@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bethel Computer Centre, Lunglei</title>
+    
+    <!-- Excel Export nan SheetJS -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
+    <style>
+        /* ================= CSS STYLES ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f0f2f5; color: #333; position: relative; min-height: 100vh; }
+        
+        /* Utilities */
+        .hidden { display: none !important; }
+
+        /* ================= HERO SECTION (Homepage) ================= */
+        .hero-section {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0c4a6e, #0284c7);
+            color: white;
+            text-align: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .hero-content h1 {
+            font-size: 45px;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero-content p {
+            font-size: 18px;
+            color: #bae6fd;
+            margin-bottom: 40px;
+        }
+
+        .home-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+        /* ================= LAYOUT & CARDS (Pages dang atan) ================= */
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        
+        h2 { color: #0f172a; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        h3 { color: #334155; margin-bottom: 15px; }
+        
+        /* ================= BUTTONS ================= */
+        .btn { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; margin-bottom: 10px; }
+        .btn-primary { background-color: #0284c7; color: white; }
+        .btn-primary:hover { background-color: #0369a1; }
+        .btn-success { background-color: #16a34a; color: white; }
+        .btn-success:hover { background-color: #15803d; }
+        .btn-danger { background-color: #dc2626; color: white; }
+        .btn-outline { background-color: transparent; border: 1px solid #0284c7; color: #0284c7; }
+        .btn-outline:hover { background-color: #e0f2fe; }
+        
+        .btn-outline-light { background-color: transparent; border: 2px solid white; color: white; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; }
+        .btn-outline-light:hover { background-color: white; color: #0c4a6e; }
+
+        /* ================= FORMS ================= */
+        form { display: flex; flex-direction: column; gap: 15px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        label { font-size: 14px; font-weight: 600; color: #475569; }
+        input, select, textarea { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: #0284c7; box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2); }
+        
+        input[type="file"] { padding: 8px; background: #f8fafc; cursor: pointer; }
+
+        /* ================= TABLES (Admin) ================= */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background-color: #f8fafc; color: #334155; }
+        .action-btns { display: flex; gap: 5px; }
+        .btn-small { padding: 6px 10px; font-size: 12px; width: auto; margin: 0; }
+
+        /* ================= SHARED LINKS ================= */
+        .shared-link-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 4px; margin-bottom: 15px; }
+        .shared-link-box a { color: #1d4ed8; font-weight: bold; text-decoration: none; }
+        .shared-link-box a:hover { text-decoration: underline; }
+        
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .hero-content h1 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================= 1. HOMEPAGE / MENU (Full Screen) ================= -->
+    <section id="home-section" class="hero-section">
+        <div class="hero-content">
+            <h1>Bethel Computer Centre</h1>
+            <p>Venglai, Lunglei - Center of Excellence</p>
+            
+            <div class="home-menu">
+                <button class="btn btn-primary" onclick="showSection('student-login-section')">Zirlai Luhna (Student Login)</button>
+                <button class="btn btn-outline-light" onclick="showSection('teacher-dashboard-section')">Zirtirtu Luhna (Admin Panel)</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Container for other sections -->
+    <div class="container">
+
+        <!-- ================= 2. ZIRLAI LOGIN ================= -->
+        <section id="student-login-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
+            <h2 style="text-align: center;">Zirlai Log In</h2>
+            <form id="login-form">
+                <div class="input-group">
+                    <label>Enrollment Number</label>
+                    <input type="text" placeholder="Entirnan: 2602001" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" required>
+                </div>
+                <button type="submit" class="btn btn-success" onclick="loginStudent(event)">Lut rawh</button>
+            </form>
+            <p style="text-align: center; margin-top: 15px; font-size: 14px;">
+                Account i la nei lo em? <a href="#" style="color: #0284c7; font-weight: bold;" onclick="showSection('student-register-section')">In-Register Rawh</a>
+            </p>
+            <button class="btn btn-outline" style="margin-top: 20px;" onclick="showSection('home-section')">Home-ah Letna</button>
+        </section>
+
+        <!-- ================= 3. ZIRLAI REGISTRATION ================= -->
+        <section id="student-register-section" class="card hidden">
+            <h2>Zirlai In-Register-na Form</h2>
+            <form id="register-form" onsubmit="submitRegistration(event)">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Zirlai Hming</label>
+                        <input type="text" placeholder="Hming Puitling" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Enrollment Number</label>
+                        <input type="text" placeholder="2602001" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Course</label>
+                        <select required>
+                            <option value="">Thlang rawh...</option>
+                            <option value="DCA 1st Sem">DCA 1st Semester</option>
+                            <option value="DCA 2nd Sem">DCA 2nd Semester</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Session</label>
+                        <select required>
+                            <option value="">Thlang rawh...</option>
+                            <option value="First Session">First Session</option>
+                            <option value="Second Session">Second Session</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Kum (Year)</label>
+                        <select required>
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Class Shift</label>
+                        <select required>
+                            <option value="">Thlang rawh...</option>
+                            <option value="Morning">Morning Shift (Zing)</option>
+                            <option value="Day">Day Shift (Chhun)</option>
+                            <option value="Evening">Evening Shift (Tlai)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group" style="grid-column: 1 / -1;">
+                        <label>Thlalak Upload (Passport Size Photo)</label>
+                        <input type="file" accept="image/*" required> 
+                    </div>
+                    
+                    <div class="input-group" style="grid-column: 1 / -1;">
+                        <label>Password (Log in nan)</label>
+                        <input type="password" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">In-Register</button>
+            </form>
+            <div style="text-align: center; margin-top: 15px;">
+                <button class="btn btn-outline" style="width: auto;" onclick="showSection('student-login-section')">Log In-ah letna</button>
+            </div>
+        </section>
+
+        <!-- ================= 4. ZIRTIRTU DASHBOARD ================= -->
+        <section id="teacher-dashboard-section" class="hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="border:none; margin:0;">Zirtirtu Dashboard</h2>
+                <button class="btn btn-outline" style="width: auto;" onclick="showSection('home-section')">Log Out (Home)</button>
+            </div>
+
+            <!-- Approval Section -->
+            <div class="card">
+                <h3>Zirlai In-Register thar te (Pending Approvals)</h3>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hming</th>
+                                <th>Enrollment</th>
+                                <th>Course</th>
+                                <th>Shift</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Lalrinpuia</td>
+                                <td>2602001</td>
+                                <td>DCA 1st Sem</td>
+                                <td>Morning</td>
+                                <td class="action-btns">
+                                    <button class="btn btn-success btn-small">Pawm</button>
+                                    <button class="btn btn-danger btn-small">Hnawl</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Share Links Section -->
+            <div class="card">
+                <h3>Thil Sem Chhuahna (Share Links)</h3>
+                <form onsubmit="shareLink(event)">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Link Type</label>
+                            <select id="link-type">
+                                <option value="Google Form">Google Form (Assignment)</option>
+                                <option value="YouTube Video">YouTube Video (Tutorial)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Link URL</label>
+                            <input type="url" id="link-url" placeholder="https://..." required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Publish Link Zirlai te hnenah</button>
+                </form>
+            </div>
+
+            <!-- Question Setter & Export -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">
+                    <h3 style="margin: 0;">MCQ Zawhna Siamna</h3>
+                    <button class="btn btn-success" style="width: auto; margin: 0;" onclick="exportToExcel()">Marks Excel-ah Export rawh</button>
+                </div>
+                
+                <form id="question-form" onsubmit="event.preventDefault(); alert('Zawhna a in-publish e!'); this.reset();">
+                    <div class="input-group">
+                        <label>Zawhna Type rawh</label>
+                        <textarea rows="3" required></textarea>
+                    </div>
+                    <div class="form-grid">
+                        <input type="text" placeholder="Option A" required>
+                        <input type="text" placeholder="Option B" required>
+                        <input type="text" placeholder="Option C" required>
+                        <input type="text" placeholder="Option D" required>
+                    </div>
+                    <div class="input-group">
+                        <label>A dik ber (Correct Answer)</label>
+                        <select required>
+                            <option value="">Thlang rawh...</option>
+                            <option value="A">Option A</option>
+                            <option value="B">Option B</option>
+                            <option value="C">Option C</option>
+                            <option value="D">Option D</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Publish Question</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================= 5. ZIRLAI DASHBOARD (Portal) ================= -->
+        <section id="student-portal-section" class="hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="border:none; margin:0;">Zirlai Portal - DCA</h2>
+                <button class="btn btn-outline" style="width: auto;" onclick="showSection('home-section')">Log Out</button>
+            </div>
+
+            <!-- Shared Resources -->
+            <div class="card">
+                <h3>Zirtirtu Thil Sem te (Resources & Assignments)</h3>
+                
+                <div class="shared-link-box">
+                    <p style="margin-bottom: 5px; font-weight: bold; color: #16a34a;">📝 Assignment (Google Form)</p>
+                    <a href="#" target="_blank">Google Form chhang turin hetah hmet rawh</a>
+                </div>
+
+                <div class="shared-link-box">
+                    <p style="margin-bottom: 5px; font-weight: bold; color: #dc2626;">▶️ Video Zirlai (YouTube)</p>
+                    <a href="#" target="_blank">HTML Basics Tutorial en turin hetah hmet rawh</a>
+                </div>
+            </div>
+
+            <!-- MCQ Area -->
+            <div class="card" style="text-align: center; padding: 40px 20px;">
+                <h3>Current MCQ Test (Subject: HTML & CSS)</h3>
+                <p style="color: #64748b; margin-bottom: 25px;">Hun tiam: 40 Minutes | Mark 10% khawl theih a ni</p>
+                <button class="btn btn-primary" style="max-width: 250px; font-size: 18px; padding: 15px;">Test Tan Rawh</button>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ================= FIREBASE SETUP CODE ================= -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js";
+        
+        // Nakina Auth leh Database i hman hunah heng hi i la un-comment ang:
+        // import { getAuth } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+        // import { getFirestore } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAYardtj2WcBiUGSD9Ytqa0yZUWwjEXgis",
+            authDomain: "bethel-portal-1641f.firebaseapp.com",
+            projectId: "bethel-portal-1641f",
+            storageBucket: "bethel-portal-1641f.firebasestorage.app",
+            messagingSenderId: "985610423339",
+            appId: "1:985610423339:web:f35bd205776bb962ed2e6e",
+            measurementId: "G-JVY6SK2EL9"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        
+        // const auth = getAuth(app);
+        // const db = getFirestore(app);
+        
+        console.log("Firebase is connected successfully!");
+    </script>
+
+    <!-- ================= JAVASCRIPT (UI Controls) ================= -->
+    <script>
+        // Section hranga kual nan (Window-ah kan vuan tlat ang)
+        window.showSection = function(sectionId) {
+            // Section awm zawng zawng thup
+            const sections = ['home-section', 'student-login-section', 'student-register-section', 'teacher-dashboard-section', 'student-portal-section'];
+            sections.forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            // A tul bik pho chhuah
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Window ti chung berah
+            window.scrollTo(0, 0);
+        }
+
+        // Zirlai Registration Submit
+        window.submitRegistration = function(event) {
+            event.preventDefault();
+            alert("I in-register hlawhtling e! Zirtirtuin a pawm (approve) hun che i nghak dawn nia.");
+            showSection('student-login-section');
+        }
+
+        // Zirlai Login Demo
+        window.loginStudent = function(event) {
+            event.preventDefault();
+            // Firebase hmang la chuan tah hian an in-approve em tih i check ang.
+            showSection('student-portal-section');
+        }
+
+        // Zirtirtu in Link a sem tur function
+        window.shareLink = function(event) {
+            event.preventDefault();
+            const type = document.getElementById('link-type').value;
+            const url = document.getElementById('link-url').value;
+            alert(type + " link chu Zirlai te hmuh theih turin i publish e!\nLink: " + url);
+            event.target.reset(); // Form clear lehna
+        }
+
+        // Excel Export (SheetJS)
+        window.exportToExcel = function() {
+            let zirlaiData = [
+                { Enrollment: "2602001", Name: "Lalrinpuia", Course: "DCA 1st Sem", Total_Marks: 35, Banked_10_Percent: 3.5 },
+                { Enrollment: "2602002", Name: "Zothanpuii", Course: "DCA 2nd Sem", Total_Marks: 38, Banked_10_Percent: 3.8 }
+            ];
+
+            let worksheet = XLSX.utils.json_to_sheet(zirlaiData);
+            let workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Marks_Record");
+            
+            XLSX.writeFile(workbook, "Bethel_Computer_Marks.xlsx");
+        }
+    </script>
+</body>
+</html>
