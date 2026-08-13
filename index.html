@@ -63,7 +63,8 @@
             <h1>Bethel Computer Centre</h1>
             <p>Venglai, Lunglei - Center of Excellence</p>
             <div class="home-menu">
-                <button class="btn btn-primary" onclick="showSection('student-login-section')">Zirlai Luhna (Student Login)</button>
+                <button class="btn btn-primary" onclick="showSection('student-registration-section')">Zirlai In-Register-na</button>
+                <button class="btn btn-success" onclick="showSection('student-login-section')">Zirlai Luhna (Student Login)</button>
                 <button class="btn btn-outline-light" onclick="showSection('admin-login-section')">Zirtirtu Luhna (Admin Panel)</button>
             </div>
         </div>
@@ -71,7 +72,28 @@
 
     <div class="container">
 
-        <!-- 2. ZIRLAI LOGIN (DOB Hmangin) -->
+        <!-- 2. ZIRLAI IN-REGISTER-NA -->
+        <section id="student-registration-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
+            <h2 style="text-align: center;">Zirlai In-register-na</h2>
+            <form onsubmit="registerStudent(event)">
+                <div class="input-group">
+                    <label>Enrollment Number</label>
+                    <input type="text" id="reg-enrollment" placeholder="Entirnan: 2602001" required>
+                </div>
+                <div class="input-group">
+                    <label>Zirlai Hming Puitling</label>
+                    <input type="text" id="reg-name" placeholder="Hming pum" required>
+                </div>
+                <div class="input-group">
+                    <label>Date of Birth (Hei hi i Password tur a ni)</label>
+                    <input type="date" id="reg-dob" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Register Rawh</button>
+            </form>
+            <button class="btn btn-outline" style="margin-top: 20px;" onclick="showSection('home-section')">Home-ah Letna</button>
+        </section>
+
+        <!-- 3. ZIRLAI LOGIN (DOB Hmangin) -->
         <section id="student-login-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
             <h2 style="text-align: center;">Zirlai Log In</h2>
             <form id="login-form" onsubmit="loginStudent(event)">
@@ -88,7 +110,7 @@
             <button class="btn btn-outline" style="margin-top: 20px;" onclick="showSection('home-section')">Home-ah Letna</button>
         </section>
 
-        <!-- 3. ADMIN / ZIRTIRTU LOGIN -->
+        <!-- 4. ADMIN / ZIRTIRTU LOGIN -->
         <section id="admin-login-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
             <h2 style="text-align: center;">Zirtirtu Log In</h2>
             <p style="text-align: center; color: gray; margin-bottom: 20px;">Zirtirtu leh Admin te chauh luh phal a ni.</p>
@@ -102,7 +124,7 @@
             <button class="btn btn-outline" style="margin-top: 20px;" onclick="showSection('home-section')">Home-ah Letna</button>
         </section>
 
-        <!-- 4. ZIRTIRTU DASHBOARD -->
+        <!-- 5. ZIRTIRTU DASHBOARD -->
         <section id="teacher-dashboard-section" class="hidden">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="border:none; margin:0;">Zirtirtu Dashboard</h2>
@@ -184,7 +206,7 @@
             </div>
         </section>
 
-        <!-- 5. ZIRLAI DASHBOARD -->
+        <!-- 6. ZIRLAI DASHBOARD -->
         <section id="student-portal-section" class="hidden">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="border:none; margin:0;" id="student-welcome-title">Zirlai Portal</h2>
@@ -233,20 +255,44 @@
         window.allQuestions = [];
 
         window.showSection = function(sectionId) {
-            const sections = ['home-section', 'student-login-section', 'admin-login-section', 'teacher-dashboard-section', 'student-portal-section'];
+            const sections = ['home-section', 'student-registration-section', 'student-login-section', 'admin-login-section', 'teacher-dashboard-section', 'student-portal-section'];
             sections.forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(sectionId).classList.remove('hidden');
             window.scrollTo(0, 0);
         }
 
-        // Zirlai Login Logic (DOB hmangin)
+        // --- Zirlai Registration Logic ---
+        window.registerStudent = async function(event) {
+            event.preventDefault();
+            const enrollment = document.getElementById('reg-enrollment').value.trim();
+            const name = document.getElementById('reg-name').value.trim();
+            const dob = document.getElementById('reg-dob').value;
+
+            try {
+                // Firestore-a 'students' collection ah kan save ang
+                await setDoc(doc(db, "students", enrollment), {
+                    enrollment: enrollment,
+                    name: name,
+                    dob: dob,
+                    registeredAt: serverTimestamp()
+                });
+                alert("I in-register hlawhtling e! I Date of Birth kha Password-ah hmangin i lut thei tawh ang.");
+                document.getElementById('reg-enrollment').value = '';
+                document.getElementById('reg-name').value = '';
+                document.getElementById('reg-dob').value = '';
+                showSection('student-login-section');
+            } catch (error) {
+                alert("Registration-ah harsatna a awm: " + error.message);
+            }
+        }
+
+        // --- Zirlai Login Logic (DOB hmangin) ---
         window.loginStudent = async function(event) {
             event.preventDefault();
             const enrollment = document.getElementById('login-enrollment').value.trim();
             const dob = document.getElementById('login-dob').value;
             
             try {
-                // Firestore 'students' collection-ah data a match em check-na
                 const q = query(collection(db, "students"), where("enrollment", "==", enrollment), where("dob", "==", dob));
                 const querySnapshot = await getDocs(q);
 
@@ -260,30 +306,28 @@
                     document.getElementById('student-welcome-title').innerText = `Zirlai Portal - ${window.currentStudent.name} (${window.currentStudent.enrollment})`;
                     showSection('student-portal-section');
                 } else {
-                    alert("Enrollment number emaw Date of Birth a dik lo!");
+                    alert("Enrollment number emaw Date of Birth a dik lo! I in-register tawh em check rawh.");
                 }
             } catch (error) {
                 alert("Database thlunzawmnaah harsatna a awm: " + error.message);
             }
         }
 
-        // Admin/Zirtirtu Login Logic
+        // --- Admin/Zirtirtu Login Logic ---
         window.loginAdmin = function(event) {
             event.preventDefault();
             const passwordInput = document.getElementById('admin-password').value;
-            
-            // HETA HIAN PASSWORD I THLAK THEI ANG
             const correctPassword = "Bethel@123"; 
 
             if (passwordInput === correctPassword) {
-                document.getElementById('admin-password').value = ''; // clear password field
+                document.getElementById('admin-password').value = ''; 
                 showSection('teacher-dashboard-section');
             } else {
                 alert("Password a dik lo! Zirtirtu te chauh luh phal a ni.");
             }
         }
 
-        // 1. Link Semna (Zirtirtu)
+        // --- Link Semna (Zirtirtu) ---
         window.shareLink = async function(event) {
             event.preventDefault();
             const type = document.getElementById('link-type').value;
@@ -295,7 +339,7 @@
             } catch (error) { alert("Harsatna: " + error.message); }
         }
 
-        // 2. Zawhna Siamna (Zirtirtu)
+        // --- Zawhna Siamna (Zirtirtu) ---
         window.publishQuestion = async function(event) {
             event.preventDefault();
             const qText = document.getElementById('q-text').value;
@@ -317,7 +361,7 @@
             } catch (error) { alert("Harsatna: " + error.message); }
         }
 
-        // 3. Zirlai Test Submit & Auto Grade
+        // --- Zirlai Test Submit & Auto Grade ---
         window.submitTest = async function() {
             if (!window.currentStudent.enrollment) {
                 alert("Log in hmasak phawt tur a ni!");
@@ -351,7 +395,7 @@
             }
         }
 
-        // 4. Excel Export (Zirtirtu)
+        // --- Excel Export (Zirtirtu) ---
         window.exportToExcel = async function() {
             try {
                 const querySnapshot = await getDocs(collection(db, "student_results"));
@@ -382,7 +426,7 @@
             }
         }
 
-        // Real-time Links Load
+        // --- Real-time Links Load ---
         onSnapshot(query(collection(db, "shared_links"), orderBy("createdAt", "desc")), (snapshot) => {
             const container = document.getElementById('student-links-container');
             container.innerHTML = '<h3>Zirtirtu Thil Sem te (Resources & Assignments)</h3>';
@@ -403,7 +447,7 @@
             }
         });
 
-        // Real-time MCQ Load for Students
+        // --- Real-time MCQ Load for Students ---
         onSnapshot(query(collection(db, "mcq_questions"), orderBy("createdAt", "desc")), (snapshot) => {
             const container = document.getElementById('student-mcq-container');
             const submitBtn = document.getElementById('submit-test-btn');
@@ -434,7 +478,7 @@
             }
         });
 
-        // Real-time Results Load for Teacher Dashboard
+        // --- Real-time Results Load for Teacher Dashboard ---
         onSnapshot(collection(db, "student_results"), (snapshot) => {
             const tableBody = document.getElementById('teacher-results-table');
             tableBody.innerHTML = '';
