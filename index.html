@@ -44,7 +44,7 @@
         input, select, textarea { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; outline: none; }
         
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
         th { background-color: #f8fafc; color: #334155; }
         
         .shared-link-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 4px; margin-bottom: 15px; }
@@ -144,11 +144,29 @@
                 </form>
             </div>
 
-            <!-- Excel Export Section -->
-            <div class="card" style="text-align: center; background: #f8fafc;">
-                <h3>Zirlai Mark & Internal 10% Lak Khawmna</h3>
-                <p style="color: #64748b; margin-bottom: 15px;">Zirlaite mark hmuh tawh zawng zawng Excel file-ah download rawh.</p>
-                <button class="btn btn-success" style="max-width: 300px; margin: 0 auto;" onclick="exportToExcel()">Marks Excel-ah Export Rawh</button>
+            <!-- Zirlaite Results Live View & Export -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">
+                    <h3 style="margin: 0;">Zirlaite Test Chhanna & Marks (Live)</h3>
+                    <button class="btn btn-success" style="width: auto; margin: 0;" onclick="exportToExcel()">Marks Excel-ah Export Rawh</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Enrollment</th>
+                                <th>Hming</th>
+                                <th>Score</th>
+                                <th>10% Internal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacher-results-table">
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: gray;">Results a la awm rih lo...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
@@ -197,7 +215,6 @@
         const analytics = getAnalytics(app);
         const db = getFirestore(app);
 
-        // Global variables for logged student
         window.currentStudent = { enrollment: '', name: '' };
         window.allQuestions = [];
 
@@ -268,7 +285,7 @@
                 }
             });
 
-            let percentage10 = (score / (totalQuestions > 0 ? totalQuestions : 1)) * 10; // 10% Internal calculation
+            let percentage10 = (score / (totalQuestions > 0 ? totalQuestions : 1)) * 10;
 
             try {
                 await setDoc(doc(db, "student_results", window.currentStudent.enrollment), {
@@ -365,6 +382,28 @@
                     `;
                 });
                 submitBtn.classList.remove('hidden');
+            }
+        });
+
+        // Real-time Results Load for Teacher Dashboard
+        onSnapshot(collection(db, "student_results"), (snapshot) => {
+            const tableBody = document.getElementById('teacher-results-table');
+            tableBody.innerHTML = '';
+
+            if (snapshot.empty) {
+                tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: gray;">Results a la awm rih lo...</td></tr>';
+            } else {
+                snapshot.forEach((doc) => {
+                    let d = doc.data();
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${d.enrollment}</td>
+                            <td><b>${d.name}</b></td>
+                            <td>${d.totalScore} / ${d.outOf}</td>
+                            <td><span style="color: #16a34a; font-weight: bold;">${d.internalMark10}</span></td>
+                        </tr>
+                    `;
+                });
             }
         });
     </script>
