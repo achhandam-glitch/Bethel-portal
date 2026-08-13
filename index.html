@@ -71,7 +71,7 @@
 
     <div class="container">
 
-        <!-- 2. ZIRLAI LOGIN -->
+        <!-- 2. ZIRLAI LOGIN (DOB Hmangin) -->
         <section id="student-login-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
             <h2 style="text-align: center;">Zirlai Log In</h2>
             <form id="login-form" onsubmit="loginStudent(event)">
@@ -80,15 +80,15 @@
                     <input type="text" id="login-enrollment" placeholder="Entirnan: 2602001" required>
                 </div>
                 <div class="input-group">
-                    <label>Zirlai Hming Puitling</label>
-                    <input type="text" id="login-name" placeholder="Hming pum" required>
+                    <label>Date of Birth (Password)</label>
+                    <input type="date" id="login-dob" required>
                 </div>
                 <button type="submit" class="btn btn-success">Lut rawh</button>
             </form>
             <button class="btn btn-outline" style="margin-top: 20px;" onclick="showSection('home-section')">Home-ah Letna</button>
         </section>
 
-        <!-- 3. ADMIN / ZIRTIRTU LOGIN (THAR) -->
+        <!-- 3. ADMIN / ZIRTIRTU LOGIN -->
         <section id="admin-login-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
             <h2 style="text-align: center;">Zirtirtu Log In</h2>
             <p style="text-align: center; color: gray; margin-bottom: 20px;">Zirtirtu leh Admin te chauh luh phal a ni.</p>
@@ -213,7 +213,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js";
-        import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAYardtj2WcBiUGSD9Ytqa0yZUWwjEXgis",
@@ -239,14 +239,32 @@
             window.scrollTo(0, 0);
         }
 
-        // Zirlai Login Logic
-        window.loginStudent = function(event) {
+        // Zirlai Login Logic (DOB hmangin)
+        window.loginStudent = async function(event) {
             event.preventDefault();
-            window.currentStudent.enrollment = document.getElementById('login-enrollment').value.trim();
-            window.currentStudent.name = document.getElementById('login-name').value.trim();
+            const enrollment = document.getElementById('login-enrollment').value.trim();
+            const dob = document.getElementById('login-dob').value;
             
-            document.getElementById('student-welcome-title').innerText = `Zirlai Portal - ${window.currentStudent.name} (${window.currentStudent.enrollment})`;
-            showSection('student-portal-section');
+            try {
+                // Firestore 'students' collection-ah data a match em check-na
+                const q = query(collection(db, "students"), where("enrollment", "==", enrollment), where("dob", "==", dob));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    querySnapshot.forEach((doc) => {
+                        let data = doc.data();
+                        window.currentStudent.name = data.name || "Zirlai"; 
+                    });
+                    
+                    window.currentStudent.enrollment = enrollment;
+                    document.getElementById('student-welcome-title').innerText = `Zirlai Portal - ${window.currentStudent.name} (${window.currentStudent.enrollment})`;
+                    showSection('student-portal-section');
+                } else {
+                    alert("Enrollment number emaw Date of Birth a dik lo!");
+                }
+            } catch (error) {
+                alert("Database thlunzawmnaah harsatna a awm: " + error.message);
+            }
         }
 
         // Admin/Zirtirtu Login Logic
