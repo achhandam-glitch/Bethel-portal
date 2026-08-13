@@ -32,6 +32,7 @@
         .btn-primary { background-color: #0284c7; color: white; }
         .btn-primary:hover { background-color: #0369a1; }
         .btn-success { background-color: #16a34a; color: white; }
+        .btn-success:hover { background-color: #15803d; }
         .btn-outline { background-color: transparent; border: 1px solid #0284c7; color: #0284c7; }
         .btn-outline-light { background-color: transparent; border: 2px solid white; color: white; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; }
         .btn-outline-light:hover { background-color: white; color: #0c4a6e; }
@@ -47,9 +48,8 @@
         th { background-color: #f8fafc; color: #334155; }
         
         .shared-link-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 4px; margin-bottom: 15px; }
-        
         .mcq-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        .mcq-box p { font-weight: bold; margin-bottom: 10px; }
+        .mcq-box p { font-weight: bold; margin-bottom: 10px; color: #1e293b; }
         .mcq-options label { display: block; background: white; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; margin-bottom: 5px; cursor: pointer; }
         
         @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .hero-content h1 { font-size: 32px; } }
@@ -74,37 +74,18 @@
         <!-- 2. ZIRLAI LOGIN -->
         <section id="student-login-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
             <h2 style="text-align: center;">Zirlai Log In</h2>
-            <form id="login-form">
+            <form id="login-form" onsubmit="loginStudent(event)">
                 <div class="input-group">
                     <label>Enrollment Number</label>
-                    <input type="text" placeholder="Entirnan: 2602001" required>
+                    <input type="text" id="login-enrollment" placeholder="Entirnan: 2602001" required>
                 </div>
                 <div class="input-group">
-                    <label>Password</label>
-                    <input type="password" required>
+                    <label>Zirlai Hming Puitling</label>
+                    <input type="text" id="login-name" placeholder="Hming pum" required>
                 </div>
-                <button type="submit" class="btn btn-success" onclick="loginStudent(event)">Lut rawh</button>
+                <button type="submit" class="btn btn-success">Lut rawh</button>
             </form>
-            <p style="text-align: center; margin-top: 15px; font-size: 14px;">
-                Account i la nei lo em? <a href="#" style="color: #0284c7; font-weight: bold;" onclick="showSection('student-register-section')">In-Register Rawh</a>
-            </p>
             <button class="btn btn-outline" style="margin-top: 20px;" onclick="showSection('home-section')">Home-ah Letna</button>
-        </section>
-
-        <!-- 3. ZIRLAI REGISTRATION -->
-        <section id="student-register-section" class="card hidden">
-            <h2>Zirlai In-Register-na Form</h2>
-            <form onsubmit="event.preventDefault(); alert('In-register hlawhtling! Admin pawm i nghak dawn nia.'); showSection('student-login-section');">
-                <div class="form-grid">
-                    <div class="input-group"><label>Zirlai Hming</label><input type="text" required></div>
-                    <div class="input-group"><label>Enrollment Number</label><input type="text" required></div>
-                    <div class="input-group" style="grid-column: 1 / -1;"><label>Password</label><input type="password" required></div>
-                </div>
-                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">In-Register</button>
-            </form>
-            <div style="text-align: center; margin-top: 15px;">
-                <button class="btn btn-outline" style="width: auto;" onclick="showSection('student-login-section')">Log In-ah letna</button>
-            </div>
         </section>
 
         <!-- 4. ZIRTIRTU DASHBOARD -->
@@ -162,25 +143,35 @@
                     <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Publish Question</button>
                 </form>
             </div>
+
+            <!-- Excel Export Section -->
+            <div class="card" style="text-align: center; background: #f8fafc;">
+                <h3>Zirlai Mark & Internal 10% Lak Khawmna</h3>
+                <p style="color: #64748b; margin-bottom: 15px;">Zirlaite mark hmuh tawh zawng zawng Excel file-ah download rawh.</p>
+                <button class="btn btn-success" style="max-width: 300px; margin: 0 auto;" onclick="exportToExcel()">Marks Excel-ah Export Rawh</button>
+            </div>
         </section>
 
         <!-- 5. ZIRLAI DASHBOARD -->
         <section id="student-portal-section" class="hidden">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="border:none; margin:0;">Zirlai Portal - DCA</h2>
+                <h2 style="border:none; margin:0;" id="student-welcome-title">Zirlai Portal</h2>
                 <button class="btn btn-outline" style="width: auto;" onclick="showSection('home-section')">Log Out</button>
             </div>
 
-            <!-- Firebase atanga Link rawn luhna -->
+            <!-- Resources -->
             <div class="card" id="student-links-container">
                 <h3>Zirtirtu Thil Sem te (Resources & Assignments)</h3>
                 <p style="color: gray;">Database atangin link a rawn in-load mek...</p>
             </div>
 
-            <!-- Firebase atanga Zawhna rawn luhna -->
-            <div class="card" id="student-mcq-container">
-                <h3>Current MCQ Test (Subject: HTML & CSS)</h3>
-                <p style="color: gray;">Zawhna thar a rawn in-load mek...</p>
+            <!-- MCQ Test Area -->
+            <div class="card">
+                <h3>Online MCQ Test</h3>
+                <div id="student-mcq-container">
+                    <p style="color: gray;">Zawhna a la awm rih lo.</p>
+                </div>
+                <button id="submit-test-btn" class="btn btn-success hidden" style="margin-top: 20px;" onclick="submitTest()">Test Hi Submit Rawh</button>
             </div>
         </section>
 
@@ -190,7 +181,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAYardtj2WcBiUGSD9Ytqa0yZUWwjEXgis",
@@ -206,8 +197,12 @@
         const analytics = getAnalytics(app);
         const db = getFirestore(app);
 
+        // Global variables for logged student
+        window.currentStudent = { enrollment: '', name: '' };
+        window.allQuestions = [];
+
         window.showSection = function(sectionId) {
-            const sections = ['home-section', 'student-login-section', 'student-register-section', 'teacher-dashboard-section', 'student-portal-section'];
+            const sections = ['home-section', 'student-login-section', 'teacher-dashboard-section', 'student-portal-section'];
             sections.forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(sectionId).classList.remove('hidden');
             window.scrollTo(0, 0);
@@ -215,29 +210,26 @@
 
         window.loginStudent = function(event) {
             event.preventDefault();
+            window.currentStudent.enrollment = document.getElementById('login-enrollment').value.trim();
+            window.currentStudent.name = document.getElementById('login-name').value.trim();
+            
+            document.getElementById('student-welcome-title').innerText = `Zirlai Portal - ${window.currentStudent.name} (${window.currentStudent.enrollment})`;
             showSection('student-portal-section');
         }
 
-        // 1. Link Semna
+        // 1. Link Semna (Zirtirtu)
         window.shareLink = async function(event) {
             event.preventDefault();
             const type = document.getElementById('link-type').value;
             const url = document.getElementById('link-url').value;
-            
             try {
-                await addDoc(collection(db, "shared_links"), {
-                    type: type,
-                    url: url,
-                    createdAt: serverTimestamp()
-                });
+                await addDoc(collection(db, "shared_links"), { type, url, createdAt: serverTimestamp() });
                 alert(type + " hi hlawhtling takin i publish e!");
                 event.target.reset(); 
-            } catch (error) {
-                alert("Harsatna a awm: " + error.message);
-            }
+            } catch (error) { alert("Harsatna: " + error.message); }
         }
 
-        // 2. Zawhna Semna
+        // 2. Zawhna Siamna (Zirtirtu)
         window.publishQuestion = async function(event) {
             event.preventDefault();
             const qText = document.getElementById('q-text').value;
@@ -256,25 +248,85 @@
                 });
                 alert("Zawhna hi hlawhtling takin i publish e!");
                 event.target.reset();
+            } catch (error) { alert("Harsatna: " + error.message); }
+        }
+
+        // 3. Zirlai Test Submit & Auto Grade
+        window.submitTest = async function() {
+            if (!window.currentStudent.enrollment) {
+                alert("Log in hmasak phawt tur a ni!");
+                return;
+            }
+
+            let score = 0;
+            let totalQuestions = window.allQuestions.length;
+
+            window.allQuestions.forEach((q) => {
+                const selected = document.querySelector(`input[name="q_${q.id}"]:checked`);
+                if (selected && selected.value === q.correctAnswer) {
+                    score += 1;
+                }
+            });
+
+            let percentage10 = (score / (totalQuestions > 0 ? totalQuestions : 1)) * 10; // 10% Internal calculation
+
+            try {
+                await setDoc(doc(db, "student_results", window.currentStudent.enrollment), {
+                    enrollment: window.currentStudent.enrollment,
+                    name: window.currentStudent.name,
+                    totalScore: score,
+                    outOf: totalQuestions,
+                    internalMark10: percentage10.toFixed(2),
+                    submittedAt: serverTimestamp()
+                });
+                alert(`Test a zo e! I hmuh zat: ${score}/${totalQuestions}\nInternal Mark (10%): ${percentage10.toFixed(2)}`);
             } catch (error) {
-                alert("Harsatna a awm: " + error.message);
+                alert("Mark save-naah harsatna a awm: " + error.message);
             }
         }
 
-        // Real-time Links Load (Button format-a siam)
-        const linksQ = query(collection(db, "shared_links"), orderBy("createdAt", "desc"));
-        onSnapshot(linksQ, (snapshot) => {
+        // 4. Excel Export (Zirtirtu)
+        window.exportToExcel = async function() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "student_results"));
+                let resultsData = [];
+                
+                querySnapshot.forEach((doc) => {
+                    let d = doc.data();
+                    resultsData.push({
+                        "Enrollment No": d.enrollment,
+                        "Zirlai Hming": d.name,
+                        "Total Score": d.totalScore,
+                        "Out Of": d.outOf,
+                        "10% Internal Mark": d.internalMark10
+                    });
+                });
+
+                if(resultsData.length === 0) {
+                    alert("Zirlaite chhanna a la awm rih lo.");
+                    return;
+                }
+
+                let worksheet = XLSX.utils.json_to_sheet(resultsData);
+                let workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Internal_Marks");
+                XLSX.writeFile(workbook, "Bethel_Student_Marks.xlsx");
+            } catch (error) {
+                alert("Excel export-naah harsatna a awm: " + error.message);
+            }
+        }
+
+        // Real-time Links Load
+        onSnapshot(query(collection(db, "shared_links"), orderBy("createdAt", "desc")), (snapshot) => {
             const container = document.getElementById('student-links-container');
             container.innerHTML = '<h3>Zirtirtu Thil Sem te (Resources & Assignments)</h3>';
-            
             if (snapshot.empty) {
-                container.innerHTML += '<p style="color: gray;">Tunah rih chuan thil sem thar a awm lo.</p>';
+                container.innerHTML += '<p style="color: gray;">Thil sem a la awm lo.</p>';
             } else {
                 snapshot.forEach((doc) => {
-                    const data = doc.data();
+                    let data = doc.data();
                     let icon = data.type === 'Google Form' ? '📝' : '▶️';
                     let color = data.type === 'Google Form' ? '#16a34a' : '#dc2626';
-                    
                     container.innerHTML += `
                         <div class="shared-link-box">
                             <p style="margin-bottom: 8px; font-weight: bold; color: ${color};">${icon} ${data.type}</p>
@@ -285,31 +337,34 @@
             }
         });
 
-        // Real-time MCQ Load
-        const mcqQ = query(collection(db, "mcq_questions"), orderBy("createdAt", "desc"));
-        onSnapshot(mcqQ, (snapshot) => {
+        // Real-time MCQ Load for Students
+        onSnapshot(query(collection(db, "mcq_questions"), orderBy("createdAt", "desc")), (snapshot) => {
             const container = document.getElementById('student-mcq-container');
-            container.innerHTML = '<h3>Current MCQ Test</h3>';
+            const submitBtn = document.getElementById('submit-test-btn');
+            window.allQuestions = [];
             
             if (snapshot.empty) {
-                container.innerHTML += '<p style="color: gray;">Tunah rih chuan test tur zawhna a awm lo.</p>';
+                container.innerHTML = '<p style="color: gray;">Test tur zawhna a la awm lo.</p>';
+                submitBtn.classList.add('hidden');
             } else {
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const qID = doc.id;
+                container.innerHTML = '';
+                snapshot.forEach((docSnap) => {
+                    let qData = docSnap.data();
+                    window.allQuestions.push({ id: docSnap.id, correctAnswer: qData.correctAnswer });
                     
                     container.innerHTML += `
                         <div class="mcq-box">
-                            <p>${data.question}</p>
+                            <p>${qData.question}</p>
                             <div class="mcq-options">
-                                <label><input type="radio" name="q_${qID}" value="A"> A) ${data.options.A}</label>
-                                <label><input type="radio" name="q_${qID}" value="B"> B) ${data.options.B}</label>
-                                <label><input type="radio" name="q_${qID}" value="C"> C) ${data.options.C}</label>
-                                <label><input type="radio" name="q_${qID}" value="D"> D) ${data.options.D}</label>
+                                <label><input type="radio" name="q_${docSnap.id}" value="A"> A) ${qData.options.A}</label>
+                                <label><input type="radio" name="q_${docSnap.id}" value="B"> B) ${qData.options.B}</label>
+                                <label><input type="radio" name="q_${docSnap.id}" value="C"> C) ${qData.options.C}</label>
+                                <label><input type="radio" name="q_${docSnap.id}" value="D"> D) ${qData.options.D}</label>
                             </div>
                         </div>
                     `;
                 });
+                submitBtn.classList.remove('hidden');
             }
         });
     </script>
