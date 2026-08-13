@@ -33,7 +33,7 @@
         .btn-primary:hover { background-color: #0369a1; }
         .btn-success { background-color: #16a34a; color: white; }
         .btn-outline { background-color: transparent; border: 1px solid #0284c7; color: #0284c7; }
-        .btn-outline-light { background-color: transparent; border: 2px solid white; color: white; padding: 12px 20px; border-radius: 6px; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; }
+        .btn-outline-light { background-color: transparent; border: 2px solid white; color: white; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; }
         .btn-outline-light:hover { background-color: white; color: #0c4a6e; }
 
         form { display: flex; flex-direction: column; gap: 15px; }
@@ -47,7 +47,6 @@
         th { background-color: #f8fafc; color: #334155; }
         
         .shared-link-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 4px; margin-bottom: 15px; }
-        .shared-link-box a { color: #1d4ed8; font-weight: bold; text-decoration: none; word-break: break-all; }
         
         .mcq-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
         .mcq-box p { font-weight: bold; margin-bottom: 10px; }
@@ -189,12 +188,10 @@
 
     <!-- ================= FIREBASE SETUP & LOGIC ================= -->
     <script type="module">
-        // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
-        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAYardtj2WcBiUGSD9Ytqa0yZUWwjEXgis",
             authDomain: "bethel-portal-1641f.firebaseapp.com",
@@ -205,12 +202,10 @@
             measurementId: "G-JVY6SK2EL9"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const db = getFirestore(app);
 
-        // UI Controls (Global Scope)
         window.showSection = function(sectionId) {
             const sections = ['home-section', 'student-login-section', 'student-register-section', 'teacher-dashboard-section', 'student-portal-section'];
             sections.forEach(id => document.getElementById(id).classList.add('hidden'));
@@ -223,8 +218,6 @@
             showSection('student-portal-section');
         }
 
-        // ================= FIREBASE WRITE (Zirtirtu) =================
-        
         // 1. Link Semna
         window.shareLink = async function(event) {
             event.preventDefault();
@@ -244,7 +237,7 @@
             }
         }
 
-        // 2. Zawhna (MCQ) Semna
+        // 2. Zawhna Semna
         window.publishQuestion = async function(event) {
             event.preventDefault();
             const qText = document.getElementById('q-text').value;
@@ -268,9 +261,7 @@
             }
         }
 
-        // ================= FIREBASE READ (Zirlai - Real-time) =================
-        
-        // 1. Link lo lan theihna
+        // Real-time Links Load (Button format-a siam)
         const linksQ = query(collection(db, "shared_links"), orderBy("createdAt", "desc"));
         onSnapshot(linksQ, (snapshot) => {
             const container = document.getElementById('student-links-container');
@@ -286,15 +277,15 @@
                     
                     container.innerHTML += `
                         <div class="shared-link-box">
-                            <p style="margin-bottom: 5px; font-weight: bold; color: ${color};">${icon} ${data.type}</p>
-                            <a href="${data.url}" target="_blank">${data.url}</a>
+                            <p style="margin-bottom: 8px; font-weight: bold; color: ${color};">${icon} ${data.type}</p>
+                            <a href="${data.url}" target="_blank" class="btn btn-primary" style="display: inline-block; padding: 10px 20px; font-size: 14px; text-align: center; text-decoration: none; width: auto;">Hawng Rawh (Open Link)</a>
                         </div>
                     `;
                 });
             }
         });
 
-        // 2. MCQ Zawhna lo lan theihna
+        // Real-time MCQ Load
         const mcqQ = query(collection(db, "mcq_questions"), orderBy("createdAt", "desc"));
         onSnapshot(mcqQ, (snapshot) => {
             const container = document.getElementById('student-mcq-container');
@@ -303,7 +294,7 @@
             if (snapshot.empty) {
                 container.innerHTML += '<p style="color: gray;">Tunah rih chuan test tur zawhna a awm lo.</p>';
             } else {
-                snapshot.forEach((doc, index) => {
+                snapshot.forEach((doc) => {
                     const data = doc.data();
                     const qID = doc.id;
                     
@@ -321,7 +312,6 @@
                 });
             }
         });
-
     </script>
 </body>
 </html>
