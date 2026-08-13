@@ -64,7 +64,7 @@
             <p>Venglai, Lunglei - Center of Excellence</p>
             <div class="home-menu">
                 <button class="btn btn-primary" onclick="showSection('student-login-section')">Zirlai Luhna (Student Login)</button>
-                <button class="btn btn-outline-light" onclick="showSection('teacher-dashboard-section')">Zirtirtu Luhna (Admin Panel)</button>
+                <button class="btn btn-outline-light" onclick="showSection('admin-login-section')">Zirtirtu Luhna (Admin Panel)</button>
             </div>
         </div>
     </section>
@@ -84,6 +84,20 @@
                     <input type="text" id="login-name" placeholder="Hming pum" required>
                 </div>
                 <button type="submit" class="btn btn-success">Lut rawh</button>
+            </form>
+            <button class="btn btn-outline" style="margin-top: 20px;" onclick="showSection('home-section')">Home-ah Letna</button>
+        </section>
+
+        <!-- 3. ADMIN / ZIRTIRTU LOGIN (THAR) -->
+        <section id="admin-login-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
+            <h2 style="text-align: center;">Zirtirtu Log In</h2>
+            <p style="text-align: center; color: gray; margin-bottom: 20px;">Zirtirtu leh Admin te chauh luh phal a ni.</p>
+            <form onsubmit="loginAdmin(event)">
+                <div class="input-group">
+                    <label>Admin Password</label>
+                    <input type="password" id="admin-password" placeholder="Password chhu rawh" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Lut rawh</button>
             </form>
             <button class="btn btn-outline" style="margin-top: 20px;" onclick="showSection('home-section')">Home-ah Letna</button>
         </section>
@@ -219,12 +233,13 @@
         window.allQuestions = [];
 
         window.showSection = function(sectionId) {
-            const sections = ['home-section', 'student-login-section', 'teacher-dashboard-section', 'student-portal-section'];
+            const sections = ['home-section', 'student-login-section', 'admin-login-section', 'teacher-dashboard-section', 'student-portal-section'];
             sections.forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(sectionId).classList.remove('hidden');
             window.scrollTo(0, 0);
         }
 
+        // Zirlai Login Logic
         window.loginStudent = function(event) {
             event.preventDefault();
             window.currentStudent.enrollment = document.getElementById('login-enrollment').value.trim();
@@ -232,6 +247,22 @@
             
             document.getElementById('student-welcome-title').innerText = `Zirlai Portal - ${window.currentStudent.name} (${window.currentStudent.enrollment})`;
             showSection('student-portal-section');
+        }
+
+        // Admin/Zirtirtu Login Logic
+        window.loginAdmin = function(event) {
+            event.preventDefault();
+            const passwordInput = document.getElementById('admin-password').value;
+            
+            // HETA HIAN PASSWORD I THLAK THEI ANG
+            const correctPassword = "Bethel@123"; 
+
+            if (passwordInput === correctPassword) {
+                document.getElementById('admin-password').value = ''; // clear password field
+                showSection('teacher-dashboard-section');
+            } else {
+                alert("Password a dik lo! Zirtirtu te chauh luh phal a ni.");
+            }
         }
 
         // 1. Link Semna (Zirtirtu)
