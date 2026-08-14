@@ -40,7 +40,6 @@
         .btn-outline-light { background-color: transparent; border: 2px solid white; color: white; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; }
         .btn-outline-light:hover { background-color: white; color: #0c4a6e; }
 
-        /* Icon Buttons to fix long text/buttons */
         .btn-icon { width: 38px; height: 38px; padding: 0; border-radius: 6px; display: inline-flex; justify-content: center; align-items: center; font-size: 16px; flex-shrink: 0; }
 
         form { display: flex; flex-direction: column; gap: 15px; }
@@ -48,7 +47,7 @@
         .input-group { display: flex; flex-direction: column; gap: 5px; }
         label { font-size: 14px; font-weight: 600; color: #475569; }
         input, select, textarea { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; outline: none; }
-        input:focus, select:focus, textarea:focus { border-color: #0284c7; ring: 2px; }
+        input:focus, select:focus, textarea:focus { border-color: #0284c7; }
         
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; vertical-align: middle; }
@@ -63,6 +62,17 @@
         .list-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; gap: 10px; }
         .list-row:last-child { border-bottom: none; }
         .list-row-info { flex-grow: 1; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Status Badges for Leave Requests */
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .status-pending { background-color: #fef08a; color: #854d0e; }
+        .status-approved { background-color: #bbf7d0; color: #166534; }
+        .leave-item { background: #fff; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; margin-bottom: 10px; }
+
+        /* Login Count Dashboard Card */
+        .dashboard-stat-card { background: #e0f2fe; border: 1px solid #bae6fd; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .dashboard-stat-title { color: #0369a1; font-weight: 600; font-size: 16px; margin: 0; }
+        .dashboard-stat-number { font-size: 28px; font-weight: bold; color: #0284c7; }
 
         @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .hero-content h1 { font-size: 32px; } }
     </style>
@@ -143,20 +153,36 @@
                 <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px;" onclick="showSection('home-section')">Log Out</button>
             </div>
 
-            <!-- Notice Board Publish -->
-            <div class="card">
-                <h3>Notice Board Siamna</h3>
-                <form onsubmit="publishNotice(event)">
-                    <div class="input-group">
-                        <label>Hriattirna Thupui</label>
-                        <input type="text" id="notice-title" placeholder="Entirnan: Naktuk Chawlh" required>
+            <!-- Today's Login Count -->
+            <div class="dashboard-stat-card">
+                <p class="dashboard-stat-title">Vawiina Zirlai Log In Zat:</p>
+                <div class="dashboard-stat-number" id="today-login-count">0</div>
+            </div>
+
+            <div class="form-grid">
+                <!-- Notice Board Publish -->
+                <div class="card">
+                    <h3>Notice Board Siamna</h3>
+                    <form onsubmit="publishNotice(event)">
+                        <div class="input-group">
+                            <label>Hriattirna Thupui</label>
+                            <input type="text" id="notice-title" placeholder="Entirnan: Naktuk Chawlh" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Hriattirna Thu (Content)</label>
+                            <textarea id="notice-content" rows="3" placeholder="Sawi tur kimchang..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Notice Post Rawh</button>
+                    </form>
+                </div>
+
+                <!-- Admin: Zirlai Chawlh Dilte (Leave Requests) -->
+                <div class="card">
+                    <h3>Zirlai In-Report (Chawlh)</h3>
+                    <div id="admin-leave-list" style="max-height: 350px; overflow-y: auto; padding-right: 5px;">
+                        <p style="color: gray;">Chawlh dil an la awm lo...</p>
                     </div>
-                    <div class="input-group">
-                        <label>Hriattirna Thu (Content)</label>
-                        <textarea id="notice-content" rows="3" placeholder="Sawi tur kimchang..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Notice Post Rawh</button>
-                </form>
+                </div>
             </div>
 
             <!-- Notice List for Admin -->
@@ -200,7 +226,7 @@
                 </div>
             </div>
 
-            <!-- Student Management & Deletion -->
+            <!-- Student Management -->
             <div class="card">
                 <h3>Zirlai Management</h3>
                 <div style="overflow-x: auto;">
@@ -221,31 +247,6 @@
                     </table>
                 </div>
             </div>
-
-            <!-- Zirlaite Results Live View & Export -->
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
-                    <h3 style="margin: 0;">Zirlaite Marks</h3>
-                    <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 15px; font-size: 14px;" onclick="exportToExcel()">Marks Excel-ah Export Rawh</button>
-                </div>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Enrollment</th>
-                                <th>Hming</th>
-                                <th>Score</th>
-                                <th>10% Internal</th>
-                            </tr>
-                        </thead>
-                        <tbody id="teacher-results-table">
-                            <tr>
-                                <td colspan="4" style="text-align: center; color: gray;">Results a la awm rih lo...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </section>
 
         <!-- 6. ZIRLAI DASHBOARD (STUDENT PORTAL) -->
@@ -253,6 +254,32 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="border:none; margin:0;" id="student-welcome-title">Zirlai Portal</h2>
                 <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px;" onclick="showSection('home-section')">Log Out</button>
+            </div>
+
+            <div class="form-grid">
+                <!-- Leave Application Form -->
+                <div class="card">
+                    <h3>Chawlh Report-na</h3>
+                    <form onsubmit="applyLeave(event)">
+                        <div class="input-group">
+                            <label>Chawlh ni tur (Date)</label>
+                            <input type="date" id="leave-date" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Chawlh chhan (Reason)</label>
+                            <textarea id="leave-reason" rows="2" placeholder="Sawi fiahna tawi..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Report thehlut rawh</button>
+                    </form>
+                </div>
+
+                <!-- Student Leave History -->
+                <div class="card">
+                    <h3>I Chawlh In-Report-te</h3>
+                    <div id="student-leave-history" style="max-height: 300px; overflow-y: auto;">
+                        <p style="color: gray;">Report i la nei lo.</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Notice Board for Students -->
@@ -292,6 +319,7 @@
         const db = getFirestore(app);
 
         window.currentStudent = { enrollment: '', name: '' };
+        let studentLeaveUnsubscribe = null; 
 
         // UI Navigation
         window.showSection = function(sectionId) {
@@ -299,6 +327,11 @@
             sections.forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(sectionId).classList.remove('hidden');
             window.scrollTo(0, 0);
+            
+            if(sectionId === 'home-section' && studentLeaveUnsubscribe) {
+                studentLeaveUnsubscribe();
+                studentLeaveUnsubscribe = null;
+            }
         }
 
         // Student Registration
@@ -323,7 +356,7 @@
             }
         }
 
-        // Student Login
+        // Student Login with Last Login Tracking
         window.loginStudent = async function(event) {
             event.preventDefault();
             const enrollment = document.getElementById('login-enrollment').value.trim();
@@ -334,18 +367,146 @@
                 const querySnapshot = await getDocs(q);
 
                 if (!querySnapshot.empty) {
+                    let docId = '';
                     querySnapshot.forEach((docSnap) => {
                         window.currentStudent.name = docSnap.data().name; 
+                        docId = docSnap.id;
                     });
                     
+                    // Update Student's Last Login Date to Today
+                    const todayDate = new Date().toISOString().split('T')[0];
+                    await updateDoc(doc(db, "students", docId), {
+                        lastLoginDate: todayDate
+                    });
+
                     window.currentStudent.enrollment = enrollment;
                     document.getElementById('student-welcome-title').innerText = `Zirlai Portal - ${window.currentStudent.name} (${window.currentStudent.enrollment})`;
+                    
+                    loadStudentLeaves(enrollment);
                     showSection('student-portal-section');
                 } else {
                     alert("Enrollment number emaw Date of Birth a dik lo! I in-register tawh em check rawh.");
                 }
             } catch (error) {
                 alert("Database thlunzawmnaah harsatna a awm: " + error.message);
+            }
+        }
+
+        // Apply for Leave / Report Absence
+        window.applyLeave = async function(event) {
+            event.preventDefault();
+            const date = document.getElementById('leave-date').value;
+            const reason = document.getElementById('leave-reason').value.trim();
+
+            try {
+                await addDoc(collection(db, "leave_requests"), {
+                    enrollment: window.currentStudent.enrollment,
+                    studentName: window.currentStudent.name,
+                    date: date,
+                    reason: reason,
+                    status: "Pending", 
+                    createdAt: serverTimestamp()
+                });
+                alert("I in-report-na a lut hlawhtling e.");
+                event.target.reset();
+            } catch (error) {
+                alert("Thehluh theih a ni lo: " + error.message);
+            }
+        }
+
+        // Load specific student's leave history
+        function loadStudentLeaves(enrollment) {
+            const q = query(collection(db, "leave_requests"), where("enrollment", "==", enrollment));
+            studentLeaveUnsubscribe = onSnapshot(q, (snapshot) => {
+                const container = document.getElementById('student-leave-history');
+                container.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    container.innerHTML = '<p style="color: gray;">Report i la thehlut lo.</p>';
+                    return;
+                }
+
+                let leaves = [];
+                snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()}));
+                leaves.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                leaves.forEach(data => {
+                    let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending';
+                    let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek';
+                    
+                    container.innerHTML += `
+                        <div class="leave-item">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                                <strong>📅 ${data.date}</strong>
+                                <span class="status-badge ${badgeClass}">${statusText}</span>
+                            </div>
+                            <p style="font-size:13px; color:#475569;">${data.reason}</p>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // Admin: Update Leave Status (Approve Only)
+        window.approveLeaveStatus = async function(leaveId) {
+            try {
+                await updateDoc(doc(db, "leave_requests", leaveId), {
+                    status: 'Approved'
+                });
+            } catch(error) {
+                alert("Status thlak theih a ni lo: " + error.message);
+            }
+        }
+
+        // Admin: Listen to all leave requests
+        onSnapshot(collection(db, "leave_requests"), (snapshot) => {
+            const adminContainer = document.getElementById('admin-leave-list');
+            if(!adminContainer) return; 
+            
+            adminContainer.innerHTML = '';
+            
+            if (snapshot.empty) {
+                adminContainer.innerHTML = '<p style="color: gray;">In-report an la awm lo...</p>';
+                return;
+            }
+
+            let leaves = [];
+            snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()}));
+            leaves.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            leaves.forEach(data => {
+                let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending';
+                let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek';
+                
+                adminContainer.innerHTML += `
+                    <div class="leave-item">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                            <strong>${data.studentName} (${data.enrollment})</strong>
+                            <span class="status-badge ${badgeClass}">${statusText}</span>
+                        </div>
+                        <div style="font-size:13px; color:#475569; margin-bottom: 10px;">
+                            <span style="color:#0284c7; font-weight:bold;">Date:</span> ${data.date} <br>
+                            <span style="color:#0284c7; font-weight:bold;">Reason:</span> ${data.reason}
+                        </div>
+                        ${data.status === 'Pending' ? `
+                            <button class="btn btn-success" style="padding: 5px 12px; font-size:12px; margin:0; width: auto;" onclick="approveLeaveStatus('${data.id}')">Pawm (Approve)</button>
+                        ` : ''}
+                    </div>
+                `;
+            });
+        });
+
+        // Admin Login
+        window.loginAdmin = function(event) {
+            event.preventDefault();
+            const passwordInput = document.getElementById('admin-password').value;
+            const correctPassword = "Bethel@123"; 
+
+            if (passwordInput === correctPassword) {
+                document.getElementById('admin-password').value = ''; 
+                showSection('teacher-dashboard-section');
+            } else {
+                alert("Password a dik lo! Zirtirtu te chauh luh phal a ni.");
             }
         }
 
@@ -372,20 +533,6 @@
                 alert("I comment post a ni e!");
             } catch (error) {
                 alert("Comment post theih a ni lo: " + error.message);
-            }
-        }
-
-        // Admin Login
-        window.loginAdmin = function(event) {
-            event.preventDefault();
-            const passwordInput = document.getElementById('admin-password').value;
-            const correctPassword = "Bethel@123"; 
-
-            if (passwordInput === correctPassword) {
-                document.getElementById('admin-password').value = ''; 
-                showSection('teacher-dashboard-section');
-            } else {
-                alert("Password a dik lo! Zirtirtu te chauh luh phal a ni.");
             }
         }
 
@@ -477,37 +624,6 @@
             }
         }
 
-        // Excel Export
-        window.exportToExcel = async function() {
-            try {
-                const querySnapshot = await getDocs(collection(db, "student_results"));
-                let resultsData = [];
-                
-                querySnapshot.forEach((doc) => {
-                    let d = doc.data();
-                    resultsData.push({
-                        "Enrollment No": d.enrollment,
-                        "Zirlai Hming": d.name,
-                        "Total Score": d.totalScore,
-                        "Out Of": d.outOf,
-                        "10% Internal Mark": d.internalMark10
-                    });
-                });
-
-                if(resultsData.length === 0) {
-                    alert("Zirlaite chhanna (marks) a la awm rih lo.");
-                    return;
-                }
-
-                let worksheet = XLSX.utils.json_to_sheet(resultsData);
-                let workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Internal_Marks");
-                XLSX.writeFile(workbook, "Bethel_Student_Marks.xlsx");
-            } catch (error) {
-                alert("Excel export-naah harsatna a awm: " + error.message);
-            }
-        }
-
         // Real-time Notice Board Listener
         onSnapshot(query(collection(db, "notices"), orderBy("createdAt", "desc")), (snapshot) => {
             const adminNoticeList = document.getElementById('admin-notice-list');
@@ -533,7 +649,7 @@
                         commentsHTML += '</div>';
                     }
 
-                    // Admin Notice View with compact icon action buttons
+                    // Admin Notice View 
                     adminNoticeList.innerHTML += `
                         <div class="notice-box">
                             <h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4>
@@ -562,15 +678,25 @@
             }
         });
 
-        // Load Students Management Table
+        // Load Students Management Table & Count Logins
         onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
             const tableBody = document.getElementById('student-management-body');
+            const todayStr = new Date().toISOString().split('T')[0];
+            let todayLoginCount = 0;
+
             tableBody.innerHTML = '';
+            
             if(snapshot.empty) {
                 tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>';
             } else {
                 snapshot.forEach((docSnap) => {
                     let s = docSnap.data();
+                    
+                    // Count today's logins
+                    if(s.lastLoginDate === todayStr) {
+                        todayLoginCount++;
+                    }
+
                     tableBody.innerHTML += `
                         <tr>
                             <td>${s.enrollment}</td>
@@ -580,6 +706,12 @@
                         </tr>
                     `;
                 });
+            }
+
+            // Update login count on dashboard
+            const countDisplay = document.getElementById('today-login-count');
+            if (countDisplay) {
+                countDisplay.innerText = todayLoginCount;
             }
         });
 
@@ -615,7 +747,7 @@
                     else if (data.type === 'Google Form') { icon = '📝'; color = '#16a34a'; }
                     else if (data.type === 'YouTube Video') { icon = '▶️'; color = '#2563eb'; }
                     
-                    // Admin View with compact icon delete button
+                    // Admin View
                     adminContainer.innerHTML += `
                         <div class="list-row">
                             <div class="list-row-info">
@@ -632,28 +764,6 @@
                             <p style="margin-bottom: 0; font-weight: bold; color: ${color}; font-size: 15px;">${icon} ${data.fileName}</p>
                             <a href="${finalUrl}" target="_blank" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">${btnText}</a>
                         </div>
-                    `;
-                });
-            }
-        });
-
-        // Load Results Table
-        onSnapshot(collection(db, "student_results"), (snapshot) => {
-            const tableBody = document.getElementById('teacher-results-table');
-            tableBody.innerHTML = '';
-
-            if (snapshot.empty) {
-                tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: gray;">Results a la awm rih lo...</td></tr>';
-            } else {
-                snapshot.forEach((docSnap) => {
-                    let d = docSnap.data();
-                    tableBody.innerHTML += `
-                        <tr>
-                            <td>${d.enrollment}</td>
-                            <td><b>${d.name}</b></td>
-                            <td>${d.totalScore} / ${d.outOf}</td>
-                            <td><span style="color: #16a34a; font-weight: bold;">${d.internalMark10}</span></td>
-                        </tr>
                     `;
                 });
             }
