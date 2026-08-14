@@ -305,7 +305,7 @@
             <div class="card">
                 <h3>Notice Board</h3>
                 <div id="student-notice-list">
-                    <p style="color: gray;">Notice a awm rih lo...</p>
+                    <p style="color: gray;">Notice a la awm rih lo...</p>
                 </div>
             </div>
 
@@ -350,7 +350,6 @@
             }
         }
 
-        // Leave Requests Paih Fai (Clear All Leave Requests)
         window.clearAllLeaveRequests = async function() {
             if (confirm("Chawlh in-report record zawng zawng paih fai (clear) takzet i duh em?")) {
                 try {
@@ -806,10 +805,11 @@
                             try {
                                 let urlObj = new URL(finalUrl);
                                 urlObj.searchParams.set('enrollment', window.currentStudent.enrollment);
+                                urlObj.searchParams.set('name', window.currentStudent.name);
                                 finalUrl = urlObj.toString();
                             } catch(e) {
-                                let joiner = finalUrl.includes('?') ? '&' : '?';
-                                finalUrl = `${finalUrl}${joiner}enrollment=${encodeURIComponent(window.currentStudent.enrollment)}`;
+                                let separator = finalUrl.includes('?') ? '&' : '?';
+                                finalUrl = `${finalUrl}${separator}enrollment=${window.currentStudent.enrollment}&name=${encodeURIComponent(window.currentStudent.name)}`;
                             }
                         }
                     }
