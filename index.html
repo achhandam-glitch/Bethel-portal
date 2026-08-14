@@ -87,8 +87,8 @@
                     <input type="text" id="reg-name" placeholder="Hming pum" required>
                 </div>
                 <div class="input-group">
-                    <label>Date of Birth (Hei hi i Password tur a ni)</label>
-                    <input type="date" id="reg-dob" required>
+                    <label>Date of Birth (DD-MM-YYYY)</label>
+                    <input type="text" id="reg-dob" placeholder="Entirnan: 15-05-2005" required>
                 </div>
                 <button type="submit" class="btn btn-primary">Register Rawh</button>
             </form>
@@ -104,8 +104,8 @@
                     <input type="text" id="login-enrollment" placeholder="Entirnan: 2602001" required>
                 </div>
                 <div class="input-group">
-                    <label>Date of Birth (Password)</label>
-                    <input type="date" id="login-dob" required>
+                    <label>Date of Birth (DD-MM-YYYY)</label>
+                    <input type="text" id="login-dob" placeholder="Entirnan: 15-05-2005" required>
                 </div>
                 <button type="submit" class="btn btn-success">Lut rawh</button>
             </form>
@@ -133,24 +133,23 @@
                 <button class="btn btn-danger" style="width: auto;" onclick="showSection('home-section')">Log Out (Home)</button>
             </div>
 
-            <!-- PDF/Link Share & Manage -->
+            <!-- Link Sem Chhuahna & Paihna -->
             <div class="form-grid">
-                <!-- Add Link -->
                 <div class="card">
-                    <h3>PDF & Link Sem Chhuahna</h3>
-                    <p style="font-size: 13px; color: gray; margin-bottom: 10px;">Note PDF chu Google Drive-ah upload la, a Link hetah hian paste rawh.</p>
+                    <h3>Link Sem Chhuahna</h3>
                     <form onsubmit="shareLink(event)">
                         <div class="input-group">
-                            <label>File Type</label>
+                            <label>Link Type</label>
                             <select id="link-type">
                                 <option value="PDF Note">PDF Note / File</option>
+                                <option value="GitHub Project">GitHub Project</option>
                                 <option value="Google Form">Google Form (Assignment)</option>
                                 <option value="YouTube Video">YouTube Video (Tutorial)</option>
                             </select>
                         </div>
                         <div class="input-group">
                             <label>File Hming / Title</label>
-                            <input type="text" id="link-name" placeholder="Entirnan: HTML Note 1" required>
+                            <input type="text" id="link-name" placeholder="Entirnan: Test Trainer Project" required>
                         </div>
                         <div class="input-group">
                             <label>Link URL</label>
@@ -159,8 +158,6 @@
                         <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Zirlaite Hnenah Sem Rawh</button>
                     </form>
                 </div>
-                
-                <!-- Manage Links -->
                 <div class="card">
                     <h3>Link I Sem Tawh Te Paihna</h3>
                     <div id="admin-links-container" style="max-height: 350px; overflow-y: auto;">
@@ -169,7 +166,7 @@
                 </div>
             </div>
 
-            <!-- Question Setter -->
+            <!-- MCQ Question Setter -->
             <div class="card">
                 <h3>MCQ Zawhna Siamna</h3>
                 <form onsubmit="publishQuestion(event)">
@@ -197,9 +194,9 @@
                 </form>
             </div>
 
-            <!-- Student Management Table -->
+            <!-- Student Management & Deletion -->
             <div class="card">
-                <h3>Zirlai Management (Zirlai Paihna)</h3>
+                <h3>Zirlai Management (Paihna)</h3>
                 <div style="overflow-x: auto;">
                     <table>
                         <thead>
@@ -219,10 +216,10 @@
                 </div>
             </div>
 
-            <!-- Zirlaite Results Live View & Export -->
+            <!-- Student Results & Excel Export -->
             <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">
-                    <h3 style="margin: 0;">Zirlaite Test Chhanna & Marks (Live)</h3>
+                    <h3 style="margin: 0;">Zirlaite Test Chhanna & Marks</h3>
                     <button class="btn btn-success" style="width: auto; margin: 0;" onclick="exportToExcel()">Marks Excel-ah Export Rawh</button>
                 </div>
                 <div style="overflow-x: auto;">
@@ -245,16 +242,16 @@
             </div>
         </section>
 
-        <!-- 6. ZIRLAI DASHBOARD -->
+        <!-- 6. ZIRLAI DASHBOARD (PORTAL) -->
         <section id="student-portal-section" class="hidden">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="border:none; margin:0;" id="student-welcome-title">Zirlai Portal</h2>
                 <button class="btn btn-danger" style="width: auto;" onclick="showSection('home-section')">Log Out</button>
             </div>
 
-            <!-- Resources / PDF Download Links -->
+            <!-- Resources / Shared Links -->
             <div class="card" id="student-links-container">
-                <h3>Zirtirtu Thil Sem te (Notes & Assignments)</h3>
+                <h3>Zirtirtu Thil Sem te</h3>
                 <p style="color: gray;">Database atangin a rawn in-load mek...</p>
             </div>
 
@@ -270,12 +267,12 @@
 
     </div>
 
-    <!-- ================= FIREBASE SETUP & LOGIC ================= -->
+    <!-- ================= FIREBASE SETUP & JAVASCRIPT LOGIC ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, deleteDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
-        // I Firebase Config - I dah angin
+        // I Firebase Config - A dik tak a ni e
         const firebaseConfig = {
             apiKey: "AIzaSyAYardtj2WcBiUGSD9Ytqa0yZUWwjEXgis",
             authDomain: "bethel-portal-1641f.firebaseapp.com",
@@ -289,10 +286,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Global Variables
         window.currentStudent = { enrollment: '', name: '' };
         window.allQuestions = [];
 
-        // UI Navigation
+        // ----------------- UI Navigation -----------------
         window.showSection = function(sectionId) {
             const sections = ['home-section', 'student-registration-section', 'student-login-section', 'admin-login-section', 'teacher-dashboard-section', 'student-portal-section'];
             sections.forEach(id => document.getElementById(id).classList.add('hidden'));
@@ -300,14 +298,14 @@
             window.scrollTo(0, 0);
         }
 
-        // ================= STUDENT LOGIC =================
+        // ----------------- ZIRLAI (STUDENT) FUNCTIONS -----------------
 
         // 1. Zirlai Registration
         window.registerStudent = async function(event) {
             event.preventDefault();
             const enrollment = document.getElementById('reg-enrollment').value.trim();
             const name = document.getElementById('reg-name').value.trim();
-            const dob = document.getElementById('reg-dob').value;
+            const dob = document.getElementById('reg-dob').value.trim();
 
             try {
                 await setDoc(doc(db, "students", enrollment), {
@@ -328,7 +326,7 @@
         window.loginStudent = async function(event) {
             event.preventDefault();
             const enrollment = document.getElementById('login-enrollment').value.trim();
-            const dob = document.getElementById('login-dob').value;
+            const dob = document.getElementById('login-dob').value.trim();
             
             try {
                 const q = query(collection(db, "students"), where("enrollment", "==", enrollment), where("dob", "==", dob));
@@ -350,7 +348,7 @@
             }
         }
 
-        // 3. MCQ Submit
+        // 3. MCQ Submit & Auto Grade
         window.submitTest = async function() {
             if (!window.currentStudent.enrollment) {
                 alert("Log in hmasak phawt tur a ni!");
@@ -367,7 +365,7 @@
                 }
             });
 
-            let percentage10 = (score / (totalQuestions > 0 ? totalQuestions : 1)) * 10;
+            let percentage10 = (totalQuestions > 0) ? (score / totalQuestions) * 10 : 0;
 
             try {
                 await setDoc(doc(db, "student_results", window.currentStudent.enrollment), {
@@ -384,7 +382,7 @@
             }
         }
 
-        // ================= ADMIN LOGIC =================
+        // ----------------- ZIRTIRTU (ADMIN) FUNCTIONS -----------------
 
         // 1. Admin Login
         window.loginAdmin = function(event) {
@@ -393,14 +391,14 @@
             const correctPassword = "Bethel@123"; 
 
             if (passwordInput === correctPassword) {
-                document.getElementById('admin-password').value = ''; // clear
+                document.getElementById('admin-password').value = ''; 
                 showSection('teacher-dashboard-section');
             } else {
                 alert("Password a dik lo! Zirtirtu te chauh luh phal a ni.");
             }
         }
 
-        // 2. Link/PDF Share
+        // 2. Share Links (PDF, GitHub, Form, YouTube)
         window.shareLink = async function(event) {
             event.preventDefault();
             const type = document.getElementById('link-type').value;
@@ -415,10 +413,12 @@
                 });
                 alert(name + " hi hlawhtling takin i sem chhuak e!");
                 event.target.reset(); 
-            } catch (error) { alert("Harsatna: " + error.message); }
+            } catch (error) { 
+                alert("Harsatna: " + error.message); 
+            }
         }
 
-        // 3. Zawhna Siamna (MCQ)
+        // 3. Zawhna Siamna (MCQ Publish)
         window.publishQuestion = async function(event) {
             event.preventDefault();
             try {
@@ -435,7 +435,9 @@
                 });
                 alert("Zawhna hi hlawhtling takin i publish e!");
                 event.target.reset();
-            } catch (error) { alert("Harsatna: " + error.message); }
+            } catch (error) { 
+                alert("Harsatna: " + error.message); 
+            }
         }
 
         // 4. Delete Student
@@ -444,16 +446,20 @@
                 try {
                     await deleteDoc(doc(db, "students", enrollment));
                     alert("Zirlai hi paih a ni tawh e.");
-                } catch(error) { alert("Paihnaah harsatna: " + error.message); }
+                } catch(error) { 
+                    alert("Paihnaah harsatna: " + error.message); 
+                }
             }
         }
 
-        // 5. Delete Link
+        // 5. Delete Shared Link
         window.deleteLink = async function(docId) {
             if(confirm("He thil sem hi i paih duh takzet em?")) {
                 try {
                     await deleteDoc(doc(db, "shared_links", docId));
-                } catch(error) { alert("Paih theih a ni lo: " + error.message); }
+                } catch(error) { 
+                    alert("Paih theih a ni lo: " + error.message); 
+                }
             }
         }
 
@@ -488,9 +494,9 @@
             }
         }
 
-        // ================= REAL-TIME LISTENERS =================
+        // ----------------- REAL-TIME LISTENERS -----------------
 
-        // Real-time Student Management Table
+        // 1. Load Students (Admin Table)
         onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
             const tableBody = document.getElementById('student-management-body');
             tableBody.innerHTML = '';
@@ -511,12 +517,12 @@
             }
         });
 
-        // Real-time Links Load (For Both Admin Delete View & Student Portal)
+        // 2. Load Links (Admin View & Student View)
         onSnapshot(query(collection(db, "shared_links"), orderBy("createdAt", "desc")), (snapshot) => {
             const studentContainer = document.getElementById('student-links-container');
             const adminContainer = document.getElementById('admin-links-container');
             
-            studentContainer.innerHTML = '<h3>Zirtirtu Thil Sem te (Notes & Assignments)</h3>';
+            studentContainer.innerHTML = '<h3>Zirtirtu Thil Sem te</h3>'; 
             adminContainer.innerHTML = '';
 
             if (snapshot.empty) {
@@ -525,8 +531,13 @@
             } else {
                 snapshot.forEach((docSnap) => {
                     let data = docSnap.data();
-                    let icon = data.type === 'PDF Note' ? '📕' : (data.type === 'Google Form' ? '📝' : '▶️');
-                    let color = data.type === 'PDF Note' ? '#dc2626' : (data.type === 'Google Form' ? '#16a34a' : '#2563eb');
+                    let icon = '🔗';
+                    let color = '#333';
+
+                    if (data.type === 'PDF Note') { icon = '📕'; color = '#dc2626'; }
+                    else if (data.type === 'GitHub Project') { icon = '💻'; color = '#111827'; }
+                    else if (data.type === 'Google Form') { icon = '📝'; color = '#16a34a'; }
+                    else if (data.type === 'YouTube Video') { icon = '▶️'; color = '#2563eb'; }
                     
                     // Admin View
                     adminContainer.innerHTML += `
@@ -549,7 +560,7 @@
             }
         });
 
-        // Real-time MCQ Load for Students
+        // 3. Load Questions (Student Test Area)
         onSnapshot(query(collection(db, "mcq_questions"), orderBy("createdAt", "desc")), (snapshot) => {
             const container = document.getElementById('student-mcq-container');
             const submitBtn = document.getElementById('submit-test-btn');
@@ -580,7 +591,7 @@
             }
         });
 
-        // Real-time Results Load for Teacher Dashboard
+        // 4. Load Results (Admin Table)
         onSnapshot(collection(db, "student_results"), (snapshot) => {
             const tableBody = document.getElementById('teacher-results-table');
             tableBody.innerHTML = '';
@@ -601,6 +612,7 @@
                 });
             }
         });
+
     </script>
 </body>
 </html>
