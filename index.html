@@ -4,111 +4,270 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bethel Computer Centre, Lunglei</title>
-    <!-- SheetJS Excel Export -->
+    
+    <!-- Excel Export nan SheetJS -->
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { background-color: #f0f2f5; min-height: 100vh; padding-bottom: 50px; }
+        /* ================= CSS STYLES ================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f0f2f5; color: #333; position: relative; min-height: 100vh; }
         .hidden { display: none !important; }
-        .hero-section { height: 100vh; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #0c4a6e, #0284c7); color: white; text-align: center; position: absolute; top: 0; left: 0; z-index: 1000; width: 100%; }
+
+        .hero-section {
+            height: 100vh; width: 100%; display: flex; justify-content: center; align-items: center;
+            background: linear-gradient(135deg, #0c4a6e, #0284c7); color: white; text-align: center;
+            position: absolute; top: 0; left: 0; z-index: 1000;
+        }
+        .hero-content h1 { font-size: 45px; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .hero-content p { font-size: 18px; color: #bae6fd; margin-bottom: 40px; }
+        .home-menu { display: flex; flex-direction: column; gap: 15px; max-width: 350px; margin: 0 auto; }
+
         .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .btn { padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; margin: 5px; transition: 0.3s; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        h2 { color: #0f172a; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        h3 { color: #334155; margin-bottom: 15px; }
+        
+        .btn { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; margin-bottom: 10px; }
         .btn-primary { background-color: #0284c7; color: white; }
+        .btn-primary:hover { background-color: #0369a1; }
         .btn-success { background-color: #16a34a; color: white; }
-        .btn-danger { background-color: #ef4444; color: white; }
+        .btn-success:hover { background-color: #15803d; }
+        .btn-danger { background-color: #ef4444; color: white; margin-top: 5px; }
+        .btn-danger:hover { background-color: #dc2626; }
         .btn-outline { background-color: transparent; border: 1px solid #0284c7; color: #0284c7; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 10px; }
+        .btn-outline-light { background-color: transparent; border: 2px solid white; color: white; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; }
+        .btn-outline-light:hover { background-color: white; color: #0c4a6e; }
+
+        form { display: flex; flex-direction: column; gap: 15px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        label { font-size: 14px; font-weight: 600; color: #475569; }
+        input, select, textarea { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; outline: none; }
+        
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px; border: 1px solid #e2e8f0; text-align: left; }
-        .notice-box { border-left: 5px solid #0284c7; background: #f9fafb; padding: 15px; margin-bottom: 15px; }
-        .comment-section { margin-top: 10px; padding: 8px; background: #eee; font-size: 12px; border-radius: 4px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+        th { background-color: #f8fafc; color: #334155; }
+        
+        .shared-link-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 4px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .notice-box { border-left: 5px solid #0284c7; background: #f9fafb; padding: 15px; border-radius: 4px; margin-bottom: 15px; }
+        .comment-area { margin-top: 10px; background: #fff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; }
+        .comment-item { border-bottom: 1px solid #eee; padding: 5px 0; }
+        
+        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .hero-content h1 { font-size: 32px; } }
     </style>
 </head>
 <body>
 
-    <!-- HOMEPAGE -->
+    <!-- 1. HOMEPAGE -->
     <section id="home-section" class="hero-section">
         <div class="hero-content">
             <h1>Bethel Computer Centre</h1>
-            <div style="display:flex; flex-direction:column; gap:10px; max-width:300px; margin:0 auto;">
-                <button class="btn btn-primary" onclick="showSection('student-registration-section')">Zirlai Registration</button>
-                <button class="btn btn-success" onclick="showSection('student-login-section')">Zirlai Login</button>
-                <button class="btn btn-outline" style="color:white; border-color:white;" onclick="showSection('admin-login-section')">Admin Login</button>
+            <p>Venglai, Lunglei - Center of Excellence</p>
+            <div class="home-menu">
+                <button class="btn btn-primary" onclick="showSection('student-registration-section')">Zirlai In-register-na</button>
+                <button class="btn btn-success" onclick="showSection('student-login-section')">Zirlai Luhna (Student Login)</button>
+                <button class="btn btn-outline-light" onclick="showSection('admin-login-section')">Zirtirtu Luhna (Admin Panel)</button>
             </div>
         </div>
     </section>
 
     <div class="container">
-        <!-- REGISTRATION -->
-        <section id="student-registration-section" class="card hidden">
-            <h2>Zirlai In-register-na</h2>
+
+        <!-- 2. ZIRLAI REGISTRATION -->
+        <section id="student-registration-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
+            <h2 style="text-align: center;">Zirlai In-register-na</h2>
             <form onsubmit="registerStudent(event)">
-                <input type="text" id="reg-enrollment" placeholder="Enrollment Number" required>
-                <input type="text" id="reg-name" placeholder="Hming Puitling" required>
-                <input type="text" id="reg-dob" placeholder="Date of Birth (DD-MM-YYYY)" required>
+                <div class="input-group">
+                    <label>Enrollment Number</label>
+                    <input type="text" id="reg-enrollment" placeholder="Entirnan: 2602001" required>
+                </div>
+                <div class="input-group">
+                    <label>Zirlai Hming Puitling</label>
+                    <input type="text" id="reg-name" placeholder="Hming pum" required>
+                </div>
+                <div class="input-group">
+                    <label>Date of Birth (DD-MM-YYYY)</label>
+                    <input type="text" id="reg-dob" placeholder="Entirnan: 15-05-2005" required>
+                </div>
                 <button type="submit" class="btn btn-primary">Register Rawh</button>
             </form>
-            <button class="btn btn-outline" onclick="showSection('home-section')">Home</button>
+            <button class="btn btn-outline" style="margin-top: 20px;" onclick="showSection('home-section')">Home-ah Letna</button>
         </section>
 
-        <!-- LOGIN -->
-        <section id="student-login-section" class="card hidden">
-            <h2>Zirlai Login</h2>
+        <!-- 3. ZIRLAI LOGIN -->
+        <section id="student-login-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
+            <h2 style="text-align: center;">Zirlai Log In</h2>
             <form onsubmit="loginStudent(event)">
-                <input type="text" id="login-enrollment" placeholder="Enrollment Number" required>
-                <input type="text" id="login-dob" placeholder="Date of Birth (DD-MM-YYYY)" required>
+                <div class="input-group">
+                    <label>Enrollment Number</label>
+                    <input type="text" id="login-enrollment" placeholder="Entirnan: 2602001" required>
+                </div>
+                <div class="input-group">
+                    <label>Date of Birth (DD-MM-YYYY)</label>
+                    <input type="text" id="login-dob" placeholder="Entirnan: 15-05-2005" required>
+                </div>
                 <button type="submit" class="btn btn-success">Lut rawh</button>
             </form>
-            <button class="btn btn-outline" onclick="showSection('home-section')">Home</button>
+            <button class="btn btn-outline" style="margin-top: 20px;" onclick="showSection('home-section')">Home-ah Letna</button>
         </section>
 
-        <!-- ADMIN PANEL -->
-        <section id="admin-login-section" class="card hidden">
-            <h2>Admin Login</h2>
-            <input type="password" id="admin-password" placeholder="Password">
-            <button class="btn btn-primary" onclick="checkAdmin()">Lut rawh</button>
-            <button class="btn btn-outline" onclick="showSection('home-section')">Home</button>
+        <!-- 4. ADMIN LOGIN -->
+        <section id="admin-login-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
+            <h2 style="text-align: center;">Zirtirtu Log In</h2>
+            <p style="text-align: center; color: gray; margin-bottom: 20px;">Zirtirtu leh Admin te chauh luh phal a ni.</p>
+            <form onsubmit="loginAdmin(event)">
+                <div class="input-group">
+                    <label>Admin Password</label>
+                    <input type="password" id="admin-password" placeholder="Password chhu rawh" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Lut rawh</button>
+            </form>
+            <button class="btn btn-outline" style="margin-top: 20px;" onclick="showSection('home-section')">Home-ah Letna</button>
         </section>
 
-        <!-- TEACHER DASHBOARD -->
+        <!-- 5. ZIRTIRTU DASHBOARD -->
         <section id="teacher-dashboard-section" class="hidden">
-            <button class="btn btn-danger" onclick="showSection('home-section')">Log Out</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="border:none; margin:0;">Zirtirtu Dashboard</h2>
+                <button class="btn btn-danger" style="width: auto;" onclick="showSection('home-section')">Log Out (Home)</button>
+            </div>
+
+            <!-- Notice Board Publish -->
             <div class="card">
                 <h3>Notice Board Siamna</h3>
-                <input type="text" id="notice-title" placeholder="Title">
-                <textarea id="notice-content" placeholder="Content..."></textarea>
-                <button class="btn btn-primary" onclick="addNotice()">Post Notice</button>
-            </div>
-            <div class="card">
-                <h3>Link Sem Chhuahna (PDF/GitHub/etc)</h3>
-                <form onsubmit="shareLink(event)">
-                    <select id="link-type"><option>PDF Note</option><option>GitHub Project</option><option>Google Form</option></select>
-                    <input type="text" id="link-name" placeholder="Title" required>
-                    <input type="url" id="link-url" placeholder="URL" required>
-                    <button type="submit" class="btn btn-primary">Publish Link</button>
+                <form onsubmit="publishNotice(event)">
+                    <div class="input-group">
+                        <label>Notice Thupui (Title)</label>
+                        <input type="text" id="notice-title" placeholder="Entirnan: Naktuk Chawlh" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Notice Thu (Content)</label>
+                        <textarea id="notice-content" rows="3" placeholder="Sawi tur kimchang..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Notice Post Rawh</button>
                 </form>
             </div>
+
+            <!-- Notice List for Admin -->
             <div class="card">
-                <h3>Management (Delete buttons)</h3>
-                <div id="admin-management-container"></div>
+                <h3>Notice Post Tawh Te</h3>
+                <div id="admin-notice-list" style="max-height: 400px; overflow-y: auto;">
+                    <p style="color: gray;">Notice a la awm lo...</p>
+                </div>
             </div>
-            <button class="btn btn-success" onclick="exportToExcel()">Export Results</button>
+
+            <!-- PDF/Link Share -->
+            <div class="form-grid">
+                <div class="card">
+                    <h3>Link Sem Chhuahna</h3>
+                    <form onsubmit="shareLink(event)">
+                        <div class="input-group">
+                            <label>Link Type</label>
+                            <select id="link-type">
+                                <option value="PDF Note">PDF Note / File</option>
+                                <option value="GitHub Project">GitHub Project</option>
+                                <option value="Google Form">Google Form (Assignment)</option>
+                                <option value="YouTube Video">YouTube Video (Tutorial)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>File Hming / Title</label>
+                            <input type="text" id="link-name" placeholder="Entirnan: HTML Note 1" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Link URL</label>
+                            <input type="url" id="link-url" placeholder="https://..." required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Zirlaite Hnenah Sem Rawh</button>
+                    </form>
+                </div>
+                <div class="card">
+                    <h3>Link I Sem Tawh Te Paihna</h3>
+                    <div id="admin-links-container" style="max-height: 350px; overflow-y: auto;">
+                        <p style="color: gray;">A la awm rih lo...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Management & Deletion -->
+            <div class="card">
+                <h3>Zirlai Management (Paihna)</h3>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Enrollment</th>
+                                <th>Hming</th>
+                                <th>DOB</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-management-body">
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: gray;">Data a la awm lo...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Zirlaite Results Live View & Export -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">
+                    <h3 style="margin: 0;">Zirlaite Marks (Hma ami)</h3>
+                    <button class="btn btn-success" style="width: auto; margin: 0;" onclick="exportToExcel()">Marks Excel-ah Export Rawh</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Enrollment</th>
+                                <th>Hming</th>
+                                <th>Score</th>
+                                <th>10% Internal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacher-results-table">
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: gray;">Results a la awm rih lo...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </section>
 
-        <!-- STUDENT PORTAL -->
+        <!-- 6. ZIRLAI DASHBOARD (STUDENT PORTAL) -->
         <section id="student-portal-section" class="hidden">
-            <h2 id="student-welcome-title">Zirlai Portal</h2>
-            <div id="student-notice-list" class="card"><h3>Notice Board</h3></div>
-            <div id="student-links-container" class="card"><h3>Thil Sem te</h3></div>
-            <button class="btn btn-danger" onclick="showSection('home-section')">Log Out</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="border:none; margin:0;" id="student-welcome-title">Zirlai Portal</h2>
+                <button class="btn btn-danger" style="width: auto;" onclick="showSection('home-section')">Log Out</button>
+            </div>
+
+            <!-- Notice Board for Students -->
+            <div class="card">
+                <h3>Notice Board</h3>
+                <div id="student-notice-list">
+                    <p style="color: gray;">Notice a awm rih lo...</p>
+                </div>
+            </div>
+
+            <!-- Resources / Shared Links -->
+            <div class="card" id="student-links-container">
+                <h3>Zirtirtu Thil Sem te (Resources)</h3>
+                <p style="color: gray;">Database atangin a rawn in-load mek...</p>
+            </div>
         </section>
+
     </div>
 
+    <!-- ================= FIREBASE SETUP & JAVASCRIPT LOGIC ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, onSnapshot, orderBy, query, setDoc, getDocs, where } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
+        // I Firebase Config - Heta hi a dik tak ka dah lut e
         const firebaseConfig = {
             apiKey: "AIzaSyAYardtj2WcBiUGSD9Ytqa0yZUWwjEXgis",
             authDomain: "bethel-portal-1641f.firebaseapp.com",
@@ -118,85 +277,375 @@
             appId: "1:985610423339:web:f35bd205776bb962ed2e6e",
             measurementId: "G-JVY6SK2EL9"
         };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+
+        // Global Variables
         window.currentStudent = { enrollment: '', name: '' };
 
-        window.showSection = (id) => {
-            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-        };
+        // ----------------- UI Navigation -----------------
+        window.showSection = function(sectionId) {
+            const sections = ['home-section', 'student-registration-section', 'student-login-section', 'admin-login-section', 'teacher-dashboard-section', 'student-portal-section'];
+            sections.forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
 
-        // Notice Board
-        window.addNotice = async () => {
-            await addDoc(collection(db, "notices"), { title: document.getElementById('notice-title').value, content: document.getElementById('notice-content').value, createdAt: new Date() });
-            alert("Notice Post!");
-        };
+        // ----------------- ZIRLAI (STUDENT) FUNCTIONS -----------------
 
-        window.deleteNotice = async (id) => { await deleteDoc(doc(db, "notices", id)); };
-        
-        window.addComment = async (noticeId) => {
-            const text = document.getElementById('comment-input-' + noticeId).value;
-            await addDoc(collection(db, "notices", noticeId, "comments"), { student: window.currentStudent.name, text, createdAt: new Date() });
-        };
+        // 1. Zirlai Registration
+        window.registerStudent = async function(event) {
+            event.preventDefault();
+            const enrollment = document.getElementById('reg-enrollment').value.trim();
+            const name = document.getElementById('reg-name').value.trim();
+            const dob = document.getElementById('reg-dob').value.trim();
 
-        // Register/Login
-        window.registerStudent = async (e) => {
-            e.preventDefault();
-            const eNo = document.getElementById('reg-enrollment').value;
-            await setDoc(doc(db, "students", eNo), { enrollment: eNo, name: document.getElementById('reg-name').value, dob: document.getElementById('reg-dob').value });
-            alert("Registered!"); showSection('home-section');
-        };
+            try {
+                await setDoc(doc(db, "students", enrollment), {
+                    enrollment: enrollment,
+                    name: name,
+                    dob: dob,
+                    registeredAt: serverTimestamp()
+                });
+                alert("I in-register hlawhtling e! I Date of Birth kha Password-ah hmangin i lut thei tawh ang.");
+                event.target.reset();
+                showSection('student-login-section');
+            } catch (error) {
+                alert("Registration-ah harsatna a awm: " + error.message);
+            }
+        }
 
-        window.loginStudent = async (e) => {
-            e.preventDefault();
-            const snap = await getDocs(query(collection(db, "students"), where("enrollment", "==", document.getElementById('login-enrollment').value), where("dob", "==", document.getElementById('login-dob').value)));
-            if(!snap.empty) { 
-                snap.forEach(d => window.currentStudent.name = d.data().name);
-                showSection('student-portal-section'); 
-            } else alert("Details dik lo!");
-        };
+        // 2. Zirlai Login
+        window.loginStudent = async function(event) {
+            event.preventDefault();
+            const enrollment = document.getElementById('login-enrollment').value.trim();
+            const dob = document.getElementById('login-dob').value.trim();
+            
+            try {
+                const q = query(collection(db, "students"), where("enrollment", "==", enrollment), where("dob", "==", dob));
+                const querySnapshot = await getDocs(q);
 
-        window.checkAdmin = () => {
-            if(document.getElementById('admin-password').value === "Bethel@123") showSection('teacher-dashboard-section');
-        };
+                if (!querySnapshot.empty) {
+                    querySnapshot.forEach((docSnap) => {
+                        window.currentStudent.name = docSnap.data().name; 
+                    });
+                    
+                    window.currentStudent.enrollment = enrollment;
+                    document.getElementById('student-welcome-title').innerText = `Zirlai Portal - ${window.currentStudent.name} (${window.currentStudent.enrollment})`;
+                    showSection('student-portal-section');
+                } else {
+                    alert("Enrollment number emaw Date of Birth a dik lo! I in-register tawh em check rawh.");
+                }
+            } catch (error) {
+                alert("Database thlunzawmnaah harsatna a awm: " + error.message);
+            }
+        }
 
-        window.shareLink = async (e) => {
-            e.preventDefault();
-            await addDoc(collection(db, "shared_links"), { type: document.getElementById('link-type').value, name: document.getElementById('link-name').value, url: document.getElementById('link-url').value, createdAt: new Date() });
-            alert("Published!");
-        };
+        // 3. Comment Post (Student)
+        window.postComment = async function(noticeId) {
+            const inputField = document.getElementById(`comment-input-${noticeId}`);
+            const commentText = inputField.value.trim();
+            
+            if (!commentText) {
+                alert("Comment ziak phawt rawh!");
+                return;
+            }
 
-        window.exportToExcel = async () => {
-            const snap = await getDocs(collection(db, "student_results"));
-            let data = [];
-            snap.forEach(d => data.push(d.data()));
-            let wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data), "Marks");
-            XLSX.writeFile(wb, "Marks.xlsx");
-        };
+            try {
+                const noticeRef = doc(db, "notices", noticeId);
+                await updateDoc(noticeRef, {
+                    comments: arrayUnion({
+                        studentName: window.currentStudent.name,
+                        text: commentText,
+                        date: new Date().toLocaleString()
+                    })
+                });
+                inputField.value = ''; // Clear the input
+                alert("I comment post a ni e!");
+            } catch (error) {
+                alert("Comment post theih a ni lo: " + error.message);
+            }
+        }
 
-        // Real-time Listeners
-        onSnapshot(collection(db, "notices"), (snap) => {
-            const adminList = document.getElementById('admin-notice-list');
-            const studentList = document.getElementById('student-notice-list');
-            studentList.innerHTML = '<h3>Notice Board</h3>';
-            snap.forEach(d => {
-                const n = d.data();
-                studentList.innerHTML += `<div class="notice-box"><b>${n.title}</b><p>${n.content}</p>
-                <input type="text" id="comment-input-${d.id}" placeholder="Comment...">
-                <button class="btn btn-success" onclick="addComment('${d.id}')">Comment</button></div>`;
-            });
+        // ----------------- ZIRTIRTU (ADMIN) FUNCTIONS -----------------
+
+        // 1. Admin Login
+        window.loginAdmin = function(event) {
+            event.preventDefault();
+            const passwordInput = document.getElementById('admin-password').value;
+            const correctPassword = "Bethel@123"; 
+
+            if (passwordInput === correctPassword) {
+                document.getElementById('admin-password').value = ''; 
+                showSection('teacher-dashboard-section');
+            } else {
+                alert("Password a dik lo! Zirtirtu te chauh luh phal a ni.");
+            }
+        }
+
+        // 2. Publish Notice
+        window.publishNotice = async function(event) {
+            event.preventDefault();
+            const title = document.getElementById('notice-title').value;
+            const content = document.getElementById('notice-content').value;
+
+            try {
+                await addDoc(collection(db, "notices"), {
+                    title: title,
+                    content: content,
+                    comments: [], // Initialize empty comments array
+                    createdAt: serverTimestamp()
+                });
+                alert("Notice thar i publish hlawhtling e!");
+                event.target.reset();
+            } catch (error) {
+                alert("Harsatna: " + error.message);
+            }
+        }
+
+        // 3. Edit Notice
+        window.editNotice = async function(noticeId) {
+            const newContent = prompt("Notice text thar tur type rawh:");
+            if (newContent !== null && newContent.trim() !== "") {
+                try {
+                    await updateDoc(doc(db, "notices", noticeId), { content: newContent });
+                    alert("Notice i siam tha e.");
+                } catch (error) {
+                    alert("Siam that theih a ni lo: " + error.message);
+                }
+            }
+        }
+
+        // 4. Delete Notice
+        window.deleteNotice = async function(noticeId) {
+            if (confirm("He notice hi i paih duh takzet em?")) {
+                try {
+                    await deleteDoc(doc(db, "notices", noticeId));
+                    alert("Notice paih a ni tawh e.");
+                } catch (error) {
+                    alert("Paih theih a ni lo: " + error.message);
+                }
+            }
+        }
+
+        // 5. Share Links (PDF, GitHub, Form, YouTube)
+        window.shareLink = async function(event) {
+            event.preventDefault();
+            const type = document.getElementById('link-type').value;
+            const name = document.getElementById('link-name').value;
+            const url = document.getElementById('link-url').value;
+            try {
+                await addDoc(collection(db, "shared_links"), { 
+                    type: type, 
+                    fileName: name,
+                    url: url, 
+                    createdAt: serverTimestamp() 
+                });
+                alert(name + " hi hlawhtling takin i sem chhuak e!");
+                event.target.reset(); 
+            } catch (error) { 
+                alert("Harsatna: " + error.message); 
+            }
+        }
+
+        // 6. Delete Student
+        window.deleteStudent = async function(enrollment) {
+            if(confirm(`Enrollment No: ${enrollment} hi i paih duh takzet em?`)) {
+                try {
+                    await deleteDoc(doc(db, "students", enrollment));
+                    alert("Zirlai hi paih a ni tawh e.");
+                } catch(error) { 
+                    alert("Paihnaah harsatna: " + error.message); 
+                }
+            }
+        }
+
+        // 7. Delete Shared Link
+        window.deleteLink = async function(docId) {
+            if(confirm("He thil sem hi i paih duh takzet em?")) {
+                try {
+                    await deleteDoc(doc(db, "shared_links", docId));
+                } catch(error) { 
+                    alert("Paih theih a ni lo: " + error.message); 
+                }
+            }
+        }
+
+        // 8. Excel Export
+        window.exportToExcel = async function() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "student_results"));
+                let resultsData = [];
+                
+                querySnapshot.forEach((doc) => {
+                    let d = doc.data();
+                    resultsData.push({
+                        "Enrollment No": d.enrollment,
+                        "Zirlai Hming": d.name,
+                        "Total Score": d.totalScore,
+                        "Out Of": d.outOf,
+                        "10% Internal Mark": d.internalMark10
+                    });
+                });
+
+                if(resultsData.length === 0) {
+                    alert("Zirlaite chhanna (marks) a la awm rih lo.");
+                    return;
+                }
+
+                let worksheet = XLSX.utils.json_to_sheet(resultsData);
+                let workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Internal_Marks");
+                XLSX.writeFile(workbook, "Bethel_Student_Marks.xlsx");
+            } catch (error) {
+                alert("Excel export-naah harsatna a awm: " + error.message);
+            }
+        }
+
+        // ----------------- REAL-TIME LISTENERS -----------------
+
+        // 1. Notice Board Listener (Admin & Student)
+        onSnapshot(query(collection(db, "notices"), orderBy("createdAt", "desc")), (snapshot) => {
+            const adminNoticeList = document.getElementById('admin-notice-list');
+            const studentNoticeList = document.getElementById('student-notice-list');
+            
+            adminNoticeList.innerHTML = '';
+            studentNoticeList.innerHTML = '';
+
+            if (snapshot.empty) {
+                adminNoticeList.innerHTML = '<p style="color: gray;">Notice a la awm lo...</p>';
+                studentNoticeList.innerHTML = '<p style="color: gray;">Notice a la awm lo...</p>';
+            } else {
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const noticeId = docSnap.id;
+                    
+                    // Render Comments string
+                    let commentsHTML = '';
+                    if (data.comments && data.comments.length > 0) {
+                        commentsHTML = '<div class="comment-area"><b>Comments:</b><br>';
+                        data.comments.forEach(c => {
+                            commentsHTML += `<div class="comment-item"><span style="color:#0284c7; font-weight:bold;">${c.studentName}:</span> ${c.text} <span style="font-size:10px; color:gray;">(${c.date})</span></div>`;
+                        });
+                        commentsHTML += '</div>';
+                    }
+
+                    // Admin View (Edit & Delete options)
+                    adminNoticeList.innerHTML += `
+                        <div class="notice-box">
+                            <h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4>
+                            <p style="margin-bottom: 15px; color: #475569;">${data.content}</p>
+                            ${commentsHTML}
+                            <div style="margin-top: 15px;">
+                                <button class="btn btn-primary" style="width: auto; padding: 6px 12px; font-size: 13px;" onclick="editNotice('${noticeId}')">Siamtha (Edit)</button>
+                                <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 13px;" onclick="deleteNotice('${noticeId}')">Paih (Delete)</button>
+                            </div>
+                        </div>
+                    `;
+
+                    // Student View (Comment option)
+                    studentNoticeList.innerHTML += `
+                        <div class="notice-box">
+                            <h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4>
+                            <p style="margin-bottom: 10px; color: #475569;">${data.content}</p>
+                            ${commentsHTML}
+                            <div style="margin-top: 15px; display: flex; gap: 10px;">
+                                <input type="text" id="comment-input-${noticeId}" placeholder="Comment ziahna..." style="margin-bottom: 0;">
+                                <button class="btn btn-success" style="width: auto; white-space: nowrap;" onclick="postComment('${noticeId}')">Post</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
         });
 
-        onSnapshot(query(collection(db, "shared_links")), snap => {
-            const sCon = document.getElementById('student-links-container');
-            sCon.innerHTML = '<h3>Thil Sem te</h3>';
-            snap.forEach(d => {
-                const l = d.data();
-                sCon.innerHTML += `<div class="card"><b>${l.name}</b> <a href="${l.url}" target="_blank" class="btn btn-primary">Hawng</a></div>`;
-            });
+        // 2. Load Students (Admin Table)
+        onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
+            const tableBody = document.getElementById('student-management-body');
+            tableBody.innerHTML = '';
+            if(snapshot.empty) {
+                tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>';
+            } else {
+                snapshot.forEach((docSnap) => {
+                    let s = docSnap.data();
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${s.enrollment}</td>
+                            <td>${s.name}</td>
+                            <td>${s.dob}</td>
+                            <td><button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px; margin: 0;" onclick="deleteStudent('${s.enrollment}')">Paih</button></td>
+                        </tr>
+                    `;
+                });
+            }
         });
+
+        // 3. Load Links (Admin View & Student View)
+        onSnapshot(query(collection(db, "shared_links"), orderBy("createdAt", "desc")), (snapshot) => {
+            const studentContainer = document.getElementById('student-links-container');
+            const adminContainer = document.getElementById('admin-links-container');
+            
+            studentContainer.innerHTML = '<h3>Zirtirtu Thil Sem te</h3>'; 
+            adminContainer.innerHTML = '';
+
+            if (snapshot.empty) {
+                studentContainer.innerHTML += '<p style="color: gray;">Thil sem a la awm lo.</p>';
+                adminContainer.innerHTML = '<p style="color: gray;">A la awm rih lo...</p>';
+            } else {
+                snapshot.forEach((docSnap) => {
+                    let data = docSnap.data();
+                    let icon = '🔗';
+                    let color = '#333';
+
+                    if (data.type === 'PDF Note') { icon = '📕'; color = '#dc2626'; }
+                    else if (data.type === 'GitHub Project') { icon = '💻'; color = '#111827'; }
+                    else if (data.type === 'Google Form') { icon = '📝'; color = '#16a34a'; }
+                    else if (data.type === 'YouTube Video') { icon = '▶️'; color = '#2563eb'; }
+                    
+                    // Admin View
+                    adminContainer.innerHTML += `
+                        <div style="border-bottom: 1px solid #eee; padding: 10px 0; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <b>${data.fileName}</b> <span style="font-size:12px; color:gray;">(${data.type})</span>
+                            </div>
+                            <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px; margin: 0;" onclick="deleteLink('${docSnap.id}')">Paih</button>
+                        </div>
+                    `;
+
+                    // Student View
+                    studentContainer.innerHTML += `
+                        <div class="shared-link-box">
+                            <p style="margin-bottom: 0; font-weight: bold; color: ${color};">${icon} ${data.fileName}</p>
+                            <a href="${data.url}" target="_blank" class="btn btn-primary" style="padding: 8px 15px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">Hawng Rawh</a>
+                        </div>
+                    `;
+                });
+            }
+        });
+
+        // 4. Load Results (Admin Table - For Past Marks or Manual Entry)
+        onSnapshot(collection(db, "student_results"), (snapshot) => {
+            const tableBody = document.getElementById('teacher-results-table');
+            tableBody.innerHTML = '';
+
+            if (snapshot.empty) {
+                tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: gray;">Results a la awm rih lo...</td></tr>';
+            } else {
+                snapshot.forEach((docSnap) => {
+                    let d = docSnap.data();
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${d.enrollment}</td>
+                            <td><b>${d.name}</b></td>
+                            <td>${d.totalScore} / ${d.outOf}</td>
+                            <td><span style="color: #16a34a; font-weight: bold;">${d.internalMark10}</span></td>
+                        </tr>
+                    `;
+                });
+            }
+        });
+
     </script>
 </body>
 </html>
