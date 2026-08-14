@@ -9,7 +9,6 @@
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 
     <style>
-        /* ================= CSS STYLES ================= */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f0f2f5; color: #333; position: relative; min-height: 100vh; padding-bottom: 50px; }
         .hidden { display: none !important; }
@@ -63,13 +62,11 @@
         .list-row:last-child { border-bottom: none; }
         .list-row-info { flex-grow: 1; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Status Badges */
         .status-badge { display: inline-block; padding: 5px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }
         .status-pending { background-color: #fef08a; color: #854d0e; }
         .status-approved { background-color: #bbf7d0; color: #166534; }
         .leave-item { background: #fff; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
 
-        /* Login Count */
         .dashboard-stat-card { background: #e0f2fe; border: 1px solid #bae6fd; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .dashboard-stat-title { color: #0369a1; font-weight: 600; font-size: 16px; margin: 0; }
         .dashboard-stat-number { font-size: 28px; font-weight: bold; color: #0284c7; }
@@ -153,13 +150,11 @@
                 <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px;" onclick="showSection('home-section')">Log Out</button>
             </div>
 
-            <!-- Today's Login Count -->
             <div class="dashboard-stat-card">
                 <p class="dashboard-stat-title">Vawiina Zirlai Log In Zat:</p>
                 <div class="dashboard-stat-number" id="today-login-count">0</div>
             </div>
 
-            <!-- Zirlai In-Report (Chawlh pawmna) -->
             <div class="card" style="border: 2px solid #3b82f6;">
                 <h3 style="color: #1e3a8a; border-bottom: 2px solid #bfdbfe;">Zirlai In-Report (Chawlh Dilna)</h3>
                 <div id="admin-leave-list" style="max-height: 400px; overflow-y: auto; padding: 10px 5px;">
@@ -168,7 +163,6 @@
             </div>
 
             <div class="form-grid">
-                <!-- Notice Board Publish -->
                 <div class="card">
                     <h3>Notice Board Siamna</h3>
                     <form onsubmit="publishNotice(event)">
@@ -184,7 +178,6 @@
                     </form>
                 </div>
 
-                <!-- Notice List for Admin -->
                 <div class="card">
                     <h3>Notice Post Tawh Te</h3>
                     <div id="admin-notice-list" style="max-height: 300px; overflow-y: auto; padding-right: 5px;">
@@ -193,7 +186,6 @@
                 </div>
             </div>
 
-            <!-- PDF/Link Share -->
             <div class="form-grid">
                 <div class="card">
                     <h3>Link Sem Chhuahna</h3>
@@ -226,11 +218,14 @@
                 </div>
             </div>
 
-            <!-- ZIRLAITE MARKS (TEST RECORDS) - Ka rawn dah kir leh e -->
+            <!-- ZIRLAITE MARKS & CLEAR BUTTON -->
             <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                     <h3 style="margin: 0; border: none; padding: 0;">Zirlaite Marks (Test Records)</h3>
-                    <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 15px; font-size: 14px;" onclick="exportToExcel()">Marks Excel-ah Export Rawh</button>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 15px; font-size: 14px;" onclick="exportToExcel()">Excel-ah Export</button>
+                        <button class="btn btn-danger" style="width: auto; margin: 0; padding: 10px 15px; font-size: 14px;" onclick="clearAllTestResults()">Records Clear Rawh</button>
+                    </div>
                 </div>
                 <div style="overflow-x: auto;">
                     <table>
@@ -251,7 +246,6 @@
                 </div>
             </div>
 
-            <!-- Student Management -->
             <div class="card">
                 <h3>Zirlai Management</h3>
                 <div style="overflow-x: auto;">
@@ -282,7 +276,6 @@
             </div>
 
             <div class="form-grid">
-                <!-- Leave Application Form -->
                 <div class="card">
                     <h3>Chawlh Report-na</h3>
                     <form onsubmit="applyLeave(event)">
@@ -298,7 +291,6 @@
                     </form>
                 </div>
 
-                <!-- Student Leave History -->
                 <div class="card">
                     <h3>I Chawlh In-Report-te</h3>
                     <div id="student-leave-history" style="max-height: 300px; overflow-y: auto;">
@@ -307,15 +299,13 @@
                 </div>
             </div>
 
-            <!-- Notice Board for Students -->
             <div class="card">
                 <h3>Notice Board</h3>
                 <div id="student-notice-list">
-                    <p style="color: gray;">Notice a awm rih lo...</p>
+                    <p style="color: gray;">Notice a la awm rih lo...</p>
                 </div>
             </div>
 
-            <!-- Resources / Shared Links -->
             <div class="card" id="student-links-container">
                 <h3>Study Material, Assignment, Test / Exam</h3>
                 <p style="color: gray;">Database atangin a rawn in-load mek...</p>
@@ -345,7 +335,6 @@
         window.currentStudent = { enrollment: '', name: '' };
         let studentLeaveUnsubscribe = null; 
 
-        // UI Navigation
         window.showSection = function(sectionId) {
             const sections = ['home-section', 'student-registration-section', 'student-login-section', 'admin-login-section', 'teacher-dashboard-section', 'student-portal-section'];
             sections.forEach(id => document.getElementById(id).classList.add('hidden'));
@@ -358,7 +347,23 @@
             }
         }
 
-        // Excel Export (Test Marks)
+        // THIL THAR: Test results zawng zawng paihna (Clear)
+        window.clearAllTestResults = async function() {
+            if (confirm("Test record zawng zawng paih fai (clear) takzet i duh em?")) {
+                try {
+                    const querySnapshot = await getDocs(collection(db, "student_results"));
+                    let deletePromises = [];
+                    querySnapshot.forEach((document) => {
+                        deletePromises.push(deleteDoc(doc(db, "student_results", document.id)));
+                    });
+                    await Promise.all(deletePromises);
+                    alert("Test record zawng zawng paih fai a ni tawh e!");
+                } catch (error) {
+                    alert("Paih fai naah harsatna a awm: " + error.message);
+                }
+            }
+        }
+
         window.exportToExcel = async function() {
             try {
                 const querySnapshot = await getDocs(collection(db, "student_results"));
@@ -389,7 +394,6 @@
             }
         }
 
-        // Student Registration
         window.registerStudent = async function(event) {
             event.preventDefault();
             const enrollment = document.getElementById('reg-enrollment').value.trim();
@@ -411,7 +415,6 @@
             }
         }
 
-        // Student Login with Last Login Tracking
         window.loginStudent = async function(event) {
             event.preventDefault();
             const enrollment = document.getElementById('login-enrollment').value.trim();
@@ -446,7 +449,6 @@
             }
         }
 
-        // Apply for Leave / Report Absence (Student)
         window.applyLeave = async function(event) {
             event.preventDefault();
             const date = document.getElementById('leave-date').value;
@@ -468,7 +470,6 @@
             }
         }
 
-        // Load specific student's leave history
         function loadStudentLeaves(enrollment) {
             const q = query(collection(db, "leave_requests"), where("enrollment", "==", enrollment));
             studentLeaveUnsubscribe = onSnapshot(q, (snapshot) => {
@@ -501,7 +502,6 @@
             });
         }
 
-        // Admin: Update Leave Status (Approve Only)
         window.approveLeaveStatus = async function(leaveId) {
             try {
                 await updateDoc(doc(db, "leave_requests", leaveId), {
@@ -512,7 +512,6 @@
             }
         }
 
-        // Admin: Listen to all leave requests
         onSnapshot(collection(db, "leave_requests"), (snapshot) => {
             const adminContainer = document.getElementById('admin-leave-list');
             if(!adminContainer) return; 
@@ -550,7 +549,6 @@
             });
         });
 
-        // Admin Login
         window.loginAdmin = function(event) {
             event.preventDefault();
             const passwordInput = document.getElementById('admin-password').value;
@@ -564,7 +562,6 @@
             }
         }
 
-        // Post Comment (Student)
         window.postComment = async function(noticeId) {
             const inputField = document.getElementById(`comment-input-${noticeId}`);
             const commentText = inputField.value.trim();
@@ -590,7 +587,6 @@
             }
         }
 
-        // Publish Notice
         window.publishNotice = async function(event) {
             event.preventDefault();
             const title = document.getElementById('notice-title').value;
@@ -610,7 +606,6 @@
             }
         }
 
-        // Edit Notice
         window.editNotice = async function(noticeId) {
             const newContent = prompt("Notice text thar tur type rawh:");
             if (newContent !== null && newContent.trim() !== "") {
@@ -623,7 +618,6 @@
             }
         }
 
-        // Delete Notice
         window.deleteNotice = async function(noticeId) {
             if (confirm("He notice hi i paih duh takzet em?")) {
                 try {
@@ -635,7 +629,6 @@
             }
         }
 
-        // Share Links
         window.shareLink = async function(event) {
             event.preventDefault();
             const type = document.getElementById('link-type').value;
@@ -655,7 +648,6 @@
             }
         }
 
-        // Delete Student
         window.deleteStudent = async function(enrollment) {
             if(confirm(`Enrollment No: ${enrollment} hi i paih duh takzet em?`)) {
                 try {
@@ -667,7 +659,6 @@
             }
         }
 
-        // Delete Shared Link
         window.deleteLink = async function(docId) {
             if(confirm("He thil sem hi i paih duh takzet em?")) {
                 try {
@@ -678,7 +669,6 @@
             }
         }
 
-        // Real-time Notice Board Listener
         onSnapshot(query(collection(db, "notices"), orderBy("createdAt", "desc")), (snapshot) => {
             const adminNoticeList = document.getElementById('admin-notice-list');
             const studentNoticeList = document.getElementById('student-notice-list');
@@ -730,7 +720,6 @@
             }
         });
 
-        // Load Students Management Table & Count Logins
         onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
             const tableBody = document.getElementById('student-management-body');
             const todayStr = new Date().toISOString().split('T')[0];
@@ -765,7 +754,6 @@
             }
         });
 
-        // Load Links & Materials
         onSnapshot(query(collection(db, "shared_links"), orderBy("createdAt", "desc")), (snapshot) => {
             const studentContainer = document.getElementById('student-links-container');
             const adminContainer = document.getElementById('admin-links-container');
@@ -793,7 +781,19 @@
                             btnText = 'Download';
                         }
                     }
-                    else if (data.type === 'GitHub Project') { icon = '💻'; color = '#111827'; }
+                    else if (data.type === 'GitHub Project') { 
+                        icon = '💻'; color = '#111827'; 
+                        if (window.currentStudent && window.currentStudent.enrollment) {
+                            try {
+                                let urlObj = new URL(finalUrl);
+                                urlObj.searchParams.set('enrollment', window.currentStudent.enrollment);
+                                finalUrl = urlObj.toString();
+                            } catch(e) {
+                                let joiner = finalUrl.includes('?') ? '&' : '?';
+                                finalUrl = `${finalUrl}${joiner}enrollment=${encodeURIComponent(window.currentStudent.enrollment)}`;
+                            }
+                        }
+                    }
                     else if (data.type === 'Google Form') { icon = '📝'; color = '#16a34a'; }
                     else if (data.type === 'YouTube Video') { icon = '▶️'; color = '#2563eb'; }
                     
@@ -817,7 +817,6 @@
             }
         });
 
-        // Load Test Results (Zirlaite Marks) Table
         onSnapshot(collection(db, "student_results"), (snapshot) => {
             const tableBody = document.getElementById('teacher-results-table');
             if(!tableBody) return;
