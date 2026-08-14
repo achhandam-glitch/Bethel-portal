@@ -26,7 +26,7 @@
         .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
         .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
         h2 { color: #0f172a; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
-        h3 { color: #334155; margin-bottom: 15px; }
+        h3 { color: #334155; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;}
         
         .btn { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: 600; width: 100%; transition: 0.3s; margin-bottom: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center; }
         .btn-primary { background-color: #0284c7; color: white; }
@@ -63,13 +63,13 @@
         .list-row:last-child { border-bottom: none; }
         .list-row-info { flex-grow: 1; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Status Badges for Leave Requests */
-        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        /* Status Badges */
+        .status-badge { display: inline-block; padding: 5px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }
         .status-pending { background-color: #fef08a; color: #854d0e; }
         .status-approved { background-color: #bbf7d0; color: #166534; }
-        .leave-item { background: #fff; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; margin-bottom: 10px; }
+        .leave-item { background: #fff; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
 
-        /* Login Count Dashboard Card */
+        /* Login Count */
         .dashboard-stat-card { background: #e0f2fe; border: 1px solid #bae6fd; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .dashboard-stat-title { color: #0369a1; font-weight: 600; font-size: 16px; margin: 0; }
         .dashboard-stat-number { font-size: 28px; font-weight: bold; color: #0284c7; }
@@ -159,6 +159,14 @@
                 <div class="dashboard-stat-number" id="today-login-count">0</div>
             </div>
 
+            <!-- Zirlai In-Report (Chawlh pawmna) - Langsar taka dah a ni -->
+            <div class="card" style="border: 2px solid #3b82f6;">
+                <h3 style="color: #1e3a8a; border-bottom: 2px solid #bfdbfe;">Zirlai In-Report (Chawlh Dilna)</h3>
+                <div id="admin-leave-list" style="max-height: 400px; overflow-y: auto; padding: 10px 5px;">
+                    <p style="color: gray;">Chawlh dil an la awm lo...</p>
+                </div>
+            </div>
+
             <div class="form-grid">
                 <!-- Notice Board Publish -->
                 <div class="card">
@@ -176,20 +184,12 @@
                     </form>
                 </div>
 
-                <!-- Admin: Zirlai Chawlh Dilte (Leave Requests) -->
+                <!-- Notice List for Admin -->
                 <div class="card">
-                    <h3>Zirlai In-Report (Chawlh)</h3>
-                    <div id="admin-leave-list" style="max-height: 350px; overflow-y: auto; padding-right: 5px;">
-                        <p style="color: gray;">Chawlh dil an la awm lo...</p>
+                    <h3>Notice Post Tawh Te</h3>
+                    <div id="admin-notice-list" style="max-height: 300px; overflow-y: auto; padding-right: 5px;">
+                        <p style="color: gray;">Notice a la awm lo...</p>
                     </div>
-                </div>
-            </div>
-
-            <!-- Notice List for Admin -->
-            <div class="card">
-                <h3>Notice Post Tawh Te</h3>
-                <div id="admin-notice-list" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
-                    <p style="color: gray;">Notice a la awm lo...</p>
                 </div>
             </div>
 
@@ -220,7 +220,7 @@
                 </div>
                 <div class="card">
                     <h3>Link Sem Tawh Te Paihna</h3>
-                    <div id="admin-links-container" style="max-height: 350px; overflow-y: auto; padding-right: 5px;">
+                    <div id="admin-links-container" style="max-height: 300px; overflow-y: auto; padding-right: 5px;">
                         <p style="color: gray;">A la awm rih lo...</p>
                     </div>
                 </div>
@@ -304,7 +304,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
-        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyAYardtj2WcBiUGSD9Ytqa0yZUWwjEXgis",
             authDomain: "bethel-portal-1641f.firebaseapp.com",
@@ -373,7 +372,6 @@
                         docId = docSnap.id;
                     });
                     
-                    // Update Student's Last Login Date to Today
                     const todayDate = new Date().toISOString().split('T')[0];
                     await updateDoc(doc(db, "students", docId), {
                         lastLoginDate: todayDate
@@ -392,7 +390,7 @@
             }
         }
 
-        // Apply for Leave / Report Absence
+        // Apply for Leave / Report Absence (Student)
         window.applyLeave = async function(event) {
             event.preventDefault();
             const date = document.getElementById('leave-date').value;
@@ -436,11 +434,11 @@
                     
                     container.innerHTML += `
                         <div class="leave-item">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                                <strong>📅 ${data.date}</strong>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                                <strong style="color: #0f172a;">📅 ${data.date}</strong>
                                 <span class="status-badge ${badgeClass}">${statusText}</span>
                             </div>
-                            <p style="font-size:13px; color:#475569;">${data.reason}</p>
+                            <p style="font-size:14px; color:#475569; margin:0;">${data.reason}</p>
                         </div>
                     `;
                 });
@@ -466,7 +464,7 @@
             adminContainer.innerHTML = '';
             
             if (snapshot.empty) {
-                adminContainer.innerHTML = '<p style="color: gray;">In-report an la awm lo...</p>';
+                adminContainer.innerHTML = '<p style="color: gray; text-align: center; padding: 20px 0;">In-report an la awm lo...</p>';
                 return;
             }
 
@@ -479,17 +477,17 @@
                 let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek';
                 
                 adminContainer.innerHTML += `
-                    <div class="leave-item">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                            <strong>${data.studentName} (${data.enrollment})</strong>
+                    <div class="leave-item" style="border-left: 4px solid ${data.status === 'Approved' ? '#22c55e' : '#eab308'};">
+                        <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:8px;">
+                            <strong style="font-size: 16px; color: #0f172a;">${data.studentName} <span style="color: gray; font-size: 13px;">(${data.enrollment})</span></strong>
                             <span class="status-badge ${badgeClass}">${statusText}</span>
                         </div>
-                        <div style="font-size:13px; color:#475569; margin-bottom: 10px;">
-                            <span style="color:#0284c7; font-weight:bold;">Date:</span> ${data.date} <br>
-                            <span style="color:#0284c7; font-weight:bold;">Reason:</span> ${data.reason}
+                        <div style="font-size:14px; color:#334155; margin-bottom: 12px; background: #f8fafc; padding: 8px; border-radius: 4px;">
+                            <span style="color:#0284c7; font-weight:bold;">Chawlh Ni (Date):</span> ${data.date} <br>
+                            <span style="color:#0284c7; font-weight:bold;">A Chhan (Reason):</span> ${data.reason}
                         </div>
                         ${data.status === 'Pending' ? `
-                            <button class="btn btn-success" style="padding: 5px 12px; font-size:12px; margin:0; width: auto;" onclick="approveLeaveStatus('${data.id}')">Pawm (Approve)</button>
+                            <button class="btn btn-success" style="padding: 8px 15px; font-size:13px; margin:0; width: auto;" onclick="approveLeaveStatus('${data.id}')">Pawm (Approve)</button>
                         ` : ''}
                     </div>
                 `;
@@ -649,7 +647,6 @@
                         commentsHTML += '</div>';
                     }
 
-                    // Admin Notice View 
                     adminNoticeList.innerHTML += `
                         <div class="notice-box">
                             <h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4>
@@ -662,7 +659,6 @@
                         </div>
                     `;
 
-                    // Student Notice View
                     studentNoticeList.innerHTML += `
                         <div class="notice-box">
                             <h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4>
@@ -692,7 +688,6 @@
                 snapshot.forEach((docSnap) => {
                     let s = docSnap.data();
                     
-                    // Count today's logins
                     if(s.lastLoginDate === todayStr) {
                         todayLoginCount++;
                     }
@@ -708,7 +703,6 @@
                 });
             }
 
-            // Update login count on dashboard
             const countDisplay = document.getElementById('today-login-count');
             if (countDisplay) {
                 countDisplay.innerText = todayLoginCount;
@@ -747,7 +741,6 @@
                     else if (data.type === 'Google Form') { icon = '📝'; color = '#16a34a'; }
                     else if (data.type === 'YouTube Video') { icon = '▶️'; color = '#2563eb'; }
                     
-                    // Admin View
                     adminContainer.innerHTML += `
                         <div class="list-row">
                             <div class="list-row-info">
@@ -758,7 +751,6 @@
                         </div>
                     `;
 
-                    // Student View
                     studentContainer.innerHTML += `
                         <div class="shared-link-box">
                             <p style="margin-bottom: 0; font-weight: bold; color: ${color}; font-size: 15px;">${icon} ${data.fileName}</p>
