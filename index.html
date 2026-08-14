@@ -7,6 +7,11 @@
     
     <!-- SheetJS Excel Export & Import -->
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    
+    <!-- jsPDF for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>window.jsPDF = window.jspdf.jsPDF;</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -34,6 +39,8 @@
         .btn-success:hover { background-color: #15803d; }
         .btn-danger { background-color: #ef4444; color: white; }
         .btn-danger:hover { background-color: #dc2626; }
+        .btn-pdf { background-color: #dc2626; color: white; }
+        .btn-pdf:hover { background-color: #b91c1c; }
         .btn-outline { background-color: transparent; border: 1px solid #0284c7; color: #0284c7; }
         .btn-outline:hover { background-color: #f0f9ff; }
         .btn-outline-light { background-color: transparent; border: 2px solid white; color: white; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; }
@@ -149,8 +156,9 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                     <h3 style="color: #1e3a8a; border: none; padding: 0; margin: 0;">Zirlai In-Report (Chawlh Dilna)</h3>
                     <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportLeaveToExcel()">Excel-ah Export</button>
-                        <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAllLeaveRequests()">Records Clear Rawh</button>
+                        <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportLeaveToExcel()">Excel Export</button>
+                        <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;" onclick="exportLeaveToPDF()">PDF Export</button>
+                        <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAllLeaveRequests()">Records Clear</button>
                     </div>
                 </div>
                 <div id="admin-leave-list" style="max-height: 400px; overflow-y: auto; padding: 10px 5px;">
@@ -218,8 +226,9 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                     <h3 style="margin: 0; border: none; padding: 0;">Zirlaite Marks (Test Records)</h3>
                     <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 15px; font-size: 14px;" onclick="exportToExcel()">Excel-ah Export</button>
-                        <button class="btn btn-danger" style="width: auto; margin: 0; padding: 10px 15px; font-size: 14px;" onclick="clearAllTestResults()">Records Clear Rawh</button>
+                        <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportToExcel()">Excel Export</button>
+                        <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;" onclick="exportResultsToPDF()">PDF Export</button>
+                        <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAllTestResults()">Records Clear</button>
                     </div>
                 </div>
                 <div style="overflow-x: auto;">
@@ -413,7 +422,7 @@
             reader.readAsArrayBuffer(file);
         }
         
-        // ================= LEAVE EXPORT LOGIC =================
+        // ================= LEAVE EXPORT LOGIC (EXCEL & PDF) =================
         window.exportLeaveToExcel = async function() {
             try {
                 const querySnapshot = await getDocs(collection(db, "leave_requests"));
@@ -435,7 +444,6 @@
                     return;
                 }
 
-                // Date hmanga rem (Sort by date)
                 leaveData.sort((a, b) => new Date(b["Chawlh Ni (Date)"]) - new Date(a["Chawlh Ni (Date)"]));
 
                 let worksheet = XLSX.utils.json_to_sheet(leaveData);
@@ -447,6 +455,117 @@
             }
         }
 
+        window.exportLeaveToPDF = async function() {
+            try {
+                const doc = new window.jsPDF();
+
+                const querySnapshot = await getDocs(collection(db, "leave_requests"));
+                let leaveData = [];
+
+                querySnapshot.forEach((document) => {
+                    let d = document.data();
+                    leaveData.push([
+                        d.enrollment,
+                        d.studentName,
+                        d.date,
+                        d.reason,
+                        d.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek'
+                    ]);
+                });
+
+                if(leaveData.length === 0) {
+                    alert("Chawlh dilna record a la awm lo.");
+                    return;
+                }
+
+                leaveData.sort((a, b) => new Date(b[2]) - new Date(a[2]));
+
+                doc.text("Zirlai Chawlh Report (Bethel Computer Centre)", 14, 15);
+                
+                doc.autoTable({
+                    startY: 20,
+                    head: [['Enrollment', 'Hming', 'Chawlh Ni', 'Chhan', 'Status']],
+                    body: leaveData,
+                    styles: { fontSize: 10, cellPadding: 3 },
+                    headStyles: { fillColor: [2, 132, 199] } 
+                });
+
+                doc.save("Bethel_Zirlai_Chawlh.pdf");
+            } catch (error) {
+                alert("PDF export-naah harsatna a awm: " + error.message);
+            }
+        }
+
+        // ================= TEST MARKS EXPORT LOGIC (EXCEL & PDF) =================
+        window.exportToExcel = async function() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "student_results"));
+                let resultsData = [];
+                
+                querySnapshot.forEach((doc) => {
+                    let d = doc.data();
+                    resultsData.push({
+                        "Enrollment No": d.enrollment,
+                        "Zirlai Hming": d.name,
+                        "Total Score": d.totalScore,
+                        "Out Of": d.outOf,
+                        "10% Internal Mark": d.internalMark10
+                    });
+                });
+
+                if(resultsData.length === 0) {
+                    alert("Zirlaite chhanna (marks) a la awm rih lo.");
+                    return;
+                }
+
+                let worksheet = XLSX.utils.json_to_sheet(resultsData);
+                let workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Internal_Marks");
+                XLSX.writeFile(workbook, "Bethel_Student_Marks.xlsx");
+            } catch (error) {
+                alert("Excel export-naah harsatna a awm: " + error.message);
+            }
+        }
+
+        window.exportResultsToPDF = async function() {
+            try {
+                const doc = new window.jsPDF();
+
+                const querySnapshot = await getDocs(collection(db, "student_results"));
+                let resultsData = [];
+
+                querySnapshot.forEach((document) => {
+                    let d = document.data();
+                    resultsData.push([
+                        d.enrollment,
+                        d.name,
+                        `${d.totalScore} / ${d.outOf}`,
+                        d.internalMark10
+                    ]);
+                });
+
+                if(resultsData.length === 0) {
+                    alert("Zirlaite chhanna (marks) a la awm rih lo.");
+                    return;
+                }
+
+                doc.text("Zirlaite Marks (Bethel Computer Centre)", 14, 15);
+                
+                doc.autoTable({
+                    startY: 20,
+                    head: [['Enrollment No', 'Hming', 'Score', '10% Internal']],
+                    body: resultsData,
+                    styles: { fontSize: 10, cellPadding: 3 },
+                    headStyles: { fillColor: [22, 163, 74] } 
+                });
+
+                doc.save("Bethel_Student_Marks.pdf");
+            } catch (error) {
+                alert("PDF export-naah harsatna a awm: " + error.message);
+            }
+        }
+
+        // ================= CLEAR DATA LOGIC =================
         window.clearAllLeaveRequests = async function() {
             if (confirm("Chawlh in-report record zawng zawng paih fai (clear) takzet i duh em?")) {
                 try {
@@ -479,36 +598,7 @@
             }
         }
 
-        window.exportToExcel = async function() {
-            try {
-                const querySnapshot = await getDocs(collection(db, "student_results"));
-                let resultsData = [];
-                
-                querySnapshot.forEach((doc) => {
-                    let d = doc.data();
-                    resultsData.push({
-                        "Enrollment No": d.enrollment,
-                        "Zirlai Hming": d.name,
-                        "Total Score": d.totalScore,
-                        "Out Of": d.outOf,
-                        "10% Internal Mark": d.internalMark10
-                    });
-                });
-
-                if(resultsData.length === 0) {
-                    alert("Zirlaite chhanna (marks) a la awm rih lo.");
-                    return;
-                }
-
-                let worksheet = XLSX.utils.json_to_sheet(resultsData);
-                let workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Internal_Marks");
-                XLSX.writeFile(workbook, "Bethel_Student_Marks.xlsx");
-            } catch (error) {
-                alert("Excel export-naah harsatna a awm: " + error.message);
-            }
-        }
-
+        // ================= AUTH & OTHER LOGIC =================
         window.loginStudent = async function(event) {
             event.preventDefault();
             const enrollment = document.getElementById('login-enrollment').value.trim();
