@@ -155,8 +155,12 @@
                 <div class="dashboard-stat-number" id="today-login-count">0</div>
             </div>
 
+            <!-- Zirlai In-Report & Clear Button -->
             <div class="card" style="border: 2px solid #3b82f6;">
-                <h3 style="color: #1e3a8a; border-bottom: 2px solid #bfdbfe;">Zirlai In-Report (Chawlh Dilna)</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
+                    <h3 style="color: #1e3a8a; border: none; padding: 0; margin: 0;">Zirlai In-Report (Chawlh Dilna)</h3>
+                    <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAllLeaveRequests()">Report Records Clear Rawh</button>
+                </div>
                 <div id="admin-leave-list" style="max-height: 400px; overflow-y: auto; padding: 10px 5px;">
                     <p style="color: gray;">Chawlh dil an la awm lo...</p>
                 </div>
@@ -218,7 +222,6 @@
                 </div>
             </div>
 
-            <!-- ZIRLAITE MARKS & CLEAR BUTTON -->
             <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                     <h3 style="margin: 0; border: none; padding: 0;">Zirlaite Marks (Test Records)</h3>
@@ -302,7 +305,7 @@
             <div class="card">
                 <h3>Notice Board</h3>
                 <div id="student-notice-list">
-                    <p style="color: gray;">Notice a la awm rih lo...</p>
+                    <p style="color: gray;">Notice a awm rih lo...</p>
                 </div>
             </div>
 
@@ -347,7 +350,23 @@
             }
         }
 
-        // THIL THAR: Test results zawng zawng paihna (Clear)
+        // Leave Requests Paih Fai (Clear All Leave Requests)
+        window.clearAllLeaveRequests = async function() {
+            if (confirm("Chawlh in-report record zawng zawng paih fai (clear) takzet i duh em?")) {
+                try {
+                    const querySnapshot = await getDocs(collection(db, "leave_requests"));
+                    let deletePromises = [];
+                    querySnapshot.forEach((document) => {
+                        deletePromises.push(deleteDoc(doc(db, "leave_requests", document.id)));
+                    });
+                    await Promise.all(deletePromises);
+                    alert("Chawlh in-report record zawng zawng paih fai a ni tawh e!");
+                } catch (error) {
+                    alert("Paih fai naah harsatna a awm: " + error.message);
+                }
+            }
+        }
+
         window.clearAllTestResults = async function() {
             if (confirm("Test record zawng zawng paih fai (clear) takzet i duh em?")) {
                 try {
