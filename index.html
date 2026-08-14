@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bethel Computer Centre, Lunglei</title>
     
-    <!-- Excel Export nan SheetJS -->
+    <!-- SheetJS Excel Export -->
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 
     <style>
         /* ================= CSS STYLES ================= */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f0f2f5; color: #333; position: relative; min-height: 100vh; padding-bottom: 50px;}
+        body { background-color: #f0f2f5; color: #333; position: relative; min-height: 100vh; padding-bottom: 50px; }
         .hidden { display: none !important; }
 
         .hero-section {
@@ -28,33 +28,43 @@
         h2 { color: #0f172a; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
         h3 { color: #334155; margin-bottom: 15px; }
         
-        .btn { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; margin-bottom: 10px; }
+        .btn { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: 600; width: 100%; transition: 0.3s; margin-bottom: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center; }
         .btn-primary { background-color: #0284c7; color: white; }
         .btn-primary:hover { background-color: #0369a1; }
         .btn-success { background-color: #16a34a; color: white; }
         .btn-success:hover { background-color: #15803d; }
-        .btn-danger { background-color: #ef4444; color: white; margin-top: 5px; }
+        .btn-danger { background-color: #ef4444; color: white; }
         .btn-danger:hover { background-color: #dc2626; }
         .btn-outline { background-color: transparent; border: 1px solid #0284c7; color: #0284c7; }
+        .btn-outline:hover { background-color: #f0f9ff; }
         .btn-outline-light { background-color: transparent; border: 2px solid white; color: white; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; }
         .btn-outline-light:hover { background-color: white; color: #0c4a6e; }
 
+        /* Icon Buttons to fix long text/buttons */
+        .btn-icon { width: 38px; height: 38px; padding: 0; border-radius: 6px; display: inline-flex; justify-content: center; align-items: center; font-size: 16px; flex-shrink: 0; }
+
         form { display: flex; flex-direction: column; gap: 15px; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .input-group { display: flex; flex-direction: column; gap: 5px; }
         label { font-size: 14px; font-weight: 600; color: #475569; }
         input, select, textarea { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: #0284c7; ring: 2px; }
         
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; vertical-align: middle; }
         th { background-color: #f8fafc; color: #334155; }
         
-        .shared-link-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 4px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .notice-box { border-left: 5px solid #0284c7; background: #f9fafb; padding: 15px; border-radius: 4px; margin-bottom: 15px; }
+        .shared-link-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 6px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .notice-box { border-left: 5px solid #0284c7; background: #f9fafb; padding: 15px; border-radius: 6px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
         .comment-area { margin-top: 10px; background: #fff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; }
-        .comment-item { border-bottom: 1px solid #eee; padding: 5px 0; }
-        
-        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } .hero-content h1 { font-size: 32px; } }
+        .comment-item { border-bottom: 1px solid #f1f5f9; padding: 6px 0; }
+        .comment-item:last-child { border-bottom: none; }
+
+        .list-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; gap: 10px; }
+        .list-row:last-child { border-bottom: none; }
+        .list-row-info { flex-grow: 1; overflow: hidden; text-overflow: ellipsis; }
+
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .hero-content h1 { font-size: 32px; } }
     </style>
 </head>
 <body>
@@ -92,7 +102,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary">Register Rawh</button>
             </form>
-            <button class="btn btn-outline" style="margin-top: 20px;" onclick="showSection('home-section')">Home-a letna</button>
+            <button class="btn btn-outline" style="margin-top: 15px;" onclick="showSection('home-section')">Home-a letna</button>
         </section>
 
         <!-- 3. ZIRLAI LOGIN -->
@@ -109,13 +119,13 @@
                 </div>
                 <button type="submit" class="btn btn-success">Lut rawh</button>
             </form>
-            <button class="btn btn-outline" style="margin-top: 20px;" onclick="showSection('home-section')">Home-a letna</button>
+            <button class="btn btn-outline" style="margin-top: 15px;" onclick="showSection('home-section')">Home-a letna</button>
         </section>
 
         <!-- 4. ADMIN LOGIN -->
         <section id="admin-login-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
             <h2 style="text-align: center;">Zirtirtu Log In</h2>
-            <p style="text-align: center; color: gray; margin-bottom: 20px;">Zirtirtu leh Admin te chauh luh phal a ni.</p>
+            <p style="text-align: center; color: gray; margin-bottom: 20px; font-size: 14px;">Zirtirtu leh Admin te chauh luh phal a ni.</p>
             <form onsubmit="loginAdmin(event)">
                 <div class="input-group">
                     <label>Admin Password</label>
@@ -123,14 +133,14 @@
                 </div>
                 <button type="submit" class="btn btn-primary">Lut rawh</button>
             </form>
-            <button class="btn btn-outline" style="margin-top: 20px;" onclick="showSection('home-section')">Home-a letna</button>
+            <button class="btn btn-outline" style="margin-top: 15px;" onclick="showSection('home-section')">Home-a letna</button>
         </section>
 
         <!-- 5. ZIRTIRTU DASHBOARD -->
         <section id="teacher-dashboard-section" class="hidden">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="border:none; margin:0;">Zirtirtu Dashboard</h2>
-                <button class="btn btn-danger" style="width: auto;" onclick="showSection('home-section')">Log Out (Home)</button>
+                <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px;" onclick="showSection('home-section')">Log Out</button>
             </div>
 
             <!-- Notice Board Publish -->
@@ -145,14 +155,14 @@
                         <label>Hriattirna Thu (Content)</label>
                         <textarea id="notice-content" rows="3" placeholder="Sawi tur kimchang..." required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Notice Post Rawh</button>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Notice Post Rawh</button>
                 </form>
             </div>
 
             <!-- Notice List for Admin -->
             <div class="card">
                 <h3>Notice Post Tawh Te</h3>
-                <div id="admin-notice-list" style="max-height: 400px; overflow-y: auto;">
+                <div id="admin-notice-list" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
                     <p style="color: gray;">Notice a la awm lo...</p>
                 </div>
             </div>
@@ -166,7 +176,7 @@
                             <label>Link Type</label>
                             <select id="link-type">
                                 <option value="PDF Note">PDF Note / File (Downloadable)</option>
-                                <option value="GitHub Project">GitHub atanga MCQ project(Test pekna tur)</option>
+                                <option value="GitHub Project">GitHub atanga MCQ project (Test)</option>
                                 <option value="Google Form">Google Form (Assignment)</option>
                                 <option value="YouTube Video">YouTube Video (Tutorial)</option>
                             </select>
@@ -179,12 +189,12 @@
                             <label>Link URL</label>
                             <input type="url" id="link-url" placeholder="https://..." required>
                         </div>
-                        <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Zirlaite Hnenah Sem Rawh</button>
+                        <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Zirlaite Hnenah Sem Rawh</button>
                     </form>
                 </div>
                 <div class="card">
-                    <h3>Link i Sem Tawh Te Paihna</h3>
-                    <div id="admin-links-container" style="max-height: 350px; overflow-y: auto;">
+                    <h3>Link Sem Tawh Te Paihna</h3>
+                    <div id="admin-links-container" style="max-height: 350px; overflow-y: auto; padding-right: 5px;">
                         <p style="color: gray;">A la awm rih lo...</p>
                     </div>
                 </div>
@@ -192,7 +202,7 @@
 
             <!-- Student Management & Deletion -->
             <div class="card">
-                <h3>Zirlai Management (Paihna)</h3>
+                <h3>Zirlai Management</h3>
                 <div style="overflow-x: auto;">
                     <table>
                         <thead>
@@ -200,7 +210,7 @@
                                 <th>Enrollment</th>
                                 <th>Hming</th>
                                 <th>DOB</th>
-                                <th>Action</th>
+                                <th style="text-align: center;">Action</th>
                             </tr>
                         </thead>
                         <tbody id="student-management-body">
@@ -214,9 +224,9 @@
 
             <!-- Zirlaite Results Live View & Export -->
             <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                     <h3 style="margin: 0;">Zirlaite Marks</h3>
-                    <button class="btn btn-success" style="width: auto; margin: 0;" onclick="exportToExcel()">Marks Excel-ah Export Rawh</button>
+                    <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 15px; font-size: 14px;" onclick="exportToExcel()">Marks Excel-ah Export Rawh</button>
                 </div>
                 <div style="overflow-x: auto;">
                     <table>
@@ -242,7 +252,7 @@
         <section id="student-portal-section" class="hidden">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="border:none; margin:0;" id="student-welcome-title">Zirlai Portal</h2>
-                <button class="btn btn-danger" style="width: auto;" onclick="showSection('home-section')">Log Out</button>
+                <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px;" onclick="showSection('home-section')">Log Out</button>
             </div>
 
             <!-- Notice Board for Students -->
@@ -255,7 +265,7 @@
 
             <!-- Resources / Shared Links -->
             <div class="card" id="student-links-container">
-                <h3>Study material,Assignment,test/exam</h3>
+                <h3>Study Material, Assignment, Test / Exam</h3>
                 <p style="color: gray;">Database atangin a rawn in-load mek...</p>
             </div>
         </section>
@@ -267,7 +277,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
-        // I Firebase Config - Heta hi a dik tak ka dah lut e
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyAYardtj2WcBiUGSD9Ytqa0yZUWwjEXgis",
             authDomain: "bethel-portal-1641f.firebaseapp.com",
@@ -281,10 +291,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Global Variables
         window.currentStudent = { enrollment: '', name: '' };
 
-        // ----------------- UI Navigation -----------------
+        // UI Navigation
         window.showSection = function(sectionId) {
             const sections = ['home-section', 'student-registration-section', 'student-login-section', 'admin-login-section', 'teacher-dashboard-section', 'student-portal-section'];
             sections.forEach(id => document.getElementById(id).classList.add('hidden'));
@@ -292,9 +301,7 @@
             window.scrollTo(0, 0);
         }
 
-        // ----------------- ZIRLAI (STUDENT) FUNCTIONS -----------------
-
-        // 1. Zirlai Registration
+        // Student Registration
         window.registerStudent = async function(event) {
             event.preventDefault();
             const enrollment = document.getElementById('reg-enrollment').value.trim();
@@ -316,7 +323,7 @@
             }
         }
 
-        // 2. Zirlai Login
+        // Student Login
         window.loginStudent = async function(event) {
             event.preventDefault();
             const enrollment = document.getElementById('login-enrollment').value.trim();
@@ -342,7 +349,7 @@
             }
         }
 
-        // 3. Comment Post (Student)
+        // Post Comment (Student)
         window.postComment = async function(noticeId) {
             const inputField = document.getElementById(`comment-input-${noticeId}`);
             const commentText = inputField.value.trim();
@@ -361,16 +368,14 @@
                         date: new Date().toLocaleString()
                     })
                 });
-                inputField.value = ''; // Clear the input
+                inputField.value = '';
                 alert("I comment post a ni e!");
             } catch (error) {
                 alert("Comment post theih a ni lo: " + error.message);
             }
         }
 
-        // ----------------- ZIRTIRTU (ADMIN) FUNCTIONS -----------------
-
-        // 1. Admin Login
+        // Admin Login
         window.loginAdmin = function(event) {
             event.preventDefault();
             const passwordInput = document.getElementById('admin-password').value;
@@ -384,7 +389,7 @@
             }
         }
 
-        // 2. Publish Notice
+        // Publish Notice
         window.publishNotice = async function(event) {
             event.preventDefault();
             const title = document.getElementById('notice-title').value;
@@ -394,7 +399,7 @@
                 await addDoc(collection(db, "notices"), {
                     title: title,
                     content: content,
-                    comments: [], // Initialize empty comments array
+                    comments: [],
                     createdAt: serverTimestamp()
                 });
                 alert("Notice thar i publish hlawhtling e!");
@@ -404,7 +409,7 @@
             }
         }
 
-        // 3. Edit Notice
+        // Edit Notice
         window.editNotice = async function(noticeId) {
             const newContent = prompt("Notice text thar tur type rawh:");
             if (newContent !== null && newContent.trim() !== "") {
@@ -417,7 +422,7 @@
             }
         }
 
-        // 4. Delete Notice
+        // Delete Notice
         window.deleteNotice = async function(noticeId) {
             if (confirm("He notice hi i paih duh takzet em?")) {
                 try {
@@ -429,7 +434,7 @@
             }
         }
 
-        // 5. Share Links (PDF, GitHub, Form, YouTube)
+        // Share Links
         window.shareLink = async function(event) {
             event.preventDefault();
             const type = document.getElementById('link-type').value;
@@ -449,19 +454,19 @@
             }
         }
 
-        // 6. Delete Student
+        // Delete Student
         window.deleteStudent = async function(enrollment) {
             if(confirm(`Enrollment No: ${enrollment} hi i paih duh takzet em?`)) {
                 try {
                     await deleteDoc(doc(db, "students", enrollment));
                     alert("Zirlai hi paih a ni tawh e.");
                 } catch(error) { 
-                    alert("Paihnaah harsatna: " + error.message); 
+                    alert("Paih naah harsatna: " + error.message); 
                 }
             }
         }
 
-        // 7. Delete Shared Link
+        // Delete Shared Link
         window.deleteLink = async function(docId) {
             if(confirm("He thil sem hi i paih duh takzet em?")) {
                 try {
@@ -472,7 +477,7 @@
             }
         }
 
-        // 8. Excel Export
+        // Excel Export
         window.exportToExcel = async function() {
             try {
                 const querySnapshot = await getDocs(collection(db, "student_results"));
@@ -503,9 +508,7 @@
             }
         }
 
-        // ----------------- REAL-TIME LISTENERS -----------------
-
-        // 1. Notice Board Listener (Admin & Student)
+        // Real-time Notice Board Listener
         onSnapshot(query(collection(db, "notices"), orderBy("createdAt", "desc")), (snapshot) => {
             const adminNoticeList = document.getElementById('admin-notice-list');
             const studentNoticeList = document.getElementById('student-notice-list');
@@ -521,38 +524,37 @@
                     const data = docSnap.data();
                     const noticeId = docSnap.id;
                     
-                    // Render Comments string
                     let commentsHTML = '';
                     if (data.comments && data.comments.length > 0) {
                         commentsHTML = '<div class="comment-area"><b>Comments:</b><br>';
                         data.comments.forEach(c => {
-                            commentsHTML += `<div class="comment-item"><span style="color:#0284c7; font-weight:bold;">${c.studentName}:</span> ${c.text} <span style="font-size:10px; color:gray;">(${c.date})</span></div>`;
+                            commentsHTML += `<div class="comment-item"><span style="color:#0284c7; font-weight:bold;">${c.studentName}:</span> ${c.text} <span style="font-size:11px; color:gray; float:right;">(${c.date})</span></div>`;
                         });
                         commentsHTML += '</div>';
                     }
 
-                    // Admin View (Edit & Delete options)
+                    // Admin Notice View with compact icon action buttons
                     adminNoticeList.innerHTML += `
                         <div class="notice-box">
                             <h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4>
-                            <p style="margin-bottom: 15px; color: #475569;">${data.content}</p>
+                            <p style="margin-bottom: 10px; color: #475569;">${data.content}</p>
                             ${commentsHTML}
-                            <div style="margin-top: 15px;">
-                                <button class="btn btn-primary" style="width: auto; padding: 6px 12px; font-size: 13px;" onclick="editNotice('${noticeId}')">Siamtha (Edit)</button>
-                                <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 13px;" onclick="deleteNotice('${noticeId}')">Paih (Delete)</button>
+                            <div style="margin-top: 10px; display: flex; gap: 8px;">
+                                <button class="btn btn-primary" style="width: auto; padding: 6px 12px; font-size: 13px;" onclick="editNotice('${noticeId}')">Edit</button>
+                                <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 13px;" onclick="deleteNotice('${noticeId}')">Paih</button>
                             </div>
                         </div>
                     `;
 
-                    // Student View (Comment option)
+                    // Student Notice View
                     studentNoticeList.innerHTML += `
                         <div class="notice-box">
                             <h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4>
                             <p style="margin-bottom: 10px; color: #475569;">${data.content}</p>
                             ${commentsHTML}
-                            <div style="margin-top: 15px; display: flex; gap: 10px;">
-                                <input type="text" id="comment-input-${noticeId}" placeholder="Comment ziahna..." style="margin-bottom: 0;">
-                                <button class="btn btn-success" style="width: auto; white-space: nowrap;" onclick="postComment('${noticeId}')">Post</button>
+                            <div style="margin-top: 12px; display: flex; gap: 10px;">
+                                <input type="text" id="comment-input-${noticeId}" placeholder="Comment ziahna..." style="margin-bottom: 0; flex-grow: 1;">
+                                <button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap;" onclick="postComment('${noticeId}')">Post</button>
                             </div>
                         </div>
                     `;
@@ -560,7 +562,7 @@
             }
         });
 
-        // 2. Load Students (Admin Table)
+        // Load Students Management Table
         onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
             const tableBody = document.getElementById('student-management-body');
             tableBody.innerHTML = '';
@@ -574,19 +576,19 @@
                             <td>${s.enrollment}</td>
                             <td>${s.name}</td>
                             <td>${s.dob}</td>
-                            <td><button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px; margin: 0;" onclick="deleteStudent('${s.enrollment}')">Paih</button></td>
+                            <td style="text-align: center;"><button class="btn btn-danger btn-icon" title="Paih" onclick="deleteStudent('${s.enrollment}')">✕</button></td>
                         </tr>
                     `;
                 });
             }
         });
 
-        // 3. Load Links (Admin View & Student View)
+        // Load Links & Materials
         onSnapshot(query(collection(db, "shared_links"), orderBy("createdAt", "desc")), (snapshot) => {
             const studentContainer = document.getElementById('student-links-container');
             const adminContainer = document.getElementById('admin-links-container');
             
-            studentContainer.innerHTML = '<h3>Zirtirtu Thil Sem te</h3>'; 
+            studentContainer.innerHTML = '<h3>Study Material, Assignment, Test / Exam</h3>'; 
             adminContainer.innerHTML = '';
 
             if (snapshot.empty) {
@@ -600,11 +602,8 @@
                     let btnText = 'Hawng Rawh';
                     let finalUrl = data.url;
 
-                    // DIRECT DOWNLOAD LOGIC FOR GOOGLE DRIVE
                     if (data.type === 'PDF Note') { 
                         icon = '📕'; color = '#dc2626'; 
-                        
-                        // Extract ID and convert to direct download link
                         let driveRegex = /\/file\/d\/([a-zA-Z0-9_-]+)/;
                         let match = finalUrl.match(driveRegex);
                         if(match && match[1]) {
@@ -616,28 +615,29 @@
                     else if (data.type === 'Google Form') { icon = '📝'; color = '#16a34a'; }
                     else if (data.type === 'YouTube Video') { icon = '▶️'; color = '#2563eb'; }
                     
-                    // Admin View
+                    // Admin View with compact icon delete button
                     adminContainer.innerHTML += `
-                        <div style="border-bottom: 1px solid #eee; padding: 10px 0; display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <b>${data.fileName}</b> <span style="font-size:12px; color:gray;">(${data.type})</span>
+                        <div class="list-row">
+                            <div class="list-row-info">
+                                <b style="font-size: 14px;">${data.fileName}</b><br>
+                                <span style="font-size: 12px; color: gray;">(${data.type})</span>
                             </div>
-                            <button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px; margin: 0;" onclick="deleteLink('${docSnap.id}')">Paih</button>
+                            <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteLink('${docSnap.id}')">✕</button>
                         </div>
                     `;
 
                     // Student View
                     studentContainer.innerHTML += `
                         <div class="shared-link-box">
-                            <p style="margin-bottom: 0; font-weight: bold; color: ${color};">${icon} ${data.fileName}</p>
-                            <a href="${finalUrl}" target="_blank" class="btn btn-primary" style="padding: 8px 15px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">${btnText}</a>
+                            <p style="margin-bottom: 0; font-weight: bold; color: ${color}; font-size: 15px;">${icon} ${data.fileName}</p>
+                            <a href="${finalUrl}" target="_blank" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">${btnText}</a>
                         </div>
                     `;
                 });
             }
         });
 
-        // 4. Load Results (Admin Table - For Past Marks or Manual Entry)
+        // Load Results Table
         onSnapshot(collection(db, "student_results"), (snapshot) => {
             const tableBody = document.getElementById('teacher-results-table');
             tableBody.innerHTML = '';
@@ -658,7 +658,6 @@
                 });
             }
         });
-
     </script>
 </body>
 </html>
