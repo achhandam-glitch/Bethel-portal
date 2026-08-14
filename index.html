@@ -11,7 +11,7 @@
     <style>
         /* ================= CSS STYLES ================= */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f0f2f5; color: #333; position: relative; min-height: 100vh; }
+        body { background-color: #f0f2f5; color: #333; position: relative; min-height: 100vh; padding-bottom: 50px;}
         .hidden { display: none !important; }
 
         .hero-section {
@@ -165,7 +165,7 @@
                         <div class="input-group">
                             <label>Link Type</label>
                             <select id="link-type">
-                                <option value="PDF Note">PDF Note / File</option>
+                                <option value="PDF Note">PDF Note / File (Downloadable)</option>
                                 <option value="GitHub Project">GitHub Project</option>
                                 <option value="Google Form">Google Form (Assignment)</option>
                                 <option value="YouTube Video">YouTube Video (Tutorial)</option>
@@ -597,8 +597,21 @@
                     let data = docSnap.data();
                     let icon = '🔗';
                     let color = '#333';
+                    let btnText = 'Hawng Rawh';
+                    let finalUrl = data.url;
 
-                    if (data.type === 'PDF Note') { icon = '📕'; color = '#dc2626'; }
+                    // DIRECT DOWNLOAD LOGIC FOR GOOGLE DRIVE
+                    if (data.type === 'PDF Note') { 
+                        icon = '📕'; color = '#dc2626'; 
+                        
+                        // Extract ID and convert to direct download link
+                        let driveRegex = /\/file\/d\/([a-zA-Z0-9_-]+)/;
+                        let match = finalUrl.match(driveRegex);
+                        if(match && match[1]) {
+                            finalUrl = `https://drive.google.com/uc?export=download&id=${match[1]}`;
+                            btnText = 'Download';
+                        }
+                    }
                     else if (data.type === 'GitHub Project') { icon = '💻'; color = '#111827'; }
                     else if (data.type === 'Google Form') { icon = '📝'; color = '#16a34a'; }
                     else if (data.type === 'YouTube Video') { icon = '▶️'; color = '#2563eb'; }
@@ -617,7 +630,7 @@
                     studentContainer.innerHTML += `
                         <div class="shared-link-box">
                             <p style="margin-bottom: 0; font-weight: bold; color: ${color};">${icon} ${data.fileName}</p>
-                            <a href="${data.url}" target="_blank" class="btn btn-primary" style="padding: 8px 15px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">Hawng Rawh</a>
+                            <a href="${finalUrl}" target="_blank" class="btn btn-primary" style="padding: 8px 15px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">${btnText}</a>
                         </div>
                     `;
                 });
