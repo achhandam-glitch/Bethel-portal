@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bethel Computer Centre, Lunglei</title>
     
-    <!-- SheetJS Excel Export -->
+    <!-- SheetJS Excel Export & Import -->
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 
     <style>
@@ -82,7 +82,6 @@
             <h1>Bethel Computer Centre</h1>
             <p>Venglai, Lunglei</p>
             <div class="home-menu">
-                <button class="btn btn-primary" onclick="showSection('student-registration-section')">Zirlai In-register-na</button>
                 <button class="btn btn-success" onclick="showSection('student-login-section')">Zirlai Luhna</button>
                 <button class="btn btn-outline-light" onclick="showSection('admin-login-section')">Zirtirtu Luhna</button>
             </div>
@@ -91,28 +90,7 @@
 
     <div class="container">
 
-        <!-- 2. ZIRLAI REGISTRATION -->
-        <section id="student-registration-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
-            <h2 style="text-align: center;">Zirlai In-register-na</h2>
-            <form onsubmit="registerStudent(event)">
-                <div class="input-group">
-                    <label>Enrollment Number</label>
-                    <input type="text" id="reg-enrollment" placeholder="Entirnan: 2602001" required>
-                </div>
-                <div class="input-group">
-                    <label>Hmingpum</label>
-                    <input type="text" id="reg-name" placeholder="Hming pum" required>
-                </div>
-                <div class="input-group">
-                    <label>Date of Birth (DD-MM-YYYY)</label>
-                    <input type="text" id="reg-dob" placeholder="Entirnan: 15-05-2005" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Register Rawh</button>
-            </form>
-            <button class="btn btn-outline" style="margin-top: 15px;" onclick="showSection('home-section')">Home-a letna</button>
-        </section>
-
-        <!-- 3. ZIRLAI LOGIN -->
+        <!-- 2. ZIRLAI LOGIN -->
         <section id="student-login-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
             <h2 style="text-align: center;">Zirlai Log In</h2>
             <form onsubmit="loginStudent(event)">
@@ -129,7 +107,7 @@
             <button class="btn btn-outline" style="margin-top: 15px;" onclick="showSection('home-section')">Home-a letna</button>
         </section>
 
-        <!-- 4. ADMIN LOGIN -->
+        <!-- 3. ADMIN LOGIN -->
         <section id="admin-login-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
             <h2 style="text-align: center;">Zirtirtu Log In</h2>
             <p style="text-align: center; color: gray; margin-bottom: 20px; font-size: 14px;">Zirtirtu leh Admin te chauh luh phal a ni.</p>
@@ -143,7 +121,7 @@
             <button class="btn btn-outline" style="margin-top: 15px;" onclick="showSection('home-section')">Home-a letna</button>
         </section>
 
-        <!-- 5. ZIRTIRTU DASHBOARD -->
+        <!-- 4. ZIRTIRTU DASHBOARD -->
         <section id="teacher-dashboard-section" class="hidden">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="border:none; margin:0;">Zirtirtu Dashboard</h2>
@@ -153,6 +131,17 @@
             <div class="dashboard-stat-card">
                 <p class="dashboard-stat-title">Vawiina Zirlai Log In Zat:</p>
                 <div class="dashboard-stat-number" id="today-login-count">0</div>
+            </div>
+
+            <!-- EXCEL UPLOAD SECTION (NEW) -->
+            <div class="card" style="border: 2px solid #16a34a;">
+                <h3 style="color: #15803d; border-bottom: 1px solid #bbf7d0; padding-bottom: 10px;">Zirlai Register-na (Excel/CSV Upload)</h3>
+                <p style="font-size: 14px; color: #475569; margin-bottom: 15px;">Excel file-ah Row hmasa berah (Header) hetiang hian Column hming phuah ang che: <b>Enrollment</b>, <b>Name</b>, <b>DOB</b>. Chumi hnuaiah chuan zirlai data type thla diat diat la, rawn upload rawh.</p>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <input type="file" id="excel-upload" accept=".xlsx, .xls, .csv" style="flex-grow: 1; border: 1px dashed #cbd5e1; padding: 10px; border-radius: 6px;">
+                    <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 20px;" onclick="uploadExcelData()">Data Thunlut Rawh</button>
+                </div>
+                <div id="upload-status" style="margin-top: 10px; font-size: 14px; font-weight: bold;"></div>
             </div>
 
             <!-- Zirlai In-Report & Clear Button -->
@@ -271,7 +260,7 @@
             </div>
         </section>
 
-        <!-- 6. ZIRLAI DASHBOARD (STUDENT PORTAL) -->
+        <!-- 5. ZIRLAI DASHBOARD (STUDENT PORTAL) -->
         <section id="student-portal-section" class="hidden">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="border:none; margin:0;" id="student-welcome-title">Zirlai Portal</h2>
@@ -339,7 +328,7 @@
         let studentLeaveUnsubscribe = null; 
 
         window.showSection = function(sectionId) {
-            const sections = ['home-section', 'student-registration-section', 'student-login-section', 'admin-login-section', 'teacher-dashboard-section', 'student-portal-section'];
+            const sections = ['home-section', 'student-login-section', 'admin-login-section', 'teacher-dashboard-section', 'student-portal-section'];
             sections.forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(sectionId).classList.remove('hidden');
             window.scrollTo(0, 0);
@@ -349,6 +338,78 @@
                 studentLeaveUnsubscribe = null;
             }
         }
+
+        // ================= EXCEL UPLOAD LOGIC (NEW) =================
+        window.uploadExcelData = async function() {
+            const fileInput = document.getElementById('excel-upload');
+            const statusDiv = document.getElementById('upload-status');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Excel emaw CSV file thlang phawt rawh!");
+                return;
+            }
+
+            statusDiv.style.color = "#0369a1";
+            statusDiv.innerText = "Data lakluh mek a ni, khawngaihin nghak lawk rawh...";
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const json = XLSX.utils.sheet_to_json(worksheet);
+
+                    if (json.length === 0) {
+                        statusDiv.style.color = "red";
+                        statusDiv.innerText = "File chhungah data a awm lo emaw a dik lo.";
+                        return;
+                    }
+
+                    let successCount = 0;
+                    let errorCount = 0;
+
+                    for (let i = 0; i < json.length; i++) {
+                        let row = json[i];
+                        
+                        // Handle column variations (case insensitive matching if needed, but strict is better)
+                        let enrollment = row.Enrollment || row.enrollment;
+                        let name = row.Name || row.name || row.Hming;
+                        let dob = row.DOB || row.dob;
+
+                        if (enrollment && name && dob) {
+                            try {
+                                await setDoc(doc(db, "students", String(enrollment)), {
+                                    enrollment: String(enrollment),
+                                    name: String(name),
+                                    dob: String(dob),
+                                    registeredAt: serverTimestamp(),
+                                    lastLoginDate: ""
+                                });
+                                successCount++;
+                            } catch (err) {
+                                console.error(err);
+                                errorCount++;
+                            }
+                        }
+                    }
+                    
+                    statusDiv.style.color = "#15803d";
+                    statusDiv.innerText = `✅ Tluang takin zirlai ${successCount} thunluh an ni e! (Fail zat: ${errorCount})`;
+                    fileInput.value = ""; // Clear input
+                    
+                    setTimeout(() => { statusDiv.innerText = ""; }, 5000); // Clear message after 5 sec
+
+                } catch (error) {
+                    statusDiv.style.color = "red";
+                    statusDiv.innerText = "Harsatna a awm: " + error.message;
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        // =============================================================
 
         window.clearAllLeaveRequests = async function() {
             if (confirm("Chawlh in-report record zawng zawng paih fai (clear) takzet i duh em?")) {
@@ -412,27 +473,6 @@
             }
         }
 
-        window.registerStudent = async function(event) {
-            event.preventDefault();
-            const enrollment = document.getElementById('reg-enrollment').value.trim();
-            const name = document.getElementById('reg-name').value.trim();
-            const dob = document.getElementById('reg-dob').value.trim();
-
-            try {
-                await setDoc(doc(db, "students", enrollment), {
-                    enrollment: enrollment,
-                    name: name,
-                    dob: dob,
-                    registeredAt: serverTimestamp()
-                });
-                alert("I in-register hlawhtling e! I Date of Birth kha Password-ah hmangin i lut thei tawh ang.");
-                event.target.reset();
-                showSection('student-login-section');
-            } catch (error) {
-                alert("Registration-ah harsatna a awm: " + error.message);
-            }
-        }
-
         window.loginStudent = async function(event) {
             event.preventDefault();
             const enrollment = document.getElementById('login-enrollment').value.trim();
@@ -460,7 +500,7 @@
                     loadStudentLeaves(enrollment);
                     showSection('student-portal-section');
                 } else {
-                    alert("Enrollment number emaw Date of Birth a dik lo! I in-register tawh em check rawh.");
+                    alert("Enrollment number emaw Date of Birth a dik lo! Teacher hnenah i hming register a ni em zawh fiah rawh.");
                 }
             } catch (error) {
                 alert("Database thlunzawmnaah harsatna a awm: " + error.message);
