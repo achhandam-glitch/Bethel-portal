@@ -99,7 +99,7 @@
                     <input type="text" id="login-enrollment" placeholder="Entirnan: 2602001" required>
                 </div>
                 <div class="input-group">
-                    <label>Date of Birth (DD-MM-YYYY)</label>
+                    <label>Date of Birth</label>
                     <input type="text" id="login-dob" placeholder="Entirnan: 15-05-2005" required>
                 </div>
                 <button type="submit" class="btn btn-success">Lut rawh</button>
@@ -133,7 +133,7 @@
                 <div class="dashboard-stat-number" id="today-login-count">0</div>
             </div>
 
-            <!-- EXCEL UPLOAD SECTION (NEW) -->
+            <!-- EXCEL UPLOAD SECTION -->
             <div class="card" style="border: 2px solid #16a34a;">
                 <h3 style="color: #15803d; border-bottom: 1px solid #bbf7d0; padding-bottom: 10px;">Zirlai Register-na (Excel/CSV Upload)</h3>
                 <p style="font-size: 14px; color: #475569; margin-bottom: 15px;">Excel file-ah Row hmasa berah (Header) hetiang hian Column hming phuah ang che: <b>Enrollment</b>, <b>Name</b>, <b>DOB</b>. Chumi hnuaiah chuan zirlai data type thla diat diat la, rawn upload rawh.</p>
@@ -148,7 +148,10 @@
             <div class="card" style="border: 2px solid #3b82f6;">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                     <h3 style="color: #1e3a8a; border: none; padding: 0; margin: 0;">Zirlai In-Report (Chawlh Dilna)</h3>
-                    <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAllLeaveRequests()">Report Records Clear Rawh</button>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportLeaveToExcel()">Excel-ah Export</button>
+                        <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAllLeaveRequests()">Records Clear Rawh</button>
+                    </div>
                 </div>
                 <div id="admin-leave-list" style="max-height: 400px; overflow-y: auto; padding: 10px 5px;">
                     <p style="color: gray;">Chawlh dil an la awm lo...</p>
@@ -339,7 +342,7 @@
             }
         }
 
-        // ================= EXCEL UPLOAD LOGIC (NEW) =================
+        // ================= EXCEL UPLOAD LOGIC =================
         window.uploadExcelData = async function() {
             const fileInput = document.getElementById('excel-upload');
             const statusDiv = document.getElementById('upload-status');
@@ -360,7 +363,8 @@
                     const workbook = XLSX.read(data, {type: 'array'});
                     const firstSheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[firstSheetName];
-                    const json = XLSX.utils.sheet_to_json(worksheet);
+                    
+                    const json = XLSX.utils.sheet_to_json(worksheet, { raw: false });
 
                     if (json.length === 0) {
                         statusDiv.style.color = "red";
@@ -374,7 +378,6 @@
                     for (let i = 0; i < json.length; i++) {
                         let row = json[i];
                         
-                        // Handle column variations (case insensitive matching if needed, but strict is better)
                         let enrollment = row.Enrollment || row.enrollment;
                         let name = row.Name || row.name || row.Hming;
                         let dob = row.DOB || row.dob;
@@ -398,9 +401,9 @@
                     
                     statusDiv.style.color = "#15803d";
                     statusDiv.innerText = `✅ Tluang takin zirlai ${successCount} thunluh an ni e! (Fail zat: ${errorCount})`;
-                    fileInput.value = ""; // Clear input
+                    fileInput.value = ""; 
                     
-                    setTimeout(() => { statusDiv.innerText = ""; }, 5000); // Clear message after 5 sec
+                    setTimeout(() => { statusDiv.innerText = ""; }, 5000); 
 
                 } catch (error) {
                     statusDiv.style.color = "red";
@@ -409,7 +412,40 @@
             };
             reader.readAsArrayBuffer(file);
         }
-        // =============================================================
+        
+        // ================= LEAVE EXPORT LOGIC =================
+        window.exportLeaveToExcel = async function() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "leave_requests"));
+                let leaveData = [];
+                
+                querySnapshot.forEach((doc) => {
+                    let d = doc.data();
+                    leaveData.push({
+                        "Enrollment No": d.enrollment,
+                        "Zirlai Hming": d.studentName,
+                        "Chawlh Ni (Date)": d.date,
+                        "Chhan (Reason)": d.reason,
+                        "Status": d.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek'
+                    });
+                });
+
+                if(leaveData.length === 0) {
+                    alert("Chawlh dilna record a la awm lo.");
+                    return;
+                }
+
+                // Date hmanga rem (Sort by date)
+                leaveData.sort((a, b) => new Date(b["Chawlh Ni (Date)"]) - new Date(a["Chawlh Ni (Date)"]));
+
+                let worksheet = XLSX.utils.json_to_sheet(leaveData);
+                let workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Chawlh_Report");
+                XLSX.writeFile(workbook, "Bethel_Zirlai_Chawlh.xlsx");
+            } catch (error) {
+                alert("Excel export-naah harsatna a awm: " + error.message);
+            }
+        }
 
         window.clearAllLeaveRequests = async function() {
             if (confirm("Chawlh in-report record zawng zawng paih fai (clear) takzet i duh em?")) {
