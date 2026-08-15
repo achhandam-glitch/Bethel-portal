@@ -64,7 +64,7 @@
         .shared-link-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 6px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .notice-box { border-left: 5px solid #0284c7; background: #f9fafb; padding: 15px; border-radius: 6px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
         .comment-area { margin-top: 10px; background: #fff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; }
-        .comment-item { border-bottom: 1px solid #f1f5f9; padding: 6px 0; }
+        .comment-item { border-bottom: 1px solid #f1f5f9; padding: 6px 0; line-height: 1.5; }
         .comment-item:last-child { border-bottom: none; }
 
         .list-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; gap: 10px; }
@@ -146,7 +146,7 @@
                 <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px;" onclick="showSection('home-section')">Log Out</button>
             </div>
 
-            <!-- VAWIINA ONLINE TE (NEW/UPDATED) -->
+            <!-- VAWIINA ONLINE TE -->
             <div class="card" style="border: 1px solid #bae6fd; background: #f0f9ff; margin-bottom: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #bae6fd; padding-bottom: 10px; margin-bottom: 12px;">
                     <h3 style="color: #0369a1; border: none; padding: 0; margin: 0;">Vawiina Online Te</h3>
@@ -298,7 +298,7 @@
 
                 <div class="card">
                     <h3>Notice Post Tawh Te</h3>
-                    <div id="admin-notice-list" style="max-height: 300px; overflow-y: auto; padding-right: 5px;">
+                    <div id="admin-notice-list" style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
                         <p style="color: gray;">Notice a la awm lo...</p>
                     </div>
                 </div>
@@ -444,7 +444,7 @@
 
             <div class="card">
                 <h3>Notice Board</h3>
-                <div id="student-notice-list">
+                <div id="student-notice-list" style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
                     <p style="color: gray;">Notice a la awm rih lo...</p>
                 </div>
             </div>
@@ -1063,7 +1063,7 @@
             }
         }
 
-        // ================= NOTICES =================
+        // ================= NOTICES & COMMENTS =================
         window.publishNotice = async function(event) {
             event.preventDefault();
             try {
@@ -1089,6 +1089,7 @@
             }
         }
 
+        // Zirlai Comment na
         window.postComment = async function(noticeId) {
             const inputField = document.getElementById(`comment-input-${noticeId}`);
             const commentText = inputField.value.trim();
@@ -1098,6 +1099,19 @@
                     comments: arrayUnion({ studentName: window.currentStudent.name, text: commentText, date: new Date().toLocaleString() })
                 });
                 inputField.value = ''; alert("Post a ni e!");
+            } catch (error) { alert("Harsatna: " + error.message); }
+        }
+
+        // Zirtirtu (Admin) Reply na thar
+        window.adminPostComment = async function(noticeId) {
+            const inputField = document.getElementById(`admin-comment-input-${noticeId}`);
+            const commentText = inputField.value.trim();
+            if (!commentText) { alert("Reply tur ziak phawt rawh!"); return; }
+            try {
+                await updateDoc(doc(db, "notices", noticeId), {
+                    comments: arrayUnion({ studentName: "Zirtirtu (Admin)", text: commentText, date: new Date().toLocaleString() })
+                });
+                inputField.value = ''; alert("Reply post a ni e!");
             } catch (error) { alert("Harsatna: " + error.message); }
         }
 
@@ -1112,27 +1126,43 @@
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data(); const noticeId = docSnap.id;
                     let commentsHTML = '';
+                    
                     if (data.comments && data.comments.length > 0) {
                         commentsHTML = '<div class="comment-area"><b>Comments:</b><br>';
-                        data.comments.forEach(c => { commentsHTML += `<div class="comment-item"><span style="color:#0284c7; font-weight:bold;">${c.studentName}:</span> ${c.text} <span style="font-size:11px; color:gray; float:right;">(${c.date})</span></div>`; });
+                        data.comments.forEach(c => { 
+                            let isTeacher = c.studentName === "Zirtirtu (Admin)";
+                            let nameTag = isTeacher 
+                                ? `<span style="color:#15803d; font-weight:bold; background:#dcfce7; padding:2px 6px; border-radius:4px; font-size:12px;">✅ ${c.studentName}</span>` 
+                                : `<span style="color:#0284c7; font-weight:bold;">${c.studentName}</span>`;
+                                
+                            commentsHTML += `<div class="comment-item">${nameTag}: ${c.text} <span style="font-size:11px; color:gray; float:right;">(${c.date})</span></div>`; 
+                        });
                         commentsHTML += '</div>';
                     }
+
+                    // Admin View (With Reply Box)
                     adminList.innerHTML += `
                         <div class="notice-box">
                             <h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4>
                             <p style="margin-bottom: 10px; color: #475569;">${data.content}</p>${commentsHTML}
+                            <div style="margin-top: 12px; display: flex; gap: 10px;">
+                                <input type="text" id="admin-comment-input-${noticeId}" placeholder="Comment chhanna (Reply)..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                                <button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="adminPostComment('${noticeId}')">Reply</button>
+                            </div>
                             <div style="margin-top: 10px; display: flex; gap: 8px;">
-                                <button class="btn btn-primary" style="width: auto; padding: 6px 12px; font-size: 13px;" onclick="editNotice('${noticeId}')">Edit</button>
-                                <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 13px;" onclick="deleteNotice('${noticeId}')">Paih</button>
+                                <button class="btn btn-primary" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="editNotice('${noticeId}')">Edit Notice</button>
+                                <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="deleteNotice('${noticeId}')">Paih</button>
                             </div>
                         </div>`;
+
+                    // Student View
                     studentList.innerHTML += `
                         <div class="notice-box">
                             <h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4>
                             <p style="margin-bottom: 10px; color: #475569;">${data.content}</p>${commentsHTML}
                             <div style="margin-top: 12px; display: flex; gap: 10px;">
-                                <input type="text" id="comment-input-${noticeId}" placeholder="Comment ziahna..." style="margin-bottom: 0; flex-grow: 1;">
-                                <button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap;" onclick="postComment('${noticeId}')">Post</button>
+                                <input type="text" id="comment-input-${noticeId}" placeholder="Comment ziahna..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                                <button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="postComment('${noticeId}')">Post</button>
                             </div>
                         </div>`;
                 });
