@@ -179,6 +179,10 @@
                         </select>
                     </div>
                     <div class="input-group">
+                        <label>Pek Ni (Date)</label>
+                        <input type="date" id="fee-date" required>
+                    </div>
+                    <div class="input-group">
                         <label>Total Course Fee (₹)</label>
                         <input type="number" id="fee-total-amount" placeholder="Entirnan: 12000" value="12000" required>
                     </div>
@@ -186,7 +190,7 @@
                         <label>Pek Zat (Installment) (₹)</label>
                         <input type="number" id="fee-paid-amount" placeholder="Entirnan: 2000" required>
                     </div>
-                    <div class="input-group">
+                    <div class="input-group" style="grid-column: 1 / -1;">
                         <label>Pek Dan (Method)</label>
                         <select id="fee-method">
                             <option value="Cash">Cash (Kut ngeia pe)</option>
@@ -207,10 +211,11 @@
                                 <th>Total Fee</th>
                                 <th>Pek Tawh Zat</th>
                                 <th>La Ba (Balance)</th>
+                                <th>Pek Ni & History</th>
                             </tr>
                         </thead>
                         <tbody id="fee-list-body">
-                            <tr><td colspan="5" style="text-align:center; color:gray;">Data a rawn in-load mek...</td></tr>
+                            <tr><td colspan="6" style="text-align:center; color:gray;">Data a rawn in-load mek...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -472,6 +477,7 @@
 
         const todayISODate = new Date().toISOString().split('T')[0];
         document.getElementById('attendance-date').value = todayISODate;
+        document.getElementById('fee-date').value = todayISODate;
 
         window.showSection = function(sectionId) {
             const sections = ['home-section', 'student-login-section', 'admin-login-section', 'teacher-dashboard-section', 'student-portal-section'];
@@ -510,18 +516,23 @@
 
         window.saveFeePayment = async function() {
             const enrollment = document.getElementById('fee-student-select').value;
+            const feeDateRaw = document.getElementById('fee-date').value;
             const totalFee = parseFloat(document.getElementById('fee-total-amount').value);
             const paidAmount = parseFloat(document.getElementById('fee-paid-amount').value);
             const method = document.getElementById('fee-method').value;
 
-            if(!enrollment || isNaN(totalFee) || isNaN(paidAmount)) {
+            if(!enrollment || !feeDateRaw || isNaN(totalFee) || isNaN(paidAmount)) {
                 alert("Khawngaihin data a kimin thun lut rawh.");
                 return;
             }
 
+            // Convert Date to DD-MM-YYYY format
+            const dParts = feeDateRaw.split('-');
+            const formattedDate = `${dParts[2]}-${dParts[1]}-${dParts[0]}`;
+
             const studentName = allStudentsList.find(s => s.enrollment === enrollment)?.name || '';
             const paymentObj = {
-                date: todayISODate,
+                date: formattedDate,
                 amount: paidAmount,
                 method: method,
                 timestamp: new Date().toISOString()
@@ -566,7 +577,7 @@
             }
 
             if(allStudentsList.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:gray;">Zirlai an awm lo.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:gray;">Zirlai an awm lo.</td></tr>';
                 return;
             }
 
@@ -574,11 +585,13 @@
                 const feeRecord = feeDataMap[s.enrollment];
                 let totalFee = 12000;
                 let totalPaid = 0;
+                let historyStr = '<span style="color:gray; font-size:12px;">A la pe lo</span>';
                 
                 if(feeRecord) {
                     totalFee = feeRecord.totalFee || 12000;
-                    if(feeRecord.payments) {
+                    if(feeRecord.payments && feeRecord.payments.length > 0) {
                         totalPaid = feeRecord.payments.reduce((sum, p) => sum + parseFloat(p.amount), 0);
+                        historyStr = feeRecord.payments.map(p => `<div style="font-size: 11px; margin-bottom: 2px;">• ${p.date}: <b>₹${p.amount}</b> (${p.method})</div>`).join('');
                     }
                 }
                 
@@ -592,6 +605,7 @@
                         <td>₹${totalFee}</td>
                         <td style="color: #4338ca; font-weight:bold;">₹${totalPaid}</td>
                         <td style="${balanceColor} font-weight:bold;">₹${balance}</td>
+                        <td>${historyStr}</td>
                     </tr>
                 `;
             });
@@ -644,11 +658,13 @@
                 const f = feeDataMap[s.enrollment];
                 let totalFee = f ? (f.totalFee || 12000) : 12000;
                 let cashPaid = 0, gpayPaid = 0;
+                let histArr = [];
                 
                 if(f && f.payments) {
                     f.payments.forEach(p => {
                         if(p.method === 'GPay') gpayPaid += parseFloat(p.amount);
                         else cashPaid += parseFloat(p.amount);
+                        histArr.push(`${p.date} (Rs.${p.amount} - ${p.method})`);
                     });
                 }
                 let totalPaid = cashPaid + gpayPaid;
@@ -660,7 +676,8 @@
                     "Cash in a pe": cashPaid,
                     "GPay in a pe": gpayPaid,
                     "Total a pe": totalPaid,
-                    "La Ba (Balance)": totalFee - totalPaid
+                    "La Ba (Balance)": totalFee - totalPaid,
+                    "Pek Ni & History": histArr.join("\n")
                 });
             });
 
@@ -678,8 +695,14 @@
             allStudentsList.forEach(s => {
                 const f = feeDataMap[s.enrollment];
                 let totalFee = f ? (f.totalFee || 12000) : 12000;
-                let paid = f && f.payments ? f.payments.reduce((sum, p) => sum + parseFloat(p.amount), 0) : 0;
-                exportData.push([ s.enrollment, s.name, totalFee, paid, totalFee - paid ]);
+                let paid = 0;
+                let histStr = "-";
+                
+                if (f && f.payments && f.payments.length > 0) {
+                    paid = f.payments.reduce((sum, p) => sum + parseFloat(p.amount), 0);
+                    histStr = f.payments.map(p => `${p.date}: Rs.${p.amount}`).join("\n");
+                }
+                exportData.push([ s.enrollment, s.name, totalFee, paid, totalFee - paid, histStr ]);
             });
 
             if(exportData.length === 0) { alert("Data a la awm lo"); return; }
@@ -687,9 +710,9 @@
             doc.text("Zirlai Fee Report (Bethel Computer Centre)", 14, 15);
             doc.autoTable({
                 startY: 20,
-                head: [['Enrollment', 'Hming', 'Total Fee', 'Pek Tawh', 'La Ba (Balance)']],
+                head: [['Enrollment', 'Hming', 'Total Fee', 'Pek Tawh', 'La Ba', 'Pek Ni (History)']],
                 body: exportData,
-                styles: { fontSize: 10, cellPadding: 3 },
+                styles: { fontSize: 9, cellPadding: 3 },
                 headStyles: { fillColor: [245, 158, 11] } 
             });
             doc.save("Bethel_Fee_Report.pdf");
