@@ -87,6 +87,7 @@
 
         .badge-cash { background-color: #dcfce7; color: #166534; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
         .badge-gpay { background-color: #dbeafe; color: #4338ca; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+        .badge-student { display: inline-block; background-color: #bae6fd; color: #0369a1; padding: 5px 10px; border-radius: 6px; font-size: 13px; font-weight: 600; margin: 0 6px 6px 0; border: 1px solid #7dd3fc; }
 
         @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .hero-content h1 { font-size: 32px; } }
     </style>
@@ -145,9 +146,15 @@
                 <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px;" onclick="showSection('home-section')">Log Out</button>
             </div>
 
-            <div class="dashboard-stat-card">
-                <p class="dashboard-stat-title">Vawiina Zirlai Log In Zat:</p>
-                <div class="dashboard-stat-number" id="today-login-count">0</div>
+            <!-- VAWIINA ONLINE TE (NEW/UPDATED) -->
+            <div class="card" style="border: 1px solid #bae6fd; background: #f0f9ff; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #bae6fd; padding-bottom: 10px; margin-bottom: 12px;">
+                    <h3 style="color: #0369a1; border: none; padding: 0; margin: 0;">Vawiina Online Te</h3>
+                    <div style="background: #0284c7; color: white; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: bold;">Zat: <span id="today-login-count">0</span></div>
+                </div>
+                <div id="today-online-names" style="max-height: 120px; overflow-y: auto;">
+                    <span style="color: gray; font-style: italic; font-size: 14px;">Online an la awm lo...</span>
+                </div>
             </div>
 
             <!-- EXCEL UPLOAD SECTION -->
@@ -526,7 +533,6 @@
                 return;
             }
 
-            // Convert Date to DD-MM-YYYY format
             const dParts = feeDateRaw.split('-');
             const formattedDate = `${dParts[2]}-${dParts[1]}-${dParts[0]}`;
 
@@ -850,9 +856,12 @@
             }
         });
 
+        // ================= GENERAL DATA & ONLINE STATUS =================
         function renderStudentManagementTable() {
             const tableBody = document.getElementById('student-management-body');
             let todayLoginCount = 0;
+            let onlineNames = [];
+
             if(!tableBody) return;
             tableBody.innerHTML = '';
             
@@ -860,7 +869,10 @@
                 tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>';
             } else {
                 allStudentsList.forEach((s) => {
-                    if(s.lastLoginDate === todayISODate) todayLoginCount++;
+                    if(s.lastLoginDate === todayISODate) {
+                        todayLoginCount++;
+                        onlineNames.push(`<span class="badge-student">${s.name}</span>`);
+                    }
                     const totalPts = attendancePointsMap[s.enrollment] || 0;
                     tableBody.innerHTML += `
                         <tr>
@@ -873,11 +885,20 @@
                     `;
                 });
             }
+            
             const countDisplay = document.getElementById('today-login-count');
             if (countDisplay) countDisplay.innerText = todayLoginCount;
+
+            const namesDisplay = document.getElementById('today-online-names');
+            if (namesDisplay) {
+                if(onlineNames.length > 0) {
+                    namesDisplay.innerHTML = onlineNames.join('');
+                } else {
+                    namesDisplay.innerHTML = '<span style="color: gray; font-style: italic; font-size: 14px;">Online an la awm lo...</span>';
+                }
+            }
         }
 
-        // ================= GENERAL DATA & AUTH =================
         onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
             allStudentsList = [];
             snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
