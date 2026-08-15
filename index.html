@@ -78,6 +78,11 @@
         .dashboard-stat-title { color: #0369a1; font-weight: 600; font-size: 16px; margin: 0; }
         .dashboard-stat-number { font-size: 28px; font-weight: bold; color: #0284c7; }
 
+        .radio-group label { display: inline-flex; align-items: center; gap: 5px; font-weight: normal; margin-right: 15px; cursor: pointer; }
+        .radio-present { color: #16a34a; font-weight: 600 !important; }
+        .radio-report { color: #d97706; font-weight: 600 !important; }
+        .radio-absent { color: #dc2626; font-weight: 600 !important; }
+
         @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .hero-content h1 { font-size: 32px; } }
     </style>
 </head>
@@ -149,6 +154,38 @@
                     <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 20px;" onclick="uploadExcelData()">Data Thunlut Rawh</button>
                 </div>
                 <div id="upload-status" style="margin-top: 10px; font-size: 14px; font-weight: bold;"></div>
+            </div>
+
+            <!-- ATTENDANCE TRACKING -->
+            <div class="card" style="border: 2px solid #8b5cf6;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
+                    <h3 style="color: #4c1d95; border: none; padding: 0; margin: 0;">Attendance Mark-na</h3>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportAttendanceToExcel()">Excel Export</button>
+                        <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; background-color: #8b5cf6;" onclick="exportAttendanceToPDF()">PDF Export</button>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                    <label style="margin:0; font-weight: bold; color: #4c1d95;">Ni (Date) Thlang rawh:</label>
+                    <input type="date" id="attendance-date" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #8b5cf6;" onchange="loadAttendanceForDate()">
+                </div>
+                
+                <div style="overflow-x: auto; max-height: 400px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px;">
+                    <table style="margin-top: 0;">
+                        <thead style="position: sticky; top: 0; z-index: 10;">
+                            <tr>
+                                <th>Enrollment</th>
+                                <th>Hming</th>
+                                <th>Mark-na (Points)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendance-list-body">
+                            <tr><td colspan="3" style="text-align:center; color:gray;">Zirlai a rawn in-load mek...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button class="btn btn-primary" style="margin-top: 15px; background-color: #8b5cf6;" onclick="saveAttendance()">Attendance Save Rawh</button>
             </div>
 
             <!-- Zirlai In-Report & Clear Button -->
@@ -259,12 +296,13 @@
                                 <th>Enrollment</th>
                                 <th>Hming</th>
                                 <th>DOB</th>
+                                <th>Att. Points</th>
                                 <th style="text-align: center;">Action</th>
                             </tr>
                         </thead>
                         <tbody id="student-management-body">
                             <tr>
-                                <td colspan="4" style="text-align: center; color: gray;">Data a la awm lo...</td>
+                                <td colspan="5" style="text-align: center; color: gray;">Data a la awm lo...</td>
                             </tr>
                         </tbody>
                     </table>
@@ -277,6 +315,11 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2 style="border:none; margin:0;" id="student-welcome-title">Zirlai Portal</h2>
                 <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px;" onclick="showSection('home-section')">Log Out</button>
+            </div>
+
+            <div class="dashboard-stat-card" style="background: #f3e8ff; border-color: #d8b4fe;">
+                <p class="dashboard-stat-title" style="color: #6b21a8;">Total Attendance Points:</p>
+                <div class="dashboard-stat-number" id="student-att-points" style="color: #7e22ce;">0 Points</div>
             </div>
 
             <div class="form-grid">
@@ -338,6 +381,12 @@
 
         window.currentStudent = { enrollment: '', name: '' };
         let studentLeaveUnsubscribe = null; 
+        
+        let allStudentsList = []; 
+        let attendancePointsMap = {}; 
+
+        const todayISODate = new Date().toISOString().split('T')[0];
+        document.getElementById('attendance-date').value = todayISODate;
 
         window.showSection = function(sectionId) {
             const sections = ['home-section', 'student-login-section', 'admin-login-section', 'teacher-dashboard-section', 'student-portal-section'];
@@ -350,6 +399,220 @@
                 studentLeaveUnsubscribe = null;
             }
         }
+
+        // ================= ATTENDANCE LOGIC =================
+        window.loadAttendanceForDate = async function() {
+            const dateStr = document.getElementById('attendance-date').value;
+            if(!dateStr) return;
+
+            const isSaturday = new Date(dateStr).getDay() === 6;
+            const pts = isSaturday ? {p: 5, r: 2.5, a: 0} : {p: 1, r: 0.5, a: 0};
+
+            const q = query(collection(db, "attendance"), where("date", "==", dateStr));
+            const snap = await getDocs(q);
+            let existingAtt = {};
+            snap.forEach(doc => {
+                existingAtt[doc.data().enrollment] = doc.data().status;
+            });
+
+            const tbody = document.getElementById('attendance-list-body');
+            tbody.innerHTML = '';
+            
+            if(allStudentsList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">Zirlai in-register an la awm lo.</td></tr>';
+                return;
+            }
+
+            allStudentsList.forEach(s => {
+                const status = existingAtt[s.enrollment] || 'Present'; 
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${s.enrollment}</td>
+                        <td><b>${s.name}</b></td>
+                        <td>
+                            <div class="radio-group">
+                                <label class="radio-present">
+                                    <input type="radio" name="att_${s.enrollment}" value="Present" ${status==='Present'?'checked':''}> Present (${pts.p})
+                                </label>
+                                <label class="radio-report">
+                                    <input type="radio" name="att_${s.enrollment}" value="Reported" ${status==='Reported'?'checked':''}> Report (${pts.r})
+                                </label>
+                                <label class="radio-absent">
+                                    <input type="radio" name="att_${s.enrollment}" value="Absent" ${status==='Absent'?'checked':''}> Absent (${pts.a})
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        window.saveAttendance = async function() {
+            const dateStr = document.getElementById('attendance-date').value;
+            if(!dateStr) { alert("Date thlang phawt rawh!"); return; }
+
+            const isSaturday = new Date(dateStr).getDay() === 6;
+            const pts = isSaturday ? {Present: 5, Reported: 2.5, Absent: 0} : {Present: 1, Reported: 0.5, Absent: 0};
+
+            let promises = [];
+            allStudentsList.forEach(s => {
+                const radios = document.getElementsByName(`att_${s.enrollment}`);
+                let selectedVal = 'Absent';
+                for(let r of radios) { if(r.checked) selectedVal = r.value; }
+
+                const points = pts[selectedVal];
+                const docId = `${dateStr}_${s.enrollment}`;
+
+                promises.push(setDoc(doc(db, "attendance", docId), {
+                    date: dateStr,
+                    enrollment: s.enrollment,
+                    name: s.name,
+                    status: selectedVal,
+                    points: points,
+                    timestamp: serverTimestamp()
+                }));
+            });
+
+            try {
+                await Promise.all(promises);
+                alert(`${dateStr} Attendance hlawhtling taka save a ni e!`);
+            } catch(e) {
+                alert("Save naah harsatna a awm: " + e.message);
+            }
+        }
+
+        // ================= ATTENDANCE EXPORT LOGIC =================
+        window.exportAttendanceToExcel = async function() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "attendance"));
+                let attData = [];
+                
+                querySnapshot.forEach((docSnap) => {
+                    let d = docSnap.data();
+                    attData.push({
+                        "Ni (Date)": d.date,
+                        "Enrollment": d.enrollment,
+                        "Hming": d.name,
+                        "Status": d.status,
+                        "Points": d.points
+                    });
+                });
+
+                if(attData.length === 0) {
+                    alert("Attendance record a la awm lo.");
+                    return;
+                }
+
+                attData.sort((a, b) => new Date(b["Ni (Date)"]) - new Date(a["Ni (Date)"]));
+
+                let worksheet = XLSX.utils.json_to_sheet(attData);
+                let workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance_Report");
+                XLSX.writeFile(workbook, "Bethel_Attendance_Report.xlsx");
+            } catch (error) {
+                alert("Excel export-naah harsatna a awm: " + error.message);
+            }
+        }
+
+        window.exportAttendanceToPDF = async function() {
+            try {
+                const doc = new window.jsPDF();
+
+                const querySnapshot = await getDocs(collection(db, "attendance"));
+                let attData = [];
+
+                querySnapshot.forEach((document) => {
+                    let d = document.data();
+                    attData.push([
+                        d.date,
+                        d.enrollment,
+                        d.name,
+                        d.status,
+                        d.points
+                    ]);
+                });
+
+                if(attData.length === 0) {
+                    alert("Attendance record a la awm lo.");
+                    return;
+                }
+
+                attData.sort((a, b) => new Date(b[0]) - new Date(a[0]));
+
+                doc.text("Zirlai Attendance Report (Bethel Computer Centre)", 14, 15);
+                
+                doc.autoTable({
+                    startY: 20,
+                    head: [['Date', 'Enrollment', 'Hming', 'Status', 'Points']],
+                    body: attData,
+                    styles: { fontSize: 10, cellPadding: 3 },
+                    headStyles: { fillColor: [139, 92, 246] } 
+                });
+
+                doc.save("Bethel_Attendance_Report.pdf");
+            } catch (error) {
+                alert("PDF export-naah harsatna a awm: " + error.message);
+            }
+        }
+
+        onSnapshot(collection(db, "attendance"), (snapshot) => {
+            attendancePointsMap = {};
+            snapshot.forEach(docSnap => {
+                let d = docSnap.data();
+                if(!attendancePointsMap[d.enrollment]) attendancePointsMap[d.enrollment] = 0;
+                attendancePointsMap[d.enrollment] += d.points;
+            });
+            renderStudentManagementTable();
+            
+            if(window.currentStudent.enrollment) {
+                const ptsUI = document.getElementById('student-att-points');
+                if(ptsUI) ptsUI.innerText = (attendancePointsMap[window.currentStudent.enrollment] || 0) + " Points";
+            }
+        });
+
+        function renderStudentManagementTable() {
+            const tableBody = document.getElementById('student-management-body');
+            let todayLoginCount = 0;
+
+            if(!tableBody) return;
+            tableBody.innerHTML = '';
+            
+            if(allStudentsList.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>';
+            } else {
+                allStudentsList.forEach((s) => {
+                    if(s.lastLoginDate === todayISODate) {
+                        todayLoginCount++;
+                    }
+                    const totalPts = attendancePointsMap[s.enrollment] || 0;
+
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${s.enrollment}</td>
+                            <td>${s.name}</td>
+                            <td>${s.dob}</td>
+                            <td style="font-weight:bold; color:#7e22ce;">${totalPts} pts</td>
+                            <td style="text-align: center;"><button class="btn btn-danger btn-icon" title="Paih" onclick="deleteStudent('${s.enrollment}')">✕</button></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            const countDisplay = document.getElementById('today-login-count');
+            if (countDisplay) {
+                countDisplay.innerText = todayLoginCount;
+            }
+        }
+
+        onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
+            allStudentsList = [];
+            snapshot.forEach((docSnap) => {
+                allStudentsList.push(docSnap.data());
+            });
+            renderStudentManagementTable();
+            loadAttendanceForDate(); 
+        });
 
         // ================= EXCEL UPLOAD LOGIC =================
         window.uploadExcelData = async function() {
@@ -422,7 +685,7 @@
             reader.readAsArrayBuffer(file);
         }
         
-        // ================= LEAVE EXPORT LOGIC (EXCEL & PDF) =================
+        // ================= LEAVE EXPORT LOGIC =================
         window.exportLeaveToExcel = async function() {
             try {
                 const querySnapshot = await getDocs(collection(db, "leave_requests"));
@@ -496,7 +759,7 @@
             }
         }
 
-        // ================= TEST MARKS EXPORT LOGIC (EXCEL & PDF) =================
+        // ================= TEST MARKS EXPORT LOGIC =================
         window.exportToExcel = async function() {
             try {
                 const querySnapshot = await getDocs(collection(db, "student_results"));
@@ -623,6 +886,9 @@
                     window.currentStudent.enrollment = enrollment;
                     document.getElementById('student-welcome-title').innerText = `Zirlai Portal - ${window.currentStudent.name} (${window.currentStudent.enrollment})`;
                     
+                    const ptsUI = document.getElementById('student-att-points');
+                    if(ptsUI) ptsUI.innerText = (attendancePointsMap[enrollment] || 0) + " Points";
+
                     loadStudentLeaves(enrollment);
                     showSection('student-portal-section');
                 } else {
@@ -901,40 +1167,6 @@
                         </div>
                     `;
                 });
-            }
-        });
-
-        onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
-            const tableBody = document.getElementById('student-management-body');
-            const todayStr = new Date().toISOString().split('T')[0];
-            let todayLoginCount = 0;
-
-            tableBody.innerHTML = '';
-            
-            if(snapshot.empty) {
-                tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>';
-            } else {
-                snapshot.forEach((docSnap) => {
-                    let s = docSnap.data();
-                    
-                    if(s.lastLoginDate === todayStr) {
-                        todayLoginCount++;
-                    }
-
-                    tableBody.innerHTML += `
-                        <tr>
-                            <td>${s.enrollment}</td>
-                            <td>${s.name}</td>
-                            <td>${s.dob}</td>
-                            <td style="text-align: center;"><button class="btn btn-danger btn-icon" title="Paih" onclick="deleteStudent('${s.enrollment}')">✕</button></td>
-                        </tr>
-                    `;
-                });
-            }
-
-            const countDisplay = document.getElementById('today-login-count');
-            if (countDisplay) {
-                countDisplay.innerText = todayLoginCount;
             }
         });
 
