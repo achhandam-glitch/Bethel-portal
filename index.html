@@ -27,7 +27,7 @@
         .hero-content p { font-size: 18px; color: #bae6fd; margin-bottom: 40px; }
         .home-menu { display: flex; flex-direction: column; gap: 15px; max-width: 350px; margin: 0 auto; }
 
-        .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
         .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
         h2 { color: #0f172a; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
         h3 { color: #334155; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;}
@@ -93,7 +93,8 @@
         .menu-btn:hover { background: #f1f5f9; color: #0284c7; }
         .menu-btn.active-menu { background: #e0f2fe; color: #0369a1; border-left: 4px solid #0284c7; }
 
-        .admin-tab-content { display: none; animation: fadeIn 0.3s; }
+        .admin-tab-content { display: none; }
+        .admin-tab-content.active-content { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 900px) { 
@@ -216,7 +217,7 @@
                 <!-- MAIN CONTENT AREA FOR TABS -->
                 <div>
                     <!-- TAB 1: ZIRLAI REGISTER -->
-                    <div id="tab-register" class="admin-tab-content" style="display: block;">
+                    <div id="tab-register" class="admin-tab-content active-content">
                         <div class="card" style="border: 2px solid #16a34a; margin-bottom: 0;">
                             <h3 style="color: #15803d; border-bottom: 1px solid #bbf7d0; padding-bottom: 10px;">Zirlai Register-na (Excel/CSV Upload)</h3>
                             <p style="font-size: 14px; color: #475569; margin-bottom: 15px;">Excel file-ah Row hmasa berah (Header) hetiang hian Column hming phuah ang che: <b>Enrollment</b>, <b>Name</b>, <b>DOB</b>. Chumi hnuaiah chuan zirlai data type thla diat diat la, rawn upload rawh.</p>
@@ -622,12 +623,12 @@
             }
         }
 
-        // ================= SIDEBAR MENU SWITCHING LOGIC (NEW) =================
+        // ================= SIDEBAR MENU SWITCHING LOGIC =================
         window.switchAdminTab = function(tabId, btnId) {
-            document.querySelectorAll('.admin-tab-content').forEach(el => { el.style.display = 'none'; });
+            document.querySelectorAll('.admin-tab-content').forEach(el => { el.classList.remove('active-content'); });
             document.querySelectorAll('.menu-btn').forEach(el => { el.classList.remove('active-menu'); });
             
-            document.getElementById(tabId).style.display = 'block';
+            document.getElementById(tabId).classList.add('active-content');
             document.getElementById(btnId).classList.add('active-menu');
         }
 
@@ -643,7 +644,7 @@
         }
 
         window.shareLoginWhatsApp = function(name, enrollment, dob) {
-            const text = `Chibai *${name}*,\n\nHei hi Bethel Computer Centre Portal-a i luhna tur a ni e:\n\n👤 *Enrollment No:* ${enrollment}\n🔑 *Date of Birth:* ${dob}\n\n🌐 Portal Link: ${PORTAL_LINK}\n\n(I luh dawnah i date of birth kha '-' hmangin i chhu lut dawn nia, entirnan: 15-05-2005)`;
+            const text = `Chibai *${name}*,\n\nHei hi Bethel Computer Centre Portal-a i luhنا tur a ni e:\n\n👤 *Enrollment No:* ${enrollment}\n🔑 *Date of Birth:* ${dob}\n\n🌐 Portal Link: ${PORTAL_LINK}\n\n(I luh dawnah i date of birth kha '-' hmangin i chhu lut dawn nia, entirnan: 15-05-2005)`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
