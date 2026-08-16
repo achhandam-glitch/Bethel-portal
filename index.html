@@ -57,7 +57,6 @@
         .input-group { display: flex; flex-direction: column; gap: 5px; width: 100%; }
         label { font-size: 14px; font-weight: 600; color: #475569; }
         
-        /* Fixed Input overflowing issue */
         input, select, textarea { width: 100%; max-width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; outline: none; }
         input:focus, select:focus, textarea:focus { border-color: #0284c7; }
         
@@ -93,6 +92,8 @@
         .badge-gpay { background-color: #dbeafe; color: #4338ca; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
         .badge-student { display: inline-block; background-color: #bae6fd; color: #0369a1; padding: 5px 10px; border-radius: 6px; font-size: 13px; font-weight: 600; margin: 0 6px 6px 0; border: 1px solid #7dd3fc; }
 
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; }
+
         @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .hero-content h1 { font-size: 32px; } }
     </style>
 </head>
@@ -109,6 +110,35 @@
             </div>
         </div>
     </section>
+
+    <!-- EDIT FEE MODAL -->
+    <div id="fee-edit-modal" class="modal-overlay hidden">
+        <div class="card" style="width: 100%; max-width: 400px; margin: 0;">
+            <h3 style="color: #b45309; border-color: #fde68a;">Fee Record Siamthatna (Edit)</h3>
+            <input type="hidden" id="edit-fee-enrollment">
+            <input type="hidden" id="edit-fee-index">
+            
+            <div class="input-group" style="margin-bottom: 12px;">
+                <label>Pek Ni (Date)</label>
+                <input type="date" id="edit-fee-date" required>
+            </div>
+            <div class="input-group" style="margin-bottom: 12px;">
+                <label>Pek Zat (₹)</label>
+                <input type="number" id="edit-fee-amount" required>
+            </div>
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label>Pek Dan (Method)</label>
+                <select id="edit-fee-method">
+                    <option value="Cash">Cash</option>
+                    <option value="GPay">GPay</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-success" style="margin: 0;" onclick="updateFeePayment()">Save</button>
+                <button class="btn btn-danger" style="margin: 0;" onclick="closeEditFeeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
 
     <div class="container">
 
@@ -222,7 +252,7 @@
                                 <th>Total Fee</th>
                                 <th>Pek Tawh Zat</th>
                                 <th>La Ba (Balance)</th>
-                                <th>Pek Ni & History</th>
+                                <th style="min-width: 250px;">Pek Ni & History</th>
                             </tr>
                         </thead>
                         <tbody id="fee-list-body">
@@ -479,7 +509,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // TINYURL LINK UPDATE
+        // TINYURL LINK 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
 
         window.currentStudent = { enrollment: '', name: '' };
@@ -521,7 +551,7 @@
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
-        // ================= FEE MANAGEMENT LOGIC =================
+        // ================= FEE MANAGEMENT LOGIC (EDIT/DELETE ADDED) =================
         onSnapshot(collection(db, "fees"), (snapshot) => {
             feeDataMap = {};
             snapshot.forEach(docSnap => {
@@ -589,6 +619,75 @@
             }
         }
 
+        // FEE EDIT MODAL FUNCTIONS
+        window.openEditFeeModal = function(enrollment, index) {
+            let payment = feeDataMap[enrollment].payments[index];
+            document.getElementById('edit-fee-enrollment').value = enrollment;
+            document.getElementById('edit-fee-index').value = index;
+
+            // Date format letna (DD-MM-YYYY to YYYY-MM-DD for input element)
+            let dParts = payment.date.split('-');
+            if(dParts.length === 3) {
+                document.getElementById('edit-fee-date').value = `${dParts[2]}-${dParts[1]}-${dParts[0]}`;
+            } else {
+                document.getElementById('edit-fee-date').value = payment.date; 
+            }
+            
+            document.getElementById('edit-fee-amount').value = payment.amount;
+            document.getElementById('edit-fee-method').value = payment.method;
+            
+            document.getElementById('fee-edit-modal').classList.remove('hidden');
+        }
+
+        window.closeEditFeeModal = function() {
+            document.getElementById('fee-edit-modal').classList.add('hidden');
+        }
+
+        window.updateFeePayment = async function() {
+            let enrollment = document.getElementById('edit-fee-enrollment').value;
+            let index = document.getElementById('edit-fee-index').value;
+            let dateRaw = document.getElementById('edit-fee-date').value;
+            let amount = parseFloat(document.getElementById('edit-fee-amount').value);
+            let method = document.getElementById('edit-fee-method').value;
+
+            if(!dateRaw || isNaN(amount)) { alert("Data a kim lo!"); return; }
+
+            let dParts = dateRaw.split('-');
+            let formattedDate = `${dParts[2]}-${dParts[1]}-${dParts[0]}`;
+
+            let record = feeDataMap[enrollment];
+            let payments = [...record.payments]; // Copy array
+            
+            payments[index] = {
+                ...payments[index],
+                date: formattedDate,
+                amount: amount,
+                method: method
+            };
+
+            try {
+                await updateDoc(doc(db, "fees", enrollment), { payments: payments });
+                closeEditFeeModal();
+                alert("Fee hlui chu siamthat a ni e!");
+            } catch(e) {
+                alert("Harsatna: " + e.message);
+            }
+        }
+
+        window.deleteFeePayment = async function(enrollment, index) {
+            if(!confirm("He fee record hi paih (delete) i duh takzet em?")) return;
+            
+            let record = feeDataMap[enrollment];
+            let payments = [...record.payments];
+            payments.splice(index, 1); 
+
+            try {
+                await updateDoc(doc(db, "fees", enrollment), { payments: payments });
+            } catch(e) {
+                alert("Harsatna: " + e.message);
+            }
+        }
+
         function renderFeeTable() {
             const tbody = document.getElementById('fee-list-body');
             const select = document.getElementById('fee-student-select');
@@ -620,7 +719,16 @@
                     totalFee = feeRecord.totalFee || 12000;
                     if(feeRecord.payments && feeRecord.payments.length > 0) {
                         totalPaid = feeRecord.payments.reduce((sum, p) => sum + parseFloat(p.amount), 0);
-                        historyStr = feeRecord.payments.map(p => `<div style="font-size: 11px; margin-bottom: 2px;">• ${p.date}: <b>₹${p.amount}</b> (${p.method})</div>`).join('');
+                        // Edit & Delete icons added here
+                        historyStr = feeRecord.payments.map((p, idx) => `
+                            <div style="font-size: 11px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">
+                                <span>• ${p.date}: <b>₹${p.amount}</b> (${p.method})</span>
+                                <div style="display: flex; gap: 4px;">
+                                    <button title="Siamthatna (Edit)" style="background:#f59e0b; color:white; border:none; border-radius:4px; padding:3px 6px; cursor:pointer;" onclick="openEditFeeModal('${s.enrollment}', ${idx})">✏️</button>
+                                    <button title="Paih (Delete)" style="background:#ef4444; color:white; border:none; border-radius:4px; padding:3px 6px; cursor:pointer;" onclick="deleteFeePayment('${s.enrollment}', ${idx})">✕</button>
+                                </div>
+                            </div>
+                        `).join('');
                     }
                 }
                 
