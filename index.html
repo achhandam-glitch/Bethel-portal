@@ -43,6 +43,8 @@
         .btn-danger:hover { background-color: #dc2626; }
         .btn-pdf { background-color: #dc2626; color: white; }
         .btn-pdf:hover { background-color: #b91c1c; }
+        .btn-whatsapp { background-color: #25D366; color: white; }
+        .btn-whatsapp:hover { background-color: #128C7E; }
         .btn-outline { background-color: transparent; border: 1px solid #0284c7; color: #0284c7; }
         .btn-outline:hover { background-color: #f0f9ff; }
         .btn-outline-light { background-color: transparent; border: 2px solid white; color: white; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; }
@@ -377,7 +379,7 @@
                                 <th>Hming</th>
                                 <th>DOB</th>
                                 <th>Att. Points</th>
-                                <th style="text-align: center;">Action</th>
+                                <th style="text-align: center;">Thawn/Paih</th>
                             </tr>
                         </thead>
                         <tbody id="student-management-body">
@@ -475,6 +477,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // I portal URL (Domain) a awm chuan heta hi thlak rawh
+        const PORTAL_LINK = "https://bethel-portal-1641f.web.app"; 
+
         window.currentStudent = { enrollment: '', name: '' };
         let studentLeaveUnsubscribe = null; 
         
@@ -496,6 +501,22 @@
                 studentLeaveUnsubscribe();
                 studentLeaveUnsubscribe = null;
             }
+        }
+
+        // ================= WHATSAPP SHARE FUNCTIONS =================
+        window.shareNoticeWhatsApp = function(title) {
+            const text = `📌 *Bethel Computer Centre*\n\nNotice thar a awm e: *${title}*\n\nKhawngaihin in Portal-ah log in ula lo check ngei ngei ru.\n@all\n\n🌐 Portal Link: ${PORTAL_LINK}`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        window.shareMaterialWhatsApp = function(fileName, type) {
+            const text = `📌 *Bethel Computer Centre*\n\nStudy Material / Link thar a awm e!\n*${fileName}* (${type})\n\nKhawngaihin in Portal-ah log in ula lo check ngei ngei ru.\n@all\n\n🌐 Portal Link: ${PORTAL_LINK}`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        window.shareLoginWhatsApp = function(name, enrollment, dob) {
+            const text = `Chibai *${name}*,\n\nHei hi Bethel Computer Centre Portal-a i luhna tur a ni e:\n\n👤 *Enrollment No:* ${enrollment}\n🔑 *Date of Birth:* ${dob}\n\n🌐 Portal Link: ${PORTAL_LINK}\n\n(I luh dawnah i date of birth kha '-' hmangin i chhu lut dawn nia, entirnan: 15-05-2005)`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
         // ================= FEE MANAGEMENT LOGIC =================
@@ -880,7 +901,10 @@
                             <td>${s.name}</td>
                             <td>${s.dob}</td>
                             <td style="font-weight:bold; color:#7e22ce;">${totalPts} pts</td>
-                            <td style="text-align: center;"><button class="btn btn-danger btn-icon" title="Paih" onclick="deleteStudent('${s.enrollment}')">✕</button></td>
+                            <td style="text-align: center;">
+                                <button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Login Thawnna" onclick="shareLoginWhatsApp('${s.name}', '${s.enrollment}', '${s.dob}')">📱</button>
+                                <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteStudent('${s.enrollment}')">✕</button>
+                            </td>
                         </tr>
                     `;
                 });
@@ -1089,7 +1113,6 @@
             }
         }
 
-        // Zirlai Comment na
         window.postComment = async function(noticeId) {
             const inputField = document.getElementById(`comment-input-${noticeId}`);
             const commentText = inputField.value.trim();
@@ -1102,7 +1125,6 @@
             } catch (error) { alert("Harsatna: " + error.message); }
         }
 
-        // Zirtirtu (Admin) Reply na thar
         window.adminPostComment = async function(noticeId) {
             const inputField = document.getElementById(`admin-comment-input-${noticeId}`);
             const commentText = inputField.value.trim();
@@ -1140,7 +1162,8 @@
                         commentsHTML += '</div>';
                     }
 
-                    // Admin View (With Reply Box)
+                    // Admin View (With WhatsApp Share Button)
+                    let safeTitle = data.title ? data.title.replace(/'/g, "\\'") : '';
                     adminList.innerHTML += `
                         <div class="notice-box">
                             <h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4>
@@ -1149,7 +1172,8 @@
                                 <input type="text" id="admin-comment-input-${noticeId}" placeholder="Comment chhanna (Reply)..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;">
                                 <button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="adminPostComment('${noticeId}')">Reply</button>
                             </div>
-                            <div style="margin-top: 10px; display: flex; gap: 8px;">
+                            <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button class="btn btn-whatsapp" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="shareNoticeWhatsApp('${safeTitle}')">📲 WhatsApp-ah Share-na</button>
                                 <button class="btn btn-primary" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="editNotice('${noticeId}')">Edit Notice</button>
                                 <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="deleteNotice('${noticeId}')">Paih</button>
                             </div>
@@ -1177,7 +1201,7 @@
                     type: document.getElementById('link-type').value, fileName: document.getElementById('link-name').value,
                     url: document.getElementById('link-url').value, createdAt: serverTimestamp() 
                 });
-                alert("Hlawhtling takin i sem e!"); event.target.reset(); 
+                alert("Hlawhtling takin i sem e! A sira WhatsApp icon hmeh khan group-ah i thawn thei ang."); event.target.reset(); 
             } catch (error) { alert("Harsatna: " + error.message); }
         }
 
@@ -1220,10 +1244,16 @@
                     else if (data.type === 'Google Form') { icon = '📝'; color = '#16a34a'; }
                     else if (data.type === 'YouTube Video') { icon = '▶️'; color = '#2563eb'; }
                     
+                    let safeFileName = data.fileName ? data.fileName.replace(/'/g, "\\'") : '';
+                    let safeType = data.type ? data.type.replace(/'/g, "\\'") : '';
+
                     adminContainer.innerHTML += `
                         <div class="list-row">
                             <div class="list-row-info"><b style="font-size: 14px;">${data.fileName}</b><br><span style="font-size: 12px; color: gray;">(${data.type})</span></div>
-                            <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteLink('${docSnap.id}')">✕</button>
+                            <div style="display: flex; gap: 5px;">
+                                <button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Share-na" onclick="shareMaterialWhatsApp('${safeFileName}', '${safeType}')">📲</button>
+                                <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteLink('${docSnap.id}')">✕</button>
+                            </div>
                         </div>`;
                     studentContainer.innerHTML += `
                         <div class="shared-link-box">
