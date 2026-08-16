@@ -27,7 +27,7 @@
         .hero-content p { font-size: 18px; color: #bae6fd; margin-bottom: 40px; }
         .home-menu { display: flex; flex-direction: column; gap: 15px; max-width: 350px; margin: 0 auto; }
 
-        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
         .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
         h2 { color: #0f172a; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
         h3 { color: #334155; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;}
@@ -85,20 +85,19 @@
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; }
 
-        /* DASHBOARD LAYOUT WITH SIDEBAR MENU */
-        .dashboard-layout { display: grid; grid-template-columns: 280px 1fr; gap: 20px; align-items: start; }
-        .admin-sidebar { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .menu-box { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
-        .menu-btn { padding: 12px 15px; border: none; background: #f8fafc; color: #334155; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; text-align: left; transition: 0.3s; border-left: 4px solid transparent; width: 100%; }
-        .menu-btn:hover { background: #f1f5f9; color: #0284c7; }
-        .menu-btn.active-menu { background: #e0f2fe; color: #0369a1; border-left: 4px solid #0284c7; }
+        /* MENU & CONTENT TOGGLE CSS */
+        .admin-sidebar { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 500px; margin: 0 auto; }
+        .menu-box { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+        .menu-btn { padding: 14px 18px; border: none; background: #f8fafc; color: #0f172a; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; text-align: left; transition: 0.3s; border-left: 5px solid #0284c7; width: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .menu-btn:hover { background: #e0f2fe; color: #0369a1; transform: translateX(3px); }
 
         .admin-tab-content { display: none; }
         .admin-tab-content.active-content { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        @media (max-width: 900px) { 
-            .dashboard-layout { grid-template-columns: 1fr; } 
+        .back-menu-bar { margin-bottom: 15px; }
+
+        @media (max-width: 768px) { 
             .form-grid { grid-template-columns: 1fr; } 
             .hero-content h1 { font-size: 32px; } 
         }
@@ -147,7 +146,7 @@
         </div>
     </div>
 
-    <div class="container" style="max-width: 1200px;">
+    <div class="container">
 
         <!-- 2. ZIRLAI LOGIN -->
         <section id="student-login-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
@@ -180,336 +179,346 @@
             <button class="btn btn-outline" style="margin-top: 15px;" onclick="showSection('home-section')">Home-a letna</button>
         </section>
 
-        <!-- 4. ZIRTIRTU DASHBOARD (SIDEBAR MENU LAYOUT) -->
+        <!-- 4. ZIRTIRTU DASHBOARD -->
         <section id="teacher-dashboard-section" class="hidden">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="border:none; margin:0;">Zirtirtu Dashboard</h2>
-                <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px; margin:0;" onclick="showSection('home-section')">Log Out</button>
-            </div>
+            
+            <!-- MAIN MENU VIEW -->
+            <div id="admin-menu-view">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                    <h2 style="border:none; margin:0;">Zirtirtu Dashboard</h2>
+                    <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px; margin:0;" onclick="showSection('home-section')">Log Out</button>
+                </div>
 
-            <div class="dashboard-layout">
-                
-                <!-- SIDEBAR MENU BOX -->
                 <div class="admin-sidebar">
                     <!-- Vawiina Online Te Card Inside Menu Box -->
                     <div style="border: 1px solid #bae6fd; background: #f0f9ff; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #bae6fd; padding-bottom: 6px; margin-bottom: 8px;">
-                            <span style="color: #0369a1; font-weight: bold; font-size: 13px;">Vawiina Online</span>
-                            <span style="background: #0284c7; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: bold;" id="today-login-count">0</span>
+                            <span style="color: #0369a1; font-weight: bold; font-size: 14px;">Vawiina Online</span>
+                            <span style="background: #0284c7; color: white; padding: 2px 10px; border-radius: 10px; font-size: 13px; font-weight: bold;" id="today-login-count">0</span>
                         </div>
-                        <div id="today-online-names" style="max-height: 80px; overflow-y: auto; font-size: 13px;">
+                        <div id="today-online-names" style="max-height: 90px; overflow-y: auto; font-size: 13px;">
                             <span style="color: gray; font-style: italic;">Online an la awm lo...</span>
                         </div>
                     </div>
 
-                    <h4 style="font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Menu</h4>
+                    <h4 style="font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Dashboard Menu</h4>
                     <div class="menu-box">
-                        <button id="btn-tab-register" class="menu-btn active-menu" onclick="switchAdminTab('tab-register', 'btn-tab-register')">📋 Zirlai Register-na</button>
-                        <button id="btn-tab-fee" class="menu-btn" onclick="switchAdminTab('tab-fee', 'btn-tab-fee')">💰 Fee Management</button>
-                        <button id="btn-tab-attendance" class="menu-btn" onclick="switchAdminTab('tab-attendance', 'btn-tab-attendance')">📅 Attendance Mark-na</button>
-                        <button id="btn-tab-notice" class="menu-btn" onclick="switchAdminTab('tab-notice', 'btn-tab-notice')">📢 Notice Board</button>
-                        <button id="btn-tab-links" class="menu-btn" onclick="switchAdminTab('tab-links', 'btn-tab-links')">🔗 Link Semchhuahna</button>
-                        <button id="btn-tab-gradebook" class="menu-btn" onclick="switchAdminTab('tab-gradebook', 'btn-tab-gradebook')">📊 Comprehensive Gradebook</button>
-                        <button id="btn-tab-management" class="menu-btn" onclick="switchAdminTab('tab-management', 'btn-tab-management')">👥 Zirlai Management</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-register')">📋 Zirlai Register-na</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-fee')">💰 Zirlaite Fee Management</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-attendance')">📅 Attendance Mark-na & Chawlh</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-notice')">📢 Notice Board</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-links')">🔗 Link Semchhuahna</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-gradebook')">📊 Comprehensive Gradebook</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-management')">👥 Zirlai Management</button>
                     </div>
-                </div>
-
-                <!-- MAIN CONTENT AREA FOR TABS -->
-                <div>
-                    <!-- TAB 1: ZIRLAI REGISTER -->
-                    <div id="tab-register" class="admin-tab-content active-content">
-                        <div class="card" style="border: 2px solid #16a34a; margin-bottom: 0;">
-                            <h3 style="color: #15803d; border-bottom: 1px solid #bbf7d0; padding-bottom: 10px;">Zirlai Register-na (Excel/CSV Upload)</h3>
-                            <p style="font-size: 14px; color: #475569; margin-bottom: 15px;">Excel file-ah Row hmasa berah (Header) hetiang hian Column hming phuah ang che: <b>Enrollment</b>, <b>Name</b>, <b>DOB</b>. Chumi hnuaiah chuan zirlai data type thla diat diat la, rawn upload rawh.</p>
-                            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                                <input type="file" id="excel-upload" accept=".xlsx, .xls, .csv" style="flex-grow: 1; border: 1px dashed #cbd5e1; padding: 10px; border-radius: 6px;">
-                                <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 20px;" onclick="uploadExcelData()">Data Thunlut Rawh</button>
-                            </div>
-                            <div id="upload-status" style="margin-top: 10px; font-size: 14px; font-weight: bold;"></div>
-                        </div>
-                    </div>
-
-                    <!-- TAB 2: FEE MANAGEMENT -->
-                    <div id="tab-fee" class="admin-tab-content">
-                        <div class="card" style="border: 2px solid #f59e0b; margin-bottom: 0;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
-                                <h3 style="color: #b45309; border: none; padding: 0; margin: 0;">Zirlaite Fee Management</h3>
-                                <div style="display: flex; gap: 8px;">
-                                    <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportFeesToExcel()">Excel Export</button>
-                                    <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; background-color: #f59e0b;" onclick="exportFeesToPDF()">PDF Export</button>
-                                </div>
-                            </div>
-
-                            <div class="form-grid" style="margin-bottom: 20px; background: #fffbeb; padding: 15px; border-radius: 8px; border: 1px solid #fde68a;">
-                                <div class="input-group">
-                                    <label>Zirlai Thlang Rawh</label>
-                                    <select id="fee-student-select" onchange="onFeeStudentSelect()">
-                                        <option value="">-- Thlang rawh --</option>
-                                    </select>
-                                </div>
-                                <div class="input-group">
-                                    <label>Pek Ni (Date)</label>
-                                    <input type="date" id="fee-date" required>
-                                </div>
-                                <div class="input-group">
-                                    <label>Total Course Fee (₹)</label>
-                                    <input type="number" id="fee-total-amount" placeholder="Entirnan: 12000" value="12000" required>
-                                </div>
-                                <div class="input-group">
-                                    <label>Pek Zat (Installment) (₹)</label>
-                                    <input type="number" id="fee-paid-amount" placeholder="Entirnan: 2000" required>
-                                </div>
-                                <div class="input-group" style="grid-column: 1 / -1;">
-                                    <label>Pek Dan (Method)</label>
-                                    <select id="fee-method">
-                                        <option value="Cash">Cash (Kut ngeia pe)</option>
-                                        <option value="GPay">GPay / Online</option>
-                                    </select>
-                                </div>
-                                <div class="input-group" style="grid-column: 1 / -1;">
-                                    <button class="btn btn-warning" onclick="saveFeePayment()">Pekna Record Save Rawh</button>
-                                </div>
-                            </div>
-
-                            <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
-                                <table>
-                                    <thead style="position: sticky; top: 0; z-index: 10;">
-                                        <tr>
-                                            <th>Enrollment</th>
-                                            <th>Hming</th>
-                                            <th>Total Fee</th>
-                                            <th>Pek Tawh Zat</th>
-                                            <th>La Ba (Balance)</th>
-                                            <th style="min-width: 250px;">Pek Ni & History</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="fee-list-body">
-                                        <tr><td colspan="6" style="text-align:center; color:gray;">Data a rawn in-load mek...</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- TAB 3: ATTENDANCE & CHAWLH -->
-                    <div id="tab-attendance" class="admin-tab-content">
-                        <!-- Chawlh Dil Report (A chung berah) -->
-                        <div class="card" style="border: 2px solid #3b82f6;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
-                                <h3 style="color: #1e3a8a; border: none; padding: 0; margin: 0;">Zirlai Chawlh In-Report Te</h3>
-                                <div style="display: flex; gap: 8px;">
-                                    <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportLeaveToExcel()">Excel Export</button>
-                                    <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;" onclick="exportLeaveToPDF()">PDF Export</button>
-                                    <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAllLeaveRequests()">Records Clear</button>
-                                </div>
-                            </div>
-                            <div id="admin-leave-list" style="max-height: 250px; overflow-y: auto; padding: 10px 5px; background:#f8fafc; border-radius:6px;">
-                                <p style="color: gray;">Chawlh dil an la awm lo...</p>
-                            </div>
-                        </div>
-
-                        <!-- Attendance Mark-na -->
-                        <div class="card" style="border: 2px solid #8b5cf6; margin-bottom: 0;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
-                                <h3 style="color: #4c1d95; border: none; padding: 0; margin: 0;">Attendance Mark-na</h3>
-                                <div style="display: flex; gap: 8px;">
-                                    <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportAttendanceToExcel()">Excel Export</button>
-                                    <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; background-color: #8b5cf6;" onclick="exportAttendanceToPDF()">PDF Export</button>
-                                </div>
-                            </div>
-                            
-                            <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-                                <label style="margin:0; font-weight: bold; color: #4c1d95;">Ni (Date) Thlang rawh:</label>
-                                <input type="date" id="attendance-date" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #8b5cf6;" onchange="loadAttendanceForDate()">
-                            </div>
-                            
-                            <div style="margin-bottom: 15px;">
-                                <input type="text" id="attendance-search" placeholder="🔍 Hming emaw Enrollment No. zawng rawh..." style="width: 100%; padding: 10px; border: 1px solid #c4b5fd; border-radius: 6px; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);" onkeyup="filterAttendance()">
-                            </div>
-                            
-                            <div style="overflow-x: auto; max-height: 400px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px;">
-                                <table style="margin-top: 0;">
-                                    <thead style="position: sticky; top: 0; z-index: 10;">
-                                        <tr>
-                                            <th>Enrollment</th>
-                                            <th>Hming</th>
-                                            <th>Mark-na (Points)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="attendance-list-body">
-                                        <tr><td colspan="3" style="text-align:center; color:gray;">Zirlai a rawn in-load mek...</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <button class="btn btn-primary" style="margin-top: 15px; background-color: #8b5cf6;" onclick="saveAttendance()">Attendance Save Rawh</button>
-                        </div>
-                    </div>
-
-                    <!-- TAB 4: NOTICE BOARD -->
-                    <div id="tab-notice" class="admin-tab-content">
-                        <div class="form-grid" style="grid-template-columns: 1fr;">
-                            <div class="card">
-                                <h3>Notice Board Siamna</h3>
-                                <form onsubmit="publishNotice(event)">
-                                    <div class="input-group">
-                                        <label>Hriattirna Thupui</label>
-                                        <input type="text" id="notice-title" placeholder="Entirnan: Naktuk Chawlh" required>
-                                    </div>
-                                    <div class="input-group">
-                                        <label>Hriattirna Thu (Content)</label>
-                                        <textarea id="notice-content" rows="3" placeholder="Sawi tur kimchang..." required></textarea>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Notice Post Rawh</button>
-                                </form>
-                            </div>
-
-                            <div class="card" style="margin-bottom: 0;">
-                                <h3>Notice Post Tawh Te</h3>
-                                <div id="admin-notice-list" style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
-                                    <p style="color: gray;">Notice a la awm lo...</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- TAB 5: LINK SEMCHHUAHNA -->
-                    <div id="tab-links" class="admin-tab-content">
-                        <div class="form-grid" style="grid-template-columns: 1fr;">
-                            <div class="card">
-                                <h3>Link Sem Chhuahna</h3>
-                                <form onsubmit="shareLink(event)">
-                                    <div class="input-group">
-                                        <label>Link Type</label>
-                                        <select id="link-type">
-                                            <option value="PDF Note">PDF Note / File (Downloadable)</option>
-                                            <option value="GitHub Project">GitHub atanga MCQ project (Test)</option>
-                                            <option value="Google Form">Google Form (Assignment)</option>
-                                            <option value="YouTube Video">YouTube Video (Tutorial)</option>
-                                        </select>
-                                    </div>
-                                    <div class="input-group">
-                                        <label>File Hming / Title</label>
-                                        <input type="text" id="link-name" placeholder="Entirnan: DCA 101 Note" required>
-                                    </div>
-                                    <div class="input-group">
-                                        <label>Link URL</label>
-                                        <input type="url" id="link-url" placeholder="https://..." required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Zirlaite Hnenah Sem Rawh</button>
-                                </form>
-                            </div>
-                            <div class="card" style="margin-bottom: 0;">
-                                <h3>Link Sem Tawh Te Paihna</h3>
-                                <div id="admin-links-container" style="max-height: 300px; overflow-y: auto; padding-right: 5px;">
-                                    <p style="color: gray;">A la awm rih lo...</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- TAB 6: GRADEBOOK -->
-                    <div id="tab-gradebook" class="admin-tab-content">
-                        <div class="card" style="border: 2px solid #0f766e; margin-bottom: 0;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
-                                <h3 style="color: #0f766e; border: none; padding: 0; margin: 0;">Comprehensive Gradebook (DCA 101 - 106)</h3>
-                                <div style="display: flex; gap: 8px;">
-                                    <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportGradesToExcel()">Excel Export</button>
-                                    <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; background-color: #0f766e;" onclick="exportGradesToPDF()">PDF Export</button>
-                                    <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAllGrades()">Records Clear</button>
-                                </div>
-                            </div>
-
-                            <form onsubmit="saveGrade(event)" class="form-grid" style="margin-bottom: 20px; background: #f0fdf4; padding: 15px; border-radius: 8px; border: 1px solid #bbf7d0;">
-                                <div class="input-group">
-                                    <label>Zirlai Thlang Rawh</label>
-                                    <select id="grade-student-select" onchange="onGradeStudentSelect()" required>
-                                        <option value="">-- Thlang rawh --</option>
-                                    </select>
-                                    <div id="grade-student-info" style="font-size: 13px; color: #166534; margin-top: 5px; font-weight: bold;"></div>
-                                </div>
-                                <div class="input-group">
-                                    <label>Subject</label>
-                                    <select id="grade-subject" onchange="onGradeSubjectSelect()" required>
-                                        <option value="DCA 101">DCA 101</option>
-                                        <option value="DCA 102">DCA 102</option>
-                                        <option value="DCA 103">DCA 103</option>
-                                        <option value="DCA 104">DCA 104</option>
-                                        <option value="DCA 105">DCA 105</option>
-                                        <option value="DCA 106">DCA 106</option>
-                                    </select>
-                                </div>
-                                <div class="input-group">
-                                    <label>Theory IA (Written) [Max 10]</label>
-                                    <input type="number" step="0.1" id="grade-th-ia" max="10" required>
-                                </div>
-                                <div class="input-group">
-                                    <label>Theory Exam (External) [Max 40]</label>
-                                    <input type="number" step="0.1" id="grade-th-exam" max="40" required>
-                                </div>
-                                <div class="input-group">
-                                    <label>Practical IA (MCQ) [Max 10]</label>
-                                    <input type="number" step="0.1" id="grade-pr-ia" max="10" required>
-                                </div>
-                                <div class="input-group">
-                                    <label id="label-pr-exam" style="color: #0f766e; font-weight: bold;">Practical Exam - Typing/Folder [Max 40]</label>
-                                    <input type="number" step="0.1" id="grade-pr-exam" max="40" required>
-                                </div>
-                                <div class="input-group" style="grid-column: 1 / -1;">
-                                    <button type="submit" class="btn btn-primary" style="background-color: #0f766e; font-size: 16px;">Mark Save Rawh</button>
-                                </div>
-                            </form>
-
-                            <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
-                                <table>
-                                    <thead style="position: sticky; top: 0; z-index: 10;">
-                                        <tr>
-                                            <th>Enrollment</th>
-                                            <th>Hming</th>
-                                            <th>Subject</th>
-                                            <th>Th IA (10)</th>
-                                            <th>Th Exam (40)</th>
-                                            <th>Pr IA (10)</th>
-                                            <th>Pr Exam (40)</th>
-                                            <th>Total (100)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="grade-results-table">
-                                        <tr>
-                                            <td colspan="8" style="text-align: center; color: gray;">Results a la awm rih lo...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- TAB 7: ZIRLAI MANAGEMENT -->
-                    <div id="tab-management" class="admin-tab-content">
-                        <div class="card" style="margin-bottom: 0;">
-                            <h3>Zirlai List & Management</h3>
-                            <div style="overflow-x: auto;">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Enrollment</th>
-                                            <th>Hming</th>
-                                            <th>DOB</th>
-                                            <th>Att. Points</th>
-                                            <th style="text-align: center;">Thawn/Paih</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="student-management-body">
-                                        <tr>
-                                            <td colspan="5" style="text-align: center; color: gray;">Data a la awm lo...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
             </div>
+
+            <!-- TAB CONTENT VIEWS (With Back to Menu Button) -->
+            <div id="admin-content-view">
+                
+                <!-- TAB 1: ZIRLAI REGISTER -->
+                <div id="tab-register" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="card" style="border: 2px solid #16a34a; margin-bottom: 0;">
+                        <h3 style="color: #15803d; border-bottom: 1px solid #bbf7d0; padding-bottom: 10px;">Zirlai Register-na (Excel/CSV Upload)</h3>
+                        <p style="font-size: 14px; color: #475569; margin-bottom: 15px;">Excel file-ah Row hmasa berah (Header) hetiang hian Column hming phuah ang che: <b>Enrollment</b>, <b>Name</b>, <b>DOB</b>. Chumi hnuaiah chuan zirlai data type thla diat diat la, rawn upload rawh.</p>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <input type="file" id="excel-upload" accept=".xlsx, .xls, .csv" style="flex-grow: 1; border: 1px dashed #cbd5e1; padding: 10px; border-radius: 6px;">
+                            <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 20px;" onclick="uploadExcelData()">Data Thunlut Rawh</button>
+                        </div>
+                        <div id="upload-status" style="margin-top: 10px; font-size: 14px; font-weight: bold;"></div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: FEE MANAGEMENT -->
+                <div id="tab-fee" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="card" style="border: 2px solid #f59e0b; margin-bottom: 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
+                            <h3 style="color: #b45309; border: none; padding: 0; margin: 0;">Zirlaite Fee Management</h3>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportFeesToExcel()">Excel Export</button>
+                                <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; background-color: #f59e0b;" onclick="exportFeesToPDF()">PDF Export</button>
+                            </div>
+                        </div>
+
+                        <div class="form-grid" style="margin-bottom: 20px; background: #fffbeb; padding: 15px; border-radius: 8px; border: 1px solid #fde68a;">
+                            <div class="input-group">
+                                <label>Zirlai Thlang Rawh</label>
+                                <select id="fee-student-select" onchange="onFeeStudentSelect()">
+                                    <option value="">-- Thlang rawh --</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>Pek Ni (Date)</label>
+                                <input type="date" id="fee-date" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Total Course Fee (₹)</label>
+                                <input type="number" id="fee-total-amount" placeholder="Entirnan: 12000" value="12000" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Pek Zat (Installment) (₹)</label>
+                                <input type="number" id="fee-paid-amount" placeholder="Entirnan: 2000" required>
+                            </div>
+                            <div class="input-group" style="grid-column: 1 / -1;">
+                                <label>Pek Dan (Method)</label>
+                                <select id="fee-method">
+                                    <option value="Cash">Cash (Kut ngeia pe)</option>
+                                    <option value="GPay">GPay / Online</option>
+                                </select>
+                            </div>
+                            <div class="input-group" style="grid-column: 1 / -1;">
+                                <button class="btn btn-warning" onclick="saveFeePayment()">Pekna Record Save Rawh</button>
+                            </div>
+                        </div>
+
+                        <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
+                            <table>
+                                <thead style="position: sticky; top: 0; z-index: 10;">
+                                    <tr>
+                                        <th>Enrollment</th>
+                                        <th>Hming</th>
+                                        <th>Total Fee</th>
+                                        <th>Pek Tawh Zat</th>
+                                        <th>La Ba (Balance)</th>
+                                        <th style="min-width: 250px;">Pek Ni & History</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fee-list-body">
+                                    <tr><td colspan="6" style="text-align:center; color:gray;">Data a rawn in-load mek...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: ATTENDANCE & CHAWLH -->
+                <div id="tab-attendance" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    
+                    <!-- Chawlh Dil Report (A chung berah) -->
+                    <div class="card" style="border: 2px solid #3b82f6;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
+                            <h3 style="color: #1e3a8a; border: none; padding: 0; margin: 0;">Zirlai Chawlh In-Report Te</h3>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportLeaveToExcel()">Excel Export</button>
+                                <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;" onclick="exportLeaveToPDF()">PDF Export</button>
+                                <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAllLeaveRequests()">Records Clear</button>
+                            </div>
+                        </div>
+                        <div id="admin-leave-list" style="max-height: 250px; overflow-y: auto; padding: 10px 5px; background:#f8fafc; border-radius:6px;">
+                            <p style="color: gray;">Chawlh dil an la awm lo...</p>
+                        </div>
+                    </div>
+
+                    <!-- Attendance Mark-na -->
+                    <div class="card" style="border: 2px solid #8b5cf6; margin-bottom: 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
+                            <h3 style="color: #4c1d95; border: none; padding: 0; margin: 0;">Attendance Mark-na</h3>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportAttendanceToExcel()">Excel Export</button>
+                                <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; background-color: #8b5cf6;" onclick="exportAttendanceToPDF()">PDF Export</button>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                            <label style="margin:0; font-weight: bold; color: #4c1d95;">Ni (Date) Thlang rawh:</label>
+                            <input type="date" id="attendance-date" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #8b5cf6;" onchange="loadAttendanceForDate()">
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <input type="text" id="attendance-search" placeholder="🔍 Hming emaw Enrollment No. zawng rawh..." style="width: 100%; padding: 10px; border: 1px solid #c4b5fd; border-radius: 6px; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);" onkeyup="filterAttendance()">
+                        </div>
+                        
+                        <div style="overflow-x: auto; max-height: 400px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px;">
+                            <table style="margin-top: 0;">
+                                <thead style="position: sticky; top: 0; z-index: 10;">
+                                    <tr>
+                                        <th>Enrollment</th>
+                                        <th>Hming</th>
+                                        <th>Mark-na (Points)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendance-list-body">
+                                    <tr><td colspan="3" style="text-align:center; color:gray;">Zirlai a rawn in-load mek...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top: 15px; background-color: #8b5cf6;" onclick="saveAttendance()">Attendance Save Rawh</button>
+                    </div>
+                </div>
+
+                <!-- TAB 4: NOTICE BOARD -->
+                <div id="tab-notice" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="form-grid" style="grid-template-columns: 1fr;">
+                        <div class="card">
+                            <h3>Notice Board Siamna</h3>
+                            <form onsubmit="publishNotice(event)">
+                                <div class="input-group">
+                                    <label>Hriattirna Thupui</label>
+                                    <input type="text" id="notice-title" placeholder="Entirnan: Naktuk Chawlh" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Hriattirna Thu (Content)</label>
+                                    <textarea id="notice-content" rows="3" placeholder="Sawi tur kimchang..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Notice Post Rawh</button>
+                            </form>
+                        </div>
+
+                        <div class="card" style="margin-bottom: 0;">
+                            <h3>Notice Post Tawh Te</h3>
+                            <div id="admin-notice-list" style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
+                                <p style="color: gray;">Notice a la awm lo...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 5: LINK SEMCHHUAHNA -->
+                <div id="tab-links" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="form-grid" style="grid-template-columns: 1fr;">
+                        <div class="card">
+                            <h3>Link Sem Chhuahna</h3>
+                            <form onsubmit="shareLink(event)">
+                                <div class="input-group">
+                                    <label>Link Type</label>
+                                    <select id="link-type">
+                                        <option value="PDF Note">PDF Note / File (Downloadable)</option>
+                                        <option value="GitHub Project">GitHub atanga MCQ project (Test)</option>
+                                        <option value="Google Form">Google Form (Assignment)</option>
+                                        <option value="YouTube Video">YouTube Video (Tutorial)</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label>File Hming / Title</label>
+                                    <input type="text" id="link-name" placeholder="Entirnan: DCA 101 Note" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Link URL</label>
+                                    <input type="url" id="link-url" placeholder="https://..." required>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Zirlaite Hnenah Sem Rawh</button>
+                            </form>
+                        </div>
+                        <div class="card" style="margin-bottom: 0;">
+                            <h3>Link Sem Tawh Te Paihna</h3>
+                            <div id="admin-links-container" style="max-height: 300px; overflow-y: auto; padding-right: 5px;">
+                                <p style="color: gray;">A la awm rih lo...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 6: GRADEBOOK -->
+                <div id="tab-gradebook" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="card" style="border: 2px solid #0f766e; margin-bottom: 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
+                            <h3 style="color: #0f766e; border: none; padding: 0; margin: 0;">Comprehensive Gradebook (DCA 101 - 106)</h3>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportGradesToExcel()">Excel Export</button>
+                                <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; background-color: #0f766e;" onclick="exportGradesToPDF()">PDF Export</button>
+                                <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAllGrades()">Records Clear</button>
+                            </div>
+                        </div>
+
+                        <form onsubmit="saveGrade(event)" class="form-grid" style="margin-bottom: 20px; background: #f0fdf4; padding: 15px; border-radius: 8px; border: 1px solid #bbf7d0;">
+                            <div class="input-group">
+                                <label>Zirlai Thlang Rawh</label>
+                                <select id="grade-student-select" onchange="onGradeStudentSelect()" required>
+                                    <option value="">-- Thlang rawh --</option>
+                                </select>
+                                <div id="grade-student-info" style="font-size: 13px; color: #166534; margin-top: 5px; font-weight: bold;"></div>
+                            </div>
+                            <div class="input-group">
+                                <label>Subject</label>
+                                <select id="grade-subject" onchange="onGradeSubjectSelect()" required>
+                                    <option value="DCA 101">DCA 101</option>
+                                    <option value="DCA 102">DCA 102</option>
+                                    <option value="DCA 103">DCA 103</option>
+                                    <option value="DCA 104">DCA 104</option>
+                                    <option value="DCA 105">DCA 105</option>
+                                    <option value="DCA 106">DCA 106</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>Theory IA (Written) [Max 10]</label>
+                                <input type="number" step="0.1" id="grade-th-ia" max="10" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Theory Exam (External) [Max 40]</label>
+                                <input type="number" step="0.1" id="grade-th-exam" max="40" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Practical IA (MCQ) [Max 10]</label>
+                                <input type="number" step="0.1" id="grade-pr-ia" max="10" required>
+                            </div>
+                            <div class="input-group">
+                                <label id="label-pr-exam" style="color: #0f766e; font-weight: bold;">Practical Exam - Typing/Folder [Max 40]</label>
+                                <input type="number" step="0.1" id="grade-pr-exam" max="40" required>
+                            </div>
+                            <div class="input-group" style="grid-column: 1 / -1;">
+                                <button type="submit" class="btn btn-primary" style="background-color: #0f766e; font-size: 16px;">Mark Save Rawh</button>
+                            </div>
+                        </form>
+
+                        <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
+                            <table>
+                                <thead style="position: sticky; top: 0; z-index: 10;">
+                                    <tr>
+                                        <th>Enrollment</th>
+                                        <th>Hming</th>
+                                        <th>Subject</th>
+                                        <th>Th IA (10)</th>
+                                        <th>Th Exam (40)</th>
+                                        <th>Pr IA (10)</th>
+                                        <th>Pr Exam (40)</th>
+                                        <th>Total (100)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="grade-results-table">
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; color: gray;">Results a la awm rih lo...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 7: ZIRLAI MANAGEMENT -->
+                <div id="tab-management" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="card" style="margin-bottom: 0;">
+                        <h3>Zirlai List & Management</h3>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Enrollment</th>
+                                        <th>Hming</th>
+                                        <th>DOB</th>
+                                        <th>Att. Points</th>
+                                        <th style="text-align: center;">Thawn/Paih</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="student-management-body">
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; color: gray;">Data a la awm lo...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
         </section>
 
         <!-- 5. ZIRLAI DASHBOARD (STUDENT PORTAL) -->
@@ -615,6 +624,13 @@
             const sections = ['home-section', 'student-login-section', 'admin-login-section', 'teacher-dashboard-section', 'student-portal-section'];
             sections.forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(sectionId).classList.remove('hidden');
+            
+            // If opening admin dashboard, ensure menu view is shown and content is hidden
+            if(sectionId === 'teacher-dashboard-section') {
+                document.getElementById('admin-menu-view').style.display = 'block';
+                document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.remove('active-content'));
+            }
+            
             window.scrollTo(0, 0);
             
             if(sectionId === 'home-section' && studentLeaveUnsubscribe) {
@@ -623,13 +639,18 @@
             }
         }
 
-        // ================= SIDEBAR MENU SWITCHING LOGIC =================
-        window.switchAdminTab = function(tabId, btnId) {
+        // ================= MENU & CONTENT TOGGLE LOGIC (NEW) =================
+        window.openAdminTab = function(tabId) {
+            document.getElementById('admin-menu-view').style.display = 'none';
             document.querySelectorAll('.admin-tab-content').forEach(el => { el.classList.remove('active-content'); });
-            document.querySelectorAll('.menu-btn').forEach(el => { el.classList.remove('active-menu'); });
-            
             document.getElementById(tabId).classList.add('active-content');
-            document.getElementById(btnId).classList.add('active-menu');
+            window.scrollTo(0, 0);
+        }
+
+        window.backToMenu = function() {
+            document.querySelectorAll('.admin-tab-content').forEach(el => { el.classList.remove('active-content'); });
+            document.getElementById('admin-menu-view').style.display = 'block';
+            window.scrollTo(0, 0);
         }
 
         // ================= WHATSAPP SHARE FUNCTIONS =================
@@ -644,7 +665,7 @@
         }
 
         window.shareLoginWhatsApp = function(name, enrollment, dob) {
-            const text = `Chibai *${name}*,\n\nHei hi Bethel Computer Centre Portal-a i luhنا tur a ni e:\n\n👤 *Enrollment No:* ${enrollment}\n🔑 *Date of Birth:* ${dob}\n\n🌐 Portal Link: ${PORTAL_LINK}\n\n(I luh dawnah i date of birth kha '-' hmangin i chhu lut dawn nia, entirnan: 15-05-2005)`;
+            const text = `Chibai *${name}*,\n\nHei hi Bethel Computer Centre Portal-a i luhna tur a ni e:\n\n👤 *Enrollment No:* ${enrollment}\n🔑 *Date of Birth:* ${dob}\n\n🌐 Portal Link: ${PORTAL_LINK}\n\n(I luh dawnah i date of birth kha '-' hmangin i chhu lut dawn nia, entirnan: 15-05-2005)`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
