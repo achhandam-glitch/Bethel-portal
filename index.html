@@ -94,6 +94,16 @@
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; }
 
+        /* TABS CSS (NEW) */
+        .admin-tabs { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 20px; padding-bottom: 5px; border-bottom: 2px solid #cbd5e1; }
+        .admin-tabs::-webkit-scrollbar { height: 6px; }
+        .admin-tabs::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+        .tab-btn { padding: 10px 16px; border: none; background: #e2e8f0; color: #475569; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: bold; font-size: 14px; white-space: nowrap; transition: 0.3s; }
+        .tab-btn:hover { background: #cbd5e1; color: #0f172a; }
+        .tab-btn.active-tab { background: #0284c7; color: white; border-bottom: 3px solid #0c4a6e; }
+        .admin-tab-content { display: none; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
         @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .hero-content h1 { font-size: 32px; } }
     </style>
 </head>
@@ -173,300 +183,327 @@
             <button class="btn btn-outline" style="margin-top: 15px;" onclick="showSection('home-section')">Home-a letna</button>
         </section>
 
-        <!-- 4. ZIRTIRTU DASHBOARD -->
+        <!-- 4. ZIRTIRTU DASHBOARD (NOW TABBED) -->
         <section id="teacher-dashboard-section" class="hidden">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h2 style="border:none; margin:0;">Zirtirtu Dashboard</h2>
-                <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px;" onclick="showSection('home-section')">Log Out</button>
+                <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px; margin:0;" onclick="showSection('home-section')">Log Out</button>
             </div>
 
-            <!-- VAWIINA ONLINE TE -->
-            <div class="card" style="border: 1px solid #bae6fd; background: #f0f9ff; margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #bae6fd; padding-bottom: 10px; margin-bottom: 12px;">
-                    <h3 style="color: #0369a1; border: none; padding: 0; margin: 0;">Vawiina Online Te</h3>
-                    <div style="background: #0284c7; color: white; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: bold;">Zat: <span id="today-login-count">0</span></div>
-                </div>
-                <div id="today-online-names" style="max-height: 120px; overflow-y: auto;">
-                    <span style="color: gray; font-style: italic; font-size: 14px;">Online an la awm lo...</span>
-                </div>
+            <!-- TABS MENU -->
+            <div class="admin-tabs">
+                <button id="btn-tab-register" class="tab-btn active-tab" onclick="switchAdminTab('tab-register', 'btn-tab-register')">Zirlai Register</button>
+                <button id="btn-tab-fee" class="tab-btn" onclick="switchAdminTab('tab-fee', 'btn-tab-fee')">Fee Management</button>
+                <button id="btn-tab-attendance" class="tab-btn" onclick="switchAdminTab('tab-attendance', 'btn-tab-attendance')">Attendance & Chawlh</button>
+                <button id="btn-tab-notice" class="tab-btn" onclick="switchAdminTab('tab-notice', 'btn-tab-notice')">Notice Board</button>
+                <button id="btn-tab-links" class="tab-btn" onclick="switchAdminTab('tab-links', 'btn-tab-links')">Link Semchhuahna</button>
+                <button id="btn-tab-gradebook" class="tab-btn" onclick="switchAdminTab('tab-gradebook', 'btn-tab-gradebook')">Gradebook</button>
+                <button id="btn-tab-management" class="tab-btn" onclick="switchAdminTab('tab-management', 'btn-tab-management')">Zirlai Management</button>
             </div>
 
-            <!-- EXCEL UPLOAD SECTION -->
-            <div class="card" style="border: 2px solid #16a34a;">
-                <h3 style="color: #15803d; border-bottom: 1px solid #bbf7d0; padding-bottom: 10px;">Zirlai Register-na (Excel/CSV Upload)</h3>
-                <p style="font-size: 14px; color: #475569; margin-bottom: 15px;">Excel file-ah Row hmasa berah (Header) hetiang hian Column hming phuah ang che: <b>Enrollment</b>, <b>Name</b>, <b>DOB</b>. Chumi hnuaiah chuan zirlai data type thla diat diat la, rawn upload rawh.</p>
-                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                    <input type="file" id="excel-upload" accept=".xlsx, .xls, .csv" style="flex-grow: 1; border: 1px dashed #cbd5e1; padding: 10px; border-radius: 6px;">
-                    <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 20px;" onclick="uploadExcelData()">Data Thunlut Rawh</button>
-                </div>
-                <div id="upload-status" style="margin-top: 10px; font-size: 14px; font-weight: bold;"></div>
-            </div>
-
-            <!-- FEE MANAGEMENT -->
-            <div class="card" style="border: 2px solid #f59e0b;">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
-                    <h3 style="color: #b45309; border: none; padding: 0; margin: 0;">Zirlai Fee Management</h3>
-                    <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportFeesToExcel()">Excel Export</button>
-                        <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; background-color: #f59e0b;" onclick="exportFeesToPDF()">PDF Export</button>
+            <!-- TAB 1: ZIRLAI REGISTER -->
+            <div id="tab-register" class="admin-tab-content" style="display: block;">
+                <div class="card" style="border: 2px solid #16a34a;">
+                    <h3 style="color: #15803d; border-bottom: 1px solid #bbf7d0; padding-bottom: 10px;">Zirlai Register-na (Excel/CSV Upload)</h3>
+                    <p style="font-size: 14px; color: #475569; margin-bottom: 15px;">Excel file-ah Row hmasa berah (Header) hetiang hian Column hming phuah ang che: <b>Enrollment</b>, <b>Name</b>, <b>DOB</b>. Chumi hnuaiah chuan zirlai data type thla diat diat la, rawn upload rawh.</p>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <input type="file" id="excel-upload" accept=".xlsx, .xls, .csv" style="flex-grow: 1; border: 1px dashed #cbd5e1; padding: 10px; border-radius: 6px;">
+                        <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 20px;" onclick="uploadExcelData()">Data Thunlut Rawh</button>
                     </div>
-                </div>
-
-                <div class="form-grid" style="margin-bottom: 20px; background: #fffbeb; padding: 15px; border-radius: 8px; border: 1px solid #fde68a;">
-                    <div class="input-group">
-                        <label>Zirlai Thlang Rawh</label>
-                        <select id="fee-student-select" onchange="onFeeStudentSelect()">
-                            <option value="">-- Thlang rawh --</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Pek Ni (Date)</label>
-                        <input type="date" id="fee-date" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Total Course Fee (₹)</label>
-                        <input type="number" id="fee-total-amount" placeholder="Entirnan: 12000" value="12000" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Pek Zat (Installment) (₹)</label>
-                        <input type="number" id="fee-paid-amount" placeholder="Entirnan: 2000" required>
-                    </div>
-                    <div class="input-group" style="grid-column: 1 / -1;">
-                        <label>Pek Dan (Method)</label>
-                        <select id="fee-method">
-                            <option value="Cash">Cash (Kut ngeia pe)</option>
-                            <option value="GPay">GPay / Online</option>
-                        </select>
-                    </div>
-                    <div class="input-group" style="grid-column: 1 / -1;">
-                        <button class="btn btn-warning" onclick="saveFeePayment()">Pekna Record Save Rawh</button>
-                    </div>
-                </div>
-
-                <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
-                    <table>
-                        <thead style="position: sticky; top: 0; z-index: 10;">
-                            <tr>
-                                <th>Enrollment</th>
-                                <th>Hming</th>
-                                <th>Total Fee</th>
-                                <th>Pek Tawh Zat</th>
-                                <th>La Ba (Balance)</th>
-                                <th style="min-width: 250px;">Pek Ni & History</th>
-                            </tr>
-                        </thead>
-                        <tbody id="fee-list-body">
-                            <tr><td colspan="6" style="text-align:center; color:gray;">Data a rawn in-load mek...</td></tr>
-                        </tbody>
-                    </table>
+                    <div id="upload-status" style="margin-top: 10px; font-size: 14px; font-weight: bold;"></div>
                 </div>
             </div>
 
-            <!-- ATTENDANCE TRACKING -->
-            <div class="card" style="border: 2px solid #8b5cf6;">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
-                    <h3 style="color: #4c1d95; border: none; padding: 0; margin: 0;">Attendance Mark-na</h3>
-                    <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportAttendanceToExcel()">Excel Export</button>
-                        <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; background-color: #8b5cf6;" onclick="exportAttendanceToPDF()">PDF Export</button>
-                    </div>
-                </div>
-                
-                <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-                    <label style="margin:0; font-weight: bold; color: #4c1d95;">Ni (Date) Thlang rawh:</label>
-                    <input type="date" id="attendance-date" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #8b5cf6;" onchange="loadAttendanceForDate()">
-                </div>
-                
-                <div style="margin-bottom: 15px;">
-                    <input type="text" id="attendance-search" placeholder="🔍 Hming emaw Enrollment No. zawng rawh..." style="width: 100%; padding: 10px; border: 1px solid #c4b5fd; border-radius: 6px; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);" onkeyup="filterAttendance()">
-                </div>
-                
-                <div style="overflow-x: auto; max-height: 400px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px;">
-                    <table style="margin-top: 0;">
-                        <thead style="position: sticky; top: 0; z-index: 10;">
-                            <tr>
-                                <th>Enrollment</th>
-                                <th>Hming</th>
-                                <th>Mark-na (Points)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="attendance-list-body">
-                            <tr><td colspan="3" style="text-align:center; color:gray;">Zirlai a rawn in-load mek...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <button class="btn btn-primary" style="margin-top: 15px; background-color: #8b5cf6;" onclick="saveAttendance()">Attendance Save Rawh</button>
-            </div>
-
-            <!-- COMPREHENSIVE GRADEBOOK (NEW) -->
-            <div class="card" style="border: 2px solid #0f766e;">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
-                    <h3 style="color: #0f766e; border: none; padding: 0; margin: 0;">Comprehensive Gradebook (DCA 101 - 106)</h3>
-                    <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportGradesToExcel()">Excel Export</button>
-                        <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; background-color: #0f766e;" onclick="exportGradesToPDF()">PDF Export</button>
-                        <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAllGrades()">Records Clear</button>
-                    </div>
-                </div>
-
-                <form onsubmit="saveGrade(event)" class="form-grid" style="margin-bottom: 20px; background: #f0fdf4; padding: 15px; border-radius: 8px; border: 1px solid #bbf7d0;">
-                    <div class="input-group">
-                        <label>Zirlai Thlang Rawh</label>
-                        <select id="grade-student-select" onchange="onGradeStudentSelect()" required>
-                            <option value="">-- Thlang rawh --</option>
-                        </select>
-                        <div id="grade-student-info" style="font-size: 13px; color: #166534; margin-top: 5px; font-weight: bold;"></div>
-                    </div>
-                    <div class="input-group">
-                        <label>Subject</label>
-                        <select id="grade-subject" onchange="onGradeSubjectSelect()" required>
-                            <option value="DCA 101">DCA 101</option>
-                            <option value="DCA 102">DCA 102</option>
-                            <option value="DCA 103">DCA 103</option>
-                            <option value="DCA 104">DCA 104</option>
-                            <option value="DCA 105">DCA 105</option>
-                            <option value="DCA 106">DCA 106</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Theory IA (Written) [Max 10]</label>
-                        <input type="number" step="0.1" id="grade-th-ia" max="10" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Theory Exam (External) [Max 40]</label>
-                        <input type="number" step="0.1" id="grade-th-exam" max="40" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Practical IA (MCQ) [Max 10]</label>
-                        <input type="number" step="0.1" id="grade-pr-ia" max="10" required>
-                    </div>
-                    <div class="input-group">
-                        <label id="label-pr-exam" style="color: #0f766e; font-weight: bold;">Practical Exam - Typing/Folder [Max 40]</label>
-                        <input type="number" step="0.1" id="grade-pr-exam" max="40" required>
-                    </div>
-                    <div class="input-group" style="grid-column: 1 / -1;">
-                        <button type="submit" class="btn btn-primary" style="background-color: #0f766e; font-size: 16px;">Mark Save Rawh</button>
-                    </div>
-                </form>
-
-                <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
-                    <table>
-                        <thead style="position: sticky; top: 0; z-index: 10;">
-                            <tr>
-                                <th>Enrollment</th>
-                                <th>Hming</th>
-                                <th>Subject</th>
-                                <th>Th IA (10)</th>
-                                <th>Th Exam (40)</th>
-                                <th>Pr IA (10)</th>
-                                <th>Pr Exam (40)</th>
-                                <th>Total (100)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="grade-results-table">
-                            <tr>
-                                <td colspan="8" style="text-align: center; color: gray;">Results a la awm rih lo...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Zirlai In-Report & Clear Button -->
-            <div class="card" style="border: 2px solid #3b82f6;">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
-                    <h3 style="color: #1e3a8a; border: none; padding: 0; margin: 0;">Zirlai In-Report (Chawlh Dilna)</h3>
-                    <div style="display: flex; gap: 8px;">
-                        <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportLeaveToExcel()">Excel Export</button>
-                        <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;" onclick="exportLeaveToPDF()">PDF Export</button>
-                        <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAllLeaveRequests()">Records Clear</button>
-                    </div>
-                </div>
-                <div id="admin-leave-list" style="max-height: 400px; overflow-y: auto; padding: 10px 5px;">
-                    <p style="color: gray;">Chawlh dil an la awm lo...</p>
-                </div>
-            </div>
-
-            <!-- Notice Board -->
-            <div class="form-grid">
-                <div class="card">
-                    <h3>Notice Board Siamna</h3>
-                    <form onsubmit="publishNotice(event)">
-                        <div class="input-group">
-                            <label>Hriattirna Thupui</label>
-                            <input type="text" id="notice-title" placeholder="Entirnan: Naktuk Chawlh" required>
+            <!-- TAB 2: FEE MANAGEMENT -->
+            <div id="tab-fee" class="admin-tab-content">
+                <div class="card" style="border: 2px solid #f59e0b;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
+                        <h3 style="color: #b45309; border: none; padding: 0; margin: 0;">Zirlaite Fee Management</h3>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportFeesToExcel()">Excel Export</button>
+                            <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; background-color: #f59e0b;" onclick="exportFeesToPDF()">PDF Export</button>
                         </div>
-                        <div class="input-group">
-                            <label>Hriattirna Thu (Content)</label>
-                            <textarea id="notice-content" rows="3" placeholder="Sawi tur kimchang..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Notice Post Rawh</button>
-                    </form>
-                </div>
-
-                <div class="card">
-                    <h3>Notice Post Tawh Te</h3>
-                    <div id="admin-notice-list" style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
-                        <p style="color: gray;">Notice a la awm lo...</p>
                     </div>
-                </div>
-            </div>
 
-            <!-- Links -->
-            <div class="form-grid">
-                <div class="card">
-                    <h3>Link Sem Chhuahna</h3>
-                    <form onsubmit="shareLink(event)">
+                    <div class="form-grid" style="margin-bottom: 20px; background: #fffbeb; padding: 15px; border-radius: 8px; border: 1px solid #fde68a;">
                         <div class="input-group">
-                            <label>Link Type</label>
-                            <select id="link-type">
-                                <option value="PDF Note">PDF Note / File (Downloadable)</option>
-                                <option value="GitHub Project">GitHub atanga MCQ project (Test)</option>
-                                <option value="Google Form">Google Form (Assignment)</option>
-                                <option value="YouTube Video">YouTube Video (Tutorial)</option>
+                            <label>Zirlai Thlang Rawh</label>
+                            <select id="fee-student-select" onchange="onFeeStudentSelect()">
+                                <option value="">-- Thlang rawh --</option>
                             </select>
                         </div>
                         <div class="input-group">
-                            <label>File Hming / Title</label>
-                            <input type="text" id="link-name" placeholder="Entirnan: DCA 101 Note" required>
+                            <label>Pek Ni (Date)</label>
+                            <input type="date" id="fee-date" required>
                         </div>
                         <div class="input-group">
-                            <label>Link URL</label>
-                            <input type="url" id="link-url" placeholder="https://..." required>
+                            <label>Total Course Fee (₹)</label>
+                            <input type="number" id="fee-total-amount" placeholder="Entirnan: 12000" value="12000" required>
                         </div>
-                        <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Zirlaite Hnenah Sem Rawh</button>
-                    </form>
-                </div>
-                <div class="card">
-                    <h3>Link Sem Tawh Te Paihna</h3>
-                    <div id="admin-links-container" style="max-height: 300px; overflow-y: auto; padding-right: 5px;">
-                        <p style="color: gray;">A la awm rih lo...</p>
+                        <div class="input-group">
+                            <label>Pek Zat (Installment) (₹)</label>
+                            <input type="number" id="fee-paid-amount" placeholder="Entirnan: 2000" required>
+                        </div>
+                        <div class="input-group" style="grid-column: 1 / -1;">
+                            <label>Pek Dan (Method)</label>
+                            <select id="fee-method">
+                                <option value="Cash">Cash (Kut ngeia pe)</option>
+                                <option value="GPay">GPay / Online</option>
+                            </select>
+                        </div>
+                        <div class="input-group" style="grid-column: 1 / -1;">
+                            <button class="btn btn-warning" onclick="saveFeePayment()">Pekna Record Save Rawh</button>
+                        </div>
+                    </div>
+
+                    <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
+                        <table>
+                            <thead style="position: sticky; top: 0; z-index: 10;">
+                                <tr>
+                                    <th>Enrollment</th>
+                                    <th>Hming</th>
+                                    <th>Total Fee</th>
+                                    <th>Pek Tawh Zat</th>
+                                    <th>La Ba (Balance)</th>
+                                    <th style="min-width: 250px;">Pek Ni & History</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fee-list-body">
+                                <tr><td colspan="6" style="text-align:center; color:gray;">Data a rawn in-load mek...</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Student Management -->
-            <div class="card">
-                <h3>Zirlai Management</h3>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Enrollment</th>
-                                <th>Hming</th>
-                                <th>DOB</th>
-                                <th>Att. Points</th>
-                                <th style="text-align: center;">Thawn/Paih</th>
-                            </tr>
-                        </thead>
-                        <tbody id="student-management-body">
-                            <tr>
-                                <td colspan="5" style="text-align: center; color: gray;">Data a la awm lo...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <!-- TAB 3: ATTENDANCE & CHAWLH (Leave Report AT THE TOP) -->
+            <div id="tab-attendance" class="admin-tab-content">
+                <!-- 1. Chawlh Dil Report (Moved to the top inside Attendance) -->
+                <div class="card" style="border: 2px solid #3b82f6;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
+                        <h3 style="color: #1e3a8a; border: none; padding: 0; margin: 0;">Zirlai Chawlh In-Report Te</h3>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportLeaveToExcel()">Excel Export</button>
+                            <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;" onclick="exportLeaveToPDF()">PDF Export</button>
+                            <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAllLeaveRequests()">Records Clear</button>
+                        </div>
+                    </div>
+                    <div id="admin-leave-list" style="max-height: 300px; overflow-y: auto; padding: 10px 5px; background:#f8fafc; border-radius:6px;">
+                        <p style="color: gray;">Chawlh dil an la awm lo...</p>
+                    </div>
+                </div>
+
+                <!-- 2. Attendance Mark-na -->
+                <div class="card" style="border: 2px solid #8b5cf6;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
+                        <h3 style="color: #4c1d95; border: none; padding: 0; margin: 0;">Attendance Mark-na</h3>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportAttendanceToExcel()">Excel Export</button>
+                            <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; background-color: #8b5cf6;" onclick="exportAttendanceToPDF()">PDF Export</button>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                        <label style="margin:0; font-weight: bold; color: #4c1d95;">Ni (Date) Thlang rawh:</label>
+                        <input type="date" id="attendance-date" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #8b5cf6;" onchange="loadAttendanceForDate()">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <input type="text" id="attendance-search" placeholder="🔍 Hming emaw Enrollment No. zawng rawh..." style="width: 100%; padding: 10px; border: 1px solid #c4b5fd; border-radius: 6px; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);" onkeyup="filterAttendance()">
+                    </div>
+                    
+                    <div style="overflow-x: auto; max-height: 400px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px;">
+                        <table style="margin-top: 0;">
+                            <thead style="position: sticky; top: 0; z-index: 10;">
+                                <tr>
+                                    <th>Enrollment</th>
+                                    <th>Hming</th>
+                                    <th>Mark-na (Points)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendance-list-body">
+                                <tr><td colspan="3" style="text-align:center; color:gray;">Zirlai a rawn in-load mek...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top: 15px; background-color: #8b5cf6;" onclick="saveAttendance()">Attendance Save Rawh</button>
                 </div>
             </div>
+
+            <!-- TAB 4: NOTICE BOARD -->
+            <div id="tab-notice" class="admin-tab-content">
+                <div class="form-grid">
+                    <div class="card">
+                        <h3>Notice Board Siamna</h3>
+                        <form onsubmit="publishNotice(event)">
+                            <div class="input-group">
+                                <label>Hriattirna Thupui</label>
+                                <input type="text" id="notice-title" placeholder="Entirnan: Naktuk Chawlh" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Hriattirna Thu (Content)</label>
+                                <textarea id="notice-content" rows="3" placeholder="Sawi tur kimchang..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Notice Post Rawh</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <h3>Notice Post Tawh Te</h3>
+                        <div id="admin-notice-list" style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
+                            <p style="color: gray;">Notice a la awm lo...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: LINK SEMCHHUAHNA -->
+            <div id="tab-links" class="admin-tab-content">
+                <div class="form-grid">
+                    <div class="card">
+                        <h3>Link Sem Chhuahna</h3>
+                        <form onsubmit="shareLink(event)">
+                            <div class="input-group">
+                                <label>Link Type</label>
+                                <select id="link-type">
+                                    <option value="PDF Note">PDF Note / File (Downloadable)</option>
+                                    <option value="GitHub Project">GitHub atanga MCQ project (Test)</option>
+                                    <option value="Google Form">Google Form (Assignment)</option>
+                                    <option value="YouTube Video">YouTube Video (Tutorial)</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>File Hming / Title</label>
+                                <input type="text" id="link-name" placeholder="Entirnan: DCA 101 Note" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Link URL</label>
+                                <input type="url" id="link-url" placeholder="https://..." required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Zirlaite Hnenah Sem Rawh</button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h3>Link Sem Tawh Te Paihna</h3>
+                        <div id="admin-links-container" style="max-height: 300px; overflow-y: auto; padding-right: 5px;">
+                            <p style="color: gray;">A la awm rih lo...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: GRADEBOOK -->
+            <div id="tab-gradebook" class="admin-tab-content">
+                <div class="card" style="border: 2px solid #0f766e;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
+                        <h3 style="color: #0f766e; border: none; padding: 0; margin: 0;">Comprehensive Gradebook (DCA 101 - 106)</h3>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportGradesToExcel()">Excel Export</button>
+                            <button class="btn btn-pdf" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; background-color: #0f766e;" onclick="exportGradesToPDF()">PDF Export</button>
+                            <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAllGrades()">Records Clear</button>
+                        </div>
+                    </div>
+
+                    <form onsubmit="saveGrade(event)" class="form-grid" style="margin-bottom: 20px; background: #f0fdf4; padding: 15px; border-radius: 8px; border: 1px solid #bbf7d0;">
+                        <div class="input-group">
+                            <label>Zirlai Thlang Rawh</label>
+                            <select id="grade-student-select" onchange="onGradeStudentSelect()" required>
+                                <option value="">-- Thlang rawh --</option>
+                            </select>
+                            <div id="grade-student-info" style="font-size: 13px; color: #166534; margin-top: 5px; font-weight: bold;"></div>
+                        </div>
+                        <div class="input-group">
+                            <label>Subject</label>
+                            <select id="grade-subject" onchange="onGradeSubjectSelect()" required>
+                                <option value="DCA 101">DCA 101</option>
+                                <option value="DCA 102">DCA 102</option>
+                                <option value="DCA 103">DCA 103</option>
+                                <option value="DCA 104">DCA 104</option>
+                                <option value="DCA 105">DCA 105</option>
+                                <option value="DCA 106">DCA 106</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Theory IA (Written) [Max 10]</label>
+                            <input type="number" step="0.1" id="grade-th-ia" max="10" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Theory Exam (External) [Max 40]</label>
+                            <input type="number" step="0.1" id="grade-th-exam" max="40" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Practical IA (MCQ) [Max 10]</label>
+                            <input type="number" step="0.1" id="grade-pr-ia" max="10" required>
+                        </div>
+                        <div class="input-group">
+                            <label id="label-pr-exam" style="color: #0f766e; font-weight: bold;">Practical Exam - Typing/Folder [Max 40]</label>
+                            <input type="number" step="0.1" id="grade-pr-exam" max="40" required>
+                        </div>
+                        <div class="input-group" style="grid-column: 1 / -1;">
+                            <button type="submit" class="btn btn-primary" style="background-color: #0f766e; font-size: 16px;">Mark Save Rawh</button>
+                        </div>
+                    </form>
+
+                    <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
+                        <table>
+                            <thead style="position: sticky; top: 0; z-index: 10;">
+                                <tr>
+                                    <th>Enrollment</th>
+                                    <th>Hming</th>
+                                    <th>Subject</th>
+                                    <th>Th IA (10)</th>
+                                    <th>Th Exam (40)</th>
+                                    <th>Pr IA (10)</th>
+                                    <th>Pr Exam (40)</th>
+                                    <th>Total (100)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="grade-results-table">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; color: gray;">Results a la awm rih lo...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 7: ZIRLAI MANAGEMENT -->
+            <div id="tab-management" class="admin-tab-content">
+                <!-- VAWIINA ONLINE TE -->
+                <div class="card" style="border: 1px solid #bae6fd; background: #f0f9ff; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #bae6fd; padding-bottom: 10px; margin-bottom: 12px;">
+                        <h3 style="color: #0369a1; border: none; padding: 0; margin: 0;">Vawiina Online Te</h3>
+                        <div style="background: #0284c7; color: white; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: bold;">Zat: <span id="today-login-count">0</span></div>
+                    </div>
+                    <div id="today-online-names" style="max-height: 120px; overflow-y: auto;">
+                        <span style="color: gray; font-style: italic; font-size: 14px;">Online an la awm lo...</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Zirlai List & Management</h3>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Enrollment</th>
+                                    <th>Hming</th>
+                                    <th>DOB</th>
+                                    <th>Att. Points</th>
+                                    <th style="text-align: center;">Thawn/Paih</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-management-body">
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: gray;">Data a la awm lo...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
         <!-- 5. ZIRLAI DASHBOARD (STUDENT PORTAL) -->
@@ -554,7 +591,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // TINYURL LINK 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
 
         window.currentStudent = { enrollment: '', name: '' };
@@ -562,7 +598,7 @@
         
         let allStudentsList = []; 
         let attendancePointsMap = {}; 
-        let attendanceStats = {}; // To store regularity info
+        let attendanceStats = {}; 
         let feeDataMap = {}; 
 
         const todayISODate = new Date().toISOString().split('T')[0];
@@ -579,6 +615,18 @@
                 studentLeaveUnsubscribe();
                 studentLeaveUnsubscribe = null;
             }
+        }
+
+        // ================= TAB SWITCHING LOGIC (NEW) =================
+        window.switchAdminTab = function(tabId, btnId) {
+            // Hide all tab contents
+            document.querySelectorAll('.admin-tab-content').forEach(el => { el.style.display = 'none'; });
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-btn').forEach(el => { el.classList.remove('active-tab'); });
+            
+            // Show selected tab and highlight button
+            document.getElementById(tabId).style.display = 'block';
+            document.getElementById(btnId).classList.add('active-tab');
         }
 
         // ================= WHATSAPP SHARE FUNCTIONS =================
@@ -638,7 +686,6 @@
             } catch(e) { alert("Save theih a ni lo: " + e.message); }
         }
 
-        // FEE EDIT MODAL FUNCTIONS
         window.openEditFeeModal = function(enrollment, index) {
             let payment = feeDataMap[enrollment].payments[index];
             document.getElementById('edit-fee-enrollment').value = enrollment;
@@ -687,7 +734,6 @@
             
             tbody.innerHTML = '';
             
-            // Populate Dropdowns
             if(feeSelect.options.length <= 1) {
                 allStudentsList.forEach(s => {
                     let optF = document.createElement('option'); optF.value = s.enrollment; optF.innerText = `${s.name} (${s.enrollment})`; feeSelect.appendChild(optF);
@@ -786,21 +832,15 @@
             doc.save("Bethel_Fee_Report.pdf");
         }
 
-        // ================= ATTENDANCE LOGIC & SEARCH =================
+        // ================= ATTENDANCE LOGIC =================
         onSnapshot(collection(db, "attendance"), (snapshot) => {
-            attendancePointsMap = {};
-            attendanceStats = {}; 
-
+            attendancePointsMap = {}; attendanceStats = {}; 
             snapshot.forEach(docSnap => {
                 let d = docSnap.data();
-                
-                // For Total Points (Old system)
                 if(!attendancePointsMap[d.enrollment]) attendancePointsMap[d.enrollment] = 0;
                 attendancePointsMap[d.enrollment] += d.points;
 
-                // For Regularity Percentage (New Hybrid system)
                 if(!attendanceStats[d.enrollment]) { attendanceStats[d.enrollment] = { earned: 0, possible: 0, days: 0 }; }
-                
                 attendanceStats[d.enrollment].earned += d.points;
                 let isSat = new Date(d.date).getDay() === 6;
                 attendanceStats[d.enrollment].possible += isSat ? 5 : 1; 
@@ -816,18 +856,14 @@
         window.loadAttendanceForDate = async function() {
             const dateStr = document.getElementById('attendance-date').value;
             if(!dateStr) return;
-
             const isSaturday = new Date(dateStr).getDay() === 6;
             const pts = isSaturday ? {p: 5, r: 2.5, a: 0} : {p: 1, r: 0.5, a: 0};
 
             const q = query(collection(db, "attendance"), where("date", "==", dateStr));
-            const snap = await getDocs(q);
-            let existingAtt = {};
+            const snap = await getDocs(q); let existingAtt = {};
             snap.forEach(doc => { existingAtt[doc.data().enrollment] = doc.data().status; });
 
-            const tbody = document.getElementById('attendance-list-body');
-            tbody.innerHTML = '';
-            
+            const tbody = document.getElementById('attendance-list-body'); tbody.innerHTML = '';
             if(allStudentsList.length === 0) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">Zirlai in-register an la awm lo.</td></tr>'; return; }
 
             allStudentsList.forEach(s => {
@@ -843,8 +879,7 @@
                                 <label class="radio-absent"><input type="radio" name="att_${s.enrollment}" value="Absent" ${status==='Absent'?'checked':''}> Absent (${pts.a})</label>
                             </div>
                         </td>
-                    </tr>
-                `;
+                    </tr>`;
             });
             filterAttendance();
         }
@@ -854,8 +889,7 @@
             const rows = document.querySelectorAll('#attendance-list-body tr');
             rows.forEach(row => {
                 if(row.cells.length < 3) return; 
-                const enr = row.querySelector('.att-enrollment').innerText.toLowerCase();
-                const nm = row.querySelector('.att-name').innerText.toLowerCase();
+                const enr = row.querySelector('.att-enrollment').innerText.toLowerCase(); const nm = row.querySelector('.att-name').innerText.toLowerCase();
                 row.style.display = (enr.includes(input) || nm.includes(input)) ? '' : 'none';
             });
         }
@@ -863,33 +897,24 @@
         window.saveAttendance = async function() {
             const dateStr = document.getElementById('attendance-date').value;
             if(!dateStr) { alert("Date thlang phawt rawh!"); return; }
-            
             const isSaturday = new Date(dateStr).getDay() === 6;
             const pts = isSaturday ? {Present: 5, Reported: 2.5, Absent: 0} : {Present: 1, Reported: 0.5, Absent: 0};
 
             let promises = [];
             allStudentsList.forEach(s => {
-                const radios = document.getElementsByName(`att_${s.enrollment}`);
-                let val = 'Absent';
+                const radios = document.getElementsByName(`att_${s.enrollment}`); let val = 'Absent';
                 for(let r of radios) { if(r.checked) val = r.value; }
-                promises.push(setDoc(doc(db, "attendance", `${dateStr}_${s.enrollment}`), {
-                    date: dateStr, enrollment: s.enrollment, name: s.name, status: val, points: pts[val], timestamp: serverTimestamp()
-                }));
+                promises.push(setDoc(doc(db, "attendance", `${dateStr}_${s.enrollment}`), { date: dateStr, enrollment: s.enrollment, name: s.name, status: val, points: pts[val], timestamp: serverTimestamp() }));
             });
-            
-            try { await Promise.all(promises); alert(`${dateStr} Attendance save a ni e!`); } 
-            catch(e) { alert("Save naah harsatna: " + e.message); }
+            try { await Promise.all(promises); alert(`${dateStr} Attendance save a ni e!`); } catch(e) { alert("Save naah harsatna: " + e.message); }
         }
 
         window.exportAttendanceToExcel = async function() {
             try {
                 const querySnapshot = await getDocs(collection(db, "attendance")); let attData = [];
-                querySnapshot.forEach((docSnap) => {
-                    let d = docSnap.data(); attData.push({ "Ni (Date)": d.date, "Enrollment": d.enrollment, "Hming": d.name, "Status": d.status, "Points": d.points });
-                });
+                querySnapshot.forEach((docSnap) => { let d = docSnap.data(); attData.push({ "Ni (Date)": d.date, "Enrollment": d.enrollment, "Hming": d.name, "Status": d.status, "Points": d.points }); });
                 if(attData.length === 0) { alert("Attendance record a la awm lo."); return; }
                 attData.sort((a, b) => new Date(b["Ni (Date)"]) - new Date(a["Ni (Date)"]));
-
                 let worksheet = XLSX.utils.json_to_sheet(attData); let workbook = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance_Report"); XLSX.writeFile(workbook, "Bethel_Attendance_Report.xlsx");
             } catch (error) { alert("Excel export-naah harsatna: " + error.message); }
@@ -901,7 +926,6 @@
                 querySnapshot.forEach((document) => { let d = document.data(); attData.push([ d.date, d.enrollment, d.name, d.status, d.points ]); });
                 if(attData.length === 0) { alert("Attendance record a la awm lo."); return; }
                 attData.sort((a, b) => new Date(b[0]) - new Date(a[0]));
-
                 doc.text("Zirlai Attendance Report (Bethel Computer Centre)", 14, 15);
                 doc.autoTable({ startY: 20, head: [['Date', 'Enrollment', 'Hming', 'Status', 'Points']], body: attData, styles: { fontSize: 10, cellPadding: 3 }, headStyles: { fillColor: [139, 92, 246] } });
                 doc.save("Bethel_Attendance_Report.pdf");
@@ -910,29 +934,15 @@
 
         // ================= GENERAL DATA & ONLINE STATUS =================
         function renderStudentManagementTable() {
-            const tableBody = document.getElementById('student-management-body');
-            let todayLoginCount = 0; let onlineNames = [];
-
+            const tableBody = document.getElementById('student-management-body'); let todayLoginCount = 0; let onlineNames = [];
             if(!tableBody) return; tableBody.innerHTML = '';
             
-            if(allStudentsList.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>';
-            } else {
+            if(allStudentsList.length === 0) { tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>'; } 
+            else {
                 allStudentsList.forEach((s) => {
                     if(s.lastLoginDate === todayISODate) { todayLoginCount++; onlineNames.push(`<span class="badge-student">${s.name}</span>`); }
                     const totalPts = attendancePointsMap[s.enrollment] || 0;
-                    tableBody.innerHTML += `
-                        <tr>
-                            <td>${s.enrollment}</td>
-                            <td>${s.name}</td>
-                            <td>${s.dob}</td>
-                            <td style="font-weight:bold; color:#7e22ce;">${totalPts} pts</td>
-                            <td style="text-align: center;">
-                                <button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Login Thawnna" onclick="shareLoginWhatsApp('${s.name}', '${s.enrollment}', '${s.dob}')">📱</button>
-                                <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteStudent('${s.enrollment}')">✕</button>
-                            </td>
-                        </tr>
-                    `;
+                    tableBody.innerHTML += `<tr><td>${s.enrollment}</td><td>${s.name}</td><td>${s.dob}</td><td style="font-weight:bold; color:#7e22ce;">${totalPts} pts</td><td style="text-align: center;"><button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Login Thawnna" onclick="shareLoginWhatsApp('${s.name}', '${s.enrollment}', '${s.dob}')">📱</button><button class="btn btn-danger btn-icon" title="Paih" onclick="deleteStudent('${s.enrollment}')">✕</button></td></tr>`;
                 });
             }
             const countDisplay = document.getElementById('today-login-count'); if (countDisplay) countDisplay.innerText = todayLoginCount;
@@ -941,8 +951,7 @@
         }
 
         onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
-            allStudentsList = [];
-            snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
+            allStudentsList = []; snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
             renderStudentManagementTable(); renderFeeTable(); loadAttendanceForDate(); 
         });
 
@@ -976,159 +985,82 @@
             reader.readAsArrayBuffer(file);
         }
 
-        // ================= COMPREHENSIVE GRADEBOOK (NEW LOGIC) =================
-
+        // ================= COMPREHENSIVE GRADEBOOK =================
         window.onGradeStudentSelect = function() {
-            let enr = document.getElementById('grade-student-select').value;
-            let infoDiv = document.getElementById('grade-student-info');
-            
+            let enr = document.getElementById('grade-student-select').value; let infoDiv = document.getElementById('grade-student-info');
             if(!enr) { infoDiv.innerHTML = ''; return; }
-            
             let stats = attendanceStats[enr];
             if(stats && stats.days > 0) {
                 let pct = (stats.earned / stats.possible) * 100;
                 infoDiv.innerHTML = `📅 A class kal tawh zat: <b>Ni ${stats.days}</b> &nbsp;|&nbsp; 📊 A regular dan: <b>${pct.toFixed(1)}%</b>`;
-                onGradeSubjectSelect(); // Trigger auto-calc if DCA 104 is selected
-            } else {
-                infoDiv.innerHTML = `📅 A class kal tawh zat: <b>Ni 0</b> &nbsp;|&nbsp; 📊 A regular dan: <b>0%</b>`;
-            }
+                onGradeSubjectSelect();
+            } else { infoDiv.innerHTML = `📅 A class kal tawh zat: <b>Ni 0</b> &nbsp;|&nbsp; 📊 A regular dan: <b>0%</b>`; }
         }
 
         window.onGradeSubjectSelect = function() {
-            let subj = document.getElementById('grade-subject').value;
-            let prLabel = document.getElementById('label-pr-exam');
-            let prInput = document.getElementById('grade-pr-exam');
+            let subj = document.getElementById('grade-subject').value; let prLabel = document.getElementById('label-pr-exam'); let prInput = document.getElementById('grade-pr-exam');
             let enr = document.getElementById('grade-student-select').value;
             
             if (subj === 'DCA 101' || subj === 'DCA 102') {
-                prLabel.innerHTML = 'Practical Exam - Typing/Folder [Max 40]';
-                prInput.readOnly = false;
-                prInput.style.backgroundColor = 'white';
+                prLabel.innerHTML = 'Practical Exam - Typing/Folder [Max 40]'; prInput.readOnly = false; prInput.style.backgroundColor = 'white';
             } else if (subj === 'DCA 104') {
                 prLabel.innerHTML = 'Practical Exam - Auto (Attendance % atangin) [Max 40]';
                 if (enr && attendanceStats[enr] && attendanceStats[enr].days > 0) {
-                    let stats = attendanceStats[enr];
-                    let pct = (stats.earned / stats.possible) * 100;
-                    let autoMark = (pct / 100) * 40;
-                    prInput.value = autoMark.toFixed(1); 
-                } else {
-                    prInput.value = '';
-                }
+                    let pct = (attendanceStats[enr].earned / attendanceStats[enr].possible) * 100;
+                    prInput.value = ((pct / 100) * 40).toFixed(1); 
+                } else { prInput.value = ''; }
                 prInput.style.backgroundColor = '#e0f2fe'; 
             } else {
-                prLabel.innerHTML = 'Practical Exam (Pangngai) [Max 40]';
-                prInput.readOnly = false;
-                prInput.style.backgroundColor = 'white';
+                prLabel.innerHTML = 'Practical Exam (Pangngai) [Max 40]'; prInput.readOnly = false; prInput.style.backgroundColor = 'white';
             }
         }
 
         window.saveGrade = async function(event) {
             event.preventDefault();
-            const enr = document.getElementById('grade-student-select').value;
-            const subj = document.getElementById('grade-subject').value;
-            const thIa = parseFloat(document.getElementById('grade-th-ia').value) || 0;
-            const thExam = parseFloat(document.getElementById('grade-th-exam').value) || 0;
-            const prIa = parseFloat(document.getElementById('grade-pr-ia').value) || 0;
-            const prExam = parseFloat(document.getElementById('grade-pr-exam').value) || 0;
+            const enr = document.getElementById('grade-student-select').value; const subj = document.getElementById('grade-subject').value;
+            const thIa = parseFloat(document.getElementById('grade-th-ia').value) || 0; const thExam = parseFloat(document.getElementById('grade-th-exam').value) || 0;
+            const prIa = parseFloat(document.getElementById('grade-pr-ia').value) || 0; const prExam = parseFloat(document.getElementById('grade-pr-exam').value) || 0;
 
             if(!enr) { alert("Zirlai thlang phawt rawh."); return; }
-
-            const totalMark = thIa + thExam + prIa + prExam;
-            const studentName = allStudentsList.find(s => s.enrollment === enr)?.name || '';
+            const totalMark = thIa + thExam + prIa + prExam; const studentName = allStudentsList.find(s => s.enrollment === enr)?.name || '';
 
             try {
-                // Doc ID format: "2602001_DCA 101"
-                await setDoc(doc(db, "student_grades", `${enr}_${subj}`), {
-                    enrollment: enr,
-                    name: studentName,
-                    subject: subj,
-                    theoryIA: thIa,
-                    theoryExam: thExam,
-                    practicalIA: prIa,
-                    practicalExam: prExam,
-                    totalMark: totalMark,
-                    timestamp: serverTimestamp()
-                });
+                await setDoc(doc(db, "student_grades", `${enr}_${subj}`), { enrollment: enr, name: studentName, subject: subj, theoryIA: thIa, theoryExam: thExam, practicalIA: prIa, practicalExam: prExam, totalMark: totalMark, timestamp: serverTimestamp() });
                 alert(`${subj} mark hlawhtling taka save a ni e!`);
-                document.getElementById('grade-th-ia').value = '';
-                document.getElementById('grade-th-exam').value = '';
-                document.getElementById('grade-pr-ia').value = '';
-                document.getElementById('grade-pr-exam').value = '';
-            } catch(e) {
-                alert("Save naah harsatna: " + e.message);
-            }
+                document.getElementById('grade-th-ia').value = ''; document.getElementById('grade-th-exam').value = ''; document.getElementById('grade-pr-ia').value = ''; document.getElementById('grade-pr-exam').value = '';
+            } catch(e) { alert("Save naah harsatna: " + e.message); }
         }
 
         onSnapshot(query(collection(db, "student_grades"), orderBy("enrollment")), (snapshot) => {
-            const tableBody = document.getElementById('grade-results-table');
-            if(!tableBody) return;
-            tableBody.innerHTML = '';
-            
-            if (snapshot.empty) { 
-                tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: gray;">Results a la awm rih lo...</td></tr>'; 
-            } else {
+            const tableBody = document.getElementById('grade-results-table'); if(!tableBody) return; tableBody.innerHTML = '';
+            if (snapshot.empty) { tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: gray;">Results a la awm rih lo...</td></tr>'; } 
+            else {
                 snapshot.forEach((docSnap) => {
-                    let d = docSnap.data();
-                    let totalColor = d.totalMark >= 40 ? '#16a34a' : '#dc2626'; // Simple pass/fail coloring
-                    tableBody.innerHTML += `
-                        <tr>
-                            <td>${d.enrollment}</td>
-                            <td><b>${d.name}</b></td>
-                            <td style="color: #0f766e; font-weight: bold;">${d.subject}</td>
-                            <td>${d.theoryIA}</td>
-                            <td>${d.theoryExam}</td>
-                            <td>${d.practicalIA}</td>
-                            <td>${d.practicalExam}</td>
-                            <td><span style="color: ${totalColor}; font-weight: bold; font-size: 15px;">${d.totalMark.toFixed(1)}</span></td>
-                        </tr>
-                    `;
+                    let d = docSnap.data(); let totalColor = d.totalMark >= 40 ? '#16a34a' : '#dc2626';
+                    tableBody.innerHTML += `<tr><td>${d.enrollment}</td><td><b>${d.name}</b></td><td style="color: #0f766e; font-weight: bold;">${d.subject}</td><td>${d.theoryIA}</td><td>${d.theoryExam}</td><td>${d.practicalIA}</td><td>${d.practicalExam}</td><td><span style="color: ${totalColor}; font-weight: bold; font-size: 15px;">${d.totalMark.toFixed(1)}</span></td></tr>`;
                 });
             }
         });
 
         window.exportGradesToExcel = async function() {
             try {
-                const querySnapshot = await getDocs(query(collection(db, "student_grades"), orderBy("enrollment")));
-                let resultsData = [];
+                const querySnapshot = await getDocs(query(collection(db, "student_grades"), orderBy("enrollment"))); let resultsData = [];
                 querySnapshot.forEach((docSnap) => {
-                    let d = docSnap.data();
-                    resultsData.push({ 
-                        "Enrollment No": d.enrollment, 
-                        "Zirlai Hming": d.name, 
-                        "Subject": d.subject, 
-                        "Theory IA": d.theoryIA, 
-                        "Theory Exam": d.theoryExam,
-                        "Practical IA": d.practicalIA,
-                        "Practical Exam": d.practicalExam,
-                        "Total Mark (100)": d.totalMark
-                    });
+                    let d = docSnap.data(); resultsData.push({ "Enrollment No": d.enrollment, "Zirlai Hming": d.name, "Subject": d.subject, "Theory IA": d.theoryIA, "Theory Exam": d.theoryExam, "Practical IA": d.practicalIA, "Practical Exam": d.practicalExam, "Total Mark (100)": d.totalMark });
                 });
                 if(resultsData.length === 0) { alert("Marks a la awm lo."); return; }
-                let worksheet = XLSX.utils.json_to_sheet(resultsData);
-                let workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Gradebook");
-                XLSX.writeFile(workbook, "Bethel_Gradebook.xlsx");
+                let worksheet = XLSX.utils.json_to_sheet(resultsData); let workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Gradebook"); XLSX.writeFile(workbook, "Bethel_Gradebook.xlsx");
             } catch (error) { alert("Harsatna: " + error.message); }
         }
 
         window.exportGradesToPDF = async function() {
             try {
-                const doc = new window.jsPDF();
-                const querySnapshot = await getDocs(query(collection(db, "student_grades"), orderBy("enrollment")));
-                let resultsData = [];
-                querySnapshot.forEach((docSnap) => {
-                    let d = docSnap.data();
-                    resultsData.push([ d.enrollment, d.name, d.subject, d.theoryIA, d.theoryExam, d.practicalIA, d.practicalExam, d.totalMark.toFixed(1) ]);
-                });
+                const doc = new window.jsPDF(); const querySnapshot = await getDocs(query(collection(db, "student_grades"), orderBy("enrollment"))); let resultsData = [];
+                querySnapshot.forEach((docSnap) => { let d = docSnap.data(); resultsData.push([ d.enrollment, d.name, d.subject, d.theoryIA, d.theoryExam, d.practicalIA, d.practicalExam, d.totalMark.toFixed(1) ]); });
                 if(resultsData.length === 0) { alert("Marks a la awm lo."); return; }
                 doc.text("Zirlaite Marks (Bethel Computer Centre)", 14, 15);
-                doc.autoTable({ 
-                    startY: 20, 
-                    head: [['Enrollment', 'Hming', 'Subj', 'Th IA', 'Th Exam', 'Pr IA', 'Pr Exam', 'Total']], 
-                    body: resultsData, 
-                    styles: { fontSize: 9, cellPadding: 2 }, 
-                    headStyles: { fillColor: [15, 118, 110] } 
-                });
+                doc.autoTable({ startY: 20, head: [['Enrollment', 'Hming', 'Subj', 'Th IA', 'Th Exam', 'Pr IA', 'Pr Exam', 'Total']], body: resultsData, styles: { fontSize: 9, cellPadding: 2 }, headStyles: { fillColor: [15, 118, 110] } });
                 doc.save("Bethel_Gradebook.pdf");
             } catch (error) { alert("Harsatna: " + error.message); }
         }
@@ -1136,11 +1068,9 @@
         window.clearAllGrades = async function() {
             if (confirm("Mark i thunluh tawh zawng zawng paih fai takzet i duh em?")) {
                 try {
-                    const querySnapshot = await getDocs(collection(db, "student_grades"));
-                    let deletePromises = [];
+                    const querySnapshot = await getDocs(collection(db, "student_grades")); let deletePromises = [];
                     querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "student_grades", document.id))));
-                    await Promise.all(deletePromises);
-                    alert("Gradebook paih fai a ni tawh e!");
+                    await Promise.all(deletePromises); alert("Gradebook paih fai a ni tawh e!");
                 } catch (error) { alert("Harsatna: " + error.message); }
             }
         }
@@ -1148,8 +1078,7 @@
         // ================= LEAVES =================
         window.applyLeave = async function(event) {
             event.preventDefault();
-            const date = document.getElementById('leave-date').value;
-            const reason = document.getElementById('leave-reason').value.trim();
+            const date = document.getElementById('leave-date').value; const reason = document.getElementById('leave-reason').value.trim();
             try {
                 await addDoc(collection(db, "leave_requests"), { enrollment: window.currentStudent.enrollment, studentName: window.currentStudent.name, date: date, reason: reason, status: "Pending", createdAt: serverTimestamp() });
                 alert("I in-report-na a lut hlawhtling e."); event.target.reset();
@@ -1164,52 +1093,32 @@
                 let leaves = []; snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()}));
                 leaves.sort((a, b) => new Date(b.date) - new Date(a.date));
                 leaves.forEach(data => {
-                    let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending';
-                    let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek';
+                    let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending'; let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek';
                     container.innerHTML += `<div class="leave-item"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><strong style="color: #0f172a;">📅 ${data.date}</strong><span class="status-badge ${badgeClass}">${statusText}</span></div><p style="font-size:14px; color:#475569; margin:0;">${data.reason}</p></div>`;
                 });
             });
         }
 
-        window.approveLeaveStatus = async function(leaveId) {
-            try { await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Approved' }); } 
-            catch(error) { alert("Status thlak theih a ni lo: " + error.message); }
-        }
+        window.approveLeaveStatus = async function(leaveId) { try { await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Approved' }); } catch(error) { alert("Status thlak theih a ni lo: " + error.message); } }
 
         onSnapshot(collection(db, "leave_requests"), (snapshot) => {
-            const adminContainer = document.getElementById('admin-leave-list'); if(!adminContainer) return; 
-            adminContainer.innerHTML = '';
+            const adminContainer = document.getElementById('admin-leave-list'); if(!adminContainer) return; adminContainer.innerHTML = '';
             if (snapshot.empty) { adminContainer.innerHTML = '<p style="color: gray; text-align: center; padding: 20px 0;">In-report an la awm lo...</p>'; return; }
             let leaves = []; snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()}));
             leaves.sort((a, b) => new Date(b.date) - new Date(a.date));
             leaves.forEach(data => {
-                let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending';
-                let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek';
-                adminContainer.innerHTML += `
-                    <div class="leave-item" style="border-left: 4px solid ${data.status === 'Approved' ? '#22c55e' : '#eab308'};">
-                        <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:8px;">
-                            <strong style="font-size: 16px; color: #0f172a;">${data.studentName} <span style="color: gray; font-size: 13px;">(${data.enrollment})</span></strong>
-                            <span class="status-badge ${badgeClass}">${statusText}</span>
-                        </div>
-                        <div style="font-size:14px; color:#334155; margin-bottom: 12px; background: #f8fafc; padding: 8px; border-radius: 4px;">
-                            <span style="color:#0284c7; font-weight:bold;">Chawlh Ni:</span> ${data.date} <br>
-                            <span style="color:#0284c7; font-weight:bold;">A Chhan:</span> ${data.reason}
-                        </div>
-                        ${data.status === 'Pending' ? `<button class="btn btn-success" style="padding: 8px 15px; font-size:13px; margin:0; width: auto;" onclick="approveLeaveStatus('${data.id}')">Pawm (Approve)</button>` : ''}
-                    </div>`;
+                let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending'; let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek';
+                adminContainer.innerHTML += `<div class="leave-item" style="border-left: 4px solid ${data.status === 'Approved' ? '#22c55e' : '#eab308'};"><div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:8px;"><strong style="font-size: 16px; color: #0f172a;">${data.studentName} <span style="color: gray; font-size: 13px;">(${data.enrollment})</span></strong><span class="status-badge ${badgeClass}">${statusText}</span></div><div style="font-size:14px; color:#334155; margin-bottom: 12px; background: #f8fafc; padding: 8px; border-radius: 4px;"><span style="color:#0284c7; font-weight:bold;">Chawlh Ni:</span> ${data.date} <br><span style="color:#0284c7; font-weight:bold;">A Chhan:</span> ${data.reason}</div>${data.status === 'Pending' ? `<button class="btn btn-success" style="padding: 8px 15px; font-size:13px; margin:0; width: auto;" onclick="approveLeaveStatus('${data.id}')">Pawm (Approve)</button>` : ''}</div>`;
             });
         });
 
         window.exportLeaveToExcel = async function() {
             try {
                 const querySnapshot = await getDocs(collection(db, "leave_requests")); let leaveData = [];
-                querySnapshot.forEach((doc) => {
-                    let d = doc.data(); leaveData.push({ "Enrollment No": d.enrollment, "Zirlai Hming": d.studentName, "Chawlh Ni": d.date, "Chhan": d.reason, "Status": d.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek' });
-                });
+                querySnapshot.forEach((doc) => { let d = doc.data(); leaveData.push({ "Enrollment No": d.enrollment, "Zirlai Hming": d.studentName, "Chawlh Ni": d.date, "Chhan": d.reason, "Status": d.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek' }); });
                 if(leaveData.length === 0) { alert("Record a la awm lo."); return; }
                 leaveData.sort((a, b) => new Date(b["Chawlh Ni"]) - new Date(a["Chawlh Ni"]));
-                let worksheet = XLSX.utils.json_to_sheet(leaveData); let workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Chawlh_Report"); XLSX.writeFile(workbook, "Bethel_Zirlai_Chawlh.xlsx");
+                let worksheet = XLSX.utils.json_to_sheet(leaveData); let workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Chawlh_Report"); XLSX.writeFile(workbook, "Bethel_Zirlai_Chawlh.xlsx");
             } catch (error) { alert("Harsatna: " + error.message); }
         }
 
@@ -1219,58 +1128,30 @@
                 querySnapshot.forEach((document) => { let d = document.data(); leaveData.push([ d.enrollment, d.studentName, d.date, d.reason, d.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek' ]); });
                 if(leaveData.length === 0) { alert("Record a la awm lo."); return; }
                 leaveData.sort((a, b) => new Date(b[2]) - new Date(a[2]));
-                doc.text("Zirlai Chawlh Report (Bethel Computer Centre)", 14, 15);
-                doc.autoTable({ startY: 20, head: [['Enrollment', 'Hming', 'Chawlh Ni', 'Chhan', 'Status']], body: leaveData, styles: { fontSize: 10, cellPadding: 3 }, headStyles: { fillColor: [2, 132, 199] } });
-                doc.save("Bethel_Zirlai_Chawlh.pdf");
+                doc.text("Zirlai Chawlh Report (Bethel Computer Centre)", 14, 15); doc.autoTable({ startY: 20, head: [['Enrollment', 'Hming', 'Chawlh Ni', 'Chhan', 'Status']], body: leaveData, styles: { fontSize: 10, cellPadding: 3 }, headStyles: { fillColor: [2, 132, 199] } }); doc.save("Bethel_Zirlai_Chawlh.pdf");
             } catch (error) { alert("Harsatna: " + error.message); }
         }
         
-        window.clearAllLeaveRequests = async function() {
-            if (confirm("Paih fai takzet i duh em?")) {
-                try {
-                    const querySnapshot = await getDocs(collection(db, "leave_requests")); let deletePromises = [];
-                    querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "leave_requests", document.id))));
-                    await Promise.all(deletePromises); alert("Paih fai a ni tawh e!");
-                } catch (error) { alert("Harsatna: " + error.message); }
-            }
-        }
+        window.clearAllLeaveRequests = async function() { if (confirm("Paih fai takzet i duh em?")) { try { const querySnapshot = await getDocs(collection(db, "leave_requests")); let deletePromises = []; querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "leave_requests", document.id)))); await Promise.all(deletePromises); alert("Paih fai a ni tawh e!"); } catch (error) { alert("Harsatna: " + error.message); } } }
 
-        // ================= NOTICES & COMMENTS =================
+        // ================= NOTICES =================
         window.publishNotice = async function(event) {
-            event.preventDefault();
-            try {
-                await addDoc(collection(db, "notices"), { title: document.getElementById('notice-title').value, content: document.getElementById('notice-content').value, comments: [], createdAt: serverTimestamp() });
-                alert("I publish hlawhtling e!"); event.target.reset();
-            } catch (error) { alert("Harsatna: " + error.message); }
+            event.preventDefault(); try { await addDoc(collection(db, "notices"), { title: document.getElementById('notice-title').value, content: document.getElementById('notice-content').value, comments: [], createdAt: serverTimestamp() }); alert("I publish hlawhtling e!"); event.target.reset(); } catch (error) { alert("Harsatna: " + error.message); }
         }
 
-        window.editNotice = async function(noticeId) {
-            const newContent = prompt("Notice thar tur type rawh:");
-            if (newContent !== null && newContent.trim() !== "") {
-                try { await updateDoc(doc(db, "notices", noticeId), { content: newContent }); alert("I siam tha e."); } catch (error) { alert("Harsatna: " + error.message); }
-            }
-        }
-
-        window.deleteNotice = async function(noticeId) {
-            if (confirm("Paih duh takzet em?")) { try { await deleteDoc(doc(db, "notices", noticeId)); alert("Paih a ni tawh e."); } catch (error) { alert("Harsatna: " + error.message); } }
-        }
+        window.editNotice = async function(noticeId) { const newContent = prompt("Notice thar tur type rawh:"); if (newContent !== null && newContent.trim() !== "") { try { await updateDoc(doc(db, "notices", noticeId), { content: newContent }); alert("I siam tha e."); } catch (error) { alert("Harsatna: " + error.message); } } }
+        window.deleteNotice = async function(noticeId) { if (confirm("Paih duh takzet em?")) { try { await deleteDoc(doc(db, "notices", noticeId)); alert("Paih a ni tawh e."); } catch (error) { alert("Harsatna: " + error.message); } } }
 
         window.postComment = async function(noticeId) {
             const inputField = document.getElementById(`comment-input-${noticeId}`); const commentText = inputField.value.trim();
             if (!commentText) { alert("Comment ziak phawt rawh!"); return; }
-            try {
-                await updateDoc(doc(db, "notices", noticeId), { comments: arrayUnion({ studentName: window.currentStudent.name, text: commentText, date: new Date().toLocaleString() }) });
-                inputField.value = ''; alert("Post a ni e!");
-            } catch (error) { alert("Harsatna: " + error.message); }
+            try { await updateDoc(doc(db, "notices", noticeId), { comments: arrayUnion({ studentName: window.currentStudent.name, text: commentText, date: new Date().toLocaleString() }) }); inputField.value = ''; alert("Post a ni e!"); } catch (error) { alert("Harsatna: " + error.message); }
         }
 
         window.adminPostComment = async function(noticeId) {
             const inputField = document.getElementById(`admin-comment-input-${noticeId}`); const commentText = inputField.value.trim();
             if (!commentText) { alert("Reply tur ziak phawt rawh!"); return; }
-            try {
-                await updateDoc(doc(db, "notices", noticeId), { comments: arrayUnion({ studentName: "Zirtirtu (Admin)", text: commentText, date: new Date().toLocaleString() }) });
-                inputField.value = ''; alert("Reply post a ni e!");
-            } catch (error) { alert("Harsatna: " + error.message); }
+            try { await updateDoc(doc(db, "notices", noticeId), { comments: arrayUnion({ studentName: "Zirtirtu (Admin)", text: commentText, date: new Date().toLocaleString() }) }); inputField.value = ''; alert("Reply post a ni e!"); } catch (error) { alert("Harsatna: " + error.message); }
         }
 
         onSnapshot(query(collection(db, "notices"), orderBy("createdAt", "desc")), (snapshot) => {
@@ -1288,7 +1169,6 @@
                         });
                         commentsHTML += '</div>';
                     }
-
                     let safeTitle = data.title ? data.title.replace(/'/g, "\\'") : '';
                     adminList.innerHTML += `<div class="notice-box"><h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4><p style="margin-bottom: 10px; color: #475569;">${data.content}</p>${commentsHTML}<div style="margin-top: 12px; display: flex; gap: 10px;"><input type="text" id="admin-comment-input-${noticeId}" placeholder="Comment chhanna (Reply)..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;"><button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="adminPostComment('${noticeId}')">Reply</button></div><div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;"><button class="btn btn-whatsapp" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="shareNoticeWhatsApp('${safeTitle}')">📲 WhatsApp-ah Share-na</button><button class="btn btn-primary" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="editNotice('${noticeId}')">Edit Notice</button><button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="deleteNotice('${noticeId}')">Paih</button></div></div>`;
                     studentList.innerHTML += `<div class="notice-box"><h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4><p style="margin-bottom: 10px; color: #475569;">${data.content}</p>${commentsHTML}<div style="margin-top: 12px; display: flex; gap: 10px;"><input type="text" id="comment-input-${noticeId}" placeholder="Comment ziahna..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;"><button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="postComment('${noticeId}')">Post</button></div></div>`;
@@ -1299,12 +1179,8 @@
         // ================= SHARED LINKS =================
         window.shareLink = async function(event) {
             event.preventDefault();
-            try {
-                await addDoc(collection(db, "shared_links"), { type: document.getElementById('link-type').value, fileName: document.getElementById('link-name').value, url: document.getElementById('link-url').value, createdAt: serverTimestamp() });
-                alert("Hlawhtling takin i sem e! A sira WhatsApp icon hmeh khan group-ah i thawn thei ang."); event.target.reset(); 
-            } catch (error) { alert("Harsatna: " + error.message); }
+            try { await addDoc(collection(db, "shared_links"), { type: document.getElementById('link-type').value, fileName: document.getElementById('link-name').value, url: document.getElementById('link-url').value, createdAt: serverTimestamp() }); alert("Hlawhtling takin i sem e! A sira WhatsApp icon hmeh khan group-ah i thawn thei ang."); event.target.reset(); } catch (error) { alert("Harsatna: " + error.message); }
         }
-
         window.deleteLink = async function(docId) { if(confirm("Paih duh takzet em?")) { try { await deleteDoc(doc(db, "shared_links", docId)); } catch(error) { alert("Harsatna: " + error.message); } } }
 
         onSnapshot(query(collection(db, "shared_links"), orderBy("createdAt", "desc")), (snapshot) => {
@@ -1314,23 +1190,15 @@
             else {
                 snapshot.forEach((docSnap) => {
                     let data = docSnap.data(); let icon = '🔗'; let color = '#333'; let btnText = 'Hawng Rawh'; let finalUrl = data.url;
-                    if (data.type === 'PDF Note') { 
-                        icon = '📕'; color = '#dc2626'; 
-                        let match = finalUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-                        if(match && match[1]) { finalUrl = `https://drive.google.com/uc?export=download&id=${match[1]}`; btnText = 'Download'; }
-                    }
+                    if (data.type === 'PDF Note') { icon = '📕'; color = '#dc2626'; let match = finalUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/); if(match && match[1]) { finalUrl = `https://drive.google.com/uc?export=download&id=${match[1]}`; btnText = 'Download'; } }
                     else if (data.type === 'GitHub Project') { 
                         icon = '💻'; color = '#111827'; 
                         if (window.currentStudent && window.currentStudent.enrollment) {
-                            try {
-                                let urlObj = new URL(finalUrl); urlObj.searchParams.set('enrollment', window.currentStudent.enrollment); urlObj.searchParams.set('name', window.currentStudent.name); finalUrl = urlObj.toString();
-                            } catch(e) {
-                                let separator = finalUrl.includes('?') ? '&' : '?'; finalUrl = `${finalUrl}${separator}enrollment=${window.currentStudent.enrollment}&name=${encodeURIComponent(window.currentStudent.name)}`;
-                            }
+                            try { let urlObj = new URL(finalUrl); urlObj.searchParams.set('enrollment', window.currentStudent.enrollment); urlObj.searchParams.set('name', window.currentStudent.name); finalUrl = urlObj.toString(); } 
+                            catch(e) { let separator = finalUrl.includes('?') ? '&' : '?'; finalUrl = `${finalUrl}${separator}enrollment=${window.currentStudent.enrollment}&name=${encodeURIComponent(window.currentStudent.name)}`; }
                         }
                     }
                     else if (data.type === 'Google Form') { icon = '📝'; color = '#16a34a'; } else if (data.type === 'YouTube Video') { icon = '▶️'; color = '#2563eb'; }
-                    
                     let safeFileName = data.fileName ? data.fileName.replace(/'/g, "\\'") : ''; let safeType = data.type ? data.type.replace(/'/g, "\\'") : '';
                     adminContainer.innerHTML += `<div class="list-row"><div class="list-row-info"><b style="font-size: 14px;">${data.fileName}</b><br><span style="font-size: 12px; color: gray;">(${data.type})</span></div><div style="display: flex; gap: 5px;"><button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Share-na" onclick="shareMaterialWhatsApp('${safeFileName}', '${safeType}')">📲</button><button class="btn btn-danger btn-icon" title="Paih" onclick="deleteLink('${docSnap.id}')">✕</button></div></div>`;
                     studentContainer.innerHTML += `<div class="shared-link-box"><p style="margin-bottom: 0; font-weight: bold; color: ${color}; font-size: 15px;">${icon} ${data.fileName}</p><a href="${finalUrl}" target="_blank" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">${btnText}</a></div>`;
@@ -1339,12 +1207,7 @@
         });
 
         // ================= DELETE STUDENT =================
-        window.deleteStudent = async function(enrollment) {
-            if(confirm(`Enrollment No: ${enrollment} hi i paih duh takzet em?`)) {
-                try { await deleteDoc(doc(db, "students", enrollment)); alert("Zirlai hi paih a ni tawh e."); } 
-                catch(error) { alert("Paih naah harsatna: " + error.message); }
-            }
-        }
+        window.deleteStudent = async function(enrollment) { if(confirm(`Enrollment No: ${enrollment} hi i paih duh takzet em?`)) { try { await deleteDoc(doc(db, "students", enrollment)); alert("Zirlai hi paih a ni tawh e."); } catch(error) { alert("Paih naah harsatna: " + error.message); } } }
 
         // ================= LOGIN LOGIC =================
         window.loginStudent = async function(event) {
@@ -1354,12 +1217,10 @@
                 const q = query(collection(db, "students"), where("enrollment", "==", enrollment), where("dob", "==", dob));
                 const snap = await getDocs(q);
                 if (!snap.empty) {
-                    snap.forEach((d) => window.currentStudent.name = d.data().name);
-                    window.currentStudent.enrollment = enrollment;
+                    snap.forEach((d) => window.currentStudent.name = d.data().name); window.currentStudent.enrollment = enrollment;
                     await updateDoc(doc(db, "students", String(enrollment)), { lastLoginDate: todayISODate });
                     document.getElementById('student-welcome-title').innerText = `Zirlai Portal - ${window.currentStudent.name}`;
-                    const ptsUI = document.getElementById('student-att-points');
-                    if(ptsUI) ptsUI.innerText = (attendancePointsMap[enrollment] || 0) + " Points";
+                    const ptsUI = document.getElementById('student-att-points'); if(ptsUI) ptsUI.innerText = (attendancePointsMap[enrollment] || 0) + " Points";
                     renderStudentFeePortal(); loadStudentLeaves(enrollment); showSection('student-portal-section');
                 } else { alert("A dik lo! Teacher rawn rawh."); }
             } catch (e) { alert("Harsatna: " + e.message); }
