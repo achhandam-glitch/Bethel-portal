@@ -551,7 +551,7 @@
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
-        // ================= FEE MANAGEMENT LOGIC (EDIT/DELETE ADDED) =================
+        // ================= FEE MANAGEMENT LOGIC =================
         onSnapshot(collection(db, "fees"), (snapshot) => {
             feeDataMap = {};
             snapshot.forEach(docSnap => {
@@ -656,7 +656,7 @@
             let formattedDate = `${dParts[2]}-${dParts[1]}-${dParts[0]}`;
 
             let record = feeDataMap[enrollment];
-            let payments = [...record.payments]; // Copy array
+            let payments = [...record.payments]; 
             
             payments[index] = {
                 ...payments[index],
@@ -719,7 +719,7 @@
                     totalFee = feeRecord.totalFee || 12000;
                     if(feeRecord.payments && feeRecord.payments.length > 0) {
                         totalPaid = feeRecord.payments.reduce((sum, p) => sum + parseFloat(p.amount), 0);
-                        // Edit & Delete icons added here
+                        // Edit & Delete icons
                         historyStr = feeRecord.payments.map((p, idx) => `
                             <div style="font-size: 11px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">
                                 <span>• ${p.date}: <b>₹${p.amount}</b> (${p.method})</span>
@@ -877,7 +877,7 @@
             }
 
             allStudentsList.forEach(s => {
-                const status = existingAtt[s.enrollment] || 'Present'; 
+                const status = existingAtt[s.enrollment] || 'Absent'; // Default to Absent
                 tbody.innerHTML += `
                     <tr class="att-row">
                         <td class="att-enrollment">${s.enrollment}</td>
