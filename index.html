@@ -607,6 +607,9 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
+        
+        // AUTO-REFRESH VERSION CHECK (Hemi number hi code i thlak dawn apiangin i ti-sang zel dawn nia, entirnan: 1.0 -> 1.1)
+        const APP_VERSION = "1.0"; 
 
         window.currentStudent = { enrollment: '', name: '' };
         let studentLeaveUnsubscribe = null; 
@@ -620,12 +623,22 @@
         document.getElementById('attendance-date').value = todayISODate;
         document.getElementById('fee-date').value = todayISODate;
 
+        // Auto Version Check on load
+        (function checkVersion() {
+            let savedVersion = localStorage.getItem('bcc_portal_version');
+            if (!savedVersion) {
+                localStorage.setItem('bcc_portal_version', APP_VERSION);
+            } else if (savedVersion !== APP_VERSION) {
+                localStorage.setItem('bcc_portal_version', APP_VERSION);
+                window.location.reload(true); // Auto-refresh page without log out
+            }
+        })();
+
         window.showSection = function(sectionId) {
             const sections = ['home-section', 'student-login-section', 'admin-login-section', 'teacher-dashboard-section', 'student-portal-section'];
             sections.forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(sectionId).classList.remove('hidden');
             
-            // If opening admin dashboard, ensure menu view is shown and content is hidden
             if(sectionId === 'teacher-dashboard-section') {
                 document.getElementById('admin-menu-view').style.display = 'block';
                 document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.remove('active-content'));
@@ -639,7 +652,6 @@
             }
         }
 
-        // ================= MENU & CONTENT TOGGLE LOGIC (NEW) =================
         window.openAdminTab = function(tabId) {
             document.getElementById('admin-menu-view').style.display = 'none';
             document.querySelectorAll('.admin-tab-content').forEach(el => { el.classList.remove('active-content'); });
