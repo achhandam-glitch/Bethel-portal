@@ -328,7 +328,7 @@
                             <input type="date" id="attendance-date" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #8b5cf6;" onchange="loadAttendanceForDate()">
                         </div>
                         
-                        <!-- Vawiina Present / Report / Absent List Card Added Here -->
+                        <!-- Vawiina Present / Report / Absent List Card -->
                         <div style="background: #faf5ff; border: 1px solid #e9d5ff; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
                             <h4 style="font-size: 15px; color: #6b21a8; margin-bottom: 10px; border-bottom: 1px solid #e9d5ff; padding-bottom: 5px;">📋 Vawiin Attendance Summary & Lists</h4>
                             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; font-size: 13px;">
@@ -628,7 +628,7 @@
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
         // AUTO-REFRESH VERSION CHECK
-        const APP_VERSION = "2.0"; 
+        const APP_VERSION = "2.1"; 
 
         window.currentStudent = { enrollment: '', name: '' };
         let studentLeaveUnsubscribe = null; 
@@ -926,8 +926,7 @@
             let absentList = [];
 
             allStudentsList.forEach(s => {
-                let status = existingAtt[s.enrollment] !== undefined ? existingAtt[s.enrollment] : 'Absent'; 
-                if(!existingAtt[s.enrollment]) { status = 'Absent'; }
+                let status = existingAtt[s.enrollment] !== undefined ? existingAtt[s.enrollment] : ''; 
 
                 let presentChecked = (status === 'Present') ? 'checked' : '';
                 let reportedChecked = (status === 'Reported') ? 'checked' : '';
@@ -970,13 +969,12 @@
             let absentList = [];
 
             allStudentsList.forEach(s => {
-                const radios = document.getElementsByName(`att_${s.enrollment}`);
-                let val = 'Absent';
+                const radios = document.getElementsByName(`att_${s.enrollment}`); let val = '';
                 for(let r of radios) { if(r.checked) val = r.value; }
 
                 if (val === 'Present') presentList.push(s.name);
                 else if (val === 'Reported') reportList.push(s.name);
-                else absentList.push(s.name);
+                else absentList.push(s.name); // Engmah hmeh loh pawhin absent-ah chhiar tel vek a ni ang
             });
 
             document.getElementById('count-present').innerText = presentList.length;
