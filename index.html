@@ -557,7 +557,7 @@
                 <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px;" onclick="showSection('home-section')">Log Out</button>
             </div>
 
-            <!-- FEE REPORT (STUDENT) - Total fee leh Ba ti boin Fee pek zat chauh a lang tawh ang -->
+            <!-- FEE REPORT (STUDENT) - Fee pek zat chauh a lang ang -->
             <div class="dashboard-stat-card" style="background: #fffbeb; border-color: #fde68a; display: block; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fde68a;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <p style="color: #b45309; font-weight: 600; font-size: 16px; margin: 0;">I Fee Pek Dinhmun:</p>
@@ -634,7 +634,7 @@
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
         // AUTO-REFRESH VERSION CHECK
-        const APP_VERSION = "2.4"; 
+        const APP_VERSION = "2.5"; 
 
         window.currentStudent = { enrollment: '', name: '' };
         let studentLeaveUnsubscribe = null; 
@@ -1327,20 +1327,42 @@
         // ================= DELETE STUDENT =================
         window.deleteStudent = async function(enrollment) { if(confirm(`Enrollment No: ${enrollment} hi i paih duh takzet em?`)) { try { await deleteDoc(doc(db, "students", enrollment)); alert("Zirlai hi paih a ni tawh e."); } catch(error) { alert("Paih naah harsatna: " + error.message); } } }
 
-        // ================= LOGIN LOGIC =================
+        // ================= LOGIN LOGIC (Flexible DOB Format: dd/mm/yyyy or dd-mm-yyyy) =================
         window.loginStudent = async function(event) {
             event.preventDefault();
-            const enrollment = document.getElementById('login-enrollment').value.trim(); const dob = document.getElementById('login-dob').value.trim();
+            const enrollment = document.getElementById('login-enrollment').value.trim(); 
+            let dobInput = document.getElementById('login-dob').value.trim();
+            
+            // Format input DOB: slash (/) zawng zawng dash (-) ah convert vek tur
+            dobInput = dobInput.replace(/\//g, '-');
+
             try {
-                const q = query(collection(db, "students"), where("enrollment", "==", enrollment), where("dob", "==", dob));
+                // Database-a zirlai enrollment leh DOB zawnna
+                const q = query(collection(db, "students"), where("enrollment", "==", enrollment));
                 const snap = await getDocs(q);
+                
                 if (!snap.empty) {
-                    snap.forEach((d) => window.currentStudent.name = d.data().name); window.currentStudent.enrollment = enrollment;
-                    await updateDoc(doc(db, "students", String(enrollment)), { lastLoginDate: todayISODate });
-                    document.getElementById('student-welcome-title').innerText = `Zirlai Portal - ${window.currentStudent.name}`;
-                    const ptsUI = document.getElementById('student-att-points'); if(ptsUI) ptsUI.innerText = (attendancePointsMap[enrollment] || 0) + " Points";
-                    renderStudentFeePortal(); loadStudentLeaves(enrollment); showSection('student-portal-section');
-                } else { alert("A dik lo! Teacher rawn rawh."); }
+                    let matched = false;
+                    snap.forEach((d) => {
+                        let dbDob = String(d.data().dob).trim().replace(/\//g, '-');
+                        if (dbDob === dobInput) {
+                            matched = true;
+                            window.currentStudent.name = d.data().name;
+                        }
+                    });
+
+                    if (matched) {
+                        window.currentStudent.enrollment = enrollment;
+                        await updateDoc(doc(db, "students", String(enrollment)), { lastLoginDate: todayISODate });
+                        document.getElementById('student-welcome-title').innerText = `Zirlai Portal - ${window.currentStudent.name}`;
+                        const ptsUI = document.getElementById('student-att-points'); if(ptsUI) ptsUI.innerText = (attendancePointsMap[enrollment] || 0) + " Points";
+                        renderStudentFeePortal(); loadStudentLeaves(enrollment); showSection('student-portal-section');
+                    } else {
+                        alert("Date of birth a dik lo! Entirnan: 15-05-2005 emaw 15/05/2005");
+                    }
+                } else { 
+                    alert("Enrollment Number a dik lo! Teacher rawn rawh."); 
+                }
             } catch (e) { alert("Harsatna: " + e.message); }
         }
 
