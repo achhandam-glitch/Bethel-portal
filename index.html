@@ -609,7 +609,7 @@
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
         // AUTO-REFRESH VERSION CHECK (Hemi number hi code i thlak dawn apiangin i ti-sang zel dawn nia, entirnan: 1.0 -> 1.1)
-        const APP_VERSION = "1.0"; 
+        const APP_VERSION = "1.1"; 
 
         window.currentStudent = { enrollment: '', name: '' };
         let studentLeaveUnsubscribe = null; 
@@ -903,6 +903,7 @@
             if(allStudentsList.length === 0) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">Zirlai in-register an la awm lo.</td></tr>'; return; }
 
             allStudentsList.forEach(s => {
+                // Absent hi default-a lo hmet sa turin a chunga database data a awm lo a nih chuan 'Absent' kan hmang ang
                 const status = existingAtt[s.enrollment] || 'Absent'; 
                 tbody.innerHTML += `
                     <tr class="att-row">
