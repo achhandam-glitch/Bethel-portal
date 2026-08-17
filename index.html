@@ -609,7 +609,7 @@
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
         // AUTO-REFRESH VERSION CHECK
-        const APP_VERSION = "1.8"; 
+        const APP_VERSION = "1.9"; 
 
         window.currentStudent = { enrollment: '', name: '' };
         let studentLeaveUnsubscribe = null; 
@@ -903,8 +903,11 @@
             if(allStudentsList.length === 0) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">Zirlai in-register an la awm lo.</td></tr>'; return; }
 
             allStudentsList.forEach(s => {
-                // Database-a status awm sa dik tak (Present, Reported, Absent) lak a ni. A awm lo a nih chuan 'Absent' hi default-in a in-check ang.
-                const status = existingAtt[s.enrollment] !== undefined ? existingAtt[s.enrollment] : 'Absent'; 
+                let status = existingAtt[s.enrollment] !== undefined ? existingAtt[s.enrollment] : 'Absent'; 
+
+                let presentChecked = (status === 'Present') ? 'checked' : '';
+                let reportedChecked = (status === 'Reported') ? 'checked' : '';
+                let absentChecked = (status === 'Absent' || !existingAtt[s.enrollment]) ? 'checked' : '';
 
                 tbody.innerHTML += `
                     <tr class="att-row">
@@ -912,9 +915,9 @@
                         <td class="att-name"><b>${s.name}</b></td>
                         <td>
                             <div class="radio-group">
-                                <label class="radio-present"><input type="radio" name="att_${s.enrollment}" value="Present" ${status === 'Present' ? 'checked' : ''}> Present (${pts.p})</label>
-                                <label class="radio-report"><input type="radio" name="att_${s.enrollment}" value="Reported" ${status === 'Reported' ? 'checked' : ''}> Report (${pts.r})</label>
-                                <label class="radio-absent"><input type="radio" name="att_${s.enrollment}" value="Absent" ${status === 'Absent' ? 'checked' : ''}> Absent (${pts.a})</label>
+                                <label class="radio-present"><input type="radio" name="att_${s.enrollment}" value="Present" ${presentChecked}> Present (${pts.p})</label>
+                                <label class="radio-report"><input type="radio" name="att_${s.enrollment}" value="Reported" ${reportedChecked}> Report (${pts.r})</label>
+                                <label class="radio-absent"><input type="radio" name="att_${s.enrollment}" value="Absent" ${absentChecked}> Absent (${pts.a})</label>
                             </div>
                         </td>
                     </tr>`;
