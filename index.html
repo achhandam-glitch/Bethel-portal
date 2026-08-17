@@ -91,6 +91,10 @@
 
         .admin-tab-content { display: none; }
         .admin-tab-content.active-content { display: block; animation: fadeIn 0.3s; }
+
+        .student-tab-content { display: none; }
+        .student-tab-content.active-content { display: block; animation: fadeIn 0.3s; }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         .back-menu-bar { margin-bottom: 15px; }
@@ -541,69 +545,106 @@
 
         <!-- 5. ZIRLAI DASHBOARD (STUDENT PORTAL) -->
         <section id="student-portal-section" class="hidden">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="border:none; margin:0;" id="student-welcome-title">Zirlai Portal</h2>
-                <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px;" onclick="showSection('home-section')">Log Out</button>
-            </div>
-
-            <!-- FEE REPORT (STUDENT) - Fee pek zat chauh a lang ang -->
-            <div class="dashboard-stat-card" style="background: #fffbeb; border-color: #fde68a; display: block; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fde68a;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <p style="color: #b45309; font-weight: 600; font-size: 16px; margin: 0;">I Fee Pek Dinhmun:</p>
-                    <div id="student-fee-paid" style="font-size: 20px; font-weight: bold; color: #16a34a;">Pek Tawh: ₹0</div>
-                </div>
-                <div id="student-fee-history" style="margin-top: 15px; border-top: 1px solid #fde68a; padding-top: 10px;">
-                    <!-- Fee History Injects Here -->
-                </div>
-            </div>
-
-            <!-- ATTENDANCE POINTS (STUDENT) -->
-            <div style="background: #f3e8ff; border: 1px solid #d8b4fe; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-                <p style="color: #6b21a8; font-weight: 600; font-size: 16px; margin: 0;">Total Attendance Points:</p>
-                <div style="font-size: 28px; font-weight: bold; color: #7e22ce;" id="student-att-points">0 Points</div>
-            </div>
-
-            <div class="form-grid">
-                <div class="card">
-                    <h3>Chawlh Report-na</h3>
-                    <form onsubmit="applyLeave(event)">
-                        <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <div class="input-group">
-                                <label>Chawlh Ṭan Ni (Start Date)</label>
-                                <input type="date" id="leave-start-date" required>
-                            </div>
-                            <div class="input-group">
-                                <label>Chawlh Tawp Ni (End Date)</label>
-                                <input type="date" id="leave-end-date" required>
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <label>Chawlh chhan (Reason)</label>
-                            <textarea id="leave-reason" rows="2" placeholder="Sawi fiahna tawi..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Report thehlut rawh</button>
-                    </form>
+            
+            <!-- STUDENT MAIN MENU VIEW -->
+            <div id="student-menu-view">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                    <h2 style="border:none; margin:0;" id="student-welcome-title">Zirlai Portal</h2>
+                    <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px; margin:0;" onclick="showSection('home-section')">Log Out</button>
                 </div>
 
-                <div class="card">
-                    <h3>I Chawlh In-Report-te</h3>
-                    <div id="student-leave-history" style="max-height: 300px; overflow-y: auto;">
-                        <p style="color: gray;">Report i la nei lo.</p>
+                <div class="admin-sidebar">
+                    <h4 style="font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Zirlai Menu</h4>
+                    <div class="menu-box">
+                        <button class="menu-btn" onclick="openStudentTab('student-tab-status')">📊 Zirlai Dinhmun (Fee & Attendance)</button>
+                        <button class="menu-btn" onclick="openStudentTab('student-tab-leave')">📝 Chawlh Dilna & In-Report-na</button>
+                        <button class="menu-btn" onclick="openStudentTab('student-tab-notice')">📢 Notice Board</button>
+                        <button class="menu-btn" onclick="openStudentTab('student-tab-materials')">📚 Study Materials, Assignments & Tests</button>
                     </div>
                 </div>
             </div>
 
-            <div class="card">
-                <h3>Notice Board</h3>
-                <div id="student-notice-list" style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
-                    <p style="color: gray;">Notice a la awm rih lo...</p>
+            <!-- STUDENT TAB CONTENT VIEWS -->
+            <div id="student-content-view">
+
+                <!-- TAB 1: STATUS (Fee & Attendance) -->
+                <div id="student-tab-status" class="student-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    
+                    <!-- FEE REPORT (STUDENT) - Fee pek zat chauh a lang ang -->
+                    <div class="dashboard-stat-card" style="background: #fffbeb; border-color: #fde68a; display: block; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fde68a;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <p style="color: #b45309; font-weight: 600; font-size: 16px; margin: 0;">I Fee Pek Dinhmun:</p>
+                            <div id="student-fee-paid" style="font-size: 20px; font-weight: bold; color: #16a34a;">Pek Tawh: ₹0</div>
+                        </div>
+                        <div id="student-fee-history" style="margin-top: 15px; border-top: 1px solid #fde68a; padding-top: 10px;">
+                            <!-- Fee History Injects Here -->
+                        </div>
+                    </div>
+
+                    <!-- ATTENDANCE POINTS (STUDENT) -->
+                    <div style="background: #f3e8ff; border: 1px solid #d8b4fe; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <p style="color: #6b21a8; font-weight: 600; font-size: 16px; margin: 0;">Total Attendance Points:</p>
+                        <div style="font-size: 28px; font-weight: bold; color: #7e22ce;" id="student-att-points">0 Points</div>
+                    </div>
                 </div>
+
+                <!-- TAB 2: LEAVE REQUESTS -->
+                <div id="student-tab-leave" class="student-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="form-grid">
+                        <div class="card" style="margin-bottom: 0;">
+                            <h3>Chawlh Report-na</h3>
+                            <form onsubmit="applyLeave(event)">
+                                <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    <div class="input-group">
+                                        <label>Chawlh Ṭan Ni (Start Date)</label>
+                                        <input type="date" id="leave-start-date" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Chawlh Tawp Ni (End Date)</label>
+                                        <input type="date" id="leave-end-date" required>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <label>Chawlh chhan (Reason)</label>
+                                    <textarea id="leave-reason" rows="2" placeholder="Sawi fiahna tawi..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Report thehlut rawh</button>
+                            </form>
+                        </div>
+
+                        <div class="card" style="margin-bottom: 0;">
+                            <h3>I Chawlh In-Report-te</h3>
+                            <div id="student-leave-history" style="max-height: 300px; overflow-y: auto;">
+                                <p style="color: gray;">Report i la nei lo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: NOTICE BOARD -->
+                <div id="student-tab-notice" class="student-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="card" style="margin-bottom: 0;">
+                        <h3>Notice Board</h3>
+                        <div id="student-notice-list" style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
+                            <p style="color: gray;">Notice a la awm rih lo...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 4: STUDY MATERIALS & ASSIGNMENTS -->
+                <div id="student-tab-materials" class="student-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="card" style="margin-bottom: 0;" id="student-links-container">
+                        <h3>Study Material, Assignment, Test / Exam</h3>
+                        <p style="color: gray;">Database atangin a rawn in-load mek...</p>
+                    </div>
+                </div>
+
             </div>
 
-            <div class="card" id="student-links-container">
-                <h3>Study Material, Assignment, Test / Exam</h3>
-                <p style="color: gray;">Database atangin a rawn in-load mek...</p>
-            </div>
         </section>
 
     </div>
@@ -629,7 +670,7 @@
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
         // AUTO-REFRESH VERSION CHECK
-        const APP_VERSION = "2.8"; 
+        const APP_VERSION = "2.9"; 
 
         window.currentStudent = { enrollment: '', name: '' };
         let studentLeaveUnsubscribe = null; 
@@ -665,6 +706,11 @@
                 document.getElementById('admin-menu-view').style.display = 'block';
                 document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.remove('active-content'));
             }
+
+            if(sectionId === 'student-portal-section') {
+                document.getElementById('student-menu-view').style.display = 'block';
+                document.querySelectorAll('.student-tab-content').forEach(el => el.classList.remove('active-content'));
+            }
             
             window.scrollTo(0, 0);
             
@@ -684,6 +730,20 @@
         window.backToMenu = function() {
             document.querySelectorAll('.admin-tab-content').forEach(el => { el.classList.remove('active-content'); });
             document.getElementById('admin-menu-view').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        // Student Navigation Tabs
+        window.openStudentTab = function(tabId) {
+            document.getElementById('student-menu-view').style.display = 'none';
+            document.querySelectorAll('.student-tab-content').forEach(el => { el.classList.remove('active-content'); });
+            document.getElementById(tabId).classList.add('active-content');
+            window.scrollTo(0, 0);
+        }
+
+        window.backToStudentMenu = function() {
+            document.querySelectorAll('.student-tab-content').forEach(el => { el.classList.remove('active-content'); });
+            document.getElementById('student-menu-view').style.display = 'block';
             window.scrollTo(0, 0);
         }
 
