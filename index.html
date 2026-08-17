@@ -328,21 +328,26 @@
                             <input type="date" id="attendance-date" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #8b5cf6;" onchange="loadAttendanceForDate()">
                         </div>
                         
-                        <!-- Vawiina Present / Report / Absent List Card -->
-                        <div style="background: #faf5ff; border: 1px solid #e9d5ff; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                            <h4 style="font-size: 15px; color: #6b21a8; margin-bottom: 10px; border-bottom: 1px solid #e9d5ff; padding-bottom: 5px;">📋 Vawiin Attendance Summary & Lists</h4>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; font-size: 13px;">
-                                <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #16a34a;">
-                                    <b style="color: #15803d;">Present: <span id="count-present">0</span></b>
-                                    <div id="list-present" style="margin-top: 5px; color: #334155; max-height: 100px; overflow-y: auto;">-</div>
-                                </div>
-                                <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #f59e0b;">
-                                    <b style="color: #b45309;">Report: <span id="count-report">0</span></b>
-                                    <div id="list-report" style="margin-top: 5px; color: #334155; max-height: 100px; overflow-y: auto;">-</div>
-                                </div>
-                                <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #ef4444;">
-                                    <b style="color: #dc2626;">Absent: <span id="count-absent">0</span></b>
-                                    <div id="list-absent" style="margin-top: 5px; color: #334155; max-height: 100px; overflow-y: auto;">-</div>
+                        <!-- Toggle Summary & List Card -->
+                        <div style="background: #faf5ff; border: 1px solid #e9d5ff; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleSummaryBox()">
+                                <h4 style="font-size: 14px; color: #6b21a8; margin: 0;">📋 Vawiin Attendance Summary (Hmet rawh)</h4>
+                                <span id="summary-toggle-icon" style="font-weight: bold; color: #6b21a8;">▼ Khup / Hawng</span>
+                            </div>
+                            <div id="summary-content-box" style="margin-top: 10px; display: none;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; font-size: 13px;">
+                                    <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #16a34a;">
+                                        <b style="color: #15803d;">Present: <span id="count-present">0</span></b>
+                                        <div id="list-present" style="margin-top: 5px; color: #334155; max-height: 80px; overflow-y: auto;">-</div>
+                                    </div>
+                                    <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #f59e0b;">
+                                        <b style="color: #b45309;">Report: <span id="count-report">0</span></b>
+                                        <div id="list-report" style="margin-top: 5px; color: #334155; max-height: 80px; overflow-y: auto;">-</div>
+                                    </div>
+                                    <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #ef4444;">
+                                        <b style="color: #dc2626;">Absent: <span id="count-absent">0</span></b>
+                                        <div style="margin-top: 5px; color: #334155; font-size: 12px;">(Zirlai kal lo zawng zawng)</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -628,7 +633,7 @@
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
         // AUTO-REFRESH VERSION CHECK
-        const APP_VERSION = "2.1"; 
+        const APP_VERSION = "2.2"; 
 
         window.currentStudent = { enrollment: '', name: '' };
         let studentLeaveUnsubscribe = null; 
@@ -682,6 +687,19 @@
             document.querySelectorAll('.admin-tab-content').forEach(el => { el.classList.remove('active-content'); });
             document.getElementById('admin-menu-view').style.display = 'block';
             window.scrollTo(0, 0);
+        }
+
+        // Toggle Summary Box Function
+        window.toggleSummaryBox = function() {
+            const box = document.getElementById('summary-content-box');
+            const icon = document.getElementById('summary-toggle-icon');
+            if (box.style.display === 'none') {
+                box.style.display = 'block';
+                icon.innerText = '▲ Khup / Hawng';
+            } else {
+                box.style.display = 'none';
+                icon.innerText = '▼ Khup / Hawng';
+            }
         }
 
         // ================= WHATSAPP SHARE FUNCTIONS =================
@@ -923,7 +941,7 @@
 
             let presentList = [];
             let reportList = [];
-            let absentList = [];
+            let absentCount = 0;
 
             allStudentsList.forEach(s => {
                 let status = existingAtt[s.enrollment] !== undefined ? existingAtt[s.enrollment] : ''; 
@@ -934,7 +952,7 @@
 
                 if (status === 'Present') presentList.push(s.name);
                 else if (status === 'Reported') reportList.push(s.name);
-                else absentList.push(s.name);
+                else absentCount++; // Absent ho chu zat chauh chhiar tel a ni ang
 
                 tbody.innerHTML += `
                     <tr class="att-row">
@@ -956,8 +974,7 @@
             document.getElementById('count-report').innerText = reportList.length;
             document.getElementById('list-report').innerText = reportList.length > 0 ? reportList.join(', ') : 'A la awm lo';
             
-            document.getElementById('count-absent').innerText = absentList.length;
-            document.getElementById('list-absent').innerText = absentList.length > 0 ? absentList.join(', ') : 'A la awm lo';
+            document.getElementById('count-absent').innerText = absentCount;
 
             filterAttendance();
         }
@@ -966,7 +983,7 @@
         window.updateAttendanceSummary = function() {
             let presentList = [];
             let reportList = [];
-            let absentList = [];
+            let absentCount = 0;
 
             allStudentsList.forEach(s => {
                 const radios = document.getElementsByName(`att_${s.enrollment}`); let val = '';
@@ -974,7 +991,7 @@
 
                 if (val === 'Present') presentList.push(s.name);
                 else if (val === 'Reported') reportList.push(s.name);
-                else absentList.push(s.name); // Engmah hmeh loh pawhin absent-ah chhiar tel vek a ni ang
+                else absentCount++;
             });
 
             document.getElementById('count-present').innerText = presentList.length;
@@ -983,8 +1000,7 @@
             document.getElementById('count-report').innerText = reportList.length;
             document.getElementById('list-report').innerText = reportList.length > 0 ? reportList.join(', ') : 'A la awm lo';
             
-            document.getElementById('count-absent').innerText = absentList.length;
-            document.getElementById('list-absent').innerText = absentList.length > 0 ? absentList.join(', ') : 'A la awm lo';
+            document.getElementById('count-absent').innerText = absentCount;
         }
 
         window.filterAttendance = function() {
