@@ -608,8 +608,8 @@
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
-        // AUTO-REFRESH VERSION CHECK (Hemi number hi code i thlak dawn apiangin i ti-sang zel dawn nia, entirnan: 1.0 -> 1.1)
-        const APP_VERSION = "1.1"; 
+        // AUTO-REFRESH VERSION CHECK
+        const APP_VERSION = "1.2"; 
 
         window.currentStudent = { enrollment: '', name: '' };
         let studentLeaveUnsubscribe = null; 
@@ -630,7 +630,7 @@
                 localStorage.setItem('bcc_portal_version', APP_VERSION);
             } else if (savedVersion !== APP_VERSION) {
                 localStorage.setItem('bcc_portal_version', APP_VERSION);
-                window.location.reload(true); // Auto-refresh page without log out
+                window.location.reload(true);
             }
         })();
 
@@ -903,8 +903,8 @@
             if(allStudentsList.length === 0) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">Zirlai in-register an la awm lo.</td></tr>'; return; }
 
             allStudentsList.forEach(s => {
-                // Absent hi default-a lo hmet sa turin a chunga database data a awm lo a nih chuan 'Absent' kan hmang ang
-                const status = existingAtt[s.enrollment] || 'Absent'; 
+                // Database-a record awm sa (Present/Reported/Absent) a awm chuan chu chu hman a ni ang, a awm loh chuan 'Absent' hi default-in a lo in-select tawh ang
+                const status = existingAtt[s.enrollment] ? existingAtt[s.enrollment] : 'Absent'; 
                 tbody.innerHTML += `
                     <tr class="att-row">
                         <td class="att-enrollment">${s.enrollment}</td>
