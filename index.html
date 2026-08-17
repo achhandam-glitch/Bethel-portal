@@ -328,6 +328,25 @@
                             <input type="date" id="attendance-date" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #8b5cf6;" onchange="loadAttendanceForDate()">
                         </div>
                         
+                        <!-- Vawiina Present / Report / Absent List Card Added Here -->
+                        <div style="background: #faf5ff; border: 1px solid #e9d5ff; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                            <h4 style="font-size: 15px; color: #6b21a8; margin-bottom: 10px; border-bottom: 1px solid #e9d5ff; padding-bottom: 5px;">📋 Vawiin Attendance Summary & Lists</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; font-size: 13px;">
+                                <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #16a34a;">
+                                    <b style="color: #15803d;">Present: <span id="count-present">0</span></b>
+                                    <div id="list-present" style="margin-top: 5px; color: #334155; max-height: 100px; overflow-y: auto;">-</div>
+                                </div>
+                                <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #f59e0b;">
+                                    <b style="color: #b45309;">Report: <span id="count-report">0</span></b>
+                                    <div id="list-report" style="margin-top: 5px; color: #334155; max-height: 100px; overflow-y: auto;">-</div>
+                                </div>
+                                <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #ef4444;">
+                                    <b style="color: #dc2626;">Absent: <span id="count-absent">0</span></b>
+                                    <div id="list-absent" style="margin-top: 5px; color: #334155; max-height: 100px; overflow-y: auto;">-</div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div style="margin-bottom: 15px;">
                             <input type="text" id="attendance-search" placeholder="🔍 Hming emaw Enrollment No. zawng rawh..." style="width: 100%; padding: 10px; border: 1px solid #c4b5fd; border-radius: 6px; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);" onkeyup="filterAttendance()">
                         </div>
@@ -609,7 +628,7 @@
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
         // AUTO-REFRESH VERSION CHECK
-        const APP_VERSION = "1.9"; 
+        const APP_VERSION = "2.0"; 
 
         window.currentStudent = { enrollment: '', name: '' };
         let studentLeaveUnsubscribe = null; 
@@ -902,19 +921,28 @@
             const tbody = document.getElementById('attendance-list-body'); tbody.innerHTML = '';
             if(allStudentsList.length === 0) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">Zirlai in-register an la awm lo.</td></tr>'; return; }
 
+            let presentList = [];
+            let reportList = [];
+            let absentList = [];
+
             allStudentsList.forEach(s => {
                 let status = existingAtt[s.enrollment] !== undefined ? existingAtt[s.enrollment] : 'Absent'; 
+                if(!existingAtt[s.enrollment]) { status = 'Absent'; }
 
                 let presentChecked = (status === 'Present') ? 'checked' : '';
                 let reportedChecked = (status === 'Reported') ? 'checked' : '';
-                let absentChecked = (status === 'Absent' || !existingAtt[s.enrollment]) ? 'checked' : '';
+                let absentChecked = (status === 'Absent') ? 'checked' : '';
+
+                if (status === 'Present') presentList.push(s.name);
+                else if (status === 'Reported') reportList.push(s.name);
+                else absentList.push(s.name);
 
                 tbody.innerHTML += `
                     <tr class="att-row">
                         <td class="att-enrollment">${s.enrollment}</td>
                         <td class="att-name"><b>${s.name}</b></td>
                         <td>
-                            <div class="radio-group">
+                            <div class="radio-group" onchange="updateAttendanceSummary()">
                                 <label class="radio-present"><input type="radio" name="att_${s.enrollment}" value="Present" ${presentChecked}> Present (${pts.p})</label>
                                 <label class="radio-report"><input type="radio" name="att_${s.enrollment}" value="Reported" ${reportedChecked}> Report (${pts.r})</label>
                                 <label class="radio-absent"><input type="radio" name="att_${s.enrollment}" value="Absent" ${absentChecked}> Absent (${pts.a})</label>
@@ -922,7 +950,43 @@
                         </td>
                     </tr>`;
             });
+
+            document.getElementById('count-present').innerText = presentList.length;
+            document.getElementById('list-present').innerText = presentList.length > 0 ? presentList.join(', ') : 'A la awm lo';
+            
+            document.getElementById('count-report').innerText = reportList.length;
+            document.getElementById('list-report').innerText = reportList.length > 0 ? reportList.join(', ') : 'A la awm lo';
+            
+            document.getElementById('count-absent').innerText = absentList.length;
+            document.getElementById('list-absent').innerText = absentList.length > 0 ? absentList.join(', ') : 'A la awm lo';
+
             filterAttendance();
+        }
+
+        // Real-time summary updater when radio button changes
+        window.updateAttendanceSummary = function() {
+            let presentList = [];
+            let reportList = [];
+            let absentList = [];
+
+            allStudentsList.forEach(s => {
+                const radios = document.getElementsByName(`att_${s.enrollment}`);
+                let val = 'Absent';
+                for(let r of radios) { if(r.checked) val = r.value; }
+
+                if (val === 'Present') presentList.push(s.name);
+                else if (val === 'Reported') reportList.push(s.name);
+                else absentList.push(s.name);
+            });
+
+            document.getElementById('count-present').innerText = presentList.length;
+            document.getElementById('list-present').innerText = presentList.length > 0 ? presentList.join(', ') : 'A la awm lo';
+            
+            document.getElementById('count-report').innerText = reportList.length;
+            document.getElementById('list-report').innerText = reportList.length > 0 ? reportList.join(', ') : 'A la awm lo';
+            
+            document.getElementById('count-absent').innerText = absentList.length;
+            document.getElementById('list-absent').innerText = absentList.length > 0 ? absentList.join(', ') : 'A la awm lo';
         }
 
         window.filterAttendance = function() {
