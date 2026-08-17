@@ -552,15 +552,14 @@
                 <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px;" onclick="showSection('home-section')">Log Out</button>
             </div>
 
-            <!-- FEE REPORT (STUDENT) -->
+            <!-- FEE REPORT (STUDENT) - Ba lang tawh lovin Fee pek zat chauh a lang tawh ang -->
             <div class="dashboard-stat-card" style="background: #fffbeb; border-color: #fde68a; display: block; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fde68a;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <p style="color: #b45309; font-weight: 600; font-size: 16px; margin: 0;">I Fee Dinhmun:</p>
-                    <div style="font-size: 22px; font-weight: bold; color: #d97706;" id="student-fee-balance">Ba: ₹0</div>
+                    <p style="color: #b45309; font-weight: 600; font-size: 16px; margin: 0;">I Fee Pek Dinhmun:</p>
                 </div>
-                <div style="font-size: 14px; color: #78350f; display: flex; justify-content: space-between;">
+                <div style="font-size: 16px; color: #78350f; display: flex; justify-content: space-between;">
                     <span id="student-fee-total">Total: ₹0</span>
-                    <span id="student-fee-paid">Pek Tawh: ₹0</span>
+                    <span id="student-fee-paid" style="font-weight: bold; color: #16a34a;">Pek Tawh: ₹0</span>
                 </div>
                 <div id="student-fee-history" style="margin-top: 15px; border-top: 1px solid #fde68a; padding-top: 10px;">
                     <!-- Fee History Injects Here -->
@@ -633,7 +632,7 @@
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
         // AUTO-REFRESH VERSION CHECK
-        const APP_VERSION = "2.2"; 
+        const APP_VERSION = "2.3"; 
 
         window.currentStudent = { enrollment: '', name: '' };
         let studentLeaveUnsubscribe = null; 
@@ -840,6 +839,7 @@
             });
         }
 
+        // Zirlai Portal-ah ba lang tawh lovin fee pek zat chauh a lang ang
         function renderStudentFeePortal() {
             const enr = window.currentStudent.enrollment; if(!enr) return;
             const feeRecord = feeDataMap[enr]; let totalFee = 12000; let totalPaid = 0; let payments = [];
@@ -848,11 +848,9 @@
                 totalFee = feeRecord.totalFee || 12000;
                 if(feeRecord.payments) { payments = feeRecord.payments; totalPaid = payments.reduce((sum, p) => sum + parseFloat(p.amount), 0); }
             }
-            const balance = totalFee - totalPaid;
             
             document.getElementById('student-fee-total').innerText = `Total: ₹${totalFee}`;
             document.getElementById('student-fee-paid').innerText = `Pek Tawh: ₹${totalPaid}`;
-            document.getElementById('student-fee-balance').innerText = `Ba: ₹${balance}`;
 
             const historyDiv = document.getElementById('student-fee-history');
             historyDiv.innerHTML = '';
@@ -952,7 +950,7 @@
 
                 if (status === 'Present') presentList.push(s.name);
                 else if (status === 'Reported') reportList.push(s.name);
-                else absentCount++; // Absent ho chu zat chauh chhiar tel a ni ang
+                else absentCount++;
 
                 tbody.innerHTML += `
                     <tr class="att-row">
