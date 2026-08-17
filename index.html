@@ -64,6 +64,11 @@
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; vertical-align: middle; }
         th { background-color: #f8fafc; color: #334155; }
         
+        /* Attendance Radio Button Alignment CSS */
+        .radio-group { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+        .radio-group label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 500; color: #334155; }
+        .radio-group input[type="radio"] { cursor: pointer; width: 16px; height: 16px; accent-color: #8b5cf6; }
+
         .shared-link-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 6px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .notice-box { border-left: 5px solid #0284c7; background: #f9fafb; padding: 15px; border-radius: 6px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
         .comment-area { margin-top: 10px; background: #fff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; }
@@ -552,14 +557,11 @@
                 <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px;" onclick="showSection('home-section')">Log Out</button>
             </div>
 
-            <!-- FEE REPORT (STUDENT) - Ba lang tawh lovin Fee pek zat chauh a lang tawh ang -->
+            <!-- FEE REPORT (STUDENT) - Total fee leh Ba ti boin Fee pek zat chauh a lang tawh ang -->
             <div class="dashboard-stat-card" style="background: #fffbeb; border-color: #fde68a; display: block; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fde68a;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <p style="color: #b45309; font-weight: 600; font-size: 16px; margin: 0;">I Fee Pek Dinhmun:</p>
-                </div>
-                <div style="font-size: 16px; color: #78350f; display: flex; justify-content: space-between;">
-                    <span id="student-fee-total">Total: ₹0</span>
-                    <span id="student-fee-paid" style="font-weight: bold; color: #16a34a;">Pek Tawh: ₹0</span>
+                    <div id="student-fee-paid" style="font-size: 20px; font-weight: bold; color: #16a34a;">Pek Tawh: ₹0</div>
                 </div>
                 <div id="student-fee-history" style="margin-top: 15px; border-top: 1px solid #fde68a; padding-top: 10px;">
                     <!-- Fee History Injects Here -->
@@ -632,7 +634,7 @@
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
         // AUTO-REFRESH VERSION CHECK
-        const APP_VERSION = "2.3"; 
+        const APP_VERSION = "2.4"; 
 
         window.currentStudent = { enrollment: '', name: '' };
         let studentLeaveUnsubscribe = null; 
@@ -839,17 +841,16 @@
             });
         }
 
-        // Zirlai Portal-ah ba lang tawh lovin fee pek zat chauh a lang ang
+        // Zirlai Portal-ah Fee Pek Zat Chauh (Ba leh Total fee lang tawh lovin)
         function renderStudentFeePortal() {
             const enr = window.currentStudent.enrollment; if(!enr) return;
-            const feeRecord = feeDataMap[enr]; let totalFee = 12000; let totalPaid = 0; let payments = [];
+            const feeRecord = feeDataMap[enr]; let totalPaid = 0; let payments = [];
             
-            if(feeRecord) {
-                totalFee = feeRecord.totalFee || 12000;
-                if(feeRecord.payments) { payments = feeRecord.payments; totalPaid = payments.reduce((sum, p) => sum + parseFloat(p.amount), 0); }
+            if(feeRecord && feeRecord.payments) {
+                payments = feeRecord.payments; 
+                totalPaid = payments.reduce((sum, p) => sum + parseFloat(p.amount), 0);
             }
             
-            document.getElementById('student-fee-total').innerText = `Total: ₹${totalFee}`;
             document.getElementById('student-fee-paid').innerText = `Pek Tawh: ₹${totalPaid}`;
 
             const historyDiv = document.getElementById('student-fee-history');
