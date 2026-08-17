@@ -578,9 +578,15 @@
                 <div class="card">
                     <h3>Chawlh Report-na</h3>
                     <form onsubmit="applyLeave(event)">
-                        <div class="input-group">
-                            <label>Chawlh ni tur (Date)</label>
-                            <input type="date" id="leave-date" required>
+                        <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div class="input-group">
+                                <label>Chawlh Ṭan Ni (Start Date)</label>
+                                <input type="date" id="leave-start-date" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Chawlh Tawp Ni (End Date)</label>
+                                <input type="date" id="leave-end-date" required>
+                            </div>
                         </div>
                         <div class="input-group">
                             <label>Chawlh chhan (Reason)</label>
@@ -634,7 +640,7 @@
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
         // AUTO-REFRESH VERSION CHECK
-        const APP_VERSION = "2.5"; 
+        const APP_VERSION = "2.6"; 
 
         window.currentStudent = { enrollment: '', name: '' };
         let studentLeaveUnsubscribe = null; 
@@ -647,6 +653,8 @@
         const todayISODate = new Date().toISOString().split('T')[0];
         document.getElementById('attendance-date').value = todayISODate;
         document.getElementById('fee-date').value = todayISODate;
+        document.getElementById('leave-start-date').value = todayISODate;
+        document.getElementById('leave-end-date').value = todayISODate;
 
         // Auto Version Check on load
         (function checkVersion() {
@@ -841,7 +849,6 @@
             });
         }
 
-        // Zirlai Portal-ah Fee Pek Zat Chauh (Ba leh Total fee lang tawh lovin)
         function renderStudentFeePortal() {
             const enr = window.currentStudent.enrollment; if(!enr) return;
             const feeRecord = feeDataMap[enr]; let totalPaid = 0; let payments = [];
@@ -1193,13 +1200,25 @@
             }
         }
 
-        // ================= LEAVES =================
+        // ================= LEAVES (Start Date & End Date Support) =================
         window.applyLeave = async function(event) {
             event.preventDefault();
-            const date = document.getElementById('leave-date').value; const reason = document.getElementById('leave-reason').value.trim();
+            const startDate = document.getElementById('leave-start-date').value; 
+            const endDate = document.getElementById('leave-end-date').value; 
+            const reason = document.getElementById('leave-reason').value.trim();
+
+            if (new Date(startDate) > new Date(endDate)) {
+                alert("Chawlh ṭan ni hi chawlh tawp ni hnuah a nih theih lova, a dik lo.");
+                return;
+            }
+
+            let dateStr = startDate === endDate ? startDate : `${startDate} to ${endDate}`;
+
             try {
-                await addDoc(collection(db, "leave_requests"), { enrollment: window.currentStudent.enrollment, studentName: window.currentStudent.name, date: date, reason: reason, status: "Pending", createdAt: serverTimestamp() });
+                await addDoc(collection(db, "leave_requests"), { enrollment: window.currentStudent.enrollment, studentName: window.currentStudent.name, date: dateStr, reason: reason, status: "Pending", createdAt: serverTimestamp() });
                 alert("I in-report-na a lut hlawhtling e."); event.target.reset();
+                document.getElementById('leave-start-date').value = todayISODate;
+                document.getElementById('leave-end-date').value = todayISODate;
             } catch (error) { alert("Thehluh theih a ni lo: " + error.message); }
         }
 
@@ -1209,7 +1228,7 @@
                 const container = document.getElementById('student-leave-history'); container.innerHTML = '';
                 if (snapshot.empty) { container.innerHTML = '<p style="color: gray;">Report i la thehlut lo.</p>'; return; }
                 let leaves = []; snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()}));
-                leaves.sort((a, b) => new Date(b.date) - new Date(a.date));
+                leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
                 leaves.forEach(data => {
                     let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending'; let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek';
                     container.innerHTML += `<div class="leave-item"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><strong style="color: #0f172a;">📅 ${data.date}</strong><span class="status-badge ${badgeClass}">${statusText}</span></div><p style="font-size:14px; color:#475569; margin:0;">${data.reason}</p></div>`;
@@ -1223,7 +1242,7 @@
             const adminContainer = document.getElementById('admin-leave-list'); if(!adminContainer) return; adminContainer.innerHTML = '';
             if (snapshot.empty) { adminContainer.innerHTML = '<p style="color: gray; text-align: center; padding: 10px 0;">In-report an la awm lo...</p>'; return; }
             let leaves = []; snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()}));
-            leaves.sort((a, b) => new Date(b.date) - new Date(a.date));
+            leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
             leaves.forEach(data => {
                 let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending'; let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek';
                 adminContainer.innerHTML += `<div class="leave-item" style="border-left: 4px solid ${data.status === 'Approved' ? '#22c55e' : '#eab308'};"><div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:8px;"><strong style="font-size: 15px; color: #0f172a;">${data.studentName} <span style="color: gray; font-size: 12px;">(${data.enrollment})</span></strong><span class="status-badge ${badgeClass}">${statusText}</span></div><div style="font-size:13px; color:#334155; margin-bottom: 10px; background: #f8fafc; padding: 6px; border-radius: 4px;"><span style="color:#0284c7; font-weight:bold;">Chawlh Ni:</span> ${data.date} | <span style="color:#0284c7; font-weight:bold;">A Chhan:</span> ${data.reason}</div>${data.status === 'Pending' ? `<button class="btn btn-success" style="padding: 6px 12px; font-size:12px; margin:0; width: auto;" onclick="approveLeaveStatus('${data.id}')">Pawm (Approve)</button>` : ''}</div>`;
@@ -1235,7 +1254,6 @@
                 const querySnapshot = await getDocs(collection(db, "leave_requests")); let leaveData = [];
                 querySnapshot.forEach((doc) => { let d = doc.data(); leaveData.push({ "Enrollment No": d.enrollment, "Zirlai Hming": d.studentName, "Chawlh Ni": d.date, "Chhan": d.reason, "Status": d.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek' }); });
                 if(leaveData.length === 0) { alert("Record a la awm lo."); return; }
-                leaveData.sort((a, b) => new Date(b["Chawlh Ni"]) - new Date(a["Chawlh Ni"]));
                 let worksheet = XLSX.utils.json_to_sheet(leaveData); let workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Chawlh_Report"); XLSX.writeFile(workbook, "Bethel_Zirlai_Chawlh.xlsx");
             } catch (error) { alert("Harsatna: " + error.message); }
         }
@@ -1245,7 +1263,6 @@
                 const doc = new window.jsPDF(); const querySnapshot = await getDocs(collection(db, "leave_requests")); let leaveData = [];
                 querySnapshot.forEach((document) => { let d = document.data(); leaveData.push([ d.enrollment, d.studentName, d.date, d.reason, d.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek' ]); });
                 if(leaveData.length === 0) { alert("Record a la awm lo."); return; }
-                leaveData.sort((a, b) => new Date(b[2]) - new Date(a[2]));
                 doc.text("Zirlai Chawlh Report (Bethel Computer Centre)", 14, 15); doc.autoTable({ startY: 20, head: [['Enrollment', 'Hming', 'Chawlh Ni', 'Chhan', 'Status']], body: leaveData, styles: { fontSize: 10, cellPadding: 3 }, headStyles: { fillColor: [2, 132, 199] } }); doc.save("Bethel_Zirlai_Chawlh.pdf");
             } catch (error) { alert("Harsatna: " + error.message); }
         }
