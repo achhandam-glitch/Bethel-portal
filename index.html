@@ -80,6 +80,7 @@
         .badge-cash { background-color: #dcfce7; color: #166534; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
         .badge-gpay { background-color: #dbeafe; color: #4338ca; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
         .badge-student { display: inline-block; background-color: #bae6fd; color: #0369a1; padding: 5px 10px; border-radius: 6px; font-size: 13px; font-weight: 600; margin: 0 6px 6px 0; border: 1px solid #7dd3fc; }
+        .badge-shift { background-color: #f1f5f9; color: #334155; padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; border: 1px solid #cbd5e1; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; }
 
@@ -144,6 +145,36 @@
             <div style="display: flex; gap: 10px;">
                 <button class="btn btn-success" style="margin: 0;" onclick="updateFeePayment()">Save</button>
                 <button class="btn btn-danger" style="margin: 0;" onclick="closeEditFeeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SHIFT EDIT MODAL (ADMIN) -->
+    <div id="shift-edit-modal" class="modal-overlay hidden">
+        <div class="card" style="width: 100%; max-width: 400px; margin: 0;">
+            <h3 style="color: #0284c7; border-color: #bae6fd;">Zirlai Shift Thlakna</h3>
+            <input type="hidden" id="edit-shift-enrollment">
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label>Shift Thlang Rawh</label>
+                <select id="edit-student-shift">
+                    <option value="6am shift">6am shift</option>
+                    <option value="7am shift">7am shift</option>
+                    <option value="8am shift">8am shift</option>
+                    <option value="10am shift">10am shift</option>
+                    <option value="11am shift">11am shift</option>
+                    <option value="1pm shift">1pm shift</option>
+                    <option value="2pm shift">2pm shift</option>
+                    <option value="3pm shift">3pm shift</option>
+                    <option value="4pm shift">4pm shift</option>
+                    <option value="5pm shift">5pm shift</option>
+                    <option value="7pm shift">7pm shift</option>
+                    <option value="Saturday shift">Saturday shift</option>
+                    <option value="Online shift">Online shift</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-success" style="margin: 0;" onclick="updateStudentShift()">Save</button>
+                <button class="btn btn-danger" style="margin: 0;" onclick="closeShiftModal()">Cancel</button>
             </div>
         </div>
     </div>
@@ -322,9 +353,30 @@
                             </div>
                         </div>
                         
-                        <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-                            <label style="margin:0; font-weight: bold; color: #4c1d95;">Ni (Date) Thlang rawh:</label>
-                            <input type="date" id="attendance-date" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #8b5cf6;" onchange="loadAttendanceForDate()">
+                        <div class="form-grid" style="margin-bottom: 15px;">
+                            <div class="input-group">
+                                <label style="margin:0; font-weight: bold; color: #4c1d95;">Ni (Date) Thlang rawh:</label>
+                                <input type="date" id="attendance-date" style="padding: 8px 10px; border-radius: 6px; border: 1px solid #8b5cf6;" onchange="loadAttendanceForDate()">
+                            </div>
+                            <div class="input-group">
+                                <label style="margin:0; font-weight: bold; color: #4c1d95;">Shift Thlang rawh:</label>
+                                <select id="attendance-shift-filter" style="padding: 8px 10px; border-radius: 6px; border: 1px solid #8b5cf6;" onchange="loadAttendanceForDate()">
+                                    <option value="ALL">-- Shift ZAWNG ZAWNG --</option>
+                                    <option value="6am shift">6am shift</option>
+                                    <option value="7am shift">7am shift</option>
+                                    <option value="8am shift">8am shift</option>
+                                    <option value="10am shift">10am shift</option>
+                                    <option value="11am shift">11am shift</option>
+                                    <option value="1pm shift">1pm shift</option>
+                                    <option value="2pm shift">2pm shift</option>
+                                    <option value="3pm shift">3pm shift</option>
+                                    <option value="4pm shift">4pm shift</option>
+                                    <option value="5pm shift">5pm shift</option>
+                                    <option value="7pm shift">7pm shift</option>
+                                    <option value="Saturday shift">Saturday shift</option>
+                                    <option value="Online shift">Online shift</option>
+                                </select>
+                            </div>
                         </div>
                         
                         <!-- Toggle Summary & List Card -->
@@ -525,13 +577,14 @@
                                         <th>Enrollment</th>
                                         <th>Hming</th>
                                         <th>DOB</th>
+                                        <th>Shift</th>
                                         <th>Att. Points</th>
                                         <th style="text-align: center;">Thawn/Paih</th>
                                     </tr>
                                 </thead>
                                 <tbody id="student-management-body">
                                     <tr>
-                                        <td colspan="5" style="text-align: center; color: gray;">Data a la awm lo...</td>
+                                        <td colspan="6" style="text-align: center; color: gray;">Data a la awm lo...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -670,7 +723,7 @@
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
         // AUTO-REFRESH VERSION CHECK
-        const APP_VERSION = "3.1"; 
+        const APP_VERSION = "3.3"; 
 
         window.currentStudent = { enrollment: '', name: '' };
         let studentLeaveUnsubscribe = null; 
@@ -938,7 +991,7 @@
                     });
                 }
                 let totalPaid = cashPaid + gpayPaid;
-                exportData.push({ "Enrollment No": s.enrollment, "Zirlai Hming": s.name, "Total Course Fee": totalFee, "Cash in a pe": cashPaid, "GPay in a pe": gpayPaid, "Total a pe": totalPaid, "La Ba (Balance)": totalFee - totalPaid, "Pek Ni & History": histArr.join("\n") });
+                exportData.push({ "Enrollment No": s.enrollment, "Zirlai Hming": s.name, "Shift": s.shift || '10am shift', "Total Course Fee": totalFee, "Cash in a pe": cashPaid, "GPay in a pe": gpayPaid, "Total a pe": totalPaid, "La Ba (Balance)": totalFee - totalPaid, "Pek Ni & History": histArr.join("\n") });
             });
 
             if(exportData.length === 0) { alert("Data a la awm lo"); return; }
@@ -969,6 +1022,7 @@
 
         window.loadAttendanceForDate = async function() {
             const dateStr = document.getElementById('attendance-date').value;
+            const selectedShift = document.getElementById('attendance-shift-filter').value;
             if(!dateStr) return;
             const isSaturday = new Date(dateStr).getDay() === 6;
             const pts = isSaturday ? {p: 5, r: 2.5, a: 0} : {p: 1, r: 0.5, a: 0};
@@ -978,13 +1032,20 @@
             snap.forEach(doc => { existingAtt[doc.data().enrollment] = doc.data().status; });
 
             const tbody = document.getElementById('attendance-list-body'); tbody.innerHTML = '';
-            if(allStudentsList.length === 0) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">Zirlai in-register an la awm lo.</td></tr>'; return; }
+            
+            // Filter by selected shift
+            let filteredStudents = allStudentsList;
+            if (selectedShift !== 'ALL') {
+                filteredStudents = allStudentsList.filter(s => (s.shift || '10am shift') === selectedShift);
+            }
+
+            if(filteredStudents.length === 0) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">He shift-ah hian zirlai an awm lo.</td></tr>'; return; }
 
             let presentList = [];
             let reportList = [];
             let absentCount = 0;
 
-            allStudentsList.forEach(s => {
+            filteredStudents.forEach(s => {
                 let status = existingAtt[s.enrollment] !== undefined ? existingAtt[s.enrollment] : ''; 
 
                 let presentChecked = (status === 'Present') ? 'checked' : '';
@@ -998,7 +1059,7 @@
                 tbody.innerHTML += `
                     <tr class="att-row">
                         <td class="att-enrollment">${s.enrollment}</td>
-                        <td class="att-name"><b>${s.name}</b></td>
+                        <td class="att-name"><b>${s.name}</b> <span style="font-size:11px; color:#64748b;">(${s.shift || '10am shift'})</span></td>
                         <td>
                             <div class="radio-group" onchange="updateAttendanceSummary()">
                                 <label class="radio-present"><input type="radio" name="att_${s.enrollment}" value="Present" ${presentChecked}> Present (${pts.p})</label>
@@ -1025,8 +1086,14 @@
             let presentList = [];
             let reportList = [];
             let absentCount = 0;
+            const selectedShift = document.getElementById('attendance-shift-filter').value;
+            
+            let filteredStudents = allStudentsList;
+            if (selectedShift !== 'ALL') {
+                filteredStudents = allStudentsList.filter(s => (s.shift || '10am shift') === selectedShift);
+            }
 
-            allStudentsList.forEach(s => {
+            filteredStudents.forEach(s => {
                 const radios = document.getElementsByName(`att_${s.enrollment}`); let val = '';
                 for(let r of radios) { if(r.checked) val = r.value; }
 
@@ -1056,12 +1123,18 @@
 
         window.saveAttendance = async function() {
             const dateStr = document.getElementById('attendance-date').value;
+            const selectedShift = document.getElementById('attendance-shift-filter').value;
             if(!dateStr) { alert("Date thlang phawt rawh!"); return; }
             const isSaturday = new Date(dateStr).getDay() === 6;
             const pts = isSaturday ? {Present: 5, Reported: 2.5, Absent: 0} : {Present: 1, Reported: 0.5, Absent: 0};
 
+            let targetStudents = allStudentsList;
+            if (selectedShift !== 'ALL') {
+                targetStudents = allStudentsList.filter(s => (s.shift || '10am shift') === selectedShift);
+            }
+
             let promises = [];
-            allStudentsList.forEach(s => {
+            targetStudents.forEach(s => {
                 const radios = document.getElementsByName(`att_${s.enrollment}`); let val = 'Absent';
                 for(let r of radios) { if(r.checked) val = r.value; }
                 promises.push(setDoc(doc(db, "attendance", `${dateStr}_${s.enrollment}`), { date: dateStr, enrollment: s.enrollment, name: s.name, status: val, points: pts[val], timestamp: serverTimestamp() }));
@@ -1085,12 +1158,24 @@
             const tableBody = document.getElementById('student-management-body'); let todayLoginCount = 0; let onlineNames = [];
             if(!tableBody) return; tableBody.innerHTML = '';
             
-            if(allStudentsList.length === 0) { tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>'; } 
+            if(allStudentsList.length === 0) { tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>'; } 
             else {
                 allStudentsList.forEach((s) => {
                     if(s.lastLoginDate === todayISODate) { todayLoginCount++; onlineNames.push(`<span class="badge-student">${s.name}</span>`); }
                     const totalPts = attendancePointsMap[s.enrollment] || 0;
-                    tableBody.innerHTML += `<tr><td>${s.enrollment}</td><td>${s.name}</td><td>${s.dob}</td><td style="font-weight:bold; color:#7e22ce;">${totalPts} pts</td><td style="text-align: center;"><button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Login Thawnna" onclick="shareLoginWhatsApp('${s.name}', '${s.enrollment}', '${s.dob}')">📱</button><button class="btn btn-danger btn-icon" title="Paih" onclick="deleteStudent('${s.enrollment}')">✕</button></td></tr>`;
+                    const studentShift = s.shift || '10am shift';
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${s.enrollment}</td>
+                            <td><b>${s.name}</b></td>
+                            <td>${s.dob}</td>
+                            <td><span class="badge-shift">${studentShift}</span> <button style="background:none; border:none; color:#0284c7; cursor:pointer; font-size:12px; margin-left:5px;" onclick="openShiftModal('${s.enrollment}', '${studentShift}')">✏️ Edit</button></td>
+                            <td style="font-weight:bold; color:#7e22ce;">${totalPts} pts</td>
+                            <td style="text-align: center;">
+                                <button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Login Thawnna" onclick="shareLoginWhatsApp('${s.name}', '${s.enrollment}', '${s.dob}')">📱</button>
+                                <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteStudent('${s.enrollment}')">✕</button>
+                            </td>
+                        </tr>`;
                 });
             }
             const countDisplay = document.getElementById('today-login-count'); if (countDisplay) countDisplay.innerText = todayLoginCount;
@@ -1102,6 +1187,28 @@
             allStudentsList = []; snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
             renderStudentManagementTable(); renderFeeTable(); loadAttendanceForDate(); 
         });
+
+        window.openShiftModal = function(enrollment, currentShift) {
+            document.getElementById('edit-shift-enrollment').value = enrollment;
+            document.getElementById('edit-student-shift').value = currentShift;
+            document.getElementById('shift-edit-modal').classList.remove('hidden');
+        }
+
+        window.closeShiftModal = function() {
+            document.getElementById('shift-edit-modal').classList.add('hidden');
+        }
+
+        window.updateStudentShift = async function() {
+            const enrollment = document.getElementById('edit-shift-enrollment').value;
+            const newShift = document.getElementById('edit-student-shift').value;
+            try {
+                await updateDoc(doc(db, "students", enrollment), { shift: newShift });
+                closeShiftModal();
+                alert("Zirlai shift chu hlawhtling taka thlak a ni e!");
+            } catch(e) {
+                alert("Harsatna: " + e.message);
+            }
+        }
 
         window.uploadExcelData = async function() {
             const fileInput = document.getElementById('excel-upload'); const statusDiv = document.getElementById('upload-status');
@@ -1118,10 +1225,10 @@
 
                     let successCount = 0; let errorCount = 0;
                     for (let i = 0; i < json.length; i++) {
-                        let row = json[i]; let enrollment = row.Enrollment || row.enrollment; let name = row.Name || row.name || row.Hming; let dob = row.DOB || row.dob;
+                        let row = json[i]; let enrollment = row.Enrollment || row.enrollment; let name = row.Name || row.name || row.Hming; let dob = row.DOB || row.dob; let shift = row.Shift || row.shift || "10am shift";
                         if (enrollment && name && dob) {
                             try {
-                                await setDoc(doc(db, "students", String(enrollment)), { enrollment: String(enrollment), name: String(name), dob: String(dob), registeredAt: serverTimestamp(), lastLoginDate: "" });
+                                await setDoc(doc(db, "students", String(enrollment)), { enrollment: String(enrollment), name: String(name), dob: String(dob), shift: String(shift), registeredAt: serverTimestamp(), lastLoginDate: "" });
                                 successCount++;
                             } catch (err) { errorCount++; }
                         }
