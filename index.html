@@ -57,7 +57,6 @@
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; vertical-align: middle; }
         th { background-color: #f8fafc; color: #334155; }
         
-        /* Attendance Radio Button Alignment CSS */
         .radio-group { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
         .radio-group label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 500; color: #334155; }
         .radio-group input[type="radio"] { cursor: pointer; width: 16px; height: 16px; accent-color: #8b5cf6; }
@@ -84,7 +83,6 @@
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; }
 
-        /* MENU & CONTENT TOGGLE CSS */
         .admin-sidebar { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 500px; margin: 0 auto; }
         .menu-box { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
         .menu-btn { padding: 14px 18px; border: none; background: #f8fafc; color: #0f172a; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; text-align: left; transition: 0.3s; border-left: 5px solid #0284c7; width: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
@@ -224,7 +222,6 @@
                 </div>
 
                 <div class="admin-sidebar">
-                    <!-- Vawiina Online Te Card Inside Menu Box -->
                     <div style="border: 1px solid #bae6fd; background: #f0f9ff; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #bae6fd; padding-bottom: 6px; margin-bottom: 8px;">
                             <span style="color: #0369a1; font-weight: bold; font-size: 14px;">Vawiina Online</span>
@@ -242,6 +239,7 @@
                         <button class="menu-btn" onclick="openAdminTab('tab-attendance')">📅 Attendance Mark-na & Chawlh</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-notice')">📢 Notice Board</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-links')">🔗 Link Semchhuahna</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-online')" style="border-left-color: #8b5cf6; background: #faf5ff; color: #581c87;">💻 Online Shift Bik</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-gradebook')">📊 Comprehensive Gradebook</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-management')">👥 Zirlai Management</button>
                     </div>
@@ -255,7 +253,6 @@
                 <div id="tab-register" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
-                    <!-- Manual Register Form -->
                     <div class="card" style="border: 2px solid #0284c7; margin-bottom: 20px;">
                         <h3 style="color: #0369a1; border-bottom: 1px solid #bae6fd; padding-bottom: 10px;">Zirlai Thar Manual-a Register-na</h3>
                         <form onsubmit="registerSingleStudent(event)" class="form-grid">
@@ -294,7 +291,6 @@
                         </form>
                     </div>
 
-                    <!-- Excel Upload Card -->
                     <div class="card" style="border: 2px solid #16a34a; margin-bottom: 0;">
                         <h3 style="color: #15803d; border-bottom: 1px solid #bbf7d0; padding-bottom: 10px;">Zirlai Register-na (Excel/CSV Upload)</h3>
                         <p style="font-size: 14px; color: #475569; margin-bottom: 15px;">Excel file-ah Row hmasa berah (Header) hetiang hian Column hming phuah ang che: <b>Enrollment</b>, <b>Name</b>, <b>DOB</b>, <b>Shift</b>.</p>
@@ -372,7 +368,6 @@
                 <div id="tab-attendance" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
-                    <!-- Chawlh Dil Report (A chung berah) -->
                     <div class="card" style="border: 2px solid #3b82f6;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                             <h3 style="color: #1e3a8a; border: none; padding: 0; margin: 0;">Zirlai Chawlh In-Report Te</h3>
@@ -386,7 +381,6 @@
                         </div>
                     </div>
 
-                    <!-- Attendance Mark-na -->
                     <div class="card" style="border: 2px solid #8b5cf6; margin-bottom: 0;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                             <h3 style="color: #4c1d95; border: none; padding: 0; margin: 0;">Attendance Mark-na</h3>
@@ -422,7 +416,6 @@
                             </div>
                         </div>
                         
-                        <!-- Toggle Summary & List Card -->
                         <div style="background: #faf5ff; border: 1px solid #e9d5ff; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleSummaryBox()">
                                 <h4 style="font-size: 14px; color: #6b21a8; margin: 0;">📋 Vawiin Attendance Summary (Hmet rawh)</h4>
@@ -526,6 +519,37 @@
                         <div class="card" style="margin-bottom: 0;">
                             <h3>Link Sem Tawh Te Paihna</h3>
                             <div id="admin-links-container" style="max-height: 300px; overflow-y: auto; padding-right: 5px;">
+                                <p style="color: gray;">A la awm rih lo...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- TAB NEW: ONLINE SHIFT BIK -->
+                <div id="tab-online" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="form-grid" style="grid-template-columns: 1fr;">
+                        <div class="card" style="border: 2px solid #8b5cf6;">
+                            <h3 style="color: #6d28d9; border-bottom: 1px solid #ddd6fe; padding-bottom: 10px;">Online Shift Thawnna (Message & Link)</h3>
+                            <form onsubmit="shareOnlineMaterial(event)">
+                                <div class="input-group">
+                                    <label>Thupui (Title)</label>
+                                    <input type="text" id="online-title" placeholder="Entirnan: Vawiin Class Link" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Message / Note</label>
+                                    <textarea id="online-message" rows="3" placeholder="Sawi tur..." required></textarea>
+                                </div>
+                                <div class="input-group">
+                                    <label>Link (URL) - Optional</label>
+                                    <input type="url" id="online-url" placeholder="https://...">
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="margin-top: 5px; background-color: #8b5cf6;">Online Shift-te Hnenah Thawn Rawh</button>
+                            </form>
+                        </div>
+                        <div class="card" style="margin-bottom: 0;">
+                            <h3 style="color: #581c87;">Online Shift Thawn Tawh Te</h3>
+                            <div id="admin-online-container" style="max-height: 350px; overflow-y: auto; padding-right: 5px;">
                                 <p style="color: gray;">A la awm rih lo...</p>
                             </div>
                         </div>
@@ -656,6 +680,7 @@
                         <button class="menu-btn" onclick="openStudentTab('student-tab-leave')">📝 Chawlh Dilna & In-Report-na</button>
                         <button class="menu-btn" onclick="openStudentTab('student-tab-notice')">📢 Notice Board</button>
                         <button class="menu-btn" onclick="openStudentTab('student-tab-materials')">📚 Study Materials, Assignments & Tests</button>
+                        <button class="menu-btn" id="student-menu-online" style="display: none; background: #faf5ff; border-left-color: #8b5cf6; color: #581c87;" onclick="openStudentTab('student-tab-online')">💻 Online Class & Materials</button>
                     </div>
                 </div>
             </div>
@@ -667,24 +692,20 @@
                 <div id="student-tab-status" class="student-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
-                    <!-- STUDENT SHIFT DISPLAY CARD -->
                     <div style="background: #e0f2fe; border: 1px solid #7dd3fc; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
                         <p style="color: #0369a1; font-weight: 600; font-size: 16px; margin: 0;">I Shift Hun:</p>
                         <div style="font-size: 18px; font-weight: bold; color: #0c4a6e;" id="student-portal-shift">-</div>
                     </div>
 
-                    <!-- FEE REPORT (STUDENT) - Fee pek zat chauh a lang ang -->
                     <div class="dashboard-stat-card" style="background: #fffbeb; border-color: #fde68a; display: block; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fde68a;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                             <p style="color: #b45309; font-weight: 600; font-size: 16px; margin: 0;">I Fee Pek Dinhmun:</p>
                             <div id="student-fee-paid" style="font-size: 20px; font-weight: bold; color: #16a34a;">Pek Tawh: ₹0</div>
                         </div>
                         <div id="student-fee-history" style="margin-top: 15px; border-top: 1px solid #fde68a; padding-top: 10px;">
-                            <!-- Fee History Injects Here -->
                         </div>
                     </div>
 
-                    <!-- ATTENDANCE POINTS (STUDENT) -->
                     <div style="background: #f3e8ff; border: 1px solid #d8b4fe; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
                         <p style="color: #6b21a8; font-weight: 600; font-size: 16px; margin: 0;">Total Attendance Points:</p>
                         <div style="font-size: 28px; font-weight: bold; color: #7e22ce;" id="student-att-points">0 Points</div>
@@ -744,6 +765,15 @@
                         <p style="color: gray;">Database atangin a rawn in-load mek...</p>
                     </div>
                 </div>
+                
+                <!-- TAB 5: ONLINE SHIFT BIK (Student) -->
+                <div id="student-tab-online" class="student-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="card" style="margin-bottom: 0;" id="student-online-container">
+                        <h3 style="color: #6d28d9;">Online Shift Message & Links</h3>
+                        <p style="color: gray;">Database atangin a rawn in-load mek...</p>
+                    </div>
+                </div>
 
             </div>
 
@@ -771,8 +801,7 @@
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
-        // AUTO-REFRESH VERSION CHECK
-        const APP_VERSION = "3.6"; 
+        const APP_VERSION = "3.7"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '' };
         let studentLeaveUnsubscribe = null; 
@@ -788,7 +817,6 @@
         document.getElementById('leave-start-date').value = todayISODate;
         document.getElementById('leave-end-date').value = todayISODate;
 
-        // Auto Version Check on load
         (function checkVersion() {
             let savedVersion = localStorage.getItem('bcc_portal_version');
             if (!savedVersion) {
@@ -839,7 +867,6 @@
             window.scrollTo(0, 0);
         }
 
-        // Student Navigation Tabs
         window.openStudentTab = function(tabId) {
             document.getElementById('student-menu-view').style.display = 'none';
             document.querySelectorAll('.student-tab-content').forEach(el => { el.classList.remove('active-content'); });
@@ -853,7 +880,6 @@
             window.scrollTo(0, 0);
         }
 
-        // Toggle Summary Box Function
         window.toggleSummaryBox = function() {
             const box = document.getElementById('summary-content-box');
             const icon = document.getElementById('summary-toggle-icon');
@@ -866,7 +892,6 @@
             }
         }
 
-        // ================= WHATSAPP SHARE FUNCTIONS =================
         window.shareNoticeWhatsApp = function(title) {
             const text = `📌 *Bethel Computer Centre*\n\nNotice thar a awm e: *${title}*\n\nKhawngaihin in Portal-ah log in ula lo check ngei ngei ru.\n@all\n\n🌐 Portal Link: ${PORTAL_LINK}`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
@@ -878,11 +903,11 @@
         }
 
         window.shareLoginWhatsApp = function(name, enrollment, dob) {
-            const text = `Chibai *${name}*,\n\nHei hi Bethel Computer Centre Portal-a i luhنا tur a ni e:\n\n👤 *Enrollment No:* ${enrollment}\n🔑 *Date of Birth:* ${dob}\n\n🌐 Portal Link: ${PORTAL_LINK}\n\n(I luh dawnah i date of birth kha '-' hmangin i chhu lut dawn nia, entirnan: 15-05-2005)`;
+            const text = `Chibai *${name}*,\n\nHei hi Bethel Computer Centre Portal-a i luhna tur a ni e:\n\n👤 *Enrollment No:* ${enrollment}\n🔑 *Date of Birth:* ${dob}\n\n🌐 Portal Link: ${PORTAL_LINK}\n\n(I luh dawnah i date of birth kha '-' hmangin i chhu lut dawn nia, entirnan: 15-05-2005)`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
-        // ================= FEE MANAGEMENT LOGIC =================
+        // ================= FEE MANAGEMENT =================
         onSnapshot(collection(db, "fees"), (snapshot) => {
             feeDataMap = {};
             snapshot.forEach(docSnap => { feeDataMap[docSnap.id] = docSnap.data(); });
@@ -1049,7 +1074,7 @@
             XLSX.utils.book_append_sheet(workbook, worksheet, "Fee_Report"); XLSX.writeFile(workbook, "Bethel_Fee_Report.xlsx");
         }
 
-        // ================= ATTENDANCE LOGIC =================
+        // ================= ATTENDANCE =================
         onSnapshot(collection(db, "attendance"), (snapshot) => {
             attendancePointsMap = {}; attendanceStats = {}; 
             snapshot.forEach(docSnap => {
@@ -1083,7 +1108,6 @@
 
             const tbody = document.getElementById('attendance-list-body'); tbody.innerHTML = '';
             
-            // Filter by selected shift
             let filteredStudents = allStudentsList;
             if (selectedShift !== 'ALL') {
                 filteredStudents = allStudentsList.filter(s => (s.shift || '10am shift') === selectedShift);
@@ -1131,7 +1155,6 @@
             filterAttendance();
         }
 
-        // Real-time summary updater when radio button changes
         window.updateAttendanceSummary = function() {
             let presentList = [];
             let reportList = [];
@@ -1203,7 +1226,7 @@
             } catch (error) { alert("Excel export-naah harsatna: " + error.message); }
         }
 
-        // ================= GENERAL DATA & ONLINE STATUS =================
+        // ================= GENERAL & MANAGEMENT =================
         function renderStudentManagementTable() {
             const tableBody = document.getElementById('student-management-body'); let todayLoginCount = 0; let onlineNames = [];
             if(!tableBody) return; tableBody.innerHTML = '';
@@ -1243,46 +1266,24 @@
             document.getElementById('edit-student-shift').value = currentShift;
             document.getElementById('shift-edit-modal').classList.remove('hidden');
         }
-
         window.closeShiftModal = function() {
             document.getElementById('shift-edit-modal').classList.add('hidden');
         }
-
         window.updateStudentShift = async function() {
             const enrollment = document.getElementById('edit-shift-enrollment').value;
             const newShift = document.getElementById('edit-student-shift').value;
-            try {
-                await updateDoc(doc(db, "students", enrollment), { shift: newShift });
-                closeShiftModal();
-                alert("Zirlai shift chu hlawhtling taka thlak a ni e!");
-            } catch(e) {
-                alert("Harsatna: " + e.message);
-            }
+            try { await updateDoc(doc(db, "students", enrollment), { shift: newShift }); closeShiftModal(); alert("Zirlai shift chu hlawhtling taka thlak a ni e!"); } 
+            catch(e) { alert("Harsatna: " + e.message); }
         }
 
         window.registerSingleStudent = async function(event) {
             event.preventDefault();
-            const enr = document.getElementById('reg-enrollment').value.trim();
-            const name = document.getElementById('reg-name').value.trim();
-            const dob = document.getElementById('reg-dob').value.trim();
-            const shift = document.getElementById('reg-shift').value;
+            const enr = document.getElementById('reg-enrollment').value.trim(); const name = document.getElementById('reg-name').value.trim();
+            const dob = document.getElementById('reg-dob').value.trim(); const shift = document.getElementById('reg-shift').value;
 
             if(!enr || !name || !dob) { alert("Data a kim lo!"); return; }
-
-            try {
-                await setDoc(doc(db, "students", String(enr)), {
-                    enrollment: String(enr),
-                    name: String(name),
-                    dob: String(dob),
-                    shift: String(shift),
-                    registeredAt: serverTimestamp(),
-                    lastLoginDate: ""
-                });
-                alert("Zirlai " + name + " chu hlawhtling taka register a ni e!");
-                event.target.reset();
-            } catch(e) {
-                alert("Harsatna: " + e.message);
-            }
+            try { await setDoc(doc(db, "students", String(enr)), { enrollment: String(enr), name: String(name), dob: String(dob), shift: String(shift), registeredAt: serverTimestamp(), lastLoginDate: "" }); alert("Zirlai " + name + " chu hlawhtling taka register a ni e!"); event.target.reset(); } 
+            catch(e) { alert("Harsatna: " + e.message); }
         }
 
         window.uploadExcelData = async function() {
@@ -1315,34 +1316,25 @@
             reader.readAsArrayBuffer(file);
         }
 
-        // ================= COMPREHENSIVE GRADEBOOK =================
+        // ================= GRADEBOOK =================
         window.onGradeStudentSelect = function() {
             let enr = document.getElementById('grade-student-select').value; let infoDiv = document.getElementById('grade-student-info');
             if(!enr) { infoDiv.innerHTML = ''; return; }
             let stats = attendanceStats[enr];
-            if(stats && stats.days > 0) {
-                let pct = (stats.earned / stats.possible) * 100;
-                infoDiv.innerHTML = `📅 A class kal tawh zat: <b>Ni ${stats.days}</b> &nbsp;|&nbsp; 📊 A regular dan: <b>${pct.toFixed(1)}%</b>`;
-                onGradeSubjectSelect();
-            } else { infoDiv.innerHTML = `📅 A class kal tawh zat: <b>Ni 0</b> &nbsp;|&nbsp; 📊 A regular dan: <b>0%</b>`; }
+            if(stats && stats.days > 0) { let pct = (stats.earned / stats.possible) * 100; infoDiv.innerHTML = `📅 A class kal tawh zat: <b>Ni ${stats.days}</b> &nbsp;|&nbsp; 📊 A regular dan: <b>${pct.toFixed(1)}%</b>`; onGradeSubjectSelect(); } 
+            else { infoDiv.innerHTML = `📅 A class kal tawh zat: <b>Ni 0</b> &nbsp;|&nbsp; 📊 A regular dan: <b>0%</b>`; }
         }
 
         window.onGradeSubjectSelect = function() {
             let subj = document.getElementById('grade-subject').value; let prLabel = document.getElementById('label-pr-exam'); let prInput = document.getElementById('grade-pr-exam');
             let enr = document.getElementById('grade-student-select').value;
             
-            if (subj === 'DCA 101' || subj === 'DCA 102') {
-                prLabel.innerHTML = 'Practical Exam - Typing/Folder [Max 40]'; prInput.readOnly = false; prInput.style.backgroundColor = 'white';
-            } else if (subj === 'DCA 104') {
+            if (subj === 'DCA 101' || subj === 'DCA 102') { prLabel.innerHTML = 'Practical Exam - Typing/Folder [Max 40]'; prInput.readOnly = false; prInput.style.backgroundColor = 'white'; } 
+            else if (subj === 'DCA 104') {
                 prLabel.innerHTML = 'Practical Exam - Auto (Attendance % atangin) [Max 40]';
-                if (enr && attendanceStats[enr] && attendanceStats[enr].days > 0) {
-                    let pct = (attendanceStats[enr].earned / attendanceStats[enr].possible) * 100;
-                    prInput.value = ((pct / 100) * 40).toFixed(1); 
-                } else { prInput.value = ''; }
+                if (enr && attendanceStats[enr] && attendanceStats[enr].days > 0) { let pct = (attendanceStats[enr].earned / attendanceStats[enr].possible) * 100; prInput.value = ((pct / 100) * 40).toFixed(1); } else { prInput.value = ''; }
                 prInput.style.backgroundColor = '#e0f2fe'; 
-            } else {
-                prLabel.innerHTML = 'Practical Exam (Pangngai) [Max 40]'; prInput.readOnly = false; prInput.style.backgroundColor = 'white';
-            }
+            } else { prLabel.innerHTML = 'Practical Exam (Pangngai) [Max 40]'; prInput.readOnly = false; prInput.style.backgroundColor = 'white'; }
         }
 
         window.saveGrade = async function(event) {
@@ -1353,67 +1345,28 @@
 
             if(!enr) { alert("Zirlai thlang phawt rawh."); return; }
             const totalMark = thIa + thExam + prIa + prExam; const studentName = allStudentsList.find(s => s.enrollment === enr)?.name || '';
-
-            try {
-                await setDoc(doc(db, "student_grades", `${enr}_${subj}`), { enrollment: enr, name: studentName, subject: subj, theoryIA: thIa, theoryExam: thExam, practicalIA: prIa, practicalExam: prExam, totalMark: totalMark, timestamp: serverTimestamp() });
-                alert(`${subj} mark hlawhtling taka save a ni e!`);
-                document.getElementById('grade-th-ia').value = ''; document.getElementById('grade-th-exam').value = ''; document.getElementById('grade-pr-ia').value = ''; document.getElementById('grade-pr-exam').value = '';
-            } catch(e) { alert("Save naah harsatna: " + e.message); }
+            try { await setDoc(doc(db, "student_grades", `${enr}_${subj}`), { enrollment: enr, name: studentName, subject: subj, theoryIA: thIa, theoryExam: thExam, practicalIA: prIa, practicalExam: prExam, totalMark: totalMark, timestamp: serverTimestamp() }); alert(`${subj} mark hlawhtling taka save a ni e!`); document.getElementById('grade-th-ia').value = ''; document.getElementById('grade-th-exam').value = ''; document.getElementById('grade-pr-ia').value = ''; document.getElementById('grade-pr-exam').value = ''; } 
+            catch(e) { alert("Save naah harsatna: " + e.message); }
         }
 
         onSnapshot(query(collection(db, "student_grades"), orderBy("enrollment")), (snapshot) => {
             const tableBody = document.getElementById('grade-results-table'); if(!tableBody) return; tableBody.innerHTML = '';
             if (snapshot.empty) { tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: gray;">Results a la awm rih lo...</td></tr>'; } 
-            else {
-                snapshot.forEach((docSnap) => {
-                    let d = docSnap.data(); let totalColor = d.totalMark >= 40 ? '#16a34a' : '#dc2626';
-                    tableBody.innerHTML += `<tr><td>${d.enrollment}</td><td><b>${d.name}</b></td><td style="color: #0f766e; font-weight: bold;">${d.subject}</td><td>${d.theoryIA}</td><td>${d.theoryExam}</td><td>${d.practicalIA}</td><td>${d.practicalExam}</td><td><span style="color: ${totalColor}; font-weight: bold; font-size: 15px;">${d.totalMark.toFixed(1)}</span></td></tr>`;
-                });
-            }
+            else { snapshot.forEach((docSnap) => { let d = docSnap.data(); let totalColor = d.totalMark >= 40 ? '#16a34a' : '#dc2626'; tableBody.innerHTML += `<tr><td>${d.enrollment}</td><td><b>${d.name}</b></td><td style="color: #0f766e; font-weight: bold;">${d.subject}</td><td>${d.theoryIA}</td><td>${d.theoryExam}</td><td>${d.practicalIA}</td><td>${d.practicalExam}</td><td><span style="color: ${totalColor}; font-weight: bold; font-size: 15px;">${d.totalMark.toFixed(1)}</span></td></tr>`; }); }
         });
 
         window.exportGradesToExcel = async function() {
-            try {
-                const querySnapshot = await getDocs(query(collection(db, "student_grades"), orderBy("enrollment"))); let resultsData = [];
-                querySnapshot.forEach((docSnap) => {
-                    let d = docSnap.data(); resultsData.push({ "Enrollment No": d.enrollment, "Zirlai Hming": d.name, "Subject": d.subject, "Theory IA": d.theoryIA, "Theory Exam": d.theoryExam, "Practical IA": d.practicalIA, "Practical Exam": d.practicalExam, "Total Mark (100)": d.totalMark });
-                });
-                if(resultsData.length === 0) { alert("Marks a la awm lo."); return; }
-                let worksheet = XLSX.utils.json_to_sheet(resultsData); let workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Gradebook"); XLSX.writeFile(workbook, "Bethel_Gradebook.xlsx");
-            } catch (error) { alert("Harsatna: " + error.message); }
+            try { const querySnapshot = await getDocs(query(collection(db, "student_grades"), orderBy("enrollment"))); let resultsData = []; querySnapshot.forEach((docSnap) => { let d = docSnap.data(); resultsData.push({ "Enrollment No": d.enrollment, "Zirlai Hming": d.name, "Subject": d.subject, "Theory IA": d.theoryIA, "Theory Exam": d.theoryExam, "Practical IA": d.practicalIA, "Practical Exam": d.practicalExam, "Total Mark (100)": d.totalMark }); }); if(resultsData.length === 0) { alert("Marks a la awm lo."); return; } let worksheet = XLSX.utils.json_to_sheet(resultsData); let workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Gradebook"); XLSX.writeFile(workbook, "Bethel_Gradebook.xlsx"); } catch (error) { alert("Harsatna: " + error.message); }
         }
+        window.clearAllGrades = async function() { if (confirm("Mark i thunluh tawh zawng zawng paih fai takzet i duh em?")) { try { const querySnapshot = await getDocs(collection(db, "student_grades")); let deletePromises = []; querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "student_grades", document.id)))); await Promise.all(deletePromises); alert("Gradebook paih fai a ni tawh e!"); } catch (error) { alert("Harsatna: " + error.message); } } }
 
-        window.clearAllGrades = async function() {
-            if (confirm("Mark i thunluh tawh zawng zawng paih fai takzet i duh em?")) {
-                try {
-                    const querySnapshot = await getDocs(collection(db, "student_grades")); let deletePromises = [];
-                    querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "student_grades", document.id))));
-                    await Promise.all(deletePromises); alert("Gradebook paih fai a ni tawh e!");
-                } catch (error) { alert("Harsatna: " + error.message); }
-            }
-        }
-
-        // ================= LEAVES (Start Date & End Date Support + Auto-Mark Attendance on Grant) =================
+        // ================= LEAVES =================
         window.applyLeave = async function(event) {
             event.preventDefault();
-            const startDate = document.getElementById('leave-start-date').value; 
-            const endDate = document.getElementById('leave-end-date').value; 
-            const reason = document.getElementById('leave-reason').value.trim();
-
-            if (new Date(startDate) > new Date(endDate)) {
-                alert("Chawlh ṭan ni hi chawlh tawp ni hnuah a nih theih lova, a dik lo.");
-                return;
-            }
-
+            const startDate = document.getElementById('leave-start-date').value; const endDate = document.getElementById('leave-end-date').value; const reason = document.getElementById('leave-reason').value.trim();
+            if (new Date(startDate) > new Date(endDate)) { alert("Chawlh ṭan ni hi chawlh tawp ni hnuah a nih theih lova, a dik lo."); return; }
             let dateStr = startDate === endDate ? startDate : `${startDate} to ${endDate}`;
-
-            try {
-                await addDoc(collection(db, "leave_requests"), { enrollment: window.currentStudent.enrollment, studentName: window.currentStudent.name, startDate: startDate, endDate: endDate, date: dateStr, reason: reason, status: "Pending", createdAt: serverTimestamp() });
-                alert("I in-report-na a lut hlawhtling e."); event.target.reset();
-                document.getElementById('leave-start-date').value = todayISODate;
-                document.getElementById('leave-end-date').value = todayISODate;
-            } catch (error) { alert("Thehluh theih a ni lo: " + error.message); }
+            try { await addDoc(collection(db, "leave_requests"), { enrollment: window.currentStudent.enrollment, studentName: window.currentStudent.name, startDate: startDate, endDate: endDate, date: dateStr, reason: reason, status: "Pending", createdAt: serverTimestamp() }); alert("I in-report-na a lut hlawhtling e."); event.target.reset(); document.getElementById('leave-start-date').value = todayISODate; document.getElementById('leave-end-date').value = todayISODate; } catch (error) { alert("Thehluh theih a ni lo: " + error.message); }
         }
 
         function loadStudentLeaves(enrollment) {
@@ -1421,98 +1374,45 @@
             studentLeaveUnsubscribe = onSnapshot(q, (snapshot) => {
                 const container = document.getElementById('student-leave-history'); container.innerHTML = '';
                 if (snapshot.empty) { container.innerHTML = '<p style="color: gray;">Report i la thehlut lo.</p>'; return; }
-                let leaves = []; snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()}));
-                leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
-                leaves.forEach(data => {
-                    let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending'; let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek';
-                    container.innerHTML += `<div class="leave-item"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><strong style="color: #0f172a;">📅 ${data.date}</strong><span class="status-badge ${badgeClass}">${statusText}</span></div><p style="font-size:14px; color:#475569; margin:0;">${data.reason}</p></div>`;
-                });
+                let leaves = []; snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()})); leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
+                leaves.forEach(data => { let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending'; let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek'; container.innerHTML += `<div class="leave-item"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><strong style="color: #0f172a;">📅 ${data.date}</strong><span class="status-badge ${badgeClass}">${statusText}</span></div><p style="font-size:14px; color:#475569; margin:0;">${data.reason}</p></div>`; });
             });
         }
 
-        // Zirtirtuin chawlh an 'Approve' rualin chawlh ni huam chhung zawng attendance-ah 'Reported' tiin auto-save a ni ang
         window.approveLeaveStatus = async function(leaveId, enrollment, startDate, endDate) {
             try {
                 await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Approved' });
-
-                // Date range chhui chhuahna
-                let currDate = new Date(startDate);
-                let lastDate = new Date(endDate);
-                let studentName = allStudentsList.find(s => s.enrollment === enrollment)?.name || '';
-
+                let currDate = new Date(startDate); let lastDate = new Date(endDate); let studentName = allStudentsList.find(s => s.enrollment === enrollment)?.name || '';
                 let promises = [];
                 while (currDate <= lastDate) {
-                    let dStr = currDate.toISOString().split('T')[0];
-                    let isSaturday = currDate.getDay() === 6;
-                    let pts = isSaturday ? 2.5 : 0.5; // Reported points
-
-                    promises.push(setDoc(doc(db, "attendance", `${dStr}_${enrollment}`), {
-                        date: dStr,
-                        enrollment: enrollment,
-                        name: studentName,
-                        status: 'Reported',
-                        points: pts,
-                        timestamp: serverTimestamp()
-                    }));
-
+                    let dStr = currDate.toISOString().split('T')[0]; let isSaturday = currDate.getDay() === 6; let pts = isSaturday ? 2.5 : 0.5;
+                    promises.push(setDoc(doc(db, "attendance", `${dStr}_${enrollment}`), { date: dStr, enrollment: enrollment, name: studentName, status: 'Reported', points: pts, timestamp: serverTimestamp() }));
                     currDate.setDate(currDate.getDate() + 1);
                 }
-
-                await Promise.all(promises);
-                
-                // Attendance date a lo in-load sa tawh sa chu refresh nghal turin
-                loadAttendanceForDate();
-
-                alert("Chawlh hlawhtling taka pawm a ni e! Attendance-ah 'Reported' tia dah a ni ta.");
-            } catch(error) { 
-                alert("Harsatna: " + error.message); 
-            }
+                await Promise.all(promises); loadAttendanceForDate(); alert("Chawlh hlawhtling taka pawm a ni e! Attendance-ah 'Reported' tia dah a ni ta.");
+            } catch(error) { alert("Harsatna: " + error.message); }
         }
 
         onSnapshot(collection(db, "leave_requests"), (snapshot) => {
             const adminContainer = document.getElementById('admin-leave-list'); if(!adminContainer) return; adminContainer.innerHTML = '';
             if (snapshot.empty) { adminContainer.innerHTML = '<p style="color: gray; text-align: center; padding: 10px 0;">In-report an la awm lo...</p>'; return; }
-            let leaves = []; snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()}));
-            leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
+            let leaves = []; snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()})); leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
             leaves.forEach(data => {
                 let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending'; let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek';
-                let sDate = data.startDate || data.date;
-                let eDate = data.endDate || data.date;
-
+                let sDate = data.startDate || data.date; let eDate = data.endDate || data.date;
                 adminContainer.innerHTML += `<div class="leave-item" style="border-left: 4px solid ${data.status === 'Approved' ? '#22c55e' : '#eab308'};"><div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:8px;"><strong style="font-size: 15px; color: #0f172a;">${data.studentName} <span style="color: gray; font-size: 12px;">(${data.enrollment})</span></strong><span class="status-badge ${badgeClass}">${statusText}</span></div><div style="font-size:13px; color:#334155; margin-bottom: 10px; background: #f8fafc; padding: 6px; border-radius: 4px;"><span style="color:#0284c7; font-weight:bold;">Chawlh Ni:</span> ${data.date} | <span style="color:#0284c7; font-weight:bold;">A Chhan:</span> ${data.reason}</div>${data.status === 'Pending' ? `<button class="btn btn-success" style="padding: 6px 12px; font-size:12px; margin:0; width: auto;" onclick="approveLeaveStatus('${data.id}', '${data.enrollment}', '${sDate}', '${eDate}')">Pawm (Approve)</button>` : ''}</div>`;
             });
         });
 
-        window.exportLeaveToExcel = async function() {
-            try {
-                const querySnapshot = await getDocs(collection(db, "leave_requests")); let leaveData = [];
-                querySnapshot.forEach((doc) => { let d = doc.data(); leaveData.push({ "Enrollment No": d.enrollment, "Zirlai Hming": d.studentName, "Chawlh Ni": d.date, "Chhan": d.reason, "Status": d.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek' }); });
-                if(leaveData.length === 0) { alert("Record a la awm lo."); return; }
-                let worksheet = XLSX.utils.json_to_sheet(leaveData); let workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Chawlh_Report"); XLSX.writeFile(workbook, "Bethel_Zirlai_Chawlh.xlsx");
-            } catch (error) { alert("Harsatna: " + error.message); }
-        }
-        
+        window.exportLeaveToExcel = async function() { try { const querySnapshot = await getDocs(collection(db, "leave_requests")); let leaveData = []; querySnapshot.forEach((doc) => { let d = doc.data(); leaveData.push({ "Enrollment No": d.enrollment, "Zirlai Hming": d.studentName, "Chawlh Ni": d.date, "Chhan": d.reason, "Status": d.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek' }); }); if(leaveData.length === 0) { alert("Record a la awm lo."); return; } let worksheet = XLSX.utils.json_to_sheet(leaveData); let workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Chawlh_Report"); XLSX.writeFile(workbook, "Bethel_Zirlai_Chawlh.xlsx"); } catch (error) { alert("Harsatna: " + error.message); } }
         window.clearAllLeaveRequests = async function() { if (confirm("Paih fai takzet i duh em?")) { try { const querySnapshot = await getDocs(collection(db, "leave_requests")); let deletePromises = []; querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "leave_requests", document.id)))); await Promise.all(deletePromises); alert("Paih fai a ni tawh e!"); } catch (error) { alert("Harsatna: " + error.message); } } }
 
         // ================= NOTICES =================
-        window.publishNotice = async function(event) {
-            event.preventDefault(); try { await addDoc(collection(db, "notices"), { title: document.getElementById('notice-title').value, content: document.getElementById('notice-content').value, comments: [], createdAt: serverTimestamp() }); alert("I publish hlawhtling e!"); event.target.reset(); } catch (error) { alert("Harsatna: " + error.message); }
-        }
-
+        window.publishNotice = async function(event) { event.preventDefault(); try { await addDoc(collection(db, "notices"), { title: document.getElementById('notice-title').value, content: document.getElementById('notice-content').value, comments: [], createdAt: serverTimestamp() }); alert("I publish hlawhtling e!"); event.target.reset(); } catch (error) { alert("Harsatna: " + error.message); } }
         window.editNotice = async function(noticeId) { const newContent = prompt("Notice thar tur type rawh:"); if (newContent !== null && newContent.trim() !== "") { try { await updateDoc(doc(db, "notices", noticeId), { content: newContent }); alert("I siam tha e."); } catch (error) { alert("Harsatna: " + error.message); } } }
         window.deleteNotice = async function(noticeId) { if (confirm("Paih duh takzet em?")) { try { await deleteDoc(doc(db, "notices", noticeId)); alert("Paih a ni tawh e."); } catch (error) { alert("Harsatna: " + error.message); } } }
-
-        window.postComment = async function(noticeId) {
-            const inputField = document.getElementById(`comment-input-${noticeId}`); const commentText = inputField.value.trim();
-            if (!commentText) { alert("Comment ziak phawt rawh!"); return; }
-            try { await updateDoc(doc(db, "notices", noticeId), { comments: arrayUnion({ studentName: window.currentStudent.name, text: commentText, date: new Date().toLocaleString() }) }); inputField.value = ''; alert("Post a ni e!"); } catch (error) { alert("Harsatna: " + error.message); }
-        }
-
-        window.adminPostComment = async function(noticeId) {
-            const inputField = document.getElementById(`admin-comment-input-${noticeId}`); const commentText = inputField.value.trim();
-            if (!commentText) { alert("Reply tur ziak phawt rawh!"); return; }
-            try { await updateDoc(doc(db, "notices", noticeId), { comments: arrayUnion({ studentName: "Zirtirtu (Admin)", text: commentText, date: new Date().toLocaleString() }) }); inputField.value = ''; alert("Reply post a ni e!"); } catch (error) { alert("Harsatna: " + error.message); }
-        }
+        window.postComment = async function(noticeId) { const inputField = document.getElementById(`comment-input-${noticeId}`); const commentText = inputField.value.trim(); if (!commentText) { alert("Comment ziak phawt rawh!"); return; } try { await updateDoc(doc(db, "notices", noticeId), { comments: arrayUnion({ studentName: window.currentStudent.name, text: commentText, date: new Date().toLocaleString() }) }); inputField.value = ''; alert("Post a ni e!"); } catch (error) { alert("Harsatna: " + error.message); } }
+        window.adminPostComment = async function(noticeId) { const inputField = document.getElementById(`admin-comment-input-${noticeId}`); const commentText = inputField.value.trim(); if (!commentText) { alert("Reply tur ziak phawt rawh!"); return; } try { await updateDoc(doc(db, "notices", noticeId), { comments: arrayUnion({ studentName: "Zirtirtu (Admin)", text: commentText, date: new Date().toLocaleString() }) }); inputField.value = ''; alert("Reply post a ni e!"); } catch (error) { alert("Harsatna: " + error.message); } }
 
         onSnapshot(query(collection(db, "notices"), orderBy("createdAt", "desc")), (snapshot) => {
             const adminList = document.getElementById('admin-notice-list'); const studentList = document.getElementById('student-notice-list');
@@ -1537,10 +1437,7 @@
         });
 
         // ================= SHARED LINKS =================
-        window.shareLink = async function(event) {
-            event.preventDefault();
-            try { await addDoc(collection(db, "shared_links"), { type: document.getElementById('link-type').value, fileName: document.getElementById('link-name').value, url: document.getElementById('link-url').value, createdAt: serverTimestamp() }); alert("Hlawhtling takin i sem e! A sira WhatsApp icon hmeh khan group-ah i thawn thei ang."); event.target.reset(); } catch (error) { alert("Harsatna: " + error.message); }
-        }
+        window.shareLink = async function(event) { event.preventDefault(); try { await addDoc(collection(db, "shared_links"), { type: document.getElementById('link-type').value, fileName: document.getElementById('link-name').value, url: document.getElementById('link-url').value, createdAt: serverTimestamp() }); alert("Hlawhtling takin i sem e!"); event.target.reset(); } catch (error) { alert("Harsatna: " + error.message); } }
         window.deleteLink = async function(docId) { if(confirm("Paih duh takzet em?")) { try { await deleteDoc(doc(db, "shared_links", docId)); } catch(error) { alert("Harsatna: " + error.message); } } }
 
         onSnapshot(query(collection(db, "shared_links"), orderBy("createdAt", "desc")), (snapshot) => {
@@ -1566,20 +1463,80 @@
             }
         });
 
+        // ================= ONLINE SHIFT BIK (NEW) =================
+        window.shareOnlineMaterial = async function(event) {
+            event.preventDefault();
+            try {
+                await addDoc(collection(db, "online_materials"), {
+                    title: document.getElementById('online-title').value,
+                    message: document.getElementById('online-message').value,
+                    url: document.getElementById('online-url').value,
+                    createdAt: serverTimestamp()
+                });
+                alert("Online shift te hnenah thawn a ni e!");
+                event.target.reset();
+            } catch (error) { alert("Harsatna: " + error.message); }
+        }
+
+        window.deleteOnlineMaterial = async function(docId) {
+            if(confirm("He online thawn hi paih duh takzet em?")) {
+                try { await deleteDoc(doc(db, "online_materials", docId)); } 
+                catch(error) { alert("Harsatna: " + error.message); }
+            }
+        }
+
+        onSnapshot(query(collection(db, "online_materials"), orderBy("createdAt", "desc")), (snapshot) => {
+            const adminContainer = document.getElementById('admin-online-container');
+            const studentContainer = document.getElementById('student-online-container');
+            
+            if(adminContainer) adminContainer.innerHTML = '';
+            if(studentContainer) studentContainer.innerHTML = '<h3 style="color: #6d28d9;">Online Shift Message & Links</h3>';
+            
+            if (snapshot.empty) {
+                if(adminContainer) adminContainer.innerHTML = '<p style="color: gray;">A la awm rih lo...</p>';
+                if(studentContainer) studentContainer.innerHTML += '<p style="color: gray;">Thil thawn a la awm lo.</p>';
+            } else {
+                snapshot.forEach((docSnap) => {
+                    let data = docSnap.data();
+                    let linkHtml = data.url ? `<a href="${data.url}" target="_blank" class="btn btn-primary" style="padding: 6px 12px; font-size: 13px; text-decoration: none; display: inline-block; margin-top: 10px; width: auto;">Link Hawng Rawh</a>` : '';
+                    
+                    if(adminContainer) {
+                        adminContainer.innerHTML += `
+                            <div class="notice-box" style="border-left-color: #8b5cf6;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                    <div style="flex-grow: 1; padding-right: 10px;">
+                                        <h4 style="margin-bottom: 5px; color: #581c87;">${data.title}</h4>
+                                        <p style="margin-bottom: 0; color: #475569; white-space: pre-wrap; font-size: 14px;">${data.message}</p>
+                                        ${linkHtml}
+                                    </div>
+                                    <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteOnlineMaterial('${docSnap.id}')">✕</button>
+                                </div>
+                            </div>`;
+                    }
+                        
+                    if(studentContainer) {
+                        studentContainer.innerHTML += `
+                            <div class="notice-box" style="border-left-color: #8b5cf6; background: #faf5ff;">
+                                <h4 style="margin-bottom: 5px; color: #581c87;">${data.title}</h4>
+                                <p style="margin-bottom: 0; color: #475569; white-space: pre-wrap; font-size: 14px;">${data.message}</p>
+                                ${linkHtml}
+                            </div>`;
+                    }
+                });
+            }
+        });
+
         // ================= DELETE STUDENT =================
         window.deleteStudent = async function(enrollment) { if(confirm(`Enrollment No: ${enrollment} hi i paih duh takzet em?`)) { try { await deleteDoc(doc(db, "students", enrollment)); alert("Zirlai hi paih a ni tawh e."); } catch(error) { alert("Paih naah harsatna: " + error.message); } } }
 
-        // ================= LOGIN LOGIC (Flexible DOB Format: dd/mm/yyyy or dd-mm-yyyy) =================
+        // ================= LOGIN LOGIC =================
         window.loginStudent = async function(event) {
             event.preventDefault();
             const enrollment = document.getElementById('login-enrollment').value.trim(); 
             let dobInput = document.getElementById('login-dob').value.trim();
-            
-            // Format input DOB: slash (/) zawng zawng dash (-) ah convert vek tur
             dobInput = dobInput.replace(/\//g, '-');
 
             try {
-                // Database-a zirlai enrollment leh DOB zawnna
                 const q = query(collection(db, "students"), where("enrollment", "==", enrollment));
                 const snap = await getDocs(q);
                 
@@ -1599,13 +1556,18 @@
                         await updateDoc(doc(db, "students", String(enrollment)), { lastLoginDate: todayISODate });
                         document.getElementById('student-welcome-title').innerText = `Zirlai Portal - ${window.currentStudent.name}`;
                         const ptsUI = document.getElementById('student-att-points'); if(ptsUI) ptsUI.innerText = (attendancePointsMap[enrollment] || 0) + " Points";
+                        
+                        // Online shift a nih chuan menu a rawn lang ang, a nih loh chuan a lang lo ang
+                        const onlineMenuBtn = document.getElementById('student-menu-online');
+                        if (window.currentStudent.shift === 'Online shift') {
+                            onlineMenuBtn.style.display = 'block';
+                        } else {
+                            onlineMenuBtn.style.display = 'none';
+                        }
+
                         renderStudentFeePortal(); loadStudentLeaves(enrollment); showSection('student-portal-section');
-                    } else {
-                        alert("Date of birth a dik lo! Entirnan: 15-05-2005 emaw 15/05/2005");
-                    }
-                } else { 
-                    alert("Enrollment Number a dik lo! Teacher rawn rawh."); 
-                }
+                    } else { alert("Date of birth a dik lo! Entirnan: 15-05-2005 emaw 15/05/2005"); }
+                } else { alert("Enrollment Number a dik lo! Teacher rawn rawh."); }
             } catch (e) { alert("Harsatna: " + e.message); }
         }
 
