@@ -670,7 +670,7 @@
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
         // AUTO-REFRESH VERSION CHECK
-        const APP_VERSION = "3.0"; 
+        const APP_VERSION = "3.1"; 
 
         window.currentStudent = { enrollment: '', name: '' };
         let studentLeaveUnsubscribe = null; 
@@ -705,6 +705,7 @@
             if(sectionId === 'teacher-dashboard-section') {
                 document.getElementById('admin-menu-view').style.display = 'block';
                 document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.remove('active-content'));
+                loadAttendanceForDate();
             }
 
             if(sectionId === 'student-portal-section') {
@@ -724,6 +725,9 @@
             document.getElementById('admin-menu-view').style.display = 'none';
             document.querySelectorAll('.admin-tab-content').forEach(el => { el.classList.remove('active-content'); });
             document.getElementById(tabId).classList.add('active-content');
+            if(tabId === 'tab-attendance') {
+                loadAttendanceForDate();
+            }
             window.scrollTo(0, 0);
         }
 
@@ -1273,6 +1277,10 @@
                 }
 
                 await Promise.all(promises);
+                
+                // Attendance date a lo in-load sa tawh sa chu refresh nghal turin
+                loadAttendanceForDate();
+
                 alert("Chawlh hlawhtling taka pawm a ni e! Attendance-ah 'Reported' tia dah a ni ta.");
             } catch(error) { 
                 alert("Harsatna: " + error.message); 
