@@ -254,9 +254,50 @@
                 <!-- TAB 1: ZIRLAI REGISTER -->
                 <div id="tab-register" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    
+                    <!-- Manual Register Form -->
+                    <div class="card" style="border: 2px solid #0284c7; margin-bottom: 20px;">
+                        <h3 style="color: #0369a1; border-bottom: 1px solid #bae6fd; padding-bottom: 10px;">Zirlai Thar Manual-a Register-na</h3>
+                        <form onsubmit="registerSingleStudent(event)" class="form-grid">
+                            <div class="input-group">
+                                <label>Enrollment No</label>
+                                <input type="text" id="reg-enrollment" placeholder="Entirnan: 2602001" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Hming</label>
+                                <input type="text" id="reg-name" placeholder="Zirlai hming pum" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Date of Birth</label>
+                                <input type="text" id="reg-dob" placeholder="15-05-2005" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Shift</label>
+                                <select id="reg-shift">
+                                    <option value="10am shift">10am shift</option>
+                                    <option value="6am shift">6am shift</option>
+                                    <option value="7am shift">7am shift</option>
+                                    <option value="8am shift">8am shift</option>
+                                    <option value="11am shift">11am shift</option>
+                                    <option value="1pm shift">1pm shift</option>
+                                    <option value="2pm shift">2pm shift</option>
+                                    <option value="3pm shift">3pm shift</option>
+                                    <option value="4pm shift">4pm shift</option>
+                                    <option value="5pm shift">5pm shift</option>
+                                    <option value="7pm shift">7pm shift</option>
+                                    <option value="Saturday shift">Saturday shift</option>
+                                    <option value="Online shift">Online shift</option>
+                                    <option value="Flexible shift">Flexible shift</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="grid-column: 1 / -1; margin-top: 5px;">Zirlai Save Rawh</button>
+                        </form>
+                    </div>
+
+                    <!-- Excel Upload Card -->
                     <div class="card" style="border: 2px solid #16a34a; margin-bottom: 0;">
                         <h3 style="color: #15803d; border-bottom: 1px solid #bbf7d0; padding-bottom: 10px;">Zirlai Register-na (Excel/CSV Upload)</h3>
-                        <p style="font-size: 14px; color: #475569; margin-bottom: 15px;">Excel file-ah Row hmasa berah (Header) hetiang hian Column hming phuah ang che: <b>Enrollment</b>, <b>Name</b>, <b>DOB</b>, <b>Shift</b>. Chumi hnuaiah chuan zirlai data type thla diat diat la, rawn upload rawh.</p>
+                        <p style="font-size: 14px; color: #475569; margin-bottom: 15px;">Excel file-ah Row hmasa berah (Header) hetiang hian Column hming phuah ang che: <b>Enrollment</b>, <b>Name</b>, <b>DOB</b>, <b>Shift</b>.</p>
                         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                             <input type="file" id="excel-upload" accept=".xlsx, .xls, .csv" style="flex-grow: 1; border: 1px dashed #cbd5e1; padding: 10px; border-radius: 6px;">
                             <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 20px;" onclick="uploadExcelData()">Data Thunlut Rawh</button>
@@ -731,7 +772,7 @@
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
         // AUTO-REFRESH VERSION CHECK
-        const APP_VERSION = "3.5"; 
+        const APP_VERSION = "3.6"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '' };
         let studentLeaveUnsubscribe = null; 
@@ -837,7 +878,7 @@
         }
 
         window.shareLoginWhatsApp = function(name, enrollment, dob) {
-            const text = `Chibai *${name}*,\n\nHei hi Bethel Computer Centre Portal-a i luhna tur a ni e:\n\n👤 *Enrollment No:* ${enrollment}\n🔑 *Date of Birth:* ${dob}\n\n🌐 Portal Link: ${PORTAL_LINK}\n\n(I luh dawnah i date of birth kha '-' hmangin i chhu lut dawn nia, entirnan: 15-05-2005)`;
+            const text = `Chibai *${name}*,\n\nHei hi Bethel Computer Centre Portal-a i luhنا tur a ni e:\n\n👤 *Enrollment No:* ${enrollment}\n🔑 *Date of Birth:* ${dob}\n\n🌐 Portal Link: ${PORTAL_LINK}\n\n(I luh dawnah i date of birth kha '-' hmangin i chhu lut dawn nia, entirnan: 15-05-2005)`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
@@ -1214,6 +1255,31 @@
                 await updateDoc(doc(db, "students", enrollment), { shift: newShift });
                 closeShiftModal();
                 alert("Zirlai shift chu hlawhtling taka thlak a ni e!");
+            } catch(e) {
+                alert("Harsatna: " + e.message);
+            }
+        }
+
+        window.registerSingleStudent = async function(event) {
+            event.preventDefault();
+            const enr = document.getElementById('reg-enrollment').value.trim();
+            const name = document.getElementById('reg-name').value.trim();
+            const dob = document.getElementById('reg-dob').value.trim();
+            const shift = document.getElementById('reg-shift').value;
+
+            if(!enr || !name || !dob) { alert("Data a kim lo!"); return; }
+
+            try {
+                await setDoc(doc(db, "students", String(enr)), {
+                    enrollment: String(enr),
+                    name: String(name),
+                    dob: String(dob),
+                    shift: String(shift),
+                    registeredAt: serverTimestamp(),
+                    lastLoginDate: ""
+                });
+                alert("Zirlai " + name + " chu hlawhtling taka register a ni e!");
+                event.target.reset();
             } catch(e) {
                 alert("Harsatna: " + e.message);
             }
