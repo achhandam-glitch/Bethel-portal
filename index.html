@@ -256,7 +256,7 @@
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     <div class="card" style="border: 2px solid #16a34a; margin-bottom: 0;">
                         <h3 style="color: #15803d; border-bottom: 1px solid #bbf7d0; padding-bottom: 10px;">Zirlai Register-na (Excel/CSV Upload)</h3>
-                        <p style="font-size: 14px; color: #475569; margin-bottom: 15px;">Excel file-ah Row hmasa berah (Header) hetiang hian Column hming phuah ang che: <b>Enrollment</b>, <b>Name</b>, <b>DOB</b>. Chumi hnuaiah chuan zirlai data type thla diat diat la, rawn upload rawh.</p>
+                        <p style="font-size: 14px; color: #475569; margin-bottom: 15px;">Excel file-ah Row hmasa berah (Header) hetiang hian Column hming phuah ang che: <b>Enrollment</b>, <b>Name</b>, <b>DOB</b>, <b>Shift</b>. Chumi hnuaiah chuan zirlai data type thla diat diat la, rawn upload rawh.</p>
                         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                             <input type="file" id="excel-upload" accept=".xlsx, .xls, .csv" style="flex-grow: 1; border: 1px dashed #cbd5e1; padding: 10px; border-radius: 6px;">
                             <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 20px;" onclick="uploadExcelData()">Data Thunlut Rawh</button>
@@ -626,6 +626,12 @@
                 <div id="student-tab-status" class="student-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
+                    <!-- STUDENT SHIFT DISPLAY CARD -->
+                    <div style="background: #e0f2fe; border: 1px solid #7dd3fc; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <p style="color: #0369a1; font-weight: 600; font-size: 16px; margin: 0;">I Shift Hun:</p>
+                        <div style="font-size: 18px; font-weight: bold; color: #0c4a6e;" id="student-portal-shift">-</div>
+                    </div>
+
                     <!-- FEE REPORT (STUDENT) - Fee pek zat chauh a lang ang -->
                     <div class="dashboard-stat-card" style="background: #fffbeb; border-color: #fde68a; display: block; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fde68a;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -725,9 +731,9 @@
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
         // AUTO-REFRESH VERSION CHECK
-        const APP_VERSION = "3.4"; 
+        const APP_VERSION = "3.5"; 
 
-        window.currentStudent = { enrollment: '', name: '' };
+        window.currentStudent = { enrollment: '', name: '', shift: '' };
         let studentLeaveUnsubscribe = null; 
         
         let allStudentsList = []; 
@@ -967,6 +973,7 @@
             }
             
             document.getElementById('student-fee-paid').innerText = `Pek Tawh: ₹${totalPaid}`;
+            document.getElementById('student-portal-shift').innerText = window.currentStudent.shift || '10am shift';
 
             const historyDiv = document.getElementById('student-fee-history');
             historyDiv.innerHTML = '';
@@ -1517,6 +1524,7 @@
                         if (dbDob === dobInput) {
                             matched = true;
                             window.currentStudent.name = d.data().name;
+                            window.currentStudent.shift = d.data().shift || '10am shift';
                         }
                     });
 
