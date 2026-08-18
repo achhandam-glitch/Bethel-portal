@@ -799,7 +799,7 @@
                             <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">I practical folder (Google Drive link) kha hetah hian rawn thehlut rawh. (Link i copy dawnin 'Anyone with the link' tihah i thlak hmasa dawn nia).</p>
                             <form onsubmit="submitPracticalLink(event)">
                                 <div class="input-group">
-                                    <label>Folder Hming / Entirnan: Ms Word Practical)</label>
+                                    <label>Folder Hming / Entirnan: Ms Word Practical</label>
                                     <input type="text" id="practical-title" required>
                                 </div>
                                 <div class="input-group">
@@ -846,7 +846,7 @@
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
-        const APP_VERSION = "3.9"; 
+        const APP_VERSION = "3.10"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '' };
         let studentLeaveUnsubscribe = null; 
@@ -949,6 +949,16 @@
 
         window.shareLoginWhatsApp = function(name, enrollment, dob) {
             const text = `Chibai *${name}*,\n\nHei hi Bethel Computer Centre Portal-a i luhna tur a ni e:\n\n👤 *Enrollment No:* ${enrollment}\n🔑 *Date of Birth:* ${dob}\n\n🌐 Portal Link: ${PORTAL_LINK}\n\n(I luh dawnah i date of birth kha '-' hmangin i chhu lut dawn nia, entirnan: 15-05-2005)`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        // NEW: Online Shift WhatsApp Share Function
+        window.shareOnlineWhatsApp = function(title, url) {
+            let text = `📌 *Bethel Computer Centre*\n\n💻 *Online Shift Zirlaite Hriattirna*\n\n*${title}*`;
+            if (url && url.trim() !== '') {
+                text += `\n🔗 Link: ${url}`;
+            }
+            text += `\n\nKhawngaihin in Portal-ah log in ula kimchangin lo check ngei ngei ru.\n\n🌐 Portal Link: ${PORTAL_LINK}`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
@@ -1558,6 +1568,8 @@
             } else {
                 snapshot.forEach((docSnap) => {
                     let data = docSnap.data();
+                    let safeTitle = data.title ? data.title.replace(/'/g, "\\'") : '';
+                    let safeUrl = data.url ? data.url.replace(/'/g, "\\'") : '';
                     let linkHtml = data.url ? `<a href="${data.url}" target="_blank" class="btn btn-primary" style="padding: 6px 12px; font-size: 13px; text-decoration: none; display: inline-block; margin-top: 10px; width: auto;">Link Hawng Rawh</a>` : '';
                     
                     if(adminContainer) {
@@ -1569,7 +1581,10 @@
                                         <p style="margin-bottom: 0; color: #475569; white-space: pre-wrap; font-size: 14px;">${data.message}</p>
                                         ${linkHtml}
                                     </div>
-                                    <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteOnlineMaterial('${docSnap.id}')">✕</button>
+                                    <div style="display: flex; gap: 5px; flex-direction: column;">
+                                        <button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Share-na" onclick="shareOnlineWhatsApp('${safeTitle}', '${safeUrl}')">📲</button>
+                                        <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteOnlineMaterial('${docSnap.id}')">✕</button>
+                                    </div>
                                 </div>
                             </div>`;
                     }
@@ -1586,7 +1601,7 @@
             }
         });
 
-        // ================= PRACTICAL SUBMISSION (NEW) =================
+        // ================= PRACTICAL SUBMISSION =================
         window.submitPracticalLink = async function(event) {
             event.preventDefault();
             const title = document.getElementById('practical-title').value.trim();
