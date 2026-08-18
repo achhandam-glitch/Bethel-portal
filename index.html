@@ -528,6 +528,15 @@
                 <!-- TAB NEW: ONLINE SHIFT BIK -->
                 <div id="tab-online" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    
+                    <!-- NEW SECTION: Online Students List -->
+                    <div class="card" style="border: 2px solid #3b82f6; margin-bottom: 20px; padding: 20px;">
+                        <h3 style="color: #1d4ed8; border-bottom: 1px solid #bfdbfe; padding-bottom: 10px; margin-bottom: 15px;">👥 Online Shift Zirlaite</h3>
+                        <div id="admin-online-students-list" style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 150px; overflow-y: auto;">
+                            <p style="color: gray; font-size: 14px;">Zirlai an rawn in-load mek...</p>
+                        </div>
+                    </div>
+
                     <div class="form-grid" style="grid-template-columns: 1fr;">
                         <div class="card" style="border: 2px solid #8b5cf6;">
                             <h3 style="color: #6d28d9; border-bottom: 1px solid #ddd6fe; padding-bottom: 10px;">Online Shift Thawnna (Message & Link)</h3>
@@ -801,7 +810,7 @@
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
-        const APP_VERSION = "3.7"; 
+        const APP_VERSION = "3.8"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '' };
         let studentLeaveUnsubscribe = null; 
@@ -1256,9 +1265,25 @@
             if (namesDisplay) { namesDisplay.innerHTML = onlineNames.length > 0 ? onlineNames.join('') : '<span style="color: gray; font-style: italic; font-size: 13px;">Online an la awm lo...</span>'; }
         }
 
+        // NEW FUNCTION: Render Online Students List
+        function renderOnlineShiftStudents() {
+            const container = document.getElementById('admin-online-students-list');
+            if (!container) return;
+            
+            const onlineStudents = allStudentsList.filter(s => (s.shift || '10am shift') === 'Online shift');
+            
+            if (onlineStudents.length === 0) {
+                container.innerHTML = '<span style="color: gray; font-size: 14px; font-style: italic;">Online shift-ah zirlai an la awm lo...</span>';
+            } else {
+                container.innerHTML = onlineStudents.map(s => 
+                    `<span class="badge-student" style="background-color: #f3e8ff; color: #6b21a8; border-color: #d8b4fe; font-size: 14px; padding: 6px 12px;">${s.name} <small style="color: #64748b; font-weight: normal; margin-left: 4px;">(${s.enrollment})</small></span>`
+                ).join('');
+            }
+        }
+
         onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
             allStudentsList = []; snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
-            renderStudentManagementTable(); renderFeeTable(); loadAttendanceForDate(); 
+            renderStudentManagementTable(); renderFeeTable(); loadAttendanceForDate(); renderOnlineShiftStudents(); 
         });
 
         window.openShiftModal = function(enrollment, currentShift) {
@@ -1557,7 +1582,6 @@
                         document.getElementById('student-welcome-title').innerText = `Zirlai Portal - ${window.currentStudent.name}`;
                         const ptsUI = document.getElementById('student-att-points'); if(ptsUI) ptsUI.innerText = (attendancePointsMap[enrollment] || 0) + " Points";
                         
-                        // Online shift a nih chuan menu a rawn lang ang, a nih loh chuan a lang lo ang
                         const onlineMenuBtn = document.getElementById('student-menu-online');
                         if (window.currentStudent.shift === 'Online shift') {
                             onlineMenuBtn.style.display = 'block';
