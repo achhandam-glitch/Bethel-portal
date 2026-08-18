@@ -529,7 +529,6 @@
                 <div id="tab-online" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
-                    <!-- NEW SECTION: Online Students List -->
                     <div class="card" style="border: 2px solid #3b82f6; margin-bottom: 20px; padding: 20px;">
                         <h3 style="color: #1d4ed8; border-bottom: 1px solid #bfdbfe; padding-bottom: 10px; margin-bottom: 15px;">👥 Online Shift Zirlaite</h3>
                         <div id="admin-online-students-list" style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 150px; overflow-y: auto;">
@@ -563,6 +562,15 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- NEW: ZIRLAI PRACTICAL FOLDER THEHLUHNA LIST (ADMIN VIEW) -->
+                    <div class="card" style="border: 2px solid #10b981; margin-top: 20px;">
+                        <h3 style="color: #047857; border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">📥 Zirlai Practical Thehluh Te (Google Drive Links)</h3>
+                        <div id="admin-practical-list" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
+                            <p style="color: gray;">Thehlut an la awm lo...</p>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- TAB 6: GRADEBOOK -->
@@ -778,10 +786,38 @@
                 <!-- TAB 5: ONLINE SHIFT BIK (Student) -->
                 <div id="student-tab-online" class="student-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
-                    <div class="card" style="margin-bottom: 0;" id="student-online-container">
+                    
+                    <div class="card" style="margin-bottom: 20px;" id="student-online-container">
                         <h3 style="color: #6d28d9;">Online Shift Message & Links</h3>
                         <p style="color: gray;">Database atangin a rawn in-load mek...</p>
                     </div>
+
+                    <!-- NEW: ZIRLAI PRACTICAL THEHLUHNA FORM -->
+                    <div class="form-grid" style="grid-template-columns: 1fr;">
+                        <div class="card" style="border: 2px solid #10b981;">
+                            <h3 style="color: #047857; border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">Practical Folder Thehluhna</h3>
+                            <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">I practical folder (Google Drive link) kha hetah hian rawn thehlut rawh. (Link i copy dawnin 'Anyone with the link' tihah i thlak hmasa dawn nia).</p>
+                            <form onsubmit="submitPracticalLink(event)">
+                                <div class="input-group">
+                                    <label>Folder Hming / Subject (Entirnan: DCA 101 Practical)</label>
+                                    <input type="text" id="practical-title" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Google Drive Link</label>
+                                    <input type="url" id="practical-link" placeholder="https://drive.google.com/..." required>
+                                </div>
+                                <button type="submit" class="btn btn-success" style="margin-top: 5px; background-color: #10b981;">Link Thehlut Rawh</button>
+                            </form>
+                        </div>
+                        
+                        <div class="card" style="margin-bottom: 0;">
+                            <h3 style="color: #047857;">I Thehluh Tawh Te</h3>
+                            <div id="student-practical-list" style="max-height: 250px; overflow-y: auto;">
+                                <p style="color: gray;">I la thehlut lo.</p>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
@@ -810,7 +846,7 @@
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
-        const APP_VERSION = "3.8"; 
+        const APP_VERSION = "3.9"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '' };
         let studentLeaveUnsubscribe = null; 
@@ -1265,7 +1301,6 @@
             if (namesDisplay) { namesDisplay.innerHTML = onlineNames.length > 0 ? onlineNames.join('') : '<span style="color: gray; font-style: italic; font-size: 13px;">Online an la awm lo...</span>'; }
         }
 
-        // NEW FUNCTION: Render Online Students List
         function renderOnlineShiftStudents() {
             const container = document.getElementById('admin-online-students-list');
             if (!container) return;
@@ -1488,7 +1523,7 @@
             }
         });
 
-        // ================= ONLINE SHIFT BIK (NEW) =================
+        // ================= ONLINE SHIFT BIK =================
         window.shareOnlineMaterial = async function(event) {
             event.preventDefault();
             try {
@@ -1548,6 +1583,84 @@
                             </div>`;
                     }
                 });
+            }
+        });
+
+        // ================= PRACTICAL SUBMISSION (NEW) =================
+        window.submitPracticalLink = async function(event) {
+            event.preventDefault();
+            const title = document.getElementById('practical-title').value.trim();
+            const link = document.getElementById('practical-link').value.trim();
+            
+            if(!title || !link) return;
+            
+            try {
+                await addDoc(collection(db, "practical_submissions"), {
+                    enrollment: window.currentStudent.enrollment,
+                    studentName: window.currentStudent.name,
+                    title: title,
+                    url: link,
+                    timestamp: serverTimestamp()
+                });
+                alert("I practical link chu thehluh a ni e. Zirtirtuin a lo check dawn nia.");
+                event.target.reset();
+            } catch(e) {
+                alert("Harsatna: " + e.message);
+            }
+        }
+
+        window.deletePracticalSubmission = async function(docId) {
+            if(confirm("He link thehluh hi paih i duh takzet em?")) {
+                try {
+                    await deleteDoc(doc(db, "practical_submissions", docId));
+                } catch(e) {
+                    alert("Harsatna: " + e.message);
+                }
+            }
+        }
+
+        onSnapshot(query(collection(db, "practical_submissions"), orderBy("timestamp", "desc")), (snapshot) => {
+            const adminList = document.getElementById('admin-practical-list');
+            const studentList = document.getElementById('student-practical-list');
+            
+            let adminHtml = '';
+            let studentHtml = '';
+            
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                const docId = docSnap.id;
+                const dateStr = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString() : 'Vawiin';
+                
+                adminHtml += `
+                    <div class="notice-box" style="border-left-color: #10b981; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                        <div style="flex-grow: 1;">
+                            <strong style="color: #047857; font-size: 15px;">${data.studentName} <span style="color:gray; font-size: 12px;">(${data.enrollment})</span></strong>
+                            <div style="font-size: 14px; color: #334155; margin-top: 4px;"><span style="font-weight: bold; color: #0f172a;">Subject:</span> ${data.title}</div>
+                            <div style="font-size: 12px; color: gray; margin-top: 4px;">📅 ${dateStr}</div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <a href="${data.url}" target="_blank" class="btn btn-success" style="padding: 6px 12px; font-size: 13px; margin: 0; text-decoration: none; width: auto;">Hawng Rawh</a>
+                            <button class="btn btn-danger btn-icon" onclick="deletePracticalSubmission('${docId}')">✕</button>
+                        </div>
+                    </div>`;
+                    
+                if(window.currentStudent && data.enrollment === window.currentStudent.enrollment) {
+                    studentHtml += `
+                        <div class="notice-box" style="border-left-color: #10b981; background: #ecfdf5; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                            <div style="flex-grow: 1;">
+                                <strong style="color: #047857;">${data.title}</strong>
+                                <div style="font-size: 12px; color: gray; margin-top: 4px;">📅 Thehluh ni: ${dateStr}</div>
+                            </div>
+                            <a href="${data.url}" target="_blank" class="btn btn-outline" style="border-color: #10b981; color: #10b981; padding: 6px 12px; font-size: 13px; margin: 0; text-decoration: none; width: auto;">I link</a>
+                        </div>`;
+                }
+            });
+            
+            if(adminList) {
+                adminList.innerHTML = adminHtml || '<p style="color: gray;">Thehlut an la awm lo...</p>';
+            }
+            if(studentList && window.currentStudent && window.currentStudent.enrollment) {
+                studentList.innerHTML = studentHtml || '<p style="color: gray;">I la thehlut lo.</p>';
             }
         });
 
