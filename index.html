@@ -670,7 +670,7 @@
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
         // AUTO-REFRESH VERSION CHECK
-        const APP_VERSION = "2.9"; 
+        const APP_VERSION = "3.0"; 
 
         window.currentStudent = { enrollment: '', name: '' };
         let studentLeaveUnsubscribe = null; 
@@ -1208,7 +1208,7 @@
             }
         }
 
-        // ================= LEAVES (Start Date & End Date Support) =================
+        // ================= LEAVES (Start Date & End Date Support + Auto-Mark Attendance on Grant) =================
         window.applyLeave = async function(event) {
             event.preventDefault();
             const startDate = document.getElementById('leave-start-date').value; 
@@ -1223,7 +1223,7 @@
             let dateStr = startDate === endDate ? startDate : `${startDate} to ${endDate}`;
 
             try {
-                await addDoc(collection(db, "leave_requests"), { enrollment: window.currentStudent.enrollment, studentName: window.currentStudent.name, date: dateStr, reason: reason, status: "Pending", createdAt: serverTimestamp() });
+                await addDoc(collection(db, "leave_requests"), { enrollment: window.currentStudent.enrollment, studentName: window.currentStudent.name, startDate: startDate, endDate: endDate, date: dateStr, reason: reason, status: "Pending", createdAt: serverTimestamp() });
                 alert("I in-report-na a lut hlawhtling e."); event.target.reset();
                 document.getElementById('leave-start-date').value = todayISODate;
                 document.getElementById('leave-end-date').value = todayISODate;
@@ -1244,7 +1244,40 @@
             });
         }
 
-        window.approveLeaveStatus = async function(leaveId) { try { await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Approved' }); } catch(error) { alert("Status thlak theih a ni lo: " + error.message); } }
+        // Zirtirtuin chawlh an 'Approve' rualin chawlh ni huam chhung zawng attendance-ah 'Reported' tiin auto-save a ni ang
+        window.approveLeaveStatus = async function(leaveId, enrollment, startDate, endDate) {
+            try {
+                await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Approved' });
+
+                // Date range chhui chhuahna
+                let currDate = new Date(startDate);
+                let lastDate = new Date(endDate);
+                let studentName = allStudentsList.find(s => s.enrollment === enrollment)?.name || '';
+
+                let promises = [];
+                while (currDate <= lastDate) {
+                    let dStr = currDate.toISOString().split('T')[0];
+                    let isSaturday = currDate.getDay() === 6;
+                    let pts = isSaturday ? 2.5 : 0.5; // Reported points
+
+                    promises.push(setDoc(doc(db, "attendance", `${dStr}_${enrollment}`), {
+                        date: dStr,
+                        enrollment: enrollment,
+                        name: studentName,
+                        status: 'Reported',
+                        points: pts,
+                        timestamp: serverTimestamp()
+                    }));
+
+                    currDate.setDate(currDate.getDate() + 1);
+                }
+
+                await Promise.all(promises);
+                alert("Chawlh hlawhtling taka pawm a ni e! Attendance-ah 'Reported' tia dah a ni ta.");
+            } catch(error) { 
+                alert("Harsatna: " + error.message); 
+            }
+        }
 
         onSnapshot(collection(db, "leave_requests"), (snapshot) => {
             const adminContainer = document.getElementById('admin-leave-list'); if(!adminContainer) return; adminContainer.innerHTML = '';
@@ -1253,7 +1286,10 @@
             leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
             leaves.forEach(data => {
                 let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending'; let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek';
-                adminContainer.innerHTML += `<div class="leave-item" style="border-left: 4px solid ${data.status === 'Approved' ? '#22c55e' : '#eab308'};"><div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:8px;"><strong style="font-size: 15px; color: #0f172a;">${data.studentName} <span style="color: gray; font-size: 12px;">(${data.enrollment})</span></strong><span class="status-badge ${badgeClass}">${statusText}</span></div><div style="font-size:13px; color:#334155; margin-bottom: 10px; background: #f8fafc; padding: 6px; border-radius: 4px;"><span style="color:#0284c7; font-weight:bold;">Chawlh Ni:</span> ${data.date} | <span style="color:#0284c7; font-weight:bold;">A Chhan:</span> ${data.reason}</div>${data.status === 'Pending' ? `<button class="btn btn-success" style="padding: 6px 12px; font-size:12px; margin:0; width: auto;" onclick="approveLeaveStatus('${data.id}')">Pawm (Approve)</button>` : ''}</div>`;
+                let sDate = data.startDate || data.date;
+                let eDate = data.endDate || data.date;
+
+                adminContainer.innerHTML += `<div class="leave-item" style="border-left: 4px solid ${data.status === 'Approved' ? '#22c55e' : '#eab308'};"><div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:8px;"><strong style="font-size: 15px; color: #0f172a;">${data.studentName} <span style="color: gray; font-size: 12px;">(${data.enrollment})</span></strong><span class="status-badge ${badgeClass}">${statusText}</span></div><div style="font-size:13px; color:#334155; margin-bottom: 10px; background: #f8fafc; padding: 6px; border-radius: 4px;"><span style="color:#0284c7; font-weight:bold;">Chawlh Ni:</span> ${data.date} | <span style="color:#0284c7; font-weight:bold;">A Chhan:</span> ${data.reason}</div>${data.status === 'Pending' ? `<button class="btn btn-success" style="padding: 6px 12px; font-size:12px; margin:0; width: auto;" onclick="approveLeaveStatus('${data.id}', '${data.enrollment}', '${sDate}', '${eDate}')">Pawm (Approve)</button>` : ''}</div>`;
             });
         });
 
