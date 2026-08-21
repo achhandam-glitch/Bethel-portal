@@ -178,6 +178,35 @@
         </div>
     </div>
 
+    <!-- ATTENDANCE INFO MODAL (STUDENT) -->
+    <div id="attendance-info-modal" class="modal-overlay hidden">
+        <div class="card" style="width: 100%; max-width: 450px; margin: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+                <h3 style="color: #6b21a8; margin: 0; border: none; padding: 0;">Attendance & Internal Mark</h3>
+                <button style="background: none; border: none; font-size: 20px; cursor: pointer; color: #ef4444;" onclick="document.getElementById('attendance-info-modal').classList.add('hidden')">✕</button>
+            </div>
+            
+            <div style="font-size: 14px; color: #334155; line-height: 1.6;">
+                <h4 style="color: #0f172a; margin-bottom: 5px;">1. Attendance Point Hmuh Dan</h4>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li><b>Present:</b> Ni pangngaiah point 1 (Inrinniah point 5).</li>
+                    <li><b>Reported:</b> Ni pangngaiah point 0.5 (Inrinniah point 2.5).</li>
+                    <li><b>Absent:</b> Point 0.</li>
+                </ul>
+
+                <h4 style="color: #0f172a; margin-bottom: 5px;">2. Chawlh In-Report Dan</h4>
+                <p style="margin-bottom: 15px;">Class i kal theih dawn loh chuan Menu aṭangin <b>"📝 Chawlh Dilna & In-Report-na"</b> ah lut la, i chawlh chhan ziakin thehlut rawh. Zirtirtuin a pawm (approve) hunah i attendance kha 'Reported' ah a inthlak ang a, point chanve i hmu ang.</p>
+
+                <h4 style="color: #0f172a; margin-bottom: 5px;">3. Internal Mark Hamthatna</h4>
+                <p style="margin-bottom: 15px; padding: 10px; background-color: #f0fdf4; border-left: 4px solid #16a34a; border-radius: 4px;">
+                    Class i kal ṭhat dan (percentage) hian Internal Mark-ah nghawng thui tak a nei a ni. Entirnan, <b>DCA 104</b> subject-ah phei chuan i <b>Attendance Percentage aṭangin Practical Exam Mark (Max 40) pek auto i ni dawn a ni.</b> Class i kal that poh leh i exam mark a tha dawn tihna a ni.
+                </p>
+            </div>
+            
+            <button class="btn btn-primary" style="margin-top: 10px; background-color: #6b21a8;" onclick="document.getElementById('attendance-info-modal').classList.add('hidden')">Ka Hrethiam E</button>
+        </div>
+    </div>
+
     <div class="container">
 
         <!-- 2. ZIRLAI LOGIN -->
@@ -723,9 +752,15 @@
                         </div>
                     </div>
 
-                    <div style="background: #f3e8ff; border: 1px solid #d8b4fe; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-                        <p style="color: #6b21a8; font-weight: 600; font-size: 16px; margin: 0;">Total Attendance Points:</p>
-                        <div style="font-size: 28px; font-weight: bold; color: #7e22ce;" id="student-att-points">0 Points</div>
+                    <!-- Total Attendance Points Box Updated -->
+                    <div style="background: #f3e8ff; border: 1px solid #d8b4fe; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <p style="color: #6b21a8; font-weight: 600; font-size: 16px; margin: 0;">Total Attendance Points:</p>
+                            <div style="font-size: 28px; font-weight: bold; color: #7e22ce;" id="student-att-points">0 Points</div>
+                        </div>
+                        <button class="btn" style="background-color: #e9d5ff; color: #6b21a8; border: 1px solid #c084fc; font-size: 13px; padding: 8px;" onclick="document.getElementById('attendance-info-modal').classList.remove('hidden')">
+                            ℹ️ Attendance & Internal Mark Hriattirna
+                        </button>
                     </div>
                 </div>
 
