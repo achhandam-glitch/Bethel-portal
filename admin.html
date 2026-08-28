@@ -98,6 +98,12 @@
 
         .back-menu-bar { margin-bottom: 15px; }
 
+        /* MCQ & COIN STYLES */
+        .mcq-card { border: 2px solid #eab308; background: #fefce8; padding: 20px; border-radius: 10px; margin-bottom: 15px; }
+        .mcq-option { display: block; margin: 8px 0; padding: 10px; background: white; border: 1px solid #fde047; border-radius: 6px; cursor: pointer; }
+        .mcq-option:hover { background: #fef08a; }
+        .leaderboard-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #e2e8f0; }
+
         @media (max-width: 768px) { 
             .form-grid { grid-template-columns: 1fr; } 
             .hero-content h1 { font-size: 32px; } 
@@ -112,9 +118,9 @@
             <h1>Bethel Computer Centre</h1>
             <p>Admin / Zirtirtu Portal</p>
             <div class="home-menu">
-                <!-- Zirlai Luhna chu he file-ah hian thup (hide) a ni -->
-                <button class="btn btn-success" style="display: none;" onclick="showSection('student-login-section')">Zirlaite hman tur</button>
-                <button class="btn btn-outline-light" onclick="showSection('admin-login-section')">Zirtirtu hman tur</button>
+                <!-- ZIRLAI LUHNA THUP (HIDE) SA -->
+                <button class="btn btn-success" style="display: none;" onclick="showSection('student-login-section')">Zirlai Luhna</button>
+                <button class="btn btn-outline-light" onclick="showSection('admin-login-section')">Zirtirtu Luhna</button>
             </div>
         </div>
     </section>
@@ -266,6 +272,7 @@
                     <div class="menu-box">
                         <button class="menu-btn" onclick="openAdminTab('tab-register')">📋 Zirlai Register-na</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-fee')">💰 Zirlaite Fee Management</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-mcq')" style="border-left-color: #eab308; background: #fefce8; color: #a16207;">🎮 MCQ Siamna & Coins</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-attendance')">📅 Attendance Mark-na & Chawlh</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-notice')">📢 Notice Board</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-links')">🔗 Link Semchhuahna</button>
@@ -276,9 +283,52 @@
                 </div>
             </div>
 
-            <!-- TAB CONTENT VIEWS (With Back to Menu Button) -->
+            <!-- TAB CONTENT VIEWS -->
             <div id="admin-content-view">
                 
+                <!-- TAB: MCQ ADMIN -->
+                <div id="tab-mcq" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="form-grid" style="grid-template-columns: 1fr;">
+                        <div class="card" style="border: 2px solid #eab308;">
+                            <h3 style="color: #a16207; border-bottom: 1px solid #fde047;">MCQ Zawhna Thar Siamna</h3>
+                            <form onsubmit="createMCQ(event)">
+                                <div class="input-group">
+                                    <label>Zawhna (Question)</label>
+                                    <input type="text" id="mcq-q" placeholder="Entirnan: HTML awmzia chu?" required>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="input-group"><label>Option A</label><input type="text" id="mcq-a" required></div>
+                                    <div class="input-group"><label>Option B</label><input type="text" id="mcq-b" required></div>
+                                    <div class="input-group"><label>Option C</label><input type="text" id="mcq-c" required></div>
+                                    <div class="input-group"><label>Option D</label><input type="text" id="mcq-d" required></div>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="input-group">
+                                        <label>Chhanna Dik (Correct Answer)</label>
+                                        <select id="mcq-ans" required>
+                                            <option value="A">Option A</option><option value="B">Option B</option>
+                                            <option value="C">Option C</option><option value="D">Option D</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Coins Reward (Hmuh theih zat)</label>
+                                        <input type="number" id="mcq-coins" value="10" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-warning" style="margin-top: 10px;">Post MCQ</button>
+                            </form>
+                        </div>
+                        
+                        <div class="card" style="margin-bottom: 0;">
+                            <h3 style="color: #0f172a;">MCQ Post Tawh Te</h3>
+                            <div id="admin-mcq-list" style="max-height: 400px; overflow-y: auto;">
+                                <p style="color: gray;">MCQ a la awm lo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- TAB 1: ZIRLAI REGISTER -->
                 <div id="tab-register" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
@@ -555,7 +605,7 @@
                     </div>
                 </div>
                 
-                <!-- TAB NEW: ONLINE SHIFT BIK -->
+                <!-- TAB ONLINE SHIFT BIK -->
                 <div id="tab-online" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
@@ -593,7 +643,7 @@
                         </div>
                     </div>
 
-                    <!-- NEW: ZIRLAI PRACTICAL FOLDER THEHLUHNA LIST (ADMIN VIEW) -->
+                    <!-- ZIRLAI PRACTICAL FOLDER THEHLUHNA LIST (ADMIN VIEW) -->
                     <div class="card" style="border: 2px solid #10b981; margin-top: 20px;">
                         <h3 style="color: #047857; border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">📥 Zirlai Practical Thehluh Te (Google Drive Links)</h3>
                         <div id="admin-practical-list" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
@@ -715,8 +765,11 @@
             
             <!-- STUDENT MAIN MENU VIEW -->
             <div id="student-menu-view">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto;">
-                    <h2 style="border:none; margin:0;" id="student-welcome-title">Zirlai Portal</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <h2 style="border:none; margin:0;" id="student-welcome-title">Zirlai Portal</h2>
+                        <div style="color: #eab308; font-weight: bold; font-size: 16px; margin-top: 5px;">🪙 Coins Neih Zat: <span id="student-coin-balance">0</span></div>
+                    </div>
                     <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px; margin:0;" onclick="showSection('home-section')">Log Out</button>
                 </div>
 
@@ -724,6 +777,7 @@
                     <h4 style="font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Zirlai Menu</h4>
                     <div class="menu-box">
                         <button class="menu-btn" onclick="openStudentTab('student-tab-status')">📊 Zirlai Dinhmun (Fee & Attendance)</button>
+                        <button class="menu-btn" onclick="openStudentTab('student-tab-mcq')" style="border-left-color: #eab308; background: #fefce8; color: #a16207;">🎮 MCQ Quizzes & Reward Coins</button>
                         <button class="menu-btn" onclick="openStudentTab('student-tab-leave')">📝 Chawlh Dilna & In-Report-na</button>
                         <button class="menu-btn" onclick="openStudentTab('student-tab-notice')">📢 Notice Board</button>
                         <button class="menu-btn" onclick="openStudentTab('student-tab-materials')">📚 Study Materials, Assignments & Tests</button>
@@ -734,6 +788,25 @@
 
             <!-- STUDENT TAB CONTENT VIEWS -->
             <div id="student-content-view">
+
+                <!-- NEW TAB: MCQ STUDENT -->
+                <div id="student-tab-mcq" class="student-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    
+                    <div class="card" style="border: 2px solid #eab308; padding: 20px;">
+                        <h3 style="color: #a16207; border-bottom: 1px solid #fde047;">🏆 Coin Leaderboard (Top 5)</h3>
+                        <div id="mcq-leaderboard" style="margin-top: 15px;">
+                            <p style="color: gray;">Loading...</p>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-bottom: 0;">
+                        <h3 style="color: #0f172a;">📝 Quizzes & Rewards</h3>
+                        <div id="student-mcq-list">
+                            <p style="color: gray;">Loading...</p>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- TAB 1: STATUS (Fee & Attendance) -->
                 <div id="student-tab-status" class="student-tab-content">
@@ -753,7 +826,6 @@
                         </div>
                     </div>
 
-                    <!-- Total Attendance Points Box Updated -->
                     <div style="background: #f3e8ff; border: 1px solid #d8b4fe; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <p style="color: #6b21a8; font-weight: 600; font-size: 16px; margin: 0;">Total Attendance Points:</p>
@@ -822,7 +894,7 @@
                         <p style="color: gray;">Database atangin a rawn in-load mek...</p>
                     </div>
 
-                    <!-- NEW: ZIRLAI PRACTICAL THEHLUHNA FORM -->
+                    <!-- ZIRLAI PRACTICAL THEHLUHNA FORM -->
                     <div class="form-grid" style="grid-template-columns: 1fr;">
                         <div class="card" style="border: 2px solid #10b981;">
                             <h3 style="color: #047857; border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">Practical Folder Thehluhna</h3>
@@ -859,7 +931,7 @@
     <!-- ================= FIREBASE SETUP & JAVASCRIPT LOGIC ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, deleteDoc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAYardtj2WcBiUGSD9Ytqa0yZUWwjEXgis",
@@ -876,15 +948,18 @@
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
-        const APP_VERSION = "3.11"; 
+        const APP_VERSION = "3.12"; 
 
-        window.currentStudent = { enrollment: '', name: '', shift: '' };
+        window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
         
         let allStudentsList = []; 
         let attendancePointsMap = {}; 
         let attendanceStats = {}; 
         let feeDataMap = {}; 
+        
+        let mcqTests = []; 
+        let mySubmissions = [];
 
         const todayISODate = new Date().toISOString().split('T')[0];
         document.getElementById('attendance-date').value = todayISODate;
@@ -990,6 +1065,126 @@
             }
             text += `\n\nKhawngaihin in Portal-ah log in ula kimchangin lo check ngei ngei ru.\n\n🌐 Portal Link: ${PORTAL_LINK}`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        // ================= MCQ & COINS LOGIC =================
+        window.createMCQ = async function(e) {
+            e.preventDefault();
+            try {
+                await addDoc(collection(db, "mcq_tests"), {
+                    question: document.getElementById('mcq-q').value,
+                    optA: document.getElementById('mcq-a').value,
+                    optB: document.getElementById('mcq-b').value,
+                    optC: document.getElementById('mcq-c').value,
+                    optD: document.getElementById('mcq-d').value,
+                    answer: document.getElementById('mcq-ans').value,
+                    coins: parseInt(document.getElementById('mcq-coins').value),
+                    createdAt: serverTimestamp()
+                });
+                alert("MCQ hlawhtling takin i siam e!");
+                e.target.reset();
+            } catch(err) { alert("Error: " + err.message); }
+        }
+
+        window.deleteMCQ = async function(id) {
+            if(confirm("Paih duh takzet em?")) {
+                await deleteDoc(doc(db, "mcq_tests", id));
+            }
+        }
+
+        onSnapshot(query(collection(db, "mcq_tests"), orderBy("createdAt", "desc")), (snapshot) => {
+            mcqTests = []; snapshot.forEach(doc => mcqTests.push({id: doc.id, ...doc.data()}));
+            
+            // Admin Render
+            const adminList = document.getElementById('admin-mcq-list');
+            if(adminList) {
+                adminList.innerHTML = '';
+                if(snapshot.empty) { adminList.innerHTML = '<p style="color:gray;">MCQ a la awm lo.</p>'; } 
+                else {
+                    mcqTests.forEach(d => {
+                        adminList.innerHTML += `
+                            <div style="border: 1px solid #fde047; background: #fefce8; padding: 15px; border-radius: 6px; margin-bottom: 10px;">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                                    <strong style="color:#a16207;">${d.question}</strong>
+                                    <button class="btn btn-danger btn-icon" onclick="deleteMCQ('${d.id}')">✕</button>
+                                </div>
+                                <ul style="font-size:13px; color:#475569; margin-left:15px; margin-bottom:10px;">
+                                    <li>A. ${d.optA}</li><li>B. ${d.optB}</li><li>C. ${d.optC}</li><li>D. ${d.optD}</li>
+                                </ul>
+                                <span style="font-size:13px; background:#dcfce7; color:#166534; padding:3px 8px; border-radius:4px;">Dik: <b>${d.answer}</b></span>
+                                <span style="font-size:13px; background:#fef08a; color:#854d0e; padding:3px 8px; border-radius:4px;">Coins: <b>${d.coins}</b></span>
+                            </div>`;
+                    });
+                }
+            }
+            renderStudentMCQs();
+        });
+
+        function loadMySubmissions() {
+            if(!window.currentStudent.enrollment) return;
+            onSnapshot(query(collection(db, "mcq_submissions"), where("enrollment", "==", window.currentStudent.enrollment)), (snapshot) => {
+                mySubmissions = []; snapshot.forEach(doc => mySubmissions.push(doc.data().mcqId));
+                renderStudentMCQs();
+            });
+        }
+
+        function renderStudentMCQs() {
+            const list = document.getElementById('student-mcq-list'); if(!list) return;
+            if(mcqTests.length === 0) { list.innerHTML = '<p style="color:gray;">Quiz a awm rih lo.</p>'; return; }
+            list.innerHTML = '';
+            mcqTests.forEach(mcq => {
+                let isAnswered = mySubmissions.includes(mcq.id);
+                if(isAnswered) {
+                    list.innerHTML += `<div class="mcq-card" style="border-color:#cbd5e1; background:#f8fafc; opacity:0.8;"><div style="display:flex; justify-content:space-between;"><b>${mcq.question}</b><span style="color:#16a34a; font-weight:bold;">✅ Chhang Tawh</span></div></div>`;
+                } else {
+                    list.innerHTML += `
+                        <div class="mcq-card" id="mcq-box-${mcq.id}">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                                <h4 style="color:#0f172a; margin:0;">${mcq.question}</h4>
+                                <span style="background:#fef08a; color:#854d0e; padding:3px 8px; border-radius:12px; font-size:12px; font-weight:bold;">🪙 ${mcq.coins} Coins</span>
+                            </div>
+                            <form onsubmit="submitMCQAnswer(event, '${mcq.id}')">
+                                <label class="mcq-option"><input type="radio" name="ans_${mcq.id}" value="A" required> A. ${mcq.optA}</label>
+                                <label class="mcq-option"><input type="radio" name="ans_${mcq.id}" value="B"> B. ${mcq.optB}</label>
+                                <label class="mcq-option"><input type="radio" name="ans_${mcq.id}" value="C"> C. ${mcq.optC}</label>
+                                <label class="mcq-option"><input type="radio" name="ans_${mcq.id}" value="D"> D. ${mcq.optD}</label>
+                                <button type="submit" class="btn btn-warning" style="margin-top:10px;">Submit Answer</button>
+                            </form>
+                        </div>`;
+                }
+            });
+        }
+
+        window.submitMCQAnswer = async function(event, mcqId) {
+            event.preventDefault();
+            const radios = document.getElementsByName(`ans_${mcqId}`);
+            let selected = '';
+            for(let r of radios) { if(r.checked) selected = r.value; }
+            let mcq = mcqTests.find(m => m.id === mcqId);
+            if(!mcq || !selected) return;
+
+            try {
+                await setDoc(doc(db, "mcq_submissions", `${mcqId}_${window.currentStudent.enrollment}`), {
+                    mcqId: mcqId, enrollment: window.currentStudent.enrollment, answer: selected, timestamp: serverTimestamp()
+                });
+                
+                if(selected === mcq.answer) {
+                    await setDoc(doc(db, "students", window.currentStudent.enrollment), { coins: increment(mcq.coins) }, { merge: true });
+                    alert(`✅ I chhang dik e! Coin ${mcq.coins} pek i ni.`);
+                } else {
+                    alert(`❌ I chhang sual. A dik chu: ${mcq.answer}`);
+                }
+            } catch(e) { alert("Harsatna: " + e.message); }
+        }
+
+        function renderLeaderboard() {
+            const board = document.getElementById('mcq-leaderboard'); if(!board) return;
+            let sorted = [...allStudentsList].sort((a,b) => (b.coins || 0) - (a.coins || 0)).slice(0, 5);
+            if(sorted.length === 0 || (sorted[0].coins || 0) === 0) { board.innerHTML = '<p style="color:gray; font-size:14px;">Coin la an la awm lo.</p>'; return; }
+            board.innerHTML = sorted.map((s, i) => {
+                let medal = i===0 ? '🥇' : i===1 ? '🥈' : i===2 ? '🥉' : '🔹';
+                return `<div class="leaderboard-row"><span>${medal} <b>${s.name}</b></span><strong style="color:#a16207;">${s.coins || 0} Coins</strong></div>`;
+            }).join('');
         }
 
         // ================= FEE MANAGEMENT =================
@@ -1200,9 +1395,7 @@
 
             if(filteredStudents.length === 0) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">He shift-ah hian zirlai an awm lo.</td></tr>'; return; }
 
-            let presentList = [];
-            let reportList = [];
-            let absentCount = 0;
+            let presentList = []; let reportList = []; let absentCount = 0;
 
             filteredStudents.forEach(s => {
                 let status = existingAtt[s.enrollment] !== undefined ? existingAtt[s.enrollment] : ''; 
@@ -1231,41 +1424,29 @@
 
             document.getElementById('count-present').innerText = presentList.length;
             document.getElementById('list-present').innerText = presentList.length > 0 ? presentList.join(', ') : 'A la awm lo';
-            
             document.getElementById('count-report').innerText = reportList.length;
             document.getElementById('list-report').innerText = reportList.length > 0 ? reportList.join(', ') : 'A la awm lo';
-            
             document.getElementById('count-absent').innerText = absentCount;
 
             filterAttendance();
         }
 
         window.updateAttendanceSummary = function() {
-            let presentList = [];
-            let reportList = [];
-            let absentCount = 0;
+            let presentList = []; let reportList = []; let absentCount = 0;
             const selectedShift = document.getElementById('attendance-shift-filter').value;
-            
             let filteredStudents = allStudentsList;
-            if (selectedShift !== 'ALL') {
-                filteredStudents = allStudentsList.filter(s => (s.shift || '10am shift') === selectedShift);
-            }
-
+            if (selectedShift !== 'ALL') { filteredStudents = allStudentsList.filter(s => (s.shift || '10am shift') === selectedShift); }
             filteredStudents.forEach(s => {
                 const radios = document.getElementsByName(`att_${s.enrollment}`); let val = '';
                 for(let r of radios) { if(r.checked) val = r.value; }
-
                 if (val === 'Present') presentList.push(s.name);
                 else if (val === 'Reported') reportList.push(s.name);
                 else absentCount++;
             });
-
             document.getElementById('count-present').innerText = presentList.length;
             document.getElementById('list-present').innerText = presentList.length > 0 ? presentList.join(', ') : 'A la awm lo';
-            
             document.getElementById('count-report').innerText = reportList.length;
             document.getElementById('list-report').innerText = reportList.length > 0 ? reportList.join(', ') : 'A la awm lo';
-            
             document.getElementById('count-absent').innerText = absentCount;
         }
 
@@ -1344,46 +1525,42 @@
         function renderOnlineShiftStudents() {
             const container = document.getElementById('admin-online-students-list');
             if (!container) return;
-            
             const onlineStudents = allStudentsList.filter(s => (s.shift || '10am shift') === 'Online shift');
-            
             if (onlineStudents.length === 0) {
                 container.innerHTML = '<span style="color: gray; font-size: 14px; font-style: italic;">Online shift-ah zirlai an la awm lo...</span>';
             } else {
-                container.innerHTML = onlineStudents.map(s => 
-                    `<span class="badge-student" style="background-color: #f3e8ff; color: #6b21a8; border-color: #d8b4fe; font-size: 14px; padding: 6px 12px;">${s.name} <small style="color: #64748b; font-weight: normal; margin-left: 4px;">(${s.enrollment})</small></span>`
-                ).join('');
+                container.innerHTML = onlineStudents.map(s => `<span class="badge-student" style="background-color: #f3e8ff; color: #6b21a8; border-color: #d8b4fe; font-size: 14px; padding: 6px 12px;">${s.name} <small style="color: #64748b; font-weight: normal; margin-left: 4px;">(${s.enrollment})</small></span>`).join('');
             }
         }
 
+        // FETCH ALL STUDENTS (Also used for Leaderboard)
         onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
             allStudentsList = []; snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
             renderStudentManagementTable(); renderFeeTable(); loadAttendanceForDate(); renderOnlineShiftStudents(); 
+            renderLeaderboard();
+            if(window.currentStudent.enrollment) {
+                let me = allStudentsList.find(s => s.enrollment === window.currentStudent.enrollment);
+                if(me) {
+                    window.currentStudent.coins = me.coins || 0;
+                    document.getElementById('student-coin-balance').innerText = window.currentStudent.coins;
+                }
+            }
         });
 
         window.openShiftModal = function(enrollment, currentShift) {
-            document.getElementById('edit-shift-enrollment').value = enrollment;
-            document.getElementById('edit-student-shift').value = currentShift;
-            document.getElementById('shift-edit-modal').classList.remove('hidden');
+            document.getElementById('edit-shift-enrollment').value = enrollment; document.getElementById('edit-student-shift').value = currentShift; document.getElementById('shift-edit-modal').classList.remove('hidden');
         }
-        window.closeShiftModal = function() {
-            document.getElementById('shift-edit-modal').classList.add('hidden');
-        }
+        window.closeShiftModal = function() { document.getElementById('shift-edit-modal').classList.add('hidden'); }
         window.updateStudentShift = async function() {
-            const enrollment = document.getElementById('edit-shift-enrollment').value;
-            const newShift = document.getElementById('edit-student-shift').value;
-            try { await updateDoc(doc(db, "students", enrollment), { shift: newShift }); closeShiftModal(); alert("Zirlai shift chu hlawhtling taka thlak a ni e!"); } 
-            catch(e) { alert("Harsatna: " + e.message); }
+            const enrollment = document.getElementById('edit-shift-enrollment').value; const newShift = document.getElementById('edit-student-shift').value;
+            try { await updateDoc(doc(db, "students", enrollment), { shift: newShift }); closeShiftModal(); alert("Zirlai shift chu hlawhtling taka thlak a ni e!"); } catch(e) { alert("Harsatna: " + e.message); }
         }
 
         window.registerSingleStudent = async function(event) {
             event.preventDefault();
-            const enr = document.getElementById('reg-enrollment').value.trim(); const name = document.getElementById('reg-name').value.trim();
-            const dob = document.getElementById('reg-dob').value.trim(); const shift = document.getElementById('reg-shift').value;
-
+            const enr = document.getElementById('reg-enrollment').value.trim(); const name = document.getElementById('reg-name').value.trim(); const dob = document.getElementById('reg-dob').value.trim(); const shift = document.getElementById('reg-shift').value;
             if(!enr || !name || !dob) { alert("Data a kim lo!"); return; }
-            try { await setDoc(doc(db, "students", String(enr)), { enrollment: String(enr), name: String(name), dob: String(dob), shift: String(shift), registeredAt: serverTimestamp(), lastLoginDate: "" }); alert("Zirlai " + name + " chu hlawhtling taka register a ni e!"); event.target.reset(); } 
-            catch(e) { alert("Harsatna: " + e.message); }
+            try { await setDoc(doc(db, "students", String(enr)), { enrollment: String(enr), name: String(name), dob: String(dob), shift: String(shift), coins: 0, registeredAt: serverTimestamp(), lastLoginDate: "" }); alert("Zirlai " + name + " chu hlawhtling taka register a ni e!"); event.target.reset(); } catch(e) { alert("Harsatna: " + e.message); }
         }
 
         window.uploadExcelData = async function() {
@@ -1391,20 +1568,18 @@
             const file = fileInput.files[0];
             if (!file) { alert("Excel emaw CSV file thlang phawt rawh!"); return; }
             statusDiv.style.color = "#0369a1"; statusDiv.innerText = "Data lakluh mek a ni, khawngaihin nghak lawk rawh...";
-
             const reader = new FileReader();
             reader.onload = async function(e) {
                 try {
                     const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
                     const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { raw: false });
                     if (json.length === 0) { statusDiv.style.color = "red"; statusDiv.innerText = "Data a awm lo."; return; }
-
                     let successCount = 0; let errorCount = 0;
                     for (let i = 0; i < json.length; i++) {
                         let row = json[i]; let enrollment = row.Enrollment || row.enrollment; let name = row.Name || row.name || row.Hming; let dob = row.DOB || row.dob; let shift = row.Shift || row.shift || "10am shift";
                         if (enrollment && name && dob) {
                             try {
-                                await setDoc(doc(db, "students", String(enrollment)), { enrollment: String(enrollment), name: String(name), dob: String(dob), shift: String(shift), registeredAt: serverTimestamp(), lastLoginDate: "" });
+                                await setDoc(doc(db, "students", String(enrollment)), { enrollment: String(enrollment), name: String(name), dob: String(dob), shift: String(shift), coins: 0, registeredAt: serverTimestamp(), lastLoginDate: "" }, { merge: true });
                                 successCount++;
                             } catch (err) { errorCount++; }
                         }
@@ -1684,8 +1859,7 @@
             const adminList = document.getElementById('admin-practical-list');
             const studentList = document.getElementById('student-practical-list');
             
-            let adminHtml = '';
-            let studentHtml = '';
+            let adminHtml = ''; let studentHtml = '';
             
             snapshot.forEach(docSnap => {
                 const data = docSnap.data();
@@ -1717,12 +1891,8 @@
                 }
             });
             
-            if(adminList) {
-                adminList.innerHTML = adminHtml || '<p style="color: gray;">Thehlut an la awm lo...</p>';
-            }
-            if(studentList && window.currentStudent && window.currentStudent.enrollment) {
-                studentList.innerHTML = studentHtml || '<p style="color: gray;">I la thehlut lo.</p>';
-            }
+            if(adminList) { adminList.innerHTML = adminHtml || '<p style="color: gray;">Thehlut an la awm lo...</p>'; }
+            if(studentList && window.currentStudent && window.currentStudent.enrollment) { studentList.innerHTML = studentHtml || '<p style="color: gray;">I la thehlut lo.</p>'; }
         });
 
         // ================= DELETE STUDENT =================
@@ -1747,23 +1917,22 @@
                             matched = true;
                             window.currentStudent.name = d.data().name;
                             window.currentStudent.shift = d.data().shift || '10am shift';
+                            window.currentStudent.coins = d.data().coins || 0;
                         }
                     });
 
                     if (matched) {
                         window.currentStudent.enrollment = enrollment;
                         await updateDoc(doc(db, "students", String(enrollment)), { lastLoginDate: todayISODate });
+                        
                         document.getElementById('student-welcome-title').innerText = `Zirlai Portal - ${window.currentStudent.name}`;
+                        document.getElementById('student-coin-balance').innerText = window.currentStudent.coins;
                         const ptsUI = document.getElementById('student-att-points'); if(ptsUI) ptsUI.innerText = (attendancePointsMap[enrollment] || 0) + " Points";
                         
                         const onlineMenuBtn = document.getElementById('student-menu-online');
-                        if (window.currentStudent.shift === 'Online shift') {
-                            onlineMenuBtn.style.display = 'block';
-                        } else {
-                            onlineMenuBtn.style.display = 'none';
-                        }
+                        if (window.currentStudent.shift === 'Online shift') { onlineMenuBtn.style.display = 'block'; } else { onlineMenuBtn.style.display = 'none'; }
 
-                        renderStudentFeePortal(); loadStudentLeaves(enrollment); showSection('student-portal-section');
+                        renderStudentFeePortal(); loadStudentLeaves(enrollment); loadMySubmissions(); showSection('student-portal-section');
                     } else { alert("Date of birth a dik lo! Entirnan: 15-05-2005 emaw 15/05/2005"); }
                 } else { alert("Enrollment Number a dik lo! Teacher rawn rawh."); }
             } catch (e) { alert("Harsatna: " + e.message); }
