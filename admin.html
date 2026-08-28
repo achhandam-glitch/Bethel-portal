@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bethel Computer Centre (Admin)</title>
+    
+    <!-- SheetJS Excel Export & Import -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f0f2f5; color: #333; position: relative; min-height: 100vh; padding-bottom: 50px; }
+        .hidden { display: none !important; }
+
+        .hero-section {
+            height: 100vh; width: 100%; display: flex; justify-content: center; align-items: center;
+            background: linear-gradient(135deg, #0f766e, #0f172a); color: white; text-align: center;
+            position: absolute; top: 0; left: 0; z-index: 1000;
+        }
+        .hero-content h1 { font-size: 45px; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .hero-content p { font-size: 18px; color: #99f6e4; margin-bottom: 40px; }
+        .home-menu { display: flex; flex-direction: column; gap: 15px; max-width: 350px; margin: 0 auto; }
+
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        h2 { color: #0f172a; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        h3 { color: #334155; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;}
+        
+        .btn { padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: 600; width: 100%; transition: 0.3s; margin-bottom: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center; box-sizing: border-box; }
+        .btn-primary { background-color: #0284c7; color: white; }
+        .btn-primary:hover { background-color: #0369a1; }
+        .btn-success { background-color: #16a34a; color: white; }
+        .btn-success:hover { background-color: #15803d; }
+        .btn-warning { background-color: #f59e0b; color: white; }
+        .btn-warning:hover { background-color: #d97706; }
+        .btn-danger { background-color: #ef4444; color: white; }
+        .btn-danger:hover { background-color: #dc2626; }
+        .btn-whatsapp { background-color: #25D366; color: white; }
+        .btn-whatsapp:hover { background-color: #128C7E; }
+        .btn-outline { background-color: transparent; border: 1px solid #0284c7; color: #0284c7; }
+        .btn-outline:hover { background-color: #f0f9ff; }
+        .btn-outline-light { background-color: transparent; border: 2px solid white; color: white; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; }
+        .btn-outline-light:hover { background-color: white; color: #ccfbf1; }
+
+        .btn-icon { width: 38px; height: 38px; padding: 0; border-radius: 6px; display: inline-flex; justify-content: center; align-items: center; font-size: 16px; flex-shrink: 0; }
+
+        form { display: flex; flex-direction: column; gap: 15px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; box-sizing: border-box; }
+        .input-group { display: flex; flex-direction: column; gap: 5px; width: 100%; }
+        label { font-size: 14px; font-weight: 600; color: #475569; }
+        
+        input, select, textarea { width: 100%; max-width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: #0284c7; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; vertical-align: middle; }
+        th { background-color: #f8fafc; color: #334155; }
+        
+        .radio-group { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+        .radio-group label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 500; color: #334155; }
+        .radio-group input[type="radio"] { cursor: pointer; width: 16px; height: 16px; accent-color: #8b5cf6; }
+
+        .shared-link-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 6px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .notice-box { border-left: 5px solid #0284c7; background: #f9fafb; padding: 15px; border-radius: 6px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .comment-area { margin-top: 10px; background: #fff; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; }
+        .comment-item { border-bottom: 1px solid #f1f5f9; padding: 6px 0; line-height: 1.5; }
+        .comment-item:last-child { border-bottom: none; }
+
+        .list-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; gap: 10px; }
+        .list-row:last-child { border-bottom: none; }
+        .list-row-info { flex-grow: 1; overflow: hidden; text-overflow: ellipsis; }
+
+        .status-badge { display: inline-block; padding: 5px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .status-pending { background-color: #fef08a; color: #854d0e; }
+        .status-approved { background-color: #bbf7d0; color: #166534; }
+        .leave-item { background: #fff; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+
+        .badge-cash { background-color: #dcfce7; color: #166534; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+        .badge-gpay { background-color: #dbeafe; color: #4338ca; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+        .badge-student { display: inline-block; background-color: #bae6fd; color: #0369a1; padding: 5px 10px; border-radius: 6px; font-size: 13px; font-weight: 600; margin: 0 6px 6px 0; border: 1px solid #7dd3fc; }
+        .badge-shift { background-color: #f1f5f9; color: #334155; padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; border: 1px solid #cbd5e1; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 20px; }
+
+        .admin-sidebar { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-width: 500px; margin: 0 auto; }
+        .menu-box { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+        .menu-btn { padding: 14px 18px; border: none; background: #f8fafc; color: #0f172a; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; text-align: left; transition: 0.3s; border-left: 5px solid #0284c7; width: 100%; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .menu-btn:hover { background: #e0f2fe; color: #0369a1; transform: translateX(3px); }
+
+        .admin-tab-content { display: none; }
+        .admin-tab-content.active-content { display: block; animation: fadeIn 0.3s; }
+
+        .student-tab-content { display: none; }
+        .student-tab-content.active-content { display: block; animation: fadeIn 0.3s; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .back-menu-bar { margin-bottom: 15px; }
+
+        @media (max-width: 768px) { 
+            .form-grid { grid-template-columns: 1fr; } 
+            .hero-content h1 { font-size: 32px; } 
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. HOMEPAGE -->
+    <section id="home-section" class="hero-section">
+        <div class="hero-content">
+            <h1>Bethel Computer Centre</h1>
+            <p>Admin / Zirtirtu Portal</p>
+            <div class="home-menu">
+                <!-- Zirlai Luhna chu he file-ah hian thup (hide) a ni -->
+                <button class="btn btn-success" style="display: none;" onclick="showSection('student-login-section')">Zirlai Luhna</button>
+                <button class="btn btn-outline-light" onclick="showSection('admin-login-section')">Zirtirtu Luhna</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- EDIT FEE MODAL -->
+    <div id="fee-edit-modal" class="modal-overlay hidden">
+        <div class="card" style="width: 100%; max-width: 400px; margin: 0;">
+            <h3 style="color: #b45309; border-color: #fde68a;">Fee Record Siamthatna (Edit)</h3>
+            <input type="hidden" id="edit-fee-enrollment">
+            <input type="hidden" id="edit-fee-index">
+            
+            <div class="input-group" style="margin-bottom: 12px;">
+                <label>Pek Ni (Date)</label>
+                <input type="date" id="edit-fee-date" required>
+            </div>
+            <div class="input-group" style="margin-bottom: 12px;">
+                <label>Pek Zat (₹)</label>
+                <input type="number" id="edit-fee-amount" required>
+            </div>
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label>Pek Dan (Method)</label>
+                <select id="edit-fee-method">
+                    <option value="Cash">Cash</option>
+                    <option value="GPay">GPay</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-success" style="margin: 0;" onclick="updateFeePayment()">Save</button>
+                <button class="btn btn-danger" style="margin: 0;" onclick="closeEditFeeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SHIFT EDIT MODAL (ADMIN) -->
+    <div id="shift-edit-modal" class="modal-overlay hidden">
+        <div class="card" style="width: 100%; max-width: 400px; margin: 0;">
+            <h3 style="color: #0284c7; border-color: #bae6fd;">Zirlai Shift Thlakna</h3>
+            <input type="hidden" id="edit-shift-enrollment">
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label>Shift Thlang Rawh</label>
+                <select id="edit-student-shift">
+                    <option value="6am shift">6am shift</option>
+                    <option value="7am shift">7am shift</option>
+                    <option value="8am shift">8am shift</option>
+                    <option value="10am shift">10am shift</option>
+                    <option value="11am shift">11am shift</option>
+                    <option value="1pm shift">1pm shift</option>
+                    <option value="2pm shift">2pm shift</option>
+                    <option value="3pm shift">3pm shift</option>
+                    <option value="4pm shift">4pm shift</option>
+                    <option value="5pm shift">5pm shift</option>
+                    <option value="7pm shift">7pm shift</option>
+                    <option value="Saturday shift">Saturday shift</option>
+                    <option value="Online shift">Online shift</option>
+                    <option value="Flexible shift">Flexible shift (Duh hun huna lokal)</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-success" style="margin: 0;" onclick="updateStudentShift()">Save</button>
+                <button class="btn btn-danger" style="margin: 0;" onclick="closeShiftModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ATTENDANCE INFO MODAL (STUDENT) -->
+    <div id="attendance-info-modal" class="modal-overlay hidden">
+        <div class="card" style="width: 100%; max-width: 450px; margin: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+                <h3 style="color: #6b21a8; margin: 0; border: none; padding: 0;">Attendance & Internal Mark</h3>
+                <button style="background: none; border: none; font-size: 20px; cursor: pointer; color: #ef4444;" onclick="document.getElementById('attendance-info-modal').classList.add('hidden')">✕</button>
+            </div>
+            
+            <div style="font-size: 14px; color: #334155; line-height: 1.6;">
+                <h4 style="color: #0f172a; margin-bottom: 5px;">1. Attendance Point Hmuh Dan</h4>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li><b>Present:</b> Ni pangngaiah point 1 (Inrinniah point 5).</li>
+                    <li><b>Reported:</b> Ni pangngaiah point 0.5 (Inrinniah point 2.5).</li>
+                    <li><b>Absent:</b> Point 0.</li>
+                </ul>
+
+                <h4 style="color: #0f172a; margin-bottom: 5px;">2. Chawlh In-Report Dan</h4>
+                <p style="margin-bottom: 15px;">Class i kal theih dawn loh chuan Menu aṭangin <b>"📝 Chawlh Dilna & In-Report-na"</b> ah lut la, i chawlh chhan ziakin thehlut rawh. Zirtirtuin a pawm (approve) hunah i attendance kha 'Reported' ah a inthlak ang a, point chanve i hmu ang.</p>
+
+                <h4 style="color: #0f172a; margin-bottom: 5px;">3. Internal Mark Hamthatna</h4>
+                <p style="margin-bottom: 15px; padding: 10px; background-color: #f0fdf4; border-left: 4px solid #16a34a; border-radius: 4px;">
+                    Class i kal ṭhat dan (percentage) hian Internal Mark-ah nghawng thui tak a nei a ni. Entirnan, <b>DCA 104</b> subject-ah phei chuan i <b>Attendance Percentage aṭangin Practical Exam Mark (Max 40) pek auto i ni dawn a ni.</b> Class i kal that poh leh i exam mark a tha dawn tihna a ni.
+                </p>
+            </div>
+            
+            <button class="btn btn-primary" style="margin-top: 10px; background-color: #6b21a8;" onclick="document.getElementById('attendance-info-modal').classList.add('hidden')">Ka Hrethiam E</button>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- 2. ZIRLAI LOGIN -->
+        <section id="student-login-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
+            <h2 style="text-align: center;">Zirlai Log In</h2>
+            <form onsubmit="loginStudent(event)">
+                <div class="input-group">
+                    <label>Enrollment Number</label>
+                    <input type="text" id="login-enrollment" placeholder="Entirnan: 2602001" required>
+                </div>
+                <div class="input-group">
+                    <label>Date of Birth</label>
+                    <input type="text" id="login-dob" placeholder="Entirnan: 15-05-2005" required>
+                </div>
+                <button type="submit" class="btn btn-success">Lut rawh</button>
+            </form>
+            <button class="btn btn-outline" style="margin-top: 15px;" onclick="showSection('home-section')">Home-a letna</button>
+        </section>
+
+        <!-- 3. ADMIN LOGIN -->
+        <section id="admin-login-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
+            <h2 style="text-align: center;">Zirtirtu Log In</h2>
+            <p style="text-align: center; color: gray; margin-bottom: 20px; font-size: 14px;">Zirtirtu leh Admin te chauh luh phal a ni.</p>
+            <form onsubmit="loginAdmin(event)">
+                <div class="input-group">
+                    <label>Admin Password</label>
+                    <input type="password" id="admin-password" placeholder="Password chhu rawh" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Lut rawh</button>
+            </form>
+            <button class="btn btn-outline" style="margin-top: 15px;" onclick="showSection('home-section')">Home-a letna</button>
+        </section>
+
+        <!-- 4. ZIRTIRTU DASHBOARD -->
+        <section id="teacher-dashboard-section" class="hidden">
+            
+            <!-- MAIN MENU VIEW -->
+            <div id="admin-menu-view">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                    <h2 style="border:none; margin:0;">Zirtirtu Dashboard</h2>
+                    <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px; margin:0;" onclick="showSection('home-section')">Log Out</button>
+                </div>
+
+                <div class="admin-sidebar">
+                    <div style="border: 1px solid #bae6fd; background: #f0f9ff; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #bae6fd; padding-bottom: 6px; margin-bottom: 8px;">
+                            <span style="color: #0369a1; font-weight: bold; font-size: 14px;">Vawiina Online</span>
+                            <span style="background: #0284c7; color: white; padding: 2px 10px; border-radius: 10px; font-size: 13px; font-weight: bold;" id="today-login-count">0</span>
+                        </div>
+                        <div id="today-online-names" style="max-height: 90px; overflow-y: auto; font-size: 13px;">
+                            <span style="color: gray; font-style: italic;">Online an la awm lo...</span>
+                        </div>
+                    </div>
+
+                    <h4 style="font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Dashboard Menu</h4>
+                    <div class="menu-box">
+                        <button class="menu-btn" onclick="openAdminTab('tab-register')">📋 Zirlai Register-na</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-fee')">💰 Zirlaite Fee Management</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-attendance')">📅 Attendance Mark-na & Chawlh</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-notice')">📢 Notice Board</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-links')">🔗 Link Semchhuahna</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-online')" style="border-left-color: #8b5cf6; background: #faf5ff; color: #581c87;">💻 Online Shift Bik</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-gradebook')">📊 Comprehensive Gradebook</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-management')">👥 Zirlai Management</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB CONTENT VIEWS (With Back to Menu Button) -->
+            <div id="admin-content-view">
+                
+                <!-- TAB 1: ZIRLAI REGISTER -->
+                <div id="tab-register" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    
+                    <div class="card" style="border: 2px solid #0284c7; margin-bottom: 20px;">
+                        <h3 style="color: #0369a1; border-bottom: 1px solid #bae6fd; padding-bottom: 10px;">Zirlai Thar Manual-a Register-na</h3>
+                        <form onsubmit="registerSingleStudent(event)" class="form-grid">
+                            <div class="input-group">
+                                <label>Enrollment No</label>
+                                <input type="text" id="reg-enrollment" placeholder="Entirnan: 2602001" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Hming</label>
+                                <input type="text" id="reg-name" placeholder="Zirlai hming pum" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Date of Birth</label>
+                                <input type="text" id="reg-dob" placeholder="15-05-2005" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Shift</label>
+                                <select id="reg-shift">
+                                    <option value="10am shift">10am shift</option>
+                                    <option value="6am shift">6am shift</option>
+                                    <option value="7am shift">7am shift</option>
+                                    <option value="8am shift">8am shift</option>
+                                    <option value="11am shift">11am shift</option>
+                                    <option value="1pm shift">1pm shift</option>
+                                    <option value="2pm shift">2pm shift</option>
+                                    <option value="3pm shift">3pm shift</option>
+                                    <option value="4pm shift">4pm shift</option>
+                                    <option value="5pm shift">5pm shift</option>
+                                    <option value="7pm shift">7pm shift</option>
+                                    <option value="Saturday shift">Saturday shift</option>
+                                    <option value="Online shift">Online shift</option>
+                                    <option value="Flexible shift">Flexible shift</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="grid-column: 1 / -1; margin-top: 5px;">Zirlai Save Rawh</button>
+                        </form>
+                    </div>
+
+                    <div class="card" style="border: 2px solid #16a34a; margin-bottom: 0;">
+                        <h3 style="color: #15803d; border-bottom: 1px solid #bbf7d0; padding-bottom: 10px;">Zirlai Register-na (Excel/CSV Upload)</h3>
+                        <p style="font-size: 14px; color: #475569; margin-bottom: 15px;">Excel file-ah Row hmasa berah (Header) hetiang hian Column hming phuah ang che: <b>Enrollment</b>, <b>Name</b>, <b>DOB</b>, <b>Shift</b>.</p>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <input type="file" id="excel-upload" accept=".xlsx, .xls, .csv" style="flex-grow: 1; border: 1px dashed #cbd5e1; padding: 10px; border-radius: 6px;">
+                            <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 20px;" onclick="uploadExcelData()">Data Thunlut Rawh</button>
+                        </div>
+                        <div id="upload-status" style="margin-top: 10px; font-size: 14px; font-weight: bold;"></div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: FEE MANAGEMENT -->
+                <div id="tab-fee" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="card" style="border: 2px solid #f59e0b; margin-bottom: 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
+                            <h3 style="color: #b45309; border: none; padding: 0; margin: 0;">Zirlaite Fee Management</h3>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportFeesToExcel()">Excel Export</button>
+                            </div>
+                        </div>
+
+                        <div class="form-grid" style="margin-bottom: 20px; background: #fffbeb; padding: 15px; border-radius: 8px; border: 1px solid #fde68a;">
+                            <div class="input-group">
+                                <label>Zirlai Thlang Rawh</label>
+                                <select id="fee-student-select" onchange="onFeeStudentSelect()">
+                                    <option value="">-- Thlang rawh --</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>Pek Ni (Date)</label>
+                                <input type="date" id="fee-date" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Total Course Fee (₹)</label>
+                                <input type="number" id="fee-total-amount" placeholder="Entirnan: 12000" value="12000" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Pek Zat (Installment) (₹)</label>
+                                <input type="number" id="fee-paid-amount" placeholder="Entirnan: 2000" required>
+                            </div>
+                            <div class="input-group" style="grid-column: 1 / -1;">
+                                <label>Pek Dan (Method)</label>
+                                <select id="fee-method">
+                                    <option value="Cash">Cash (Kut ngeia pe)</option>
+                                    <option value="GPay">GPay / Online</option>
+                                </select>
+                            </div>
+                            <div class="input-group" style="grid-column: 1 / -1;">
+                                <button class="btn btn-warning" onclick="saveFeePayment()">Pekna Record Save Rawh</button>
+                            </div>
+                        </div>
+
+                        <div style="overflow-x: auto; max-height: 400px; overflow-y: auto;">
+                            <table>
+                                <thead style="position: sticky; top: 0; z-index: 10;">
+                                    <tr>
+                                        <th>Enrollment</th>
+                                        <th>Hming</th>
+                                        <th>Total Fee</th>
+                                        <th>Pek Tawh Zat</th>
+                                        <th>La Ba (Balance)</th>
+                                        <th style="min-width: 250px;">Pek Ni & History</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fee-list-body">
+                                    <tr><td colspan="6" style="text-align:center; color:gray;">Data a rawn in-load mek...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: ATTENDANCE & CHAWLH -->
+                <div id="tab-attendance" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    
+                    <div class="card" style="border: 2px solid #3b82f6;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
+                            <h3 style="color: #1e3a8a; border: none; padding: 0; margin: 0;">Zirlai Chawlh In-Report Te</h3>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportLeaveToExcel()">Excel Export</button>
+                                <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAllLeaveRequests()">Records Clear</button>
+                            </div>
+                        </div>
+                        <div id="admin-leave-list" style="max-height: 250px; overflow-y: auto; padding: 10px 5px; background:#f8fafc; border-radius:6px;">
+                            <p style="color: gray;">Chawlh dil an la awm lo...</p>
+                        </div>
+                    </div>
+
+                    <div class="card" style="border: 2px solid #8b5cf6; margin-bottom: 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
+                            <h3 style="color: #4c1d95; border: none; padding: 0; margin: 0;">Attendance Mark-na</h3>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportAttendanceToExcel()">Excel Export</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-grid" style="margin-bottom: 15px;">
+                            <div class="input-group">
+                                <label style="margin:0; font-weight: bold; color: #4c1d95;">Ni (Date) Thlang rawh:</label>
+                                <input type="date" id="attendance-date" style="padding: 8px 10px; border-radius: 6px; border: 1px solid #8b5cf6;" onchange="loadAttendanceForDate()">
+                            </div>
+                            <div class="input-group">
+                                <label style="margin:0; font-weight: bold; color: #4c1d95;">Shift Thlang rawh:</label>
+                                <select id="attendance-shift-filter" style="padding: 8px 10px; border-radius: 6px; border: 1px solid #8b5cf6;" onchange="loadAttendanceForDate()">
+                                    <option value="ALL">-- Shift ZAWNG ZAWNG --</option>
+                                    <option value="6am shift">6am shift</option>
+                                    <option value="7am shift">7am shift</option>
+                                    <option value="8am shift">8am shift</option>
+                                    <option value="10am shift">10am shift</option>
+                                    <option value="11am shift">11am shift</option>
+                                    <option value="1pm shift">1pm shift</option>
+                                    <option value="2pm shift">2pm shift</option>
+                                    <option value="3pm shift">3pm shift</option>
+                                    <option value="4pm shift">4pm shift</option>
+                                    <option value="5pm shift">5pm shift</option>
+                                    <option value="7pm shift">7pm shift</option>
+                                    <option value="Saturday shift">Saturday shift</option>
+                                    <option value="Online shift">Online shift</option>
+                                    <option value="Flexible shift">Flexible shift</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div style="background: #faf5ff; border: 1px solid #e9d5ff; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleSummaryBox()">
+                                <h4 style="font-size: 14px; color: #6b21a8; margin: 0;">📋 Vawiin Attendance Summary (Hmet rawh)</h4>
+                                <span id="summary-toggle-icon" style="font-weight: bold; color: #6b21a8;">▼ Khup / Hawng</span>
+                            </div>
+                            <div id="summary-content-box" style="margin-top: 10px; display: none;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; font-size: 13px;">
+                                    <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #16a34a;">
+                                        <b style="color: #15803d;">Present: <span id="count-present">0</span></b>
+                                        <div id="list-present" style="margin-top: 5px; color: #334155; max-height: 80px; overflow-y: auto;">-</div>
+                                    </div>
+                                    <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #f59e0b;">
+                                        <b style="color: #b45309;">Report: <span id="count-report">0</span></b>
+                                        <div id="list-report" style="margin-top: 5px; color: #334155; max-height: 80px; overflow-y: auto;">-</div>
+                                    </div>
+                                    <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #ef4444;">
+                                        <b style="color: #dc2626;">Absent: <span id="count-absent">0</span></b>
+                                        <div style="margin-top: 5px; color: #334155; font-size: 12px;">(Zirlai kal lo zawng zawng)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 15px;">
+                            <input type="text" id="attendance-search" placeholder="🔍 Hming emaw Enrollment No. zawng rawh..." style="width: 100%; padding: 10px; border: 1px solid #c4b5fd; border-radius: 6px; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);" onkeyup="filterAttendance()">
+                        </div>
+                        
+                        <div style="overflow-x: auto; max-height: 400px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px;">
+                            <table style="margin-top: 0;">
+                                <thead style="position: sticky; top: 0; z-index: 10;">
+                                    <tr>
+                                        <th>Enrollment</th>
+                                        <th>Hming</th>
+                                        <th>Mark-na (Points)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendance-list-body">
+                                    <tr><td colspan="3" style="text-align:center; color:gray;">Zirlai a rawn in-load mek...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button class="btn btn-primary" style="margin-top: 15px; background-color: #8b5cf6;" onclick="saveAttendance()">Attendance Save Rawh</button>
+                    </div>
+                </div>
+
+                <!-- TAB 4: NOTICE BOARD -->
+                <div id="tab-notice" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="form-grid" style="grid-template-columns: 1fr;">
+                        <div class="card">
+                            <h3>Notice Board Siamna</h3>
+                            <form onsubmit="publishNotice(event)">
+                                <div class="input-group">
+                                    <label>Hriattirna Thupui</label>
+                                    <input type="text" id="notice-title" placeholder="Entirnan: Naktuk Chawlh" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Hriattirna Thu (Content)</label>
+                                    <textarea id="notice-content" rows="3" placeholder="Sawi tur kimchang..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Notice Post Rawh</button>
+                            </form>
+                        </div>
+
+                        <div class="card" style="margin-bottom: 0;">
+                            <h3>Notice Post Tawh Te</h3>
+                            <div id="admin-notice-list" style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
+                                <p style="color: gray;">Notice a la awm lo...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 5: LINK SEMCHHUAHNA -->
+                <div id="tab-links" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="form-grid" style="grid-template-columns: 1fr;">
+                        <div class="card">
+                            <h3>Link Sem Chhuahna</h3>
+                            <form onsubmit="shareLink(event)">
+                                <div class="input-group">
+                                    <label>Link Type</label>
+                                    <select id="link-type">
+                                        <option value="PDF Note">PDF Note / File (Downloadable)</option>
+                                        <option value="GitHub Project">GitHub atanga MCQ project (Test)</option>
+                                        <option value="Google Form">Google Form (Assignment)</option>
+                                        <option value="YouTube Video">YouTube Video (Tutorial)</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label>File Hming / Title</label>
+                                    <input type="text" id="link-name" placeholder="Entirnan: DCA 101 Note" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Link URL</label>
+                                    <input type="url" id="link-url" placeholder="https://..." required>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Zirlaite Hnenah Sem Rawh</button>
+                            </form>
+                        </div>
+                        <div class="card" style="margin-bottom: 0;">
+                            <h3>Link Sem Tawh Te Paihna</h3>
+                            <div id="admin-links-container" style="max-height: 300px; overflow-y: auto; padding-right: 5px;">
+                                <p style="color: gray;">A la awm rih lo...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- TAB NEW: ONLINE SHIFT BIK -->
+                <div id="tab-online" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    
+                    <div class="card" style="border: 2px solid #3b82f6; margin-bottom: 20px; padding: 20px;">
+                        <h3 style="color: #1d4ed8; border-bottom: 1px solid #bfdbfe; padding-bottom: 10px; margin-bottom: 15px;">👥 Online Shift Zirlaite</h3>
+                        <div id="admin-online-students-list" style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 150px; overflow-y: auto;">
+                            <p style="color: gray; font-size: 14px;">Zirlai an rawn in-load mek...</p>
+                        </div>
+                    </div>
+
+                    <div class="form-grid" style="grid-template-columns: 1fr;">
+                        <div class="card" style="border: 2px solid #8b5cf6;">
+                            <h3 style="color: #6d28d9; border-bottom: 1px solid #ddd6fe; padding-bottom: 10px;">Online Shift Thawnna (Message & Link)</h3>
+                            <form onsubmit="shareOnlineMaterial(event)">
+                                <div class="input-group">
+                                    <label>Thupui (Title)</label>
+                                    <input type="text" id="online-title" placeholder="Entirnan: Vawiin Class Link" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Message / Note</label>
+                                    <textarea id="online-message" rows="3" placeholder="Sawi tur..." required></textarea>
+                                </div>
+                                <div class="input-group">
+                                    <label>Link (URL) - Optional</label>
+                                    <input type="url" id="online-url" placeholder="https://...">
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="margin-top: 5px; background-color: #8b5cf6;">Online Shift-te Hnenah Thawn Rawh</button>
+                            </form>
+                        </div>
+                        <div class="card" style="margin-bottom: 0;">
+                            <h3 style="color: #581c87;">Online Shift Thawn Tawh Te</h3>
+                            <div id="admin-online-container" style="max-height: 350px; overflow-y: auto; padding-right: 5px;">
+                                <p style="color: gray;">A la awm rih lo...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NEW: ZIRLAI PRACTICAL FOLDER THEHLUHNA LIST (ADMIN VIEW) -->
+                    <div class="card" style="border: 2px solid #10b981; margin-top: 20px;">
+                        <h3 style="color: #047857; border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">📥 Zirlai Practical Thehluh Te (Google Drive Links)</h3>
+                        <div id="admin-practical-list" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
+                            <p style="color: gray;">Thehlut an la awm lo...</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- TAB 6: GRADEBOOK -->
+                <div id="tab-gradebook" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="card" style="border: 2px solid #0f766e; margin-bottom: 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
+                            <h3 style="color: #0f766e; border: none; padding: 0; margin: 0;">Comprehensive Gradebook (DCA 101 - 106)</h3>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportGradesToExcel()">Excel Export</button>
+                                <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAllGrades()">Records Clear</button>
+                            </div>
+                        </div>
+
+                        <form onsubmit="saveGrade(event)" class="form-grid" style="margin-bottom: 20px; background: #f0fdf4; padding: 15px; border-radius: 8px; border: 1px solid #bbf7d0;">
+                            <div class="input-group">
+                                <label>Zirlai Thlang Rawh</label>
+                                <select id="grade-student-select" onchange="onGradeStudentSelect()" required>
+                                    <option value="">-- Thlang rawh --</option>
+                                </select>
+                                <div id="grade-student-info" style="font-size: 13px; color: #166534; margin-top: 5px; font-weight: bold;"></div>
+                            </div>
+                            <div class="input-group">
+                                <label>Subject</label>
+                                <select id="grade-subject" onchange="onGradeSubjectSelect()" required>
+                                    <option value="DCA 101">DCA 101</option>
+                                    <option value="DCA 102">DCA 102</option>
+                                    <option value="DCA 103">DCA 103</option>
+                                    <option value="DCA 104">DCA 104</option>
+                                    <option value="DCA 105">DCA 105</option>
+                                    <option value="DCA 106">DCA 106</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>Theory IA (Written) [Max 10]</label>
+                                <input type="number" step="0.1" id="grade-th-ia" max="10" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Theory Exam (External) [Max 40]</label>
+                                <input type="number" step="0.1" id="grade-th-exam" max="40" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Practical IA (MCQ) [Max 10]</label>
+                                <input type="number" step="0.1" id="grade-pr-ia" max="10" required>
+                            </div>
+                            <div class="input-group">
+                                <label id="label-pr-exam" style="color: #0f766e; font-weight: bold;">Practical Exam - Typing/Folder [Max 40]</label>
+                                <input type="number" step="0.1" id="grade-pr-exam" max="40" required>
+                            </div>
+                            <div class="input-group" style="grid-column: 1 / -1;">
+                                <button type="submit" class="btn btn-primary" style="background-color: #0f766e; font-size: 16px;">Mark Save Rawh</button>
+                            </div>
+                        </form>
+
+                        <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
+                            <table>
+                                <thead style="position: sticky; top: 0; z-index: 10;">
+                                    <tr>
+                                        <th>Enrollment</th>
+                                        <th>Hming</th>
+                                        <th>Subject</th>
+                                        <th>Th IA (10)</th>
+                                        <th>Th Exam (40)</th>
+                                        <th>Pr IA (10)</th>
+                                        <th>Pr Exam (40)</th>
+                                        <th>Total (100)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="grade-results-table">
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; color: gray;">Results a la awm rih lo...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 7: ZIRLAI MANAGEMENT -->
+                <div id="tab-management" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="card" style="margin-bottom: 0;">
+                        <h3>Zirlai List & Management</h3>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Enrollment</th>
+                                        <th>Hming</th>
+                                        <th>DOB</th>
+                                        <th>Shift</th>
+                                        <th>Att. Points</th>
+                                        <th style="text-align: center;">Thawn/Paih</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="student-management-body">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; color: gray;">Data a la awm lo...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- 5. ZIRLAI DASHBOARD (STUDENT PORTAL) -->
+        <section id="student-portal-section" class="hidden">
+            
+            <!-- STUDENT MAIN MENU VIEW -->
+            <div id="student-menu-view">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                    <h2 style="border:none; margin:0;" id="student-welcome-title">Zirlai Portal</h2>
+                    <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px; margin:0;" onclick="showSection('home-section')">Log Out</button>
+                </div>
+
+                <div class="admin-sidebar">
+                    <h4 style="font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Zirlai Menu</h4>
+                    <div class="menu-box">
+                        <button class="menu-btn" onclick="openStudentTab('student-tab-status')">📊 Zirlai Dinhmun (Fee & Attendance)</button>
+                        <button class="menu-btn" onclick="openStudentTab('student-tab-leave')">📝 Chawlh Dilna & In-Report-na</button>
+                        <button class="menu-btn" onclick="openStudentTab('student-tab-notice')">📢 Notice Board</button>
+                        <button class="menu-btn" onclick="openStudentTab('student-tab-materials')">📚 Study Materials, Assignments & Tests</button>
+                        <button class="menu-btn" id="student-menu-online" style="display: none; background: #faf5ff; border-left-color: #8b5cf6; color: #581c87;" onclick="openStudentTab('student-tab-online')">💻 Online Class & Materials</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STUDENT TAB CONTENT VIEWS -->
+            <div id="student-content-view">
+
+                <!-- TAB 1: STATUS (Fee & Attendance) -->
+                <div id="student-tab-status" class="student-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    
+                    <div style="background: #e0f2fe; border: 1px solid #7dd3fc; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <p style="color: #0369a1; font-weight: 600; font-size: 16px; margin: 0;">I Shift Hun:</p>
+                        <div style="font-size: 18px; font-weight: bold; color: #0c4a6e;" id="student-portal-shift">-</div>
+                    </div>
+
+                    <div class="dashboard-stat-card" style="background: #fffbeb; border-color: #fde68a; display: block; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fde68a;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <p style="color: #b45309; font-weight: 600; font-size: 16px; margin: 0;">I Fee Pek Dinhmun:</p>
+                            <div id="student-fee-paid" style="font-size: 20px; font-weight: bold; color: #16a34a;">Pek Tawh: ₹0</div>
+                        </div>
+                        <div id="student-fee-history" style="margin-top: 15px; border-top: 1px solid #fde68a; padding-top: 10px;">
+                        </div>
+                    </div>
+
+                    <!-- Total Attendance Points Box Updated -->
+                    <div style="background: #f3e8ff; border: 1px solid #d8b4fe; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <p style="color: #6b21a8; font-weight: 600; font-size: 16px; margin: 0;">Total Attendance Points:</p>
+                            <div style="font-size: 28px; font-weight: bold; color: #7e22ce;" id="student-att-points">0 Points</div>
+                        </div>
+                        <button class="btn" style="background-color: #e9d5ff; color: #6b21a8; border: 1px solid #c084fc; font-size: 13px; padding: 8px;" onclick="document.getElementById('attendance-info-modal').classList.remove('hidden')">
+                            ℹ️ Attendance & Internal Mark Hriattirna
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TAB 2: LEAVE REQUESTS -->
+                <div id="student-tab-leave" class="student-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="form-grid">
+                        <div class="card" style="margin-bottom: 0;">
+                            <h3>Chawlh Report-na</h3>
+                            <form onsubmit="applyLeave(event)">
+                                <div class="input-group">
+                                    <label>Chawlh Dil Ni (Date)</label>
+                                    <input type="date" id="leave-date" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Chawlh chhan (Reason)</label>
+                                    <textarea id="leave-reason" rows="2" placeholder="Sawi fiahna tawi..." required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Report thehlut rawh</button>
+                            </form>
+                        </div>
+
+                        <div class="card" style="margin-bottom: 0;">
+                            <h3>I Chawlh In-Report-te</h3>
+                            <div id="student-leave-history" style="max-height: 300px; overflow-y: auto;">
+                                <p style="color: gray;">Report i la nei lo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: NOTICE BOARD -->
+                <div id="student-tab-notice" class="student-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="card" style="margin-bottom: 0;">
+                        <h3>Notice Board</h3>
+                        <div id="student-notice-list" style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
+                            <p style="color: gray;">Notice a la awm rih lo...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 4: STUDY MATERIALS & ASSIGNMENTS -->
+                <div id="student-tab-materials" class="student-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    <div class="card" style="margin-bottom: 0;" id="student-links-container">
+                        <h3>Study Material, Assignment, Test / Exam</h3>
+                        <p style="color: gray;">Database atangin a rawn in-load mek...</p>
+                    </div>
+                </div>
+                
+                <!-- TAB 5: ONLINE SHIFT BIK (Student) -->
+                <div id="student-tab-online" class="student-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    
+                    <div class="card" style="margin-bottom: 20px;" id="student-online-container">
+                        <h3 style="color: #6d28d9;">Online Shift Message & Links</h3>
+                        <p style="color: gray;">Database atangin a rawn in-load mek...</p>
+                    </div>
+
+                    <!-- NEW: ZIRLAI PRACTICAL THEHLUHNA FORM -->
+                    <div class="form-grid" style="grid-template-columns: 1fr;">
+                        <div class="card" style="border: 2px solid #10b981;">
+                            <h3 style="color: #047857; border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">Practical Folder Thehluhna</h3>
+                            <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">I practical folder (Google Drive link) kha hetah hian rawn thehlut rawh. (Link i copy dawnin 'Anyone with the link' tihah i thlak hmasa dawn nia).</p>
+                            <form onsubmit="submitPracticalLink(event)">
+                                <div class="input-group">
+                                    <label>Folder Hming / Entirnan: Ms Word Practical</label>
+                                    <input type="text" id="practical-title" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Google Drive Link</label>
+                                    <input type="url" id="practical-link" placeholder="https://drive.google.com/..." required>
+                                </div>
+                                <button type="submit" class="btn btn-success" style="margin-top: 5px; background-color: #10b981;">Link Thehlut Rawh</button>
+                            </form>
+                        </div>
+                        
+                        <div class="card" style="margin-bottom: 0;">
+                            <h3 style="color: #047857;">I Thehluh Tawh Te</h3>
+                            <div id="student-practical-list" style="max-height: 250px; overflow-y: auto;">
+                                <p style="color: gray;">I la thehlut lo.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+    <!-- ================= FIREBASE SETUP & JAVASCRIPT LOGIC ================= -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAYardtj2WcBiUGSD9Ytqa0yZUWwjEXgis",
+            authDomain: "bethel-portal-1641f.firebaseapp.com",
+            projectId: "bethel-portal-1641f",
+            storageBucket: "bethel-portal-1641f.firebasestorage.app",
+            messagingSenderId: "985610423339",
+            appId: "1:985610423339:web:f35bd205776bb962ed2e6e",
+            measurementId: "G-JVY6SK2EL9"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
+        
+        const APP_VERSION = "3.11"; 
+
+        window.currentStudent = { enrollment: '', name: '', shift: '' };
+        let studentLeaveUnsubscribe = null; 
+        
+        let allStudentsList = []; 
+        let attendancePointsMap = {}; 
+        let attendanceStats = {}; 
+        let feeDataMap = {}; 
+
+        const todayISODate = new Date().toISOString().split('T')[0];
+        document.getElementById('attendance-date').value = todayISODate;
+        document.getElementById('fee-date').value = todayISODate;
+        if(document.getElementById('leave-date')) {
+            document.getElementById('leave-date').value = todayISODate;
+        }
+
+        (function checkVersion() {
+            let savedVersion = localStorage.getItem('bcc_portal_version');
+            if (!savedVersion) {
+                localStorage.setItem('bcc_portal_version', APP_VERSION);
+            } else if (savedVersion !== APP_VERSION) {
+                localStorage.setItem('bcc_portal_version', APP_VERSION);
+                window.location.reload(true);
+            }
+        })();
+
+        window.showSection = function(sectionId) {
+            const sections = ['home-section', 'student-login-section', 'admin-login-section', 'teacher-dashboard-section', 'student-portal-section'];
+            sections.forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            if(sectionId === 'teacher-dashboard-section') {
+                document.getElementById('admin-menu-view').style.display = 'block';
+                document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.remove('active-content'));
+                loadAttendanceForDate();
+            }
+
+            if(sectionId === 'student-portal-section') {
+                document.getElementById('student-menu-view').style.display = 'block';
+                document.querySelectorAll('.student-tab-content').forEach(el => el.classList.remove('active-content'));
+            }
+            
+            window.scrollTo(0, 0);
+            
+            if(sectionId === 'home-section' && studentLeaveUnsubscribe) {
+                studentLeaveUnsubscribe();
+                studentLeaveUnsubscribe = null;
+            }
+        }
+
+        window.openAdminTab = function(tabId) {
+            document.getElementById('admin-menu-view').style.display = 'none';
+            document.querySelectorAll('.admin-tab-content').forEach(el => { el.classList.remove('active-content'); });
+            document.getElementById(tabId).classList.add('active-content');
+            if(tabId === 'tab-attendance') {
+                loadAttendanceForDate();
+            }
+            window.scrollTo(0, 0);
+        }
+
+        window.backToMenu = function() {
+            document.querySelectorAll('.admin-tab-content').forEach(el => { el.classList.remove('active-content'); });
+            document.getElementById('admin-menu-view').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        window.openStudentTab = function(tabId) {
+            document.getElementById('student-menu-view').style.display = 'none';
+            document.querySelectorAll('.student-tab-content').forEach(el => { el.classList.remove('active-content'); });
+            document.getElementById(tabId).classList.add('active-content');
+            window.scrollTo(0, 0);
+        }
+
+        window.backToStudentMenu = function() {
+            document.querySelectorAll('.student-tab-content').forEach(el => { el.classList.remove('active-content'); });
+            document.getElementById('student-menu-view').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        window.toggleSummaryBox = function() {
+            const box = document.getElementById('summary-content-box');
+            const icon = document.getElementById('summary-toggle-icon');
+            if (box.style.display === 'none') {
+                box.style.display = 'block';
+                icon.innerText = '▲ Khup / Hawng';
+            } else {
+                box.style.display = 'none';
+                icon.innerText = '▼ Khup / Hawng';
+            }
+        }
+
+        window.shareNoticeWhatsApp = function(title) {
+            const text = `📌 *Bethel Computer Centre*\n\nNotice thar a awm e: *${title}*\n\nKhawngaihin in Portal-ah log in ula lo check ngei ngei ru.\n@all\n\n🌐 Portal Link: ${PORTAL_LINK}`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        window.shareMaterialWhatsApp = function(fileName, type) {
+            const text = `📌 *Bethel Computer Centre*\n\nStudy Material / Link thar a awm e!\n*${fileName}* (${type})\n\nKhawngaihin in Portal-ah log in ula lo check ngei ngei ru.\n@all\n\n🌐 Portal Link: ${PORTAL_LINK}`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        window.shareLoginWhatsApp = function(name, enrollment, dob) {
+            const text = `Chibai *${name}*,\n\nHei hi Bethel Computer Centre Portal-a i luhna tur a ni e:\n\n👤 *Enrollment No:* ${enrollment}\n🔑 *Date of Birth:* ${dob}\n\n🌐 Portal Link: ${PORTAL_LINK}\n\n(I luh dawnah i date of birth kha '-' hmangin i chhu lut dawn nia, entirnan: 15-05-2005)`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        window.shareOnlineWhatsApp = function(title, url) {
+            let text = `📌 *Bethel Computer Centre*\n\n💻 *Online Shift Zirlaite Hriattirna*\n\n*${title}*`;
+            if (url && url.trim() !== '') {
+                text += `\n🔗 Link: ${url}`;
+            }
+            text += `\n\nKhawngaihin in Portal-ah log in ula kimchangin lo check ngei ngei ru.\n\n🌐 Portal Link: ${PORTAL_LINK}`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        // ================= FEE MANAGEMENT =================
+        onSnapshot(collection(db, "fees"), (snapshot) => {
+            feeDataMap = {};
+            snapshot.forEach(docSnap => { feeDataMap[docSnap.id] = docSnap.data(); });
+            renderFeeTable();
+            if(window.currentStudent.enrollment) renderStudentFeePortal();
+        });
+
+        window.onFeeStudentSelect = function() {
+            const enrollment = document.getElementById('fee-student-select').value;
+            if(!enrollment) return;
+            if(feeDataMap[enrollment] && feeDataMap[enrollment].totalFee) {
+                document.getElementById('fee-total-amount').value = feeDataMap[enrollment].totalFee;
+            } else {
+                document.getElementById('fee-total-amount').value = 12000;
+            }
+        }
+
+        window.saveFeePayment = async function() {
+            const enrollment = document.getElementById('fee-student-select').value;
+            const feeDateRaw = document.getElementById('fee-date').value;
+            const totalFee = parseFloat(document.getElementById('fee-total-amount').value);
+            const paidAmount = parseFloat(document.getElementById('fee-paid-amount').value);
+            const method = document.getElementById('fee-method').value;
+
+            if(!enrollment || !feeDateRaw || isNaN(totalFee) || isNaN(paidAmount)) { alert("Khawngaihin data a kimin thun lut rawh."); return; }
+
+            const dParts = feeDateRaw.split('-');
+            const formattedDate = `${dParts[2]}-${dParts[1]}-${dParts[0]}`;
+            const studentName = allStudentsList.find(s => s.enrollment === enrollment)?.name || '';
+            const paymentObj = { date: formattedDate, amount: paidAmount, method: method, timestamp: new Date().toISOString() };
+
+            try {
+                const feeRef = doc(db, "fees", enrollment);
+                if(feeDataMap[enrollment]) { await updateDoc(feeRef, { totalFee: totalFee, payments: arrayUnion(paymentObj) }); } 
+                else { await setDoc(feeRef, { enrollment: enrollment, name: studentName, totalFee: totalFee, payments: [paymentObj] }); }
+                alert("Fee pekna hlawhtling taka save a ni e!");
+                document.getElementById('fee-paid-amount').value = '';
+            } catch(e) { alert("Save theih a ni lo: " + e.message); }
+        }
+
+        window.openEditFeeModal = function(enrollment, index) {
+            let payment = feeDataMap[enrollment].payments[index];
+            document.getElementById('edit-fee-enrollment').value = enrollment;
+            document.getElementById('edit-fee-index').value = index;
+
+            let dParts = payment.date.split('-');
+            if(dParts.length === 3) { document.getElementById('edit-fee-date').value = `${dParts[2]}-${dParts[1]}-${dParts[0]}`; } 
+            else { document.getElementById('edit-fee-date').value = payment.date; }
+            
+            document.getElementById('edit-fee-amount').value = payment.amount;
+            document.getElementById('edit-fee-method').value = payment.method;
+            document.getElementById('fee-edit-modal').classList.remove('hidden');
+        }
+
+        window.closeEditFeeModal = function() { document.getElementById('fee-edit-modal').classList.add('hidden'); }
+
+        window.updateFeePayment = async function() {
+            let enrollment = document.getElementById('edit-fee-enrollment').value;
+            let index = document.getElementById('edit-fee-index').value;
+            let dateRaw = document.getElementById('edit-fee-date').value;
+            let amount = parseFloat(document.getElementById('edit-fee-amount').value);
+            let method = document.getElementById('edit-fee-method').value;
+
+            if(!dateRaw || isNaN(amount)) { alert("Data a kim lo!"); return; }
+            let dParts = dateRaw.split('-'); let formattedDate = `${dParts[2]}-${dParts[1]}-${dParts[0]}`;
+            let record = feeDataMap[enrollment]; let payments = [...record.payments]; 
+            
+            payments[index] = { ...payments[index], date: formattedDate, amount: amount, method: method };
+            try { await updateDoc(doc(db, "fees", enrollment), { payments: payments }); closeEditFeeModal(); alert("Fee hlui chu siamthat a ni e!"); } 
+            catch(e) { alert("Harsatna: " + e.message); }
+        }
+
+        window.deleteFeePayment = async function(enrollment, index) {
+            if(!confirm("He fee record hi paih (delete) i duh takzet em?")) return;
+            let record = feeDataMap[enrollment]; let payments = [...record.payments]; payments.splice(index, 1); 
+            try { await updateDoc(doc(db, "fees", enrollment), { payments: payments }); } 
+            catch(e) { alert("Harsatna: " + e.message); }
+        }
+
+        function renderFeeTable() {
+            const tbody = document.getElementById('fee-list-body');
+            const feeSelect = document.getElementById('fee-student-select');
+            const gradeSelect = document.getElementById('grade-student-select');
+            
+            if(!tbody || !feeSelect || !gradeSelect) return;
+            
+            tbody.innerHTML = '';
+            
+            if(feeSelect.options.length <= 1) {
+                allStudentsList.forEach(s => {
+                    let optF = document.createElement('option'); optF.value = s.enrollment; optF.innerText = `${s.name} (${s.enrollment})`; feeSelect.appendChild(optF);
+                    let optG = document.createElement('option'); optG.value = s.enrollment; optG.innerText = `${s.name} (${s.enrollment})`; gradeSelect.appendChild(optG);
+                });
+            }
+
+            if(allStudentsList.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:gray;">Zirlai an awm lo.</td></tr>'; return; }
+
+            allStudentsList.forEach(s => {
+                const feeRecord = feeDataMap[s.enrollment];
+                let totalFee = 12000; let totalPaid = 0; let historyStr = '<span style="color:gray; font-size:12px;">A la pe lo</span>';
+                
+                if(feeRecord) {
+                    totalFee = feeRecord.totalFee || 12000;
+                    if(feeRecord.payments && feeRecord.payments.length > 0) {
+                        totalPaid = feeRecord.payments.reduce((sum, p) => sum + parseFloat(p.amount), 0);
+                        historyStr = feeRecord.payments.map((p, idx) => `
+                            <div style="font-size: 11px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">
+                                <span>• ${p.date}: <b>₹${p.amount}</b> (${p.method})</span>
+                                <div style="display: flex; gap: 4px;">
+                                    <button title="Siamthatna (Edit)" style="background:#f59e0b; color:white; border:none; border-radius:4px; padding:3px 6px; cursor:pointer;" onclick="openEditFeeModal('${s.enrollment}', ${idx})">✏️</button>
+                                    <button title="Paih (Delete)" style="background:#ef4444; color:white; border:none; border-radius:4px; padding:3px 6px; cursor:pointer;" onclick="deleteFeePayment('${s.enrollment}', ${idx})">✕</button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+                const balance = totalFee - totalPaid; const balanceColor = balance <= 0 ? 'color: #16a34a;' : 'color: #dc2626;';
+                tbody.innerHTML += `<tr><td>${s.enrollment}</td><td><b>${s.name}</b></td><td>₹${totalFee}</td><td style="color: #4338ca; font-weight:bold;">₹${totalPaid}</td><td style="${balanceColor} font-weight:bold;">₹${balance}</td><td>${historyStr}</td></tr>`;
+            });
+        }
+
+        function renderStudentFeePortal() {
+            const enr = window.currentStudent.enrollment; if(!enr) return;
+            const feeRecord = feeDataMap[enr]; let totalPaid = 0; let payments = [];
+            
+            if(feeRecord && feeRecord.payments) {
+                payments = feeRecord.payments; 
+                totalPaid = payments.reduce((sum, p) => sum + parseFloat(p.amount), 0);
+            }
+            
+            document.getElementById('student-fee-paid').innerText = `Pek Tawh: ₹${totalPaid}`;
+            document.getElementById('student-portal-shift').innerText = window.currentStudent.shift || '10am shift';
+
+            const historyDiv = document.getElementById('student-fee-history');
+            historyDiv.innerHTML = '';
+            
+            if(payments.length === 0) { historyDiv.innerHTML = '<span style="font-size: 13px; color: gray;">Fee pek i la nei lo.</span>'; } 
+            else {
+                payments.forEach(p => {
+                    let badge = p.method === 'GPay' ? '<span class="badge-gpay">GPay</span>' : '<span class="badge-cash">Cash</span>';
+                    historyDiv.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom: 5px; font-size: 13px;"><span>📅 ${p.date} ${badge}</span><strong style="color:#0f172a;">+ ₹${p.amount}</strong></div>`;
+                });
+            }
+        }
+
+        window.exportFeesToExcel = function() {
+            let exportData = [];
+            allStudentsList.forEach(s => {
+                const f = feeDataMap[s.enrollment];
+                let totalFee = f ? (f.totalFee || 12000) : 12000; let cashPaid = 0, gpayPaid = 0; let histArr = [];
+                
+                if(f && f.payments) {
+                    f.payments.forEach(p => {
+                        if(p.method === 'GPay') gpayPaid += parseFloat(p.amount); else cashPaid += parseFloat(p.amount);
+                        histArr.push(`${p.date} (Rs.${p.amount} - ${p.method})`);
+                    });
+                }
+                let totalPaid = cashPaid + gpayPaid;
+                exportData.push({ "Enrollment No": s.enrollment, "Zirlai Hming": s.name, "Shift": s.shift || '10am shift', "Total Course Fee": totalFee, "Cash in a pe": cashPaid, "GPay in a pe": gpayPaid, "Total a pe": totalPaid, "La Ba (Balance)": totalFee - totalPaid, "Pek Ni & History": histArr.join("\n") });
+            });
+
+            if(exportData.length === 0) { alert("Data a la awm lo"); return; }
+            let worksheet = XLSX.utils.json_to_sheet(exportData); let workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Fee_Report"); XLSX.writeFile(workbook, "Bethel_Fee_Report.xlsx");
+        }
+
+        // ================= ATTENDANCE =================
+        onSnapshot(collection(db, "attendance"), (snapshot) => {
+            attendancePointsMap = {}; attendanceStats = {}; 
+            snapshot.forEach(docSnap => {
+                let d = docSnap.data();
+                if(!attendancePointsMap[d.enrollment]) attendancePointsMap[d.enrollment] = 0;
+                attendancePointsMap[d.enrollment] += d.points;
+
+                if(!attendanceStats[d.enrollment]) { attendanceStats[d.enrollment] = { earned: 0, possible: 0, days: 0 }; }
+                attendanceStats[d.enrollment].earned += d.points;
+                let isSat = new Date(d.date).getDay() === 6;
+                attendanceStats[d.enrollment].possible += isSat ? 5 : 1; 
+                attendanceStats[d.enrollment].days += 1;
+            });
+            renderStudentManagementTable();
+            if(window.currentStudent.enrollment) {
+                const ptsUI = document.getElementById('student-att-points');
+                if(ptsUI) ptsUI.innerText = (attendancePointsMap[window.currentStudent.enrollment] || 0) + " Points";
+            }
+        });
+
+        window.loadAttendanceForDate = async function() {
+            const dateStr = document.getElementById('attendance-date').value;
+            const selectedShift = document.getElementById('attendance-shift-filter').value;
+            if(!dateStr) return;
+            const isSaturday = new Date(dateStr).getDay() === 6;
+            const pts = isSaturday ? {p: 5, r: 2.5, a: 0} : {p: 1, r: 0.5, a: 0};
+
+            const q = query(collection(db, "attendance"), where("date", "==", dateStr));
+            const snap = await getDocs(q); let existingAtt = {};
+            snap.forEach(doc => { existingAtt[doc.data().enrollment] = doc.data().status; });
+
+            const tbody = document.getElementById('attendance-list-body'); tbody.innerHTML = '';
+            
+            let filteredStudents = allStudentsList;
+            if (selectedShift !== 'ALL') {
+                filteredStudents = allStudentsList.filter(s => (s.shift || '10am shift') === selectedShift);
+            }
+
+            if(filteredStudents.length === 0) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">He shift-ah hian zirlai an awm lo.</td></tr>'; return; }
+
+            let presentList = [];
+            let reportList = [];
+            let absentCount = 0;
+
+            filteredStudents.forEach(s => {
+                let status = existingAtt[s.enrollment] !== undefined ? existingAtt[s.enrollment] : ''; 
+
+                let presentChecked = (status === 'Present') ? 'checked' : '';
+                let reportedChecked = (status === 'Reported') ? 'checked' : '';
+                let absentChecked = (status === 'Absent') ? 'checked' : '';
+
+                if (status === 'Present') presentList.push(s.name);
+                else if (status === 'Reported') reportList.push(s.name);
+                else absentCount++;
+
+                tbody.innerHTML += `
+                    <tr class="att-row">
+                        <td class="att-enrollment">${s.enrollment}</td>
+                        <td class="att-name"><b>${s.name}</b> <span style="font-size:11px; color:#64748b;">(${s.shift || '10am shift'})</span></td>
+                        <td>
+                            <div class="radio-group" onchange="updateAttendanceSummary()">
+                                <label class="radio-present"><input type="radio" name="att_${s.enrollment}" value="Present" ${presentChecked}> Present (${pts.p})</label>
+                                <label class="radio-report"><input type="radio" name="att_${s.enrollment}" value="Reported" ${reportedChecked}> Report (${pts.r})</label>
+                                <label class="radio-absent"><input type="radio" name="att_${s.enrollment}" value="Absent" ${absentChecked}> Absent (${pts.a})</label>
+                            </div>
+                        </td>
+                    </tr>`;
+            });
+
+            document.getElementById('count-present').innerText = presentList.length;
+            document.getElementById('list-present').innerText = presentList.length > 0 ? presentList.join(', ') : 'A la awm lo';
+            
+            document.getElementById('count-report').innerText = reportList.length;
+            document.getElementById('list-report').innerText = reportList.length > 0 ? reportList.join(', ') : 'A la awm lo';
+            
+            document.getElementById('count-absent').innerText = absentCount;
+
+            filterAttendance();
+        }
+
+        window.updateAttendanceSummary = function() {
+            let presentList = [];
+            let reportList = [];
+            let absentCount = 0;
+            const selectedShift = document.getElementById('attendance-shift-filter').value;
+            
+            let filteredStudents = allStudentsList;
+            if (selectedShift !== 'ALL') {
+                filteredStudents = allStudentsList.filter(s => (s.shift || '10am shift') === selectedShift);
+            }
+
+            filteredStudents.forEach(s => {
+                const radios = document.getElementsByName(`att_${s.enrollment}`); let val = '';
+                for(let r of radios) { if(r.checked) val = r.value; }
+
+                if (val === 'Present') presentList.push(s.name);
+                else if (val === 'Reported') reportList.push(s.name);
+                else absentCount++;
+            });
+
+            document.getElementById('count-present').innerText = presentList.length;
+            document.getElementById('list-present').innerText = presentList.length > 0 ? presentList.join(', ') : 'A la awm lo';
+            
+            document.getElementById('count-report').innerText = reportList.length;
+            document.getElementById('list-report').innerText = reportList.length > 0 ? reportList.join(', ') : 'A la awm lo';
+            
+            document.getElementById('count-absent').innerText = absentCount;
+        }
+
+        window.filterAttendance = function() {
+            const input = document.getElementById('attendance-search').value.toLowerCase();
+            const rows = document.querySelectorAll('#attendance-list-body tr');
+            rows.forEach(row => {
+                if(row.cells.length < 3) return; 
+                const enr = row.querySelector('.att-enrollment').innerText.toLowerCase(); const nm = row.querySelector('.att-name').innerText.toLowerCase();
+                row.style.display = (enr.includes(input) || nm.includes(input)) ? '' : 'none';
+            });
+        }
+
+        window.saveAttendance = async function() {
+            const dateStr = document.getElementById('attendance-date').value;
+            const selectedShift = document.getElementById('attendance-shift-filter').value;
+            if(!dateStr) { alert("Date thlang phawt rawh!"); return; }
+            const isSaturday = new Date(dateStr).getDay() === 6;
+            const pts = isSaturday ? {Present: 5, Reported: 2.5, Absent: 0} : {Present: 1, Reported: 0.5, Absent: 0};
+
+            let targetStudents = allStudentsList;
+            if (selectedShift !== 'ALL') {
+                targetStudents = allStudentsList.filter(s => (s.shift || '10am shift') === selectedShift);
+            }
+
+            let promises = [];
+            targetStudents.forEach(s => {
+                const radios = document.getElementsByName(`att_${s.enrollment}`); let val = 'Absent';
+                for(let r of radios) { if(r.checked) val = r.value; }
+                promises.push(setDoc(doc(db, "attendance", `${dateStr}_${s.enrollment}`), { date: dateStr, enrollment: s.enrollment, name: s.name, status: val, points: pts[val], timestamp: serverTimestamp() }));
+            });
+            try { await Promise.all(promises); alert(`${dateStr} Attendance save a ni e!`); } catch(e) { alert("Save naah harsatna: " + e.message); }
+        }
+
+        window.exportAttendanceToExcel = async function() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "attendance")); let attData = [];
+                querySnapshot.forEach((docSnap) => { let d = docSnap.data(); attData.push({ "Ni (Date)": d.date, "Enrollment": d.enrollment, "Hming": d.name, "Status": d.status, "Points": d.points }); });
+                if(attData.length === 0) { alert("Attendance record a la awm lo."); return; }
+                attData.sort((a, b) => new Date(b["Ni (Date)"]) - new Date(a["Ni (Date)"]));
+                let worksheet = XLSX.utils.json_to_sheet(attData); let workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance_Report"); XLSX.writeFile(workbook, "Bethel_Attendance_Report.xlsx");
+            } catch (error) { alert("Excel export-naah harsatna: " + error.message); }
+        }
+
+        // ================= GENERAL & MANAGEMENT =================
+        function renderStudentManagementTable() {
+            const tableBody = document.getElementById('student-management-body'); let todayLoginCount = 0; let onlineNames = [];
+            if(!tableBody) return; tableBody.innerHTML = '';
+            
+            if(allStudentsList.length === 0) { tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>'; } 
+            else {
+                allStudentsList.forEach((s) => {
+                    if(s.lastLoginDate === todayISODate) { todayLoginCount++; onlineNames.push(`<span class="badge-student">${s.name}</span>`); }
+                    const totalPts = attendancePointsMap[s.enrollment] || 0;
+                    const studentShift = s.shift || '10am shift';
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${s.enrollment}</td>
+                            <td><b>${s.name}</b></td>
+                            <td>${s.dob}</td>
+                            <td><span class="badge-shift">${studentShift}</span> <button style="background:none; border:none; color:#0284c7; cursor:pointer; font-size:12px; margin-left:5px;" onclick="openShiftModal('${s.enrollment}', '${studentShift}')">✏️ Edit</button></td>
+                            <td style="font-weight:bold; color:#7e22ce;">${totalPts} pts</td>
+                            <td style="text-align: center;">
+                                <button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Login Thawnna" onclick="shareLoginWhatsApp('${s.name}', '${s.enrollment}', '${s.dob}')">📱</button>
+                                <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteStudent('${s.enrollment}')">✕</button>
+                            </td>
+                        </tr>`;
+                });
+            }
+            const countDisplay = document.getElementById('today-login-count'); if (countDisplay) countDisplay.innerText = todayLoginCount;
+            const namesDisplay = document.getElementById('today-online-names');
+            if (namesDisplay) { namesDisplay.innerHTML = onlineNames.length > 0 ? onlineNames.join('') : '<span style="color: gray; font-style: italic; font-size: 13px;">Online an la awm lo...</span>'; }
+        }
+
+        function renderOnlineShiftStudents() {
+            const container = document.getElementById('admin-online-students-list');
+            if (!container) return;
+            
+            const onlineStudents = allStudentsList.filter(s => (s.shift || '10am shift') === 'Online shift');
+            
+            if (onlineStudents.length === 0) {
+                container.innerHTML = '<span style="color: gray; font-size: 14px; font-style: italic;">Online shift-ah zirlai an la awm lo...</span>';
+            } else {
+                container.innerHTML = onlineStudents.map(s => 
+                    `<span class="badge-student" style="background-color: #f3e8ff; color: #6b21a8; border-color: #d8b4fe; font-size: 14px; padding: 6px 12px;">${s.name} <small style="color: #64748b; font-weight: normal; margin-left: 4px;">(${s.enrollment})</small></span>`
+                ).join('');
+            }
+        }
+
+        onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
+            allStudentsList = []; snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
+            renderStudentManagementTable(); renderFeeTable(); loadAttendanceForDate(); renderOnlineShiftStudents(); 
+        });
+
+        window.openShiftModal = function(enrollment, currentShift) {
+            document.getElementById('edit-shift-enrollment').value = enrollment;
+            document.getElementById('edit-student-shift').value = currentShift;
+            document.getElementById('shift-edit-modal').classList.remove('hidden');
+        }
+        window.closeShiftModal = function() {
+            document.getElementById('shift-edit-modal').classList.add('hidden');
+        }
+        window.updateStudentShift = async function() {
+            const enrollment = document.getElementById('edit-shift-enrollment').value;
+            const newShift = document.getElementById('edit-student-shift').value;
+            try { await updateDoc(doc(db, "students", enrollment), { shift: newShift }); closeShiftModal(); alert("Zirlai shift chu hlawhtling taka thlak a ni e!"); } 
+            catch(e) { alert("Harsatna: " + e.message); }
+        }
+
+        window.registerSingleStudent = async function(event) {
+            event.preventDefault();
+            const enr = document.getElementById('reg-enrollment').value.trim(); const name = document.getElementById('reg-name').value.trim();
+            const dob = document.getElementById('reg-dob').value.trim(); const shift = document.getElementById('reg-shift').value;
+
+            if(!enr || !name || !dob) { alert("Data a kim lo!"); return; }
+            try { await setDoc(doc(db, "students", String(enr)), { enrollment: String(enr), name: String(name), dob: String(dob), shift: String(shift), registeredAt: serverTimestamp(), lastLoginDate: "" }); alert("Zirlai " + name + " chu hlawhtling taka register a ni e!"); event.target.reset(); } 
+            catch(e) { alert("Harsatna: " + e.message); }
+        }
+
+        window.uploadExcelData = async function() {
+            const fileInput = document.getElementById('excel-upload'); const statusDiv = document.getElementById('upload-status');
+            const file = fileInput.files[0];
+            if (!file) { alert("Excel emaw CSV file thlang phawt rawh!"); return; }
+            statusDiv.style.color = "#0369a1"; statusDiv.innerText = "Data lakluh mek a ni, khawngaihin nghak lawk rawh...";
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
+                    const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { raw: false });
+                    if (json.length === 0) { statusDiv.style.color = "red"; statusDiv.innerText = "Data a awm lo."; return; }
+
+                    let successCount = 0; let errorCount = 0;
+                    for (let i = 0; i < json.length; i++) {
+                        let row = json[i]; let enrollment = row.Enrollment || row.enrollment; let name = row.Name || row.name || row.Hming; let dob = row.DOB || row.dob; let shift = row.Shift || row.shift || "10am shift";
+                        if (enrollment && name && dob) {
+                            try {
+                                await setDoc(doc(db, "students", String(enrollment)), { enrollment: String(enrollment), name: String(name), dob: String(dob), shift: String(shift), registeredAt: serverTimestamp(), lastLoginDate: "" });
+                                successCount++;
+                            } catch (err) { errorCount++; }
+                        }
+                    }
+                    statusDiv.style.color = "#15803d"; statusDiv.innerText = `✅ Tluang takin zirlai ${successCount} thunluh an ni e! (Fail: ${errorCount})`;
+                    fileInput.value = ""; setTimeout(() => { statusDiv.innerText = ""; }, 5000); 
+                } catch (error) { statusDiv.style.color = "red"; statusDiv.innerText = "Harsatna: " + error.message; }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // ================= GRADEBOOK =================
+        window.onGradeStudentSelect = function() {
+            let enr = document.getElementById('grade-student-select').value; let infoDiv = document.getElementById('grade-student-info');
+            if(!enr) { infoDiv.innerHTML = ''; return; }
+            let stats = attendanceStats[enr];
+            if(stats && stats.days > 0) { let pct = (stats.earned / stats.possible) * 100; infoDiv.innerHTML = `📅 A class kal tawh zat: <b>Ni ${stats.days}</b> &nbsp;|&nbsp; 📊 A regular dan: <b>${pct.toFixed(1)}%</b>`; onGradeSubjectSelect(); } 
+            else { infoDiv.innerHTML = `📅 A class kal tawh zat: <b>Ni 0</b> &nbsp;|&nbsp; 📊 A regular dan: <b>0%</b>`; }
+        }
+
+        window.onGradeSubjectSelect = function() {
+            let subj = document.getElementById('grade-subject').value; let prLabel = document.getElementById('label-pr-exam'); let prInput = document.getElementById('grade-pr-exam');
+            let enr = document.getElementById('grade-student-select').value;
+            
+            if (subj === 'DCA 101' || subj === 'DCA 102') { prLabel.innerHTML = 'Practical Exam - Typing/Folder [Max 40]'; prInput.readOnly = false; prInput.style.backgroundColor = 'white'; } 
+            else if (subj === 'DCA 104') {
+                prLabel.innerHTML = 'Practical Exam - Auto (Attendance % atangin) [Max 40]';
+                if (enr && attendanceStats[enr] && attendanceStats[enr].days > 0) { let pct = (attendanceStats[enr].earned / attendanceStats[enr].possible) * 100; prInput.value = ((pct / 100) * 40).toFixed(1); } else { prInput.value = ''; }
+                prInput.style.backgroundColor = '#e0f2fe'; 
+            } else { prLabel.innerHTML = 'Practical Exam (Pangngai) [Max 40]'; prInput.readOnly = false; prInput.style.backgroundColor = 'white'; }
+        }
+
+        window.saveGrade = async function(event) {
+            event.preventDefault();
+            const enr = document.getElementById('grade-student-select').value; const subj = document.getElementById('grade-subject').value;
+            const thIa = parseFloat(document.getElementById('grade-th-ia').value) || 0; const thExam = parseFloat(document.getElementById('grade-th-exam').value) || 0;
+            const prIa = parseFloat(document.getElementById('grade-pr-ia').value) || 0; const prExam = parseFloat(document.getElementById('grade-pr-exam').value) || 0;
+
+            if(!enr) { alert("Zirlai thlang phawt rawh."); return; }
+            const totalMark = thIa + thExam + prIa + prExam; const studentName = allStudentsList.find(s => s.enrollment === enr)?.name || '';
+            try { await setDoc(doc(db, "student_grades", `${enr}_${subj}`), { enrollment: enr, name: studentName, subject: subj, theoryIA: thIa, theoryExam: thExam, practicalIA: prIa, practicalExam: prExam, totalMark: totalMark, timestamp: serverTimestamp() }); alert(`${subj} mark hlawhtling taka save a ni e!`); document.getElementById('grade-th-ia').value = ''; document.getElementById('grade-th-exam').value = ''; document.getElementById('grade-pr-ia').value = ''; document.getElementById('grade-pr-exam').value = ''; } 
+            catch(e) { alert("Save naah harsatna: " + e.message); }
+        }
+
+        onSnapshot(query(collection(db, "student_grades"), orderBy("enrollment")), (snapshot) => {
+            const tableBody = document.getElementById('grade-results-table'); if(!tableBody) return; tableBody.innerHTML = '';
+            if (snapshot.empty) { tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: gray;">Results a la awm rih lo...</td></tr>'; } 
+            else { snapshot.forEach((docSnap) => { let d = docSnap.data(); let totalColor = d.totalMark >= 40 ? '#16a34a' : '#dc2626'; tableBody.innerHTML += `<tr><td>${d.enrollment}</td><td><b>${d.name}</b></td><td style="color: #0f766e; font-weight: bold;">${d.subject}</td><td>${d.theoryIA}</td><td>${d.theoryExam}</td><td>${d.practicalIA}</td><td>${d.practicalExam}</td><td><span style="color: ${totalColor}; font-weight: bold; font-size: 15px;">${d.totalMark.toFixed(1)}</span></td></tr>`; }); }
+        });
+
+        window.exportGradesToExcel = async function() {
+            try { const querySnapshot = await getDocs(query(collection(db, "student_grades"), orderBy("enrollment"))); let resultsData = []; querySnapshot.forEach((docSnap) => { let d = docSnap.data(); resultsData.push({ "Enrollment No": d.enrollment, "Zirlai Hming": d.name, "Subject": d.subject, "Theory IA": d.theoryIA, "Theory Exam": d.theoryExam, "Practical IA": d.practicalIA, "Practical Exam": d.practicalExam, "Total Mark (100)": d.totalMark }); }); if(resultsData.length === 0) { alert("Marks a la awm lo."); return; } let worksheet = XLSX.utils.json_to_sheet(resultsData); let workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Gradebook"); XLSX.writeFile(workbook, "Bethel_Gradebook.xlsx"); } catch (error) { alert("Harsatna: " + error.message); }
+        }
+        window.clearAllGrades = async function() { if (confirm("Mark i thunluh tawh zawng zawng paih fai takzet i duh em?")) { try { const querySnapshot = await getDocs(collection(db, "student_grades")); let deletePromises = []; querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "student_grades", document.id)))); await Promise.all(deletePromises); alert("Gradebook paih fai a ni tawh e!"); } catch (error) { alert("Harsatna: " + error.message); } } }
+
+        // ================= LEAVES =================
+        window.applyLeave = async function(event) {
+            event.preventDefault();
+            const leaveDate = document.getElementById('leave-date').value; 
+            const reason = document.getElementById('leave-reason').value.trim();
+            
+            try { 
+                await addDoc(collection(db, "leave_requests"), { 
+                    enrollment: window.currentStudent.enrollment, 
+                    studentName: window.currentStudent.name, 
+                    startDate: leaveDate, 
+                    endDate: leaveDate, 
+                    date: leaveDate, 
+                    reason: reason, 
+                    status: "Pending", 
+                    createdAt: serverTimestamp() 
+                }); 
+                alert("I in-report-na a lut hlawhtling e."); 
+                event.target.reset(); 
+                document.getElementById('leave-date').value = todayISODate; 
+            } catch (error) { 
+                alert("Thehluh theih a ni lo: " + error.message); 
+            }
+        }
+
+        function loadStudentLeaves(enrollment) {
+            const q = query(collection(db, "leave_requests"), where("enrollment", "==", enrollment));
+            studentLeaveUnsubscribe = onSnapshot(q, (snapshot) => {
+                const container = document.getElementById('student-leave-history'); container.innerHTML = '';
+                if (snapshot.empty) { container.innerHTML = '<p style="color: gray;">Report i la thehlut lo.</p>'; return; }
+                let leaves = []; snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()})); leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
+                leaves.forEach(data => { let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending'; let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek'; container.innerHTML += `<div class="leave-item"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><strong style="color: #0f172a;">📅 ${data.date}</strong><span class="status-badge ${badgeClass}">${statusText}</span></div><p style="font-size:14px; color:#475569; margin:0;">${data.reason}</p></div>`; });
+            });
+        }
+
+        window.approveLeaveStatus = async function(leaveId, enrollment, startDate, endDate) {
+            try {
+                await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Approved' });
+                let currDate = new Date(startDate); let lastDate = new Date(endDate); let studentName = allStudentsList.find(s => s.enrollment === enrollment)?.name || '';
+                let promises = [];
+                while (currDate <= lastDate) {
+                    let dStr = currDate.toISOString().split('T')[0]; let isSaturday = currDate.getDay() === 6; let pts = isSaturday ? 2.5 : 0.5;
+                    promises.push(setDoc(doc(db, "attendance", `${dStr}_${enrollment}`), { date: dStr, enrollment: enrollment, name: studentName, status: 'Reported', points: pts, timestamp: serverTimestamp() }));
+                    currDate.setDate(currDate.getDate() + 1);
+                }
+                await Promise.all(promises); loadAttendanceForDate(); alert("Chawlh hlawhtling taka pawm a ni e! Attendance-ah 'Reported' tia dah a ni ta.");
+            } catch(error) { alert("Harsatna: " + error.message); }
+        }
+
+        onSnapshot(collection(db, "leave_requests"), (snapshot) => {
+            const adminContainer = document.getElementById('admin-leave-list'); if(!adminContainer) return; adminContainer.innerHTML = '';
+            if (snapshot.empty) { adminContainer.innerHTML = '<p style="color: gray; text-align: center; padding: 10px 0;">In-report an la awm lo...</p>'; return; }
+            let leaves = []; snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()})); leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
+            leaves.forEach(data => {
+                let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending'; let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek';
+                let sDate = data.startDate || data.date; let eDate = data.endDate || data.date;
+                adminContainer.innerHTML += `<div class="leave-item" style="border-left: 4px solid ${data.status === 'Approved' ? '#22c55e' : '#eab308'};"><div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:8px;"><strong style="font-size: 15px; color: #0f172a;">${data.studentName} <span style="color: gray; font-size: 12px;">(${data.enrollment})</span></strong><span class="status-badge ${badgeClass}">${statusText}</span></div><div style="font-size:13px; color:#334155; margin-bottom: 10px; background: #f8fafc; padding: 6px; border-radius: 4px;"><span style="color:#0284c7; font-weight:bold;">Chawlh Ni:</span> ${data.date} | <span style="color:#0284c7; font-weight:bold;">A Chhan:</span> ${data.reason}</div>${data.status === 'Pending' ? `<button class="btn btn-success" style="padding: 6px 12px; font-size:12px; margin:0; width: auto;" onclick="approveLeaveStatus('${data.id}', '${data.enrollment}', '${sDate}', '${eDate}')">Pawm (Approve)</button>` : ''}</div>`;
+            });
+        });
+
+        window.exportLeaveToExcel = async function() { try { const querySnapshot = await getDocs(collection(db, "leave_requests")); let leaveData = []; querySnapshot.forEach((doc) => { let d = doc.data(); leaveData.push({ "Enrollment No": d.enrollment, "Zirlai Hming": d.studentName, "Chawlh Ni": d.date, "Chhan": d.reason, "Status": d.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek' }); }); if(leaveData.length === 0) { alert("Record a la awm lo."); return; } let worksheet = XLSX.utils.json_to_sheet(leaveData); let workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Chawlh_Report"); XLSX.writeFile(workbook, "Bethel_Zirlai_Chawlh.xlsx"); } catch (error) { alert("Harsatna: " + error.message); } }
+        window.clearAllLeaveRequests = async function() { if (confirm("Paih fai takzet i duh em?")) { try { const querySnapshot = await getDocs(collection(db, "leave_requests")); let deletePromises = []; querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "leave_requests", document.id)))); await Promise.all(deletePromises); alert("Paih fai a ni tawh e!"); } catch (error) { alert("Harsatna: " + error.message); } } }
+
+        // ================= NOTICES =================
+        window.publishNotice = async function(event) { event.preventDefault(); try { await addDoc(collection(db, "notices"), { title: document.getElementById('notice-title').value, content: document.getElementById('notice-content').value, comments: [], createdAt: serverTimestamp() }); alert("I publish hlawhtling e!"); event.target.reset(); } catch (error) { alert("Harsatna: " + error.message); } }
+        window.editNotice = async function(noticeId) { const newContent = prompt("Notice thar tur type rawh:"); if (newContent !== null && newContent.trim() !== "") { try { await updateDoc(doc(db, "notices", noticeId), { content: newContent }); alert("I siam tha e."); } catch (error) { alert("Harsatna: " + error.message); } } }
+        window.deleteNotice = async function(noticeId) { if (confirm("Paih duh takzet em?")) { try { await deleteDoc(doc(db, "notices", noticeId)); alert("Paih a ni tawh e."); } catch (error) { alert("Harsatna: " + error.message); } } }
+        window.postComment = async function(noticeId) { const inputField = document.getElementById(`comment-input-${noticeId}`); const commentText = inputField.value.trim(); if (!commentText) { alert("Comment ziak phawt rawh!"); return; } try { await updateDoc(doc(db, "notices", noticeId), { comments: arrayUnion({ studentName: window.currentStudent.name, text: commentText, date: new Date().toLocaleString() }) }); inputField.value = ''; alert("Post a ni e!"); } catch (error) { alert("Harsatna: " + error.message); } }
+        window.adminPostComment = async function(noticeId) { const inputField = document.getElementById(`admin-comment-input-${noticeId}`); const commentText = inputField.value.trim(); if (!commentText) { alert("Reply tur ziak phawt rawh!"); return; } try { await updateDoc(doc(db, "notices", noticeId), { comments: arrayUnion({ studentName: "Zirtirtu (Admin)", text: commentText, date: new Date().toLocaleString() }) }); inputField.value = ''; alert("Reply post a ni e!"); } catch (error) { alert("Harsatna: " + error.message); } }
+
+        onSnapshot(query(collection(db, "notices"), orderBy("createdAt", "desc")), (snapshot) => {
+            const adminList = document.getElementById('admin-notice-list'); const studentList = document.getElementById('student-notice-list');
+            adminList.innerHTML = ''; studentList.innerHTML = '';
+            if (snapshot.empty) { adminList.innerHTML = '<p style="color: gray;">Notice a la awm lo...</p>'; studentList.innerHTML = '<p style="color: gray;">Notice a la awm lo...</p>'; } 
+            else {
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data(); const noticeId = docSnap.id; let commentsHTML = '';
+                    if (data.comments && data.comments.length > 0) {
+                        commentsHTML = '<div class="comment-area"><b>Comments:</b><br>';
+                        data.comments.forEach(c => { 
+                            let nameTag = c.studentName === "Zirtirtu (Admin)" ? `<span style="color:#15803d; font-weight:bold; background:#dcfce7; padding:2px 6px; border-radius:4px; font-size:12px;">✅ ${c.studentName}</span>` : `<span style="color:#0284c7; font-weight:bold;">${c.studentName}</span>`;
+                            commentsHTML += `<div class="comment-item">${nameTag}: ${c.text} <span style="font-size:11px; color:gray; float:right;">(${c.date})</span></div>`; 
+                        });
+                        commentsHTML += '</div>';
+                    }
+                    let safeTitle = data.title ? data.title.replace(/'/g, "\\'") : '';
+                    adminList.innerHTML += `<div class="notice-box"><h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4><p style="margin-bottom: 10px; color: #475569;">${data.content}</p>${commentsHTML}<div style="margin-top: 12px; display: flex; gap: 10px;"><input type="text" id="admin-comment-input-${noticeId}" placeholder="Comment chhanna (Reply)..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;"><button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="adminPostComment('${noticeId}')">Reply</button></div><div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;"><button class="btn btn-whatsapp" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="shareNoticeWhatsApp('${safeTitle}')">📲 WhatsApp-ah Share-na</button><button class="btn btn-primary" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="editNotice('${noticeId}')">Edit Notice</button><button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="deleteNotice('${noticeId}')">Paih</button></div></div>`;
+                    studentList.innerHTML += `<div class="notice-box"><h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4><p style="margin-bottom: 10px; color: #475569;">${data.content}</p>${commentsHTML}<div style="margin-top: 12px; display: flex; gap: 10px;"><input type="text" id="comment-input-${noticeId}" placeholder="Comment ziahna..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;"><button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="postComment('${noticeId}')">Post</button></div></div>`;
+                });
+            }
+        });
+
+        // ================= SHARED LINKS =================
+        window.shareLink = async function(event) { event.preventDefault(); try { await addDoc(collection(db, "shared_links"), { type: document.getElementById('link-type').value, fileName: document.getElementById('link-name').value, url: document.getElementById('link-url').value, createdAt: serverTimestamp() }); alert("Hlawhtling takin i sem e!"); event.target.reset(); } catch (error) { alert("Harsatna: " + error.message); } }
+        window.deleteLink = async function(docId) { if(confirm("Paih duh takzet em?")) { try { await deleteDoc(doc(db, "shared_links", docId)); } catch(error) { alert("Harsatna: " + error.message); } } }
+
+        onSnapshot(query(collection(db, "shared_links"), orderBy("createdAt", "desc")), (snapshot) => {
+            const studentContainer = document.getElementById('student-links-container'); const adminContainer = document.getElementById('admin-links-container');
+            studentContainer.innerHTML = '<h3>Study Material, Assignment, Test / Exam</h3>'; adminContainer.innerHTML = '';
+            if (snapshot.empty) { studentContainer.innerHTML += '<p style="color: gray;">Thil sem a la awm lo.</p>'; adminContainer.innerHTML = '<p style="color: gray;">A la awm rih lo...</p>'; } 
+            else {
+                snapshot.forEach((docSnap) => {
+                    let data = docSnap.data(); let icon = '🔗'; let color = '#333'; let btnText = 'Hawng Rawh'; let finalUrl = data.url;
+                    if (data.type === 'PDF Note') { icon = '📕'; color = '#dc2626'; let match = finalUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/); if(match && match[1]) { finalUrl = `https://drive.google.com/uc?export=download&id=${match[1]}`; btnText = 'Download'; } }
+                    else if (data.type === 'GitHub Project') { 
+                        icon = '💻'; color = '#111827'; 
+                        if (window.currentStudent && window.currentStudent.enrollment) {
+                            try { let urlObj = new URL(finalUrl); urlObj.searchParams.set('enrollment', window.currentStudent.enrollment); urlObj.searchParams.set('name', window.currentStudent.name); finalUrl = urlObj.toString(); } 
+                            catch(e) { let separator = finalUrl.includes('?') ? '&' : '?'; finalUrl = `${finalUrl}${separator}enrollment=${window.currentStudent.enrollment}&name=${encodeURIComponent(window.currentStudent.name)}`; }
+                        }
+                    }
+                    else if (data.type === 'Google Form') { icon = '📝'; color = '#16a34a'; } else if (data.type === 'YouTube Video') { icon = '▶️'; color = '#2563eb'; }
+                    let safeFileName = data.fileName ? data.fileName.replace(/'/g, "\\'") : ''; let safeType = data.type ? data.type.replace(/'/g, "\\'") : '';
+                    adminContainer.innerHTML += `<div class="list-row"><div class="list-row-info"><b style="font-size: 14px;">${data.fileName}</b><br><span style="font-size: 12px; color: gray;">(${data.type})</span></div><div style="display: flex; gap: 5px;"><button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Share-na" onclick="shareMaterialWhatsApp('${safeFileName}', '${safeType}')">📲</button><button class="btn btn-danger btn-icon" title="Paih" onclick="deleteLink('${docSnap.id}')">✕</button></div></div>`;
+                    studentContainer.innerHTML += `<div class="shared-link-box"><p style="margin-bottom: 0; font-weight: bold; color: ${color}; font-size: 15px;">${icon} ${data.fileName}</p><a href="${finalUrl}" target="_blank" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">${btnText}</a></div>`;
+                });
+            }
+        });
+
+        // ================= ONLINE SHIFT BIK =================
+        window.shareOnlineMaterial = async function(event) {
+            event.preventDefault();
+            try {
+                await addDoc(collection(db, "online_materials"), {
+                    title: document.getElementById('online-title').value,
+                    message: document.getElementById('online-message').value,
+                    url: document.getElementById('online-url').value,
+                    createdAt: serverTimestamp()
+                });
+                alert("Online shift te hnenah thawn a ni e!");
+                event.target.reset();
+            } catch (error) { alert("Harsatna: " + error.message); }
+        }
+
+        window.deleteOnlineMaterial = async function(docId) {
+            if(confirm("He online thawn hi paih duh takzet em?")) {
+                try { await deleteDoc(doc(db, "online_materials", docId)); } 
+                catch(error) { alert("Harsatna: " + error.message); }
+            }
+        }
+
+        onSnapshot(query(collection(db, "online_materials"), orderBy("createdAt", "desc")), (snapshot) => {
+            const adminContainer = document.getElementById('admin-online-container');
+            const studentContainer = document.getElementById('student-online-container');
+            
+            if(adminContainer) adminContainer.innerHTML = '';
+            if(studentContainer) studentContainer.innerHTML = '<h3 style="color: #6d28d9;">Online Shift Message & Links</h3>';
+            
+            if (snapshot.empty) {
+                if(adminContainer) adminContainer.innerHTML = '<p style="color: gray;">A la awm rih lo...</p>';
+                if(studentContainer) studentContainer.innerHTML += '<p style="color: gray;">Thil thawn a la awm lo.</p>';
+            } else {
+                snapshot.forEach((docSnap) => {
+                    let data = docSnap.data();
+                    let safeTitle = data.title ? data.title.replace(/'/g, "\\'") : '';
+                    let safeUrl = data.url ? data.url.replace(/'/g, "\\'") : '';
+                    let linkHtml = data.url ? `<a href="${data.url}" target="_blank" class="btn btn-primary" style="padding: 6px 12px; font-size: 13px; text-decoration: none; display: inline-block; margin-top: 10px; width: auto;">Link Hawng Rawh</a>` : '';
+                    
+                    if(adminContainer) {
+                        adminContainer.innerHTML += `
+                            <div class="notice-box" style="border-left-color: #8b5cf6;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                    <div style="flex-grow: 1; padding-right: 10px;">
+                                        <h4 style="margin-bottom: 5px; color: #581c87;">${data.title}</h4>
+                                        <p style="margin-bottom: 0; color: #475569; white-space: pre-wrap; font-size: 14px;">${data.message}</p>
+                                        ${linkHtml}
+                                    </div>
+                                    <div style="display: flex; gap: 5px; flex-direction: column;">
+                                        <button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Share-na" onclick="shareOnlineWhatsApp('${safeTitle}', '${safeUrl}')">📲</button>
+                                        <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteOnlineMaterial('${docSnap.id}')">✕</button>
+                                    </div>
+                                </div>
+                            </div>`;
+                    }
+                        
+                    if(studentContainer) {
+                        studentContainer.innerHTML += `
+                            <div class="notice-box" style="border-left-color: #8b5cf6; background: #faf5ff;">
+                                <h4 style="margin-bottom: 5px; color: #581c87;">${data.title}</h4>
+                                <p style="margin-bottom: 0; color: #475569; white-space: pre-wrap; font-size: 14px;">${data.message}</p>
+                                ${linkHtml}
+                            </div>`;
+                    }
+                });
+            }
+        });
+
+        // ================= PRACTICAL SUBMISSION =================
+        window.submitPracticalLink = async function(event) {
+            event.preventDefault();
+            const title = document.getElementById('practical-title').value.trim();
+            const link = document.getElementById('practical-link').value.trim();
+            
+            if(!title || !link) return;
+            
+            try {
+                await addDoc(collection(db, "practical_submissions"), {
+                    enrollment: window.currentStudent.enrollment,
+                    studentName: window.currentStudent.name,
+                    title: title,
+                    url: link,
+                    timestamp: serverTimestamp()
+                });
+                alert("I practical link chu thehluh a ni e. Zirtirtuin a lo check dawn nia.");
+                event.target.reset();
+            } catch(e) {
+                alert("Harsatna: " + e.message);
+            }
+        }
+
+        window.deletePracticalSubmission = async function(docId) {
+            if(confirm("He link thehluh hi paih i duh takzet em?")) {
+                try {
+                    await deleteDoc(doc(db, "practical_submissions", docId));
+                } catch(e) {
+                    alert("Harsatna: " + e.message);
+                }
+            }
+        }
+
+        onSnapshot(query(collection(db, "practical_submissions"), orderBy("timestamp", "desc")), (snapshot) => {
+            const adminList = document.getElementById('admin-practical-list');
+            const studentList = document.getElementById('student-practical-list');
+            
+            let adminHtml = '';
+            let studentHtml = '';
+            
+            snapshot.forEach(docSnap => {
+                const data = docSnap.data();
+                const docId = docSnap.id;
+                const dateStr = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString() : 'Vawiin';
+                
+                adminHtml += `
+                    <div class="notice-box" style="border-left-color: #10b981; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                        <div style="flex-grow: 1;">
+                            <strong style="color: #047857; font-size: 15px;">${data.studentName} <span style="color:gray; font-size: 12px;">(${data.enrollment})</span></strong>
+                            <div style="font-size: 14px; color: #334155; margin-top: 4px;"><span style="font-weight: bold; color: #0f172a;">Subject:</span> ${data.title}</div>
+                            <div style="font-size: 12px; color: gray; margin-top: 4px;">📅 ${dateStr}</div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <a href="${data.url}" target="_blank" class="btn btn-success" style="padding: 6px 12px; font-size: 13px; margin: 0; text-decoration: none; width: auto;">Hawng Rawh</a>
+                            <button class="btn btn-danger btn-icon" onclick="deletePracticalSubmission('${docId}')">✕</button>
+                        </div>
+                    </div>`;
+                    
+                if(window.currentStudent && data.enrollment === window.currentStudent.enrollment) {
+                    studentHtml += `
+                        <div class="notice-box" style="border-left-color: #10b981; background: #ecfdf5; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                            <div style="flex-grow: 1;">
+                                <strong style="color: #047857;">${data.title}</strong>
+                                <div style="font-size: 12px; color: gray; margin-top: 4px;">📅 Thehluh ni: ${dateStr}</div>
+                            </div>
+                            <a href="${data.url}" target="_blank" class="btn btn-outline" style="border-color: #10b981; color: #10b981; padding: 6px 12px; font-size: 13px; margin: 0; text-decoration: none; width: auto;">I link</a>
+                        </div>`;
+                }
+            });
+            
+            if(adminList) {
+                adminList.innerHTML = adminHtml || '<p style="color: gray;">Thehlut an la awm lo...</p>';
+            }
+            if(studentList && window.currentStudent && window.currentStudent.enrollment) {
+                studentList.innerHTML = studentHtml || '<p style="color: gray;">I la thehlut lo.</p>';
+            }
+        });
+
+        // ================= DELETE STUDENT =================
+        window.deleteStudent = async function(enrollment) { if(confirm(`Enrollment No: ${enrollment} hi i paih duh takzet em?`)) { try { await deleteDoc(doc(db, "students", enrollment)); alert("Zirlai hi paih a ni tawh e."); } catch(error) { alert("Paih naah harsatna: " + error.message); } } }
+
+        // ================= LOGIN LOGIC =================
+        window.loginStudent = async function(event) {
+            event.preventDefault();
+            const enrollment = document.getElementById('login-enrollment').value.trim(); 
+            let dobInput = document.getElementById('login-dob').value.trim();
+            dobInput = dobInput.replace(/\//g, '-');
+
+            try {
+                const q = query(collection(db, "students"), where("enrollment", "==", enrollment));
+                const snap = await getDocs(q);
+                
+                if (!snap.empty) {
+                    let matched = false;
+                    snap.forEach((d) => {
+                        let dbDob = String(d.data().dob).trim().replace(/\//g, '-');
+                        if (dbDob === dobInput) {
+                            matched = true;
+                            window.currentStudent.name = d.data().name;
+                            window.currentStudent.shift = d.data().shift || '10am shift';
+                        }
+                    });
+
+                    if (matched) {
+                        window.currentStudent.enrollment = enrollment;
+                        await updateDoc(doc(db, "students", String(enrollment)), { lastLoginDate: todayISODate });
+                        document.getElementById('student-welcome-title').innerText = `Zirlai Portal - ${window.currentStudent.name}`;
+                        const ptsUI = document.getElementById('student-att-points'); if(ptsUI) ptsUI.innerText = (attendancePointsMap[enrollment] || 0) + " Points";
+                        
+                        const onlineMenuBtn = document.getElementById('student-menu-online');
+                        if (window.currentStudent.shift === 'Online shift') {
+                            onlineMenuBtn.style.display = 'block';
+                        } else {
+                            onlineMenuBtn.style.display = 'none';
+                        }
+
+                        renderStudentFeePortal(); loadStudentLeaves(enrollment); showSection('student-portal-section');
+                    } else { alert("Date of birth a dik lo! Entirnan: 15-05-2005 emaw 15/05/2005"); }
+                } else { alert("Enrollment Number a dik lo! Teacher rawn rawh."); }
+            } catch (e) { alert("Harsatna: " + e.message); }
+        }
+
+        window.loginAdmin = function(event) {
+            event.preventDefault();
+            if (document.getElementById('admin-password').value === "Bethel@123") { document.getElementById('admin-password').value = ''; showSection('teacher-dashboard-section'); } 
+            else { alert("Password a dik lo!"); }
+        }
+    </script>
+</body>
+</html>
