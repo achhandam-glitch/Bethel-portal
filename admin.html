@@ -91,17 +91,9 @@
         .admin-tab-content { display: none; }
         .admin-tab-content.active-content { display: block; animation: fadeIn 0.3s; }
 
-        .student-tab-content { display: none; }
-        .student-tab-content.active-content { display: block; animation: fadeIn 0.3s; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
         .back-menu-bar { margin-bottom: 15px; }
 
         /* MCQ & COIN STYLES */
-        .mcq-card { border: 2px solid #eab308; background: #fefce8; padding: 20px; border-radius: 10px; margin-bottom: 15px; }
-        .mcq-option { display: block; margin: 8px 0; padding: 10px; background: white; border: 1px solid #fde047; border-radius: 6px; cursor: pointer; }
-        .mcq-option:hover { background: #fef08a; }
         .leaderboard-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #e2e8f0; }
 
         @media (max-width: 768px) { 
@@ -112,7 +104,7 @@
 </head>
 <body>
 
-    <!-- 1. HOMEPAGE -->
+    <!-- HOMEPAGE -->
     <section id="home-section" class="hero-section">
         <div class="hero-content">
             <h1>Bethel Computer Centre</h1>
@@ -154,7 +146,7 @@
         </div>
     </div>
 
-    <!-- SHIFT EDIT MODAL (ADMIN) -->
+    <!-- SHIFT EDIT MODAL -->
     <div id="shift-edit-modal" class="modal-overlay hidden">
         <div class="card" style="width: 100%; max-width: 400px; margin: 0;">
             <h3 style="color: #0284c7; border-color: #bae6fd;">Zirlai Shift Thlakna</h3>
@@ -175,7 +167,7 @@
                     <option value="7pm shift">7pm shift</option>
                     <option value="Saturday shift">Saturday shift</option>
                     <option value="Online shift">Online shift</option>
-                    <option value="Flexible shift">Flexible shift (Duh hun huna lokal)</option>
+                    <option value="Flexible shift">Flexible shift</option>
                 </select>
             </div>
             <div style="display: flex; gap: 10px;">
@@ -185,55 +177,8 @@
         </div>
     </div>
 
-    <!-- ATTENDANCE INFO MODAL (STUDENT) -->
-    <div id="attendance-info-modal" class="modal-overlay hidden">
-        <div class="card" style="width: 100%; max-width: 450px; margin: 0;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
-                <h3 style="color: #6b21a8; margin: 0; border: none; padding: 0;">Attendance & Internal Mark</h3>
-                <button style="background: none; border: none; font-size: 20px; cursor: pointer; color: #ef4444;" onclick="document.getElementById('attendance-info-modal').classList.add('hidden')">✕</button>
-            </div>
-            
-            <div style="font-size: 14px; color: #334155; line-height: 1.6;">
-                <h4 style="color: #0f172a; margin-bottom: 5px;">1. Attendance Point Hmuh Dan</h4>
-                <ul style="margin-left: 20px; margin-bottom: 15px;">
-                    <li><b>Present:</b> Ni pangngaiah point 1 (Inrinniah point 5).</li>
-                    <li><b>Reported:</b> Ni pangngaiah point 0.5 (Inrinniah point 2.5).</li>
-                    <li><b>Absent:</b> Point 0.</li>
-                </ul>
-
-                <h4 style="color: #0f172a; margin-bottom: 5px;">2. Chawlh In-Report Dan</h4>
-                <p style="margin-bottom: 15px;">Class i kal theih dawn loh chuan Menu aṭangin <b>"📝 Chawlh Dilna & In-Report-na"</b> ah lut la, i chawlh chhan ziakin thehlut rawh. Zirtirtuin a pawm (approve) hunah i attendance kha 'Reported' ah a inthlak ang a, point chanve i hmu ang.</p>
-
-                <h4 style="color: #0f172a; margin-bottom: 5px;">3. Internal Mark Hamthatna</h4>
-                <p style="margin-bottom: 15px; padding: 10px; background-color: #f0fdf4; border-left: 4px solid #16a34a; border-radius: 4px;">
-                    Class i kal ṭhat dan (percentage) hian Internal Mark-ah nghawng thui tak a nei a ni. Entirnan, <b>DCA 104</b> subject-ah phei chuan i <b>Attendance Percentage aṭangin Practical Exam Mark (Max 40) pek auto i ni dawn a ni.</b> Class i kal that poh leh i exam mark a tha dawn tihna a ni.
-                </p>
-            </div>
-            
-            <button class="btn btn-primary" style="margin-top: 10px; background-color: #6b21a8;" onclick="document.getElementById('attendance-info-modal').classList.add('hidden')">Ka Hrethiam E</button>
-        </div>
-    </div>
-
     <div class="container">
-
-        <!-- 2. ZIRLAI LOGIN -->
-        <section id="student-login-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
-            <h2 style="text-align: center;">Zirlai Log In</h2>
-            <form onsubmit="loginStudent(event)">
-                <div class="input-group">
-                    <label>Enrollment Number</label>
-                    <input type="text" id="login-enrollment" placeholder="Entirnan: 2602001" required>
-                </div>
-                <div class="input-group">
-                    <label>Date of Birth</label>
-                    <input type="text" id="login-dob" placeholder="Entirnan: 15-05-2005" required>
-                </div>
-                <button type="submit" class="btn btn-success">Lut rawh</button>
-            </form>
-            <button class="btn btn-outline" style="margin-top: 15px;" onclick="showSection('home-section')">Home-a letna</button>
-        </section>
-
-        <!-- 3. ADMIN LOGIN -->
+        <!-- ADMIN LOGIN -->
         <section id="admin-login-section" class="card hidden" style="max-width: 450px; margin: 0 auto;">
             <h2 style="text-align: center;">Zirtirtu Log In</h2>
             <p style="text-align: center; color: gray; margin-bottom: 20px; font-size: 14px;">Zirtirtu leh Admin te chauh luh phal a ni.</p>
@@ -247,10 +192,8 @@
             <button class="btn btn-outline" style="margin-top: 15px;" onclick="showSection('home-section')">Home-a letna</button>
         </section>
 
-        <!-- 4. ZIRTIRTU DASHBOARD -->
+        <!-- ADMIN DASHBOARD -->
         <section id="teacher-dashboard-section" class="hidden">
-            
-            <!-- MAIN MENU VIEW -->
             <div id="admin-menu-view">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto;">
                     <h2 style="border:none; margin:0;">Zirtirtu Dashboard</h2>
@@ -268,7 +211,7 @@
                         </div>
                     </div>
 
-                    <h4 style="font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Dashboard Menu</h4>
+                    <h4 style="font-size: 14px; color: #64748b; text-transform: uppercase; margin-bottom: 5px;">Dashboard Menu</h4>
                     <div class="menu-box">
                         <button class="menu-btn" onclick="openAdminTab('tab-register')">📋 Zirlai Register-na</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-fee')">💰 Zirlaite Fee Management</button>
@@ -283,12 +226,20 @@
                 </div>
             </div>
 
-            <!-- TAB CONTENT VIEWS -->
+            <!-- ADMIN TAB CONTENT VIEWS -->
             <div id="admin-content-view">
                 
                 <!-- TAB: MCQ ADMIN -->
                 <div id="tab-mcq" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    
+                    <div class="card" style="border: 2px solid #eab308; padding: 20px; margin-bottom: 20px;">
+                        <h3 style="color: #a16207; border-bottom: 1px solid #fde047;">🏆 Zirlaite Coin Neih Zat (Top 10 Leaderboard)</h3>
+                        <div id="admin-mcq-leaderboard" style="margin-top: 15px;">
+                            <p style="color: gray;">Loading...</p>
+                        </div>
+                    </div>
+
                     <div class="form-grid" style="grid-template-columns: 1fr;">
                         <div class="card" style="border: 2px solid #eab308;">
                             <h3 style="color: #a16207; border-bottom: 1px solid #fde047;">MCQ Zawhna Thar Siamna</h3>
@@ -743,183 +694,19 @@
                                         <th>DOB</th>
                                         <th>Shift</th>
                                         <th>Att. Points</th>
+                                        <!-- HETAH HIAN COIN A LANG ANG -->
+                                        <th style="text-align: center;">Coins 🪙</th>
                                         <th style="text-align: center;">Thawn/Paih</th>
                                     </tr>
                                 </thead>
                                 <tbody id="student-management-body">
                                     <tr>
-                                        <td colspan="6" style="text-align: center; color: gray;">Data a la awm lo...</td>
+                                        <td colspan="7" style="text-align: center; color: gray;">Data a la awm lo...</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                </div>
-
-            </div>
-
-        </section>
-
-        <!-- 5. ZIRLAI DASHBOARD (STUDENT PORTAL) -->
-        <section id="student-portal-section" class="hidden">
-            
-            <!-- STUDENT MAIN MENU VIEW -->
-            <div id="student-menu-view">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto; flex-wrap: wrap; gap: 10px;">
-                    <div>
-                        <h2 style="border:none; margin:0;" id="student-welcome-title">Zirlai Portal</h2>
-                        <div style="color: #eab308; font-weight: bold; font-size: 16px; margin-top: 5px;">🪙 Coins Neih Zat: <span id="student-coin-balance">0</span></div>
-                    </div>
-                    <button class="btn btn-danger" style="width: auto; padding: 8px 15px; font-size: 14px; margin:0;" onclick="showSection('home-section')">Log Out</button>
-                </div>
-
-                <div class="admin-sidebar">
-                    <h4 style="font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Zirlai Menu</h4>
-                    <div class="menu-box">
-                        <button class="menu-btn" onclick="openStudentTab('student-tab-status')">📊 Zirlai Dinhmun (Fee & Attendance)</button>
-                        <button class="menu-btn" onclick="openStudentTab('student-tab-mcq')" style="border-left-color: #eab308; background: #fefce8; color: #a16207;">🎮 MCQ Quizzes & Reward Coins</button>
-                        <button class="menu-btn" onclick="openStudentTab('student-tab-leave')">📝 Chawlh Dilna & In-Report-na</button>
-                        <button class="menu-btn" onclick="openStudentTab('student-tab-notice')">📢 Notice Board</button>
-                        <button class="menu-btn" onclick="openStudentTab('student-tab-materials')">📚 Study Materials, Assignments & Tests</button>
-                        <button class="menu-btn" id="student-menu-online" style="display: none; background: #faf5ff; border-left-color: #8b5cf6; color: #581c87;" onclick="openStudentTab('student-tab-online')">💻 Online Class & Materials</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- STUDENT TAB CONTENT VIEWS -->
-            <div id="student-content-view">
-
-                <!-- NEW TAB: MCQ STUDENT -->
-                <div id="student-tab-mcq" class="student-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
-                    
-                    <div class="card" style="border: 2px solid #eab308; padding: 20px;">
-                        <h3 style="color: #a16207; border-bottom: 1px solid #fde047;">🏆 Coin Leaderboard (Top 5)</h3>
-                        <div id="mcq-leaderboard" style="margin-top: 15px;">
-                            <p style="color: gray;">Loading...</p>
-                        </div>
-                    </div>
-
-                    <div class="card" style="margin-bottom: 0;">
-                        <h3 style="color: #0f172a;">📝 Quizzes & Rewards</h3>
-                        <div id="student-mcq-list">
-                            <p style="color: gray;">Loading...</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 1: STATUS (Fee & Attendance) -->
-                <div id="student-tab-status" class="student-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
-                    
-                    <div style="background: #e0f2fe; border: 1px solid #7dd3fc; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-                        <p style="color: #0369a1; font-weight: 600; font-size: 16px; margin: 0;">I Shift Hun:</p>
-                        <div style="font-size: 18px; font-weight: bold; color: #0c4a6e;" id="student-portal-shift">-</div>
-                    </div>
-
-                    <div class="dashboard-stat-card" style="background: #fffbeb; border-color: #fde68a; display: block; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fde68a;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <p style="color: #b45309; font-weight: 600; font-size: 16px; margin: 0;">I Fee Pek Dinhmun:</p>
-                            <div id="student-fee-paid" style="font-size: 20px; font-weight: bold; color: #16a34a;">Pek Tawh: ₹0</div>
-                        </div>
-                        <div id="student-fee-history" style="margin-top: 15px; border-top: 1px solid #fde68a; padding-top: 10px;">
-                        </div>
-                    </div>
-
-                    <div style="background: #f3e8ff; border: 1px solid #d8b4fe; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <p style="color: #6b21a8; font-weight: 600; font-size: 16px; margin: 0;">Total Attendance Points:</p>
-                            <div style="font-size: 28px; font-weight: bold; color: #7e22ce;" id="student-att-points">0 Points</div>
-                        </div>
-                        <button class="btn" style="background-color: #e9d5ff; color: #6b21a8; border: 1px solid #c084fc; font-size: 13px; padding: 8px;" onclick="document.getElementById('attendance-info-modal').classList.remove('hidden')">
-                            ℹ️ Attendance & Internal Mark Hriattirna
-                        </button>
-                    </div>
-                </div>
-
-                <!-- TAB 2: LEAVE REQUESTS -->
-                <div id="student-tab-leave" class="student-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
-                    <div class="form-grid">
-                        <div class="card" style="margin-bottom: 0;">
-                            <h3>Chawlh Report-na</h3>
-                            <form onsubmit="applyLeave(event)">
-                                <div class="input-group">
-                                    <label>Chawlh Dil Ni (Date)</label>
-                                    <input type="date" id="leave-date" required>
-                                </div>
-                                <div class="input-group">
-                                    <label>Chawlh chhan (Reason)</label>
-                                    <textarea id="leave-reason" rows="2" placeholder="Sawi fiahna tawi..." required></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Report thehlut rawh</button>
-                            </form>
-                        </div>
-
-                        <div class="card" style="margin-bottom: 0;">
-                            <h3>I Chawlh In-Report-te</h3>
-                            <div id="student-leave-history" style="max-height: 300px; overflow-y: auto;">
-                                <p style="color: gray;">Report i la nei lo.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 3: NOTICE BOARD -->
-                <div id="student-tab-notice" class="student-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
-                    <div class="card" style="margin-bottom: 0;">
-                        <h3>Notice Board</h3>
-                        <div id="student-notice-list" style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
-                            <p style="color: gray;">Notice a la awm rih lo...</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 4: STUDY MATERIALS & ASSIGNMENTS -->
-                <div id="student-tab-materials" class="student-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
-                    <div class="card" style="margin-bottom: 0;" id="student-links-container">
-                        <h3>Study Material, Assignment, Test / Exam</h3>
-                        <p style="color: gray;">Database atangin a rawn in-load mek...</p>
-                    </div>
-                </div>
-                
-                <!-- TAB 5: ONLINE SHIFT BIK (Student) -->
-                <div id="student-tab-online" class="student-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
-                    
-                    <div class="card" style="margin-bottom: 20px;" id="student-online-container">
-                        <h3 style="color: #6d28d9;">Online Shift Message & Links</h3>
-                        <p style="color: gray;">Database atangin a rawn in-load mek...</p>
-                    </div>
-
-                    <!-- ZIRLAI PRACTICAL THEHLUHNA FORM -->
-                    <div class="form-grid" style="grid-template-columns: 1fr;">
-                        <div class="card" style="border: 2px solid #10b981;">
-                            <h3 style="color: #047857; border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">Practical Folder Thehluhna</h3>
-                            <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">I practical folder (Google Drive link) kha hetah hian rawn thehlut rawh. (Link i copy dawnin 'Anyone with the link' tihah i thlak hmasa dawn nia).</p>
-                            <form onsubmit="submitPracticalLink(event)">
-                                <div class="input-group">
-                                    <label>Folder Hming / Entirnan: Ms Word Practical</label>
-                                    <input type="text" id="practical-title" required>
-                                </div>
-                                <div class="input-group">
-                                    <label>Google Drive Link</label>
-                                    <input type="url" id="practical-link" placeholder="https://drive.google.com/..." required>
-                                </div>
-                                <button type="submit" class="btn btn-success" style="margin-top: 5px; background-color: #10b981;">Link Thehlut Rawh</button>
-                            </form>
-                        </div>
-                        
-                        <div class="card" style="margin-bottom: 0;">
-                            <h3 style="color: #047857;">I Thehluh Tawh Te</h3>
-                            <div id="student-practical-list" style="max-height: 250px; overflow-y: auto;">
-                                <p style="color: gray;">I la thehlut lo.</p>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
 
             </div>
@@ -988,18 +775,7 @@
                 document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.remove('active-content'));
                 loadAttendanceForDate();
             }
-
-            if(sectionId === 'student-portal-section') {
-                document.getElementById('student-menu-view').style.display = 'block';
-                document.querySelectorAll('.student-tab-content').forEach(el => el.classList.remove('active-content'));
-            }
-            
             window.scrollTo(0, 0);
-            
-            if(sectionId === 'home-section' && studentLeaveUnsubscribe) {
-                studentLeaveUnsubscribe();
-                studentLeaveUnsubscribe = null;
-            }
         }
 
         window.openAdminTab = function(tabId) {
@@ -1015,19 +791,6 @@
         window.backToMenu = function() {
             document.querySelectorAll('.admin-tab-content').forEach(el => { el.classList.remove('active-content'); });
             document.getElementById('admin-menu-view').style.display = 'block';
-            window.scrollTo(0, 0);
-        }
-
-        window.openStudentTab = function(tabId) {
-            document.getElementById('student-menu-view').style.display = 'none';
-            document.querySelectorAll('.student-tab-content').forEach(el => { el.classList.remove('active-content'); });
-            document.getElementById(tabId).classList.add('active-content');
-            window.scrollTo(0, 0);
-        }
-
-        window.backToStudentMenu = function() {
-            document.querySelectorAll('.student-tab-content').forEach(el => { el.classList.remove('active-content'); });
-            document.getElementById('student-menu-view').style.display = 'block';
             window.scrollTo(0, 0);
         }
 
@@ -1117,73 +880,15 @@
                     });
                 }
             }
-            renderStudentMCQs();
         });
 
-        function loadMySubmissions() {
-            if(!window.currentStudent.enrollment) return;
-            onSnapshot(query(collection(db, "mcq_submissions"), where("enrollment", "==", window.currentStudent.enrollment)), (snapshot) => {
-                mySubmissions = []; snapshot.forEach(doc => mySubmissions.push(doc.data().mcqId));
-                renderStudentMCQs();
-            });
-        }
-
-        function renderStudentMCQs() {
-            const list = document.getElementById('student-mcq-list'); if(!list) return;
-            if(mcqTests.length === 0) { list.innerHTML = '<p style="color:gray;">Quiz a awm rih lo.</p>'; return; }
-            list.innerHTML = '';
-            mcqTests.forEach(mcq => {
-                let isAnswered = mySubmissions.includes(mcq.id);
-                if(isAnswered) {
-                    list.innerHTML += `<div class="mcq-card" style="border-color:#cbd5e1; background:#f8fafc; opacity:0.8;"><div style="display:flex; justify-content:space-between;"><b>${mcq.question}</b><span style="color:#16a34a; font-weight:bold;">✅ Chhang Tawh</span></div></div>`;
-                } else {
-                    list.innerHTML += `
-                        <div class="mcq-card" id="mcq-box-${mcq.id}">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                                <h4 style="color:#0f172a; margin:0;">${mcq.question}</h4>
-                                <span style="background:#fef08a; color:#854d0e; padding:3px 8px; border-radius:12px; font-size:12px; font-weight:bold;">🪙 ${mcq.coins} Coins</span>
-                            </div>
-                            <form onsubmit="submitMCQAnswer(event, '${mcq.id}')">
-                                <label class="mcq-option"><input type="radio" name="ans_${mcq.id}" value="A" required> A. ${mcq.optA}</label>
-                                <label class="mcq-option"><input type="radio" name="ans_${mcq.id}" value="B"> B. ${mcq.optB}</label>
-                                <label class="mcq-option"><input type="radio" name="ans_${mcq.id}" value="C"> C. ${mcq.optC}</label>
-                                <label class="mcq-option"><input type="radio" name="ans_${mcq.id}" value="D"> D. ${mcq.optD}</label>
-                                <button type="submit" class="btn btn-warning" style="margin-top:10px;">Submit Answer</button>
-                            </form>
-                        </div>`;
-                }
-            });
-        }
-
-        window.submitMCQAnswer = async function(event, mcqId) {
-            event.preventDefault();
-            const radios = document.getElementsByName(`ans_${mcqId}`);
-            let selected = '';
-            for(let r of radios) { if(r.checked) selected = r.value; }
-            let mcq = mcqTests.find(m => m.id === mcqId);
-            if(!mcq || !selected) return;
-
-            try {
-                await setDoc(doc(db, "mcq_submissions", `${mcqId}_${window.currentStudent.enrollment}`), {
-                    mcqId: mcqId, enrollment: window.currentStudent.enrollment, answer: selected, timestamp: serverTimestamp()
-                });
-                
-                if(selected === mcq.answer) {
-                    await setDoc(doc(db, "students", window.currentStudent.enrollment), { coins: increment(mcq.coins) }, { merge: true });
-                    alert(`✅ I chhang dik e! Coin ${mcq.coins} pek i ni.`);
-                } else {
-                    alert(`❌ I chhang sual. A dik chu: ${mcq.answer}`);
-                }
-            } catch(e) { alert("Harsatna: " + e.message); }
-        }
-
-        function renderLeaderboard() {
-            const board = document.getElementById('mcq-leaderboard'); if(!board) return;
-            let sorted = [...allStudentsList].sort((a,b) => (b.coins || 0) - (a.coins || 0)).slice(0, 5);
+        function renderAdminLeaderboard() {
+            const board = document.getElementById('admin-mcq-leaderboard'); if(!board) return;
+            let sorted = [...allStudentsList].sort((a,b) => (b.coins || 0) - (a.coins || 0)).slice(0, 10);
             if(sorted.length === 0 || (sorted[0].coins || 0) === 0) { board.innerHTML = '<p style="color:gray; font-size:14px;">Coin la an la awm lo.</p>'; return; }
             board.innerHTML = sorted.map((s, i) => {
                 let medal = i===0 ? '🥇' : i===1 ? '🥈' : i===2 ? '🥉' : '🔹';
-                return `<div class="leaderboard-row"><span>${medal} <b>${s.name}</b></span><strong style="color:#a16207;">${s.coins || 0} Coins</strong></div>`;
+                return `<div class="leaderboard-row"><span>${medal} <b>${s.name}</b> <span style="font-size:12px; color:gray;">(${s.enrollment})</span></span><strong style="color:#a16207;">${s.coins || 0} Coins</strong></div>`;
             }).join('');
         }
 
@@ -1192,7 +897,6 @@
             feeDataMap = {};
             snapshot.forEach(docSnap => { feeDataMap[docSnap.id] = docSnap.data(); });
             renderFeeTable();
-            if(window.currentStudent.enrollment) renderStudentFeePortal();
         });
 
         window.onFeeStudentSelect = function() {
@@ -1309,30 +1013,6 @@
             });
         }
 
-        function renderStudentFeePortal() {
-            const enr = window.currentStudent.enrollment; if(!enr) return;
-            const feeRecord = feeDataMap[enr]; let totalPaid = 0; let payments = [];
-            
-            if(feeRecord && feeRecord.payments) {
-                payments = feeRecord.payments; 
-                totalPaid = payments.reduce((sum, p) => sum + parseFloat(p.amount), 0);
-            }
-            
-            document.getElementById('student-fee-paid').innerText = `Pek Tawh: ₹${totalPaid}`;
-            document.getElementById('student-portal-shift').innerText = window.currentStudent.shift || '10am shift';
-
-            const historyDiv = document.getElementById('student-fee-history');
-            historyDiv.innerHTML = '';
-            
-            if(payments.length === 0) { historyDiv.innerHTML = '<span style="font-size: 13px; color: gray;">Fee pek i la nei lo.</span>'; } 
-            else {
-                payments.forEach(p => {
-                    let badge = p.method === 'GPay' ? '<span class="badge-gpay">GPay</span>' : '<span class="badge-cash">Cash</span>';
-                    historyDiv.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom: 5px; font-size: 13px;"><span>📅 ${p.date} ${badge}</span><strong style="color:#0f172a;">+ ₹${p.amount}</strong></div>`;
-                });
-            }
-        }
-
         window.exportFeesToExcel = function() {
             let exportData = [];
             allStudentsList.forEach(s => {
@@ -1369,10 +1049,6 @@
                 attendanceStats[d.enrollment].days += 1;
             });
             renderStudentManagementTable();
-            if(window.currentStudent.enrollment) {
-                const ptsUI = document.getElementById('student-att-points');
-                if(ptsUI) ptsUI.innerText = (attendancePointsMap[window.currentStudent.enrollment] || 0) + " Points";
-            }
         });
 
         window.loadAttendanceForDate = async function() {
@@ -1497,12 +1173,13 @@
             const tableBody = document.getElementById('student-management-body'); let todayLoginCount = 0; let onlineNames = [];
             if(!tableBody) return; tableBody.innerHTML = '';
             
-            if(allStudentsList.length === 0) { tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>'; } 
+            if(allStudentsList.length === 0) { tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>'; } 
             else {
                 allStudentsList.forEach((s) => {
                     if(s.lastLoginDate === todayISODate) { todayLoginCount++; onlineNames.push(`<span class="badge-student">${s.name}</span>`); }
                     const totalPts = attendancePointsMap[s.enrollment] || 0;
                     const studentShift = s.shift || '10am shift';
+                    const studentCoins = s.coins || 0;
                     tableBody.innerHTML += `
                         <tr>
                             <td>${s.enrollment}</td>
@@ -1510,6 +1187,7 @@
                             <td>${s.dob}</td>
                             <td><span class="badge-shift">${studentShift}</span> <button style="background:none; border:none; color:#0284c7; cursor:pointer; font-size:12px; margin-left:5px;" onclick="openShiftModal('${s.enrollment}', '${studentShift}')">✏️ Edit</button></td>
                             <td style="font-weight:bold; color:#7e22ce;">${totalPts} pts</td>
+                            <td style="text-align: center; font-weight:bold; color:#a16207; font-size:15px;">${studentCoins}</td>
                             <td style="text-align: center;">
                                 <button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Login Thawnna" onclick="shareLoginWhatsApp('${s.name}', '${s.enrollment}', '${s.dob}')">📱</button>
                                 <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteStudent('${s.enrollment}')">✕</button>
@@ -1533,18 +1211,11 @@
             }
         }
 
-        // FETCH ALL STUDENTS (Also used for Leaderboard)
+        // FETCH ALL STUDENTS
         onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
             allStudentsList = []; snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
             renderStudentManagementTable(); renderFeeTable(); loadAttendanceForDate(); renderOnlineShiftStudents(); 
-            renderLeaderboard();
-            if(window.currentStudent.enrollment) {
-                let me = allStudentsList.find(s => s.enrollment === window.currentStudent.enrollment);
-                if(me) {
-                    window.currentStudent.coins = me.coins || 0;
-                    document.getElementById('student-coin-balance').innerText = window.currentStudent.coins;
-                }
-            }
+            renderAdminLeaderboard();
         });
 
         window.openShiftModal = function(enrollment, currentShift) {
@@ -1636,39 +1307,16 @@
         window.clearAllGrades = async function() { if (confirm("Mark i thunluh tawh zawng zawng paih fai takzet i duh em?")) { try { const querySnapshot = await getDocs(collection(db, "student_grades")); let deletePromises = []; querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "student_grades", document.id)))); await Promise.all(deletePromises); alert("Gradebook paih fai a ni tawh e!"); } catch (error) { alert("Harsatna: " + error.message); } } }
 
         // ================= LEAVES =================
-        window.applyLeave = async function(event) {
-            event.preventDefault();
-            const leaveDate = document.getElementById('leave-date').value; 
-            const reason = document.getElementById('leave-reason').value.trim();
-            
-            try { 
-                await addDoc(collection(db, "leave_requests"), { 
-                    enrollment: window.currentStudent.enrollment, 
-                    studentName: window.currentStudent.name, 
-                    startDate: leaveDate, 
-                    endDate: leaveDate, 
-                    date: leaveDate, 
-                    reason: reason, 
-                    status: "Pending", 
-                    createdAt: serverTimestamp() 
-                }); 
-                alert("I in-report-na a lut hlawhtling e."); 
-                event.target.reset(); 
-                document.getElementById('leave-date').value = todayISODate; 
-            } catch (error) { 
-                alert("Thehluh theih a ni lo: " + error.message); 
-            }
-        }
-
-        function loadStudentLeaves(enrollment) {
-            const q = query(collection(db, "leave_requests"), where("enrollment", "==", enrollment));
-            studentLeaveUnsubscribe = onSnapshot(q, (snapshot) => {
-                const container = document.getElementById('student-leave-history'); container.innerHTML = '';
-                if (snapshot.empty) { container.innerHTML = '<p style="color: gray;">Report i la thehlut lo.</p>'; return; }
-                let leaves = []; snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()})); leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
-                leaves.forEach(data => { let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending'; let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek'; container.innerHTML += `<div class="leave-item"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><strong style="color: #0f172a;">📅 ${data.date}</strong><span class="status-badge ${badgeClass}">${statusText}</span></div><p style="font-size:14px; color:#475569; margin:0;">${data.reason}</p></div>`; });
+        onSnapshot(collection(db, "leave_requests"), (snapshot) => {
+            const adminContainer = document.getElementById('admin-leave-list'); if(!adminContainer) return; adminContainer.innerHTML = '';
+            if (snapshot.empty) { adminContainer.innerHTML = '<p style="color: gray; text-align: center; padding: 10px 0;">In-report an la awm lo...</p>'; return; }
+            let leaves = []; snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()})); leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
+            leaves.forEach(data => {
+                let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending'; let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek';
+                let sDate = data.startDate || data.date; let eDate = data.endDate || data.date;
+                adminContainer.innerHTML += `<div class="leave-item" style="border-left: 4px solid ${data.status === 'Approved' ? '#22c55e' : '#eab308'};"><div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:8px;"><strong style="font-size: 15px; color: #0f172a;">${data.studentName} <span style="color: gray; font-size: 12px;">(${data.enrollment})</span></strong><span class="status-badge ${badgeClass}">${statusText}</span></div><div style="font-size:13px; color:#334155; margin-bottom: 10px; background: #f8fafc; padding: 6px; border-radius: 4px;"><span style="color:#0284c7; font-weight:bold;">Chawlh Ni:</span> ${data.date} | <span style="color:#0284c7; font-weight:bold;">A Chhan:</span> ${data.reason}</div>${data.status === 'Pending' ? `<button class="btn btn-success" style="padding: 6px 12px; font-size:12px; margin:0; width: auto;" onclick="approveLeaveStatus('${data.id}', '${data.enrollment}', '${sDate}', '${eDate}')">Pawm (Approve)</button>` : ''}</div>`;
             });
-        }
+        });
 
         window.approveLeaveStatus = async function(leaveId, enrollment, startDate, endDate) {
             try {
@@ -1684,17 +1332,6 @@
             } catch(error) { alert("Harsatna: " + error.message); }
         }
 
-        onSnapshot(collection(db, "leave_requests"), (snapshot) => {
-            const adminContainer = document.getElementById('admin-leave-list'); if(!adminContainer) return; adminContainer.innerHTML = '';
-            if (snapshot.empty) { adminContainer.innerHTML = '<p style="color: gray; text-align: center; padding: 10px 0;">In-report an la awm lo...</p>'; return; }
-            let leaves = []; snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()})); leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
-            leaves.forEach(data => {
-                let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending'; let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek';
-                let sDate = data.startDate || data.date; let eDate = data.endDate || data.date;
-                adminContainer.innerHTML += `<div class="leave-item" style="border-left: 4px solid ${data.status === 'Approved' ? '#22c55e' : '#eab308'};"><div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:8px;"><strong style="font-size: 15px; color: #0f172a;">${data.studentName} <span style="color: gray; font-size: 12px;">(${data.enrollment})</span></strong><span class="status-badge ${badgeClass}">${statusText}</span></div><div style="font-size:13px; color:#334155; margin-bottom: 10px; background: #f8fafc; padding: 6px; border-radius: 4px;"><span style="color:#0284c7; font-weight:bold;">Chawlh Ni:</span> ${data.date} | <span style="color:#0284c7; font-weight:bold;">A Chhan:</span> ${data.reason}</div>${data.status === 'Pending' ? `<button class="btn btn-success" style="padding: 6px 12px; font-size:12px; margin:0; width: auto;" onclick="approveLeaveStatus('${data.id}', '${data.enrollment}', '${sDate}', '${eDate}')">Pawm (Approve)</button>` : ''}</div>`;
-            });
-        });
-
         window.exportLeaveToExcel = async function() { try { const querySnapshot = await getDocs(collection(db, "leave_requests")); let leaveData = []; querySnapshot.forEach((doc) => { let d = doc.data(); leaveData.push({ "Enrollment No": d.enrollment, "Zirlai Hming": d.studentName, "Chawlh Ni": d.date, "Chhan": d.reason, "Status": d.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek' }); }); if(leaveData.length === 0) { alert("Record a la awm lo."); return; } let worksheet = XLSX.utils.json_to_sheet(leaveData); let workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Chawlh_Report"); XLSX.writeFile(workbook, "Bethel_Zirlai_Chawlh.xlsx"); } catch (error) { alert("Harsatna: " + error.message); } }
         window.clearAllLeaveRequests = async function() { if (confirm("Paih fai takzet i duh em?")) { try { const querySnapshot = await getDocs(collection(db, "leave_requests")); let deletePromises = []; querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "leave_requests", document.id)))); await Promise.all(deletePromises); alert("Paih fai a ni tawh e!"); } catch (error) { alert("Harsatna: " + error.message); } } }
 
@@ -1702,13 +1339,12 @@
         window.publishNotice = async function(event) { event.preventDefault(); try { await addDoc(collection(db, "notices"), { title: document.getElementById('notice-title').value, content: document.getElementById('notice-content').value, comments: [], createdAt: serverTimestamp() }); alert("I publish hlawhtling e!"); event.target.reset(); } catch (error) { alert("Harsatna: " + error.message); } }
         window.editNotice = async function(noticeId) { const newContent = prompt("Notice thar tur type rawh:"); if (newContent !== null && newContent.trim() !== "") { try { await updateDoc(doc(db, "notices", noticeId), { content: newContent }); alert("I siam tha e."); } catch (error) { alert("Harsatna: " + error.message); } } }
         window.deleteNotice = async function(noticeId) { if (confirm("Paih duh takzet em?")) { try { await deleteDoc(doc(db, "notices", noticeId)); alert("Paih a ni tawh e."); } catch (error) { alert("Harsatna: " + error.message); } } }
-        window.postComment = async function(noticeId) { const inputField = document.getElementById(`comment-input-${noticeId}`); const commentText = inputField.value.trim(); if (!commentText) { alert("Comment ziak phawt rawh!"); return; } try { await updateDoc(doc(db, "notices", noticeId), { comments: arrayUnion({ studentName: window.currentStudent.name, text: commentText, date: new Date().toLocaleString() }) }); inputField.value = ''; alert("Post a ni e!"); } catch (error) { alert("Harsatna: " + error.message); } }
         window.adminPostComment = async function(noticeId) { const inputField = document.getElementById(`admin-comment-input-${noticeId}`); const commentText = inputField.value.trim(); if (!commentText) { alert("Reply tur ziak phawt rawh!"); return; } try { await updateDoc(doc(db, "notices", noticeId), { comments: arrayUnion({ studentName: "Zirtirtu (Admin)", text: commentText, date: new Date().toLocaleString() }) }); inputField.value = ''; alert("Reply post a ni e!"); } catch (error) { alert("Harsatna: " + error.message); } }
 
         onSnapshot(query(collection(db, "notices"), orderBy("createdAt", "desc")), (snapshot) => {
-            const adminList = document.getElementById('admin-notice-list'); const studentList = document.getElementById('student-notice-list');
-            adminList.innerHTML = ''; studentList.innerHTML = '';
-            if (snapshot.empty) { adminList.innerHTML = '<p style="color: gray;">Notice a la awm lo...</p>'; studentList.innerHTML = '<p style="color: gray;">Notice a la awm lo...</p>'; } 
+            const adminList = document.getElementById('admin-notice-list');
+            if(adminList) { adminList.innerHTML = ''; }
+            if (snapshot.empty) { if(adminList) adminList.innerHTML = '<p style="color: gray;">Notice a la awm lo...</p>'; } 
             else {
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data(); const noticeId = docSnap.id; let commentsHTML = '';
@@ -1721,8 +1357,9 @@
                         commentsHTML += '</div>';
                     }
                     let safeTitle = data.title ? data.title.replace(/'/g, "\\'") : '';
-                    adminList.innerHTML += `<div class="notice-box"><h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4><p style="margin-bottom: 10px; color: #475569;">${data.content}</p>${commentsHTML}<div style="margin-top: 12px; display: flex; gap: 10px;"><input type="text" id="admin-comment-input-${noticeId}" placeholder="Comment chhanna (Reply)..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;"><button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="adminPostComment('${noticeId}')">Reply</button></div><div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;"><button class="btn btn-whatsapp" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="shareNoticeWhatsApp('${safeTitle}')">📲 WhatsApp-ah Share-na</button><button class="btn btn-primary" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="editNotice('${noticeId}')">Edit Notice</button><button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="deleteNotice('${noticeId}')">Paih</button></div></div>`;
-                    studentList.innerHTML += `<div class="notice-box"><h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4><p style="margin-bottom: 10px; color: #475569;">${data.content}</p>${commentsHTML}<div style="margin-top: 12px; display: flex; gap: 10px;"><input type="text" id="comment-input-${noticeId}" placeholder="Comment ziahna..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;"><button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="postComment('${noticeId}')">Post</button></div></div>`;
+                    if(adminList) {
+                        adminList.innerHTML += `<div class="notice-box"><h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4><p style="margin-bottom: 10px; color: #475569;">${data.content}</p>${commentsHTML}<div style="margin-top: 12px; display: flex; gap: 10px;"><input type="text" id="admin-comment-input-${noticeId}" placeholder="Comment chhanna (Reply)..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;"><button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="adminPostComment('${noticeId}')">Reply</button></div><div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;"><button class="btn btn-whatsapp" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="shareNoticeWhatsApp('${safeTitle}')">📲 WhatsApp-ah Share-na</button><button class="btn btn-primary" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="editNotice('${noticeId}')">Edit Notice</button><button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="deleteNotice('${noticeId}')">Paih</button></div></div>`;
+                    }
                 });
             }
         });
@@ -1732,24 +1369,19 @@
         window.deleteLink = async function(docId) { if(confirm("Paih duh takzet em?")) { try { await deleteDoc(doc(db, "shared_links", docId)); } catch(error) { alert("Harsatna: " + error.message); } } }
 
         onSnapshot(query(collection(db, "shared_links"), orderBy("createdAt", "desc")), (snapshot) => {
-            const studentContainer = document.getElementById('student-links-container'); const adminContainer = document.getElementById('admin-links-container');
-            studentContainer.innerHTML = '<h3>Study Material, Assignment, Test / Exam</h3>'; adminContainer.innerHTML = '';
-            if (snapshot.empty) { studentContainer.innerHTML += '<p style="color: gray;">Thil sem a la awm lo.</p>'; adminContainer.innerHTML = '<p style="color: gray;">A la awm rih lo...</p>'; } 
+            const adminContainer = document.getElementById('admin-links-container');
+            if(adminContainer) adminContainer.innerHTML = '';
+            if (snapshot.empty) { if(adminContainer) adminContainer.innerHTML = '<p style="color: gray;">A la awm rih lo...</p>'; } 
             else {
                 snapshot.forEach((docSnap) => {
                     let data = docSnap.data(); let icon = '🔗'; let color = '#333'; let btnText = 'Hawng Rawh'; let finalUrl = data.url;
                     if (data.type === 'PDF Note') { icon = '📕'; color = '#dc2626'; let match = finalUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/); if(match && match[1]) { finalUrl = `https://drive.google.com/uc?export=download&id=${match[1]}`; btnText = 'Download'; } }
-                    else if (data.type === 'GitHub Project') { 
-                        icon = '💻'; color = '#111827'; 
-                        if (window.currentStudent && window.currentStudent.enrollment) {
-                            try { let urlObj = new URL(finalUrl); urlObj.searchParams.set('enrollment', window.currentStudent.enrollment); urlObj.searchParams.set('name', window.currentStudent.name); finalUrl = urlObj.toString(); } 
-                            catch(e) { let separator = finalUrl.includes('?') ? '&' : '?'; finalUrl = `${finalUrl}${separator}enrollment=${window.currentStudent.enrollment}&name=${encodeURIComponent(window.currentStudent.name)}`; }
-                        }
-                    }
+                    else if (data.type === 'GitHub Project') { icon = '💻'; color = '#111827'; }
                     else if (data.type === 'Google Form') { icon = '📝'; color = '#16a34a'; } else if (data.type === 'YouTube Video') { icon = '▶️'; color = '#2563eb'; }
                     let safeFileName = data.fileName ? data.fileName.replace(/'/g, "\\'") : ''; let safeType = data.type ? data.type.replace(/'/g, "\\'") : '';
-                    adminContainer.innerHTML += `<div class="list-row"><div class="list-row-info"><b style="font-size: 14px;">${data.fileName}</b><br><span style="font-size: 12px; color: gray;">(${data.type})</span></div><div style="display: flex; gap: 5px;"><button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Share-na" onclick="shareMaterialWhatsApp('${safeFileName}', '${safeType}')">📲</button><button class="btn btn-danger btn-icon" title="Paih" onclick="deleteLink('${docSnap.id}')">✕</button></div></div>`;
-                    studentContainer.innerHTML += `<div class="shared-link-box"><p style="margin-bottom: 0; font-weight: bold; color: ${color}; font-size: 15px;">${icon} ${data.fileName}</p><a href="${finalUrl}" target="_blank" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">${btnText}</a></div>`;
+                    if(adminContainer) {
+                        adminContainer.innerHTML += `<div class="list-row"><div class="list-row-info"><b style="font-size: 14px;">${data.fileName}</b><br><span style="font-size: 12px; color: gray;">(${data.type})</span></div><div style="display: flex; gap: 5px;"><button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Share-na" onclick="shareMaterialWhatsApp('${safeFileName}', '${safeType}')">📲</button><button class="btn btn-danger btn-icon" title="Paih" onclick="deleteLink('${docSnap.id}')">✕</button></div></div>`;
+                    }
                 });
             }
         });
@@ -1778,14 +1410,10 @@
 
         onSnapshot(query(collection(db, "online_materials"), orderBy("createdAt", "desc")), (snapshot) => {
             const adminContainer = document.getElementById('admin-online-container');
-            const studentContainer = document.getElementById('student-online-container');
-            
             if(adminContainer) adminContainer.innerHTML = '';
-            if(studentContainer) studentContainer.innerHTML = '<h3 style="color: #6d28d9;">Online Shift Message & Links</h3>';
             
             if (snapshot.empty) {
                 if(adminContainer) adminContainer.innerHTML = '<p style="color: gray;">A la awm rih lo...</p>';
-                if(studentContainer) studentContainer.innerHTML += '<p style="color: gray;">Thil thawn a la awm lo.</p>';
             } else {
                 snapshot.forEach((docSnap) => {
                     let data = docSnap.data();
@@ -1809,42 +1437,11 @@
                                 </div>
                             </div>`;
                     }
-                        
-                    if(studentContainer) {
-                        studentContainer.innerHTML += `
-                            <div class="notice-box" style="border-left-color: #8b5cf6; background: #faf5ff;">
-                                <h4 style="margin-bottom: 5px; color: #581c87;">${data.title}</h4>
-                                <p style="margin-bottom: 0; color: #475569; white-space: pre-wrap; font-size: 14px;">${data.message}</p>
-                                ${linkHtml}
-                            </div>`;
-                    }
                 });
             }
         });
 
         // ================= PRACTICAL SUBMISSION =================
-        window.submitPracticalLink = async function(event) {
-            event.preventDefault();
-            const title = document.getElementById('practical-title').value.trim();
-            const link = document.getElementById('practical-link').value.trim();
-            
-            if(!title || !link) return;
-            
-            try {
-                await addDoc(collection(db, "practical_submissions"), {
-                    enrollment: window.currentStudent.enrollment,
-                    studentName: window.currentStudent.name,
-                    title: title,
-                    url: link,
-                    timestamp: serverTimestamp()
-                });
-                alert("I practical link chu thehluh a ni e. Zirtirtuin a lo check dawn nia.");
-                event.target.reset();
-            } catch(e) {
-                alert("Harsatna: " + e.message);
-            }
-        }
-
         window.deletePracticalSubmission = async function(docId) {
             if(confirm("He link thehluh hi paih i duh takzet em?")) {
                 try {
@@ -1857,9 +1454,7 @@
 
         onSnapshot(query(collection(db, "practical_submissions"), orderBy("timestamp", "desc")), (snapshot) => {
             const adminList = document.getElementById('admin-practical-list');
-            const studentList = document.getElementById('student-practical-list');
-            
-            let adminHtml = ''; let studentHtml = '';
+            let adminHtml = '';
             
             snapshot.forEach(docSnap => {
                 const data = docSnap.data();
@@ -1878,66 +1473,15 @@
                             <button class="btn btn-danger btn-icon" onclick="deletePracticalSubmission('${docId}')">✕</button>
                         </div>
                     </div>`;
-                    
-                if(window.currentStudent && data.enrollment === window.currentStudent.enrollment) {
-                    studentHtml += `
-                        <div class="notice-box" style="border-left-color: #10b981; background: #ecfdf5; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-                            <div style="flex-grow: 1;">
-                                <strong style="color: #047857;">${data.title}</strong>
-                                <div style="font-size: 12px; color: gray; margin-top: 4px;">📅 Thehluh ni: ${dateStr}</div>
-                            </div>
-                            <a href="${data.url}" target="_blank" class="btn btn-outline" style="border-color: #10b981; color: #10b981; padding: 6px 12px; font-size: 13px; margin: 0; text-decoration: none; width: auto;">I link</a>
-                        </div>`;
-                }
             });
             
             if(adminList) { adminList.innerHTML = adminHtml || '<p style="color: gray;">Thehlut an la awm lo...</p>'; }
-            if(studentList && window.currentStudent && window.currentStudent.enrollment) { studentList.innerHTML = studentHtml || '<p style="color: gray;">I la thehlut lo.</p>'; }
         });
 
         // ================= DELETE STUDENT =================
         window.deleteStudent = async function(enrollment) { if(confirm(`Enrollment No: ${enrollment} hi i paih duh takzet em?`)) { try { await deleteDoc(doc(db, "students", enrollment)); alert("Zirlai hi paih a ni tawh e."); } catch(error) { alert("Paih naah harsatna: " + error.message); } } }
 
         // ================= LOGIN LOGIC =================
-        window.loginStudent = async function(event) {
-            event.preventDefault();
-            const enrollment = document.getElementById('login-enrollment').value.trim(); 
-            let dobInput = document.getElementById('login-dob').value.trim();
-            dobInput = dobInput.replace(/\//g, '-');
-
-            try {
-                const q = query(collection(db, "students"), where("enrollment", "==", enrollment));
-                const snap = await getDocs(q);
-                
-                if (!snap.empty) {
-                    let matched = false;
-                    snap.forEach((d) => {
-                        let dbDob = String(d.data().dob).trim().replace(/\//g, '-');
-                        if (dbDob === dobInput) {
-                            matched = true;
-                            window.currentStudent.name = d.data().name;
-                            window.currentStudent.shift = d.data().shift || '10am shift';
-                            window.currentStudent.coins = d.data().coins || 0;
-                        }
-                    });
-
-                    if (matched) {
-                        window.currentStudent.enrollment = enrollment;
-                        await updateDoc(doc(db, "students", String(enrollment)), { lastLoginDate: todayISODate });
-                        
-                        document.getElementById('student-welcome-title').innerText = `Zirlai Portal - ${window.currentStudent.name}`;
-                        document.getElementById('student-coin-balance').innerText = window.currentStudent.coins;
-                        const ptsUI = document.getElementById('student-att-points'); if(ptsUI) ptsUI.innerText = (attendancePointsMap[enrollment] || 0) + " Points";
-                        
-                        const onlineMenuBtn = document.getElementById('student-menu-online');
-                        if (window.currentStudent.shift === 'Online shift') { onlineMenuBtn.style.display = 'block'; } else { onlineMenuBtn.style.display = 'none'; }
-
-                        renderStudentFeePortal(); loadStudentLeaves(enrollment); loadMySubmissions(); showSection('student-portal-section');
-                    } else { alert("Date of birth a dik lo! Entirnan: 15-05-2005 emaw 15/05/2005"); }
-                } else { alert("Enrollment Number a dik lo! Teacher rawn rawh."); }
-            } catch (e) { alert("Harsatna: " + e.message); }
-        }
-
         window.loginAdmin = function(event) {
             event.preventDefault();
             if (document.getElementById('admin-password').value === "Bethel@123") { document.getElementById('admin-password').value = ''; showSection('teacher-dashboard-section'); } 
