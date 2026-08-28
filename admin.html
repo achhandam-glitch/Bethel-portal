@@ -110,8 +110,6 @@
             <h1>Bethel Computer Centre</h1>
             <p>Admin / Zirtirtu Portal</p>
             <div class="home-menu">
-                <!-- ZIRLAI LUHNA THUP (HIDE) SA -->
-                <button class="btn btn-success" style="display: none;" onclick="showSection('student-login-section')">Zirlai Luhna</button>
                 <button class="btn btn-outline-light" onclick="showSection('admin-login-section')">Zirtirtu Luhna</button>
             </div>
         </div>
@@ -694,7 +692,6 @@
                                         <th>DOB</th>
                                         <th>Shift</th>
                                         <th>Att. Points</th>
-                                        <!-- HETAH HIAN COIN A LANG ANG -->
                                         <th style="text-align: center;">Coins 🪙</th>
                                         <th style="text-align: center;">Thawn/Paih</th>
                                     </tr>
@@ -751,9 +748,6 @@
         const todayISODate = new Date().toISOString().split('T')[0];
         document.getElementById('attendance-date').value = todayISODate;
         document.getElementById('fee-date').value = todayISODate;
-        if(document.getElementById('leave-date')) {
-            document.getElementById('leave-date').value = todayISODate;
-        }
 
         (function checkVersion() {
             let savedVersion = localStorage.getItem('bcc_portal_version');
@@ -765,15 +759,21 @@
             }
         })();
 
+        // SECTION IN-THLAKNA FUNCTION KHA A DIK TAKIN KA DAH E
         window.showSection = function(sectionId) {
-            const sections = ['home-section', 'student-login-section', 'admin-login-section', 'teacher-dashboard-section', 'student-portal-section'];
-            sections.forEach(id => document.getElementById(id).classList.add('hidden'));
-            document.getElementById(sectionId).classList.remove('hidden');
+            const sections = ['home-section', 'admin-login-section', 'teacher-dashboard-section'];
+            sections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            const targetEl = document.getElementById(sectionId);
+            if (targetEl) targetEl.classList.remove('hidden');
             
             if(sectionId === 'teacher-dashboard-section') {
-                document.getElementById('admin-menu-view').style.display = 'block';
+                const adminMenu = document.getElementById('admin-menu-view');
+                if(adminMenu) adminMenu.style.display = 'block';
                 document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.remove('active-content'));
-                loadAttendanceForDate();
+                if(typeof loadAttendanceForDate === 'function') loadAttendanceForDate();
             }
             window.scrollTo(0, 0);
         }
