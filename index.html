@@ -113,7 +113,8 @@
             <p>Venglai, Lunglei</p>
             <div class="home-menu">
                 <button class="btn btn-success" onclick="showSection('student-login-section')">Zirlai Luhna</button>
-                <button class="btn btn-outline-light" onclick="showSection('admin-login-section')">Zirtirtu Luhna</button>
+                <!-- UI atangin Zirtirtu luhna hi thup (hide) a ni -->
+                <button class="btn btn-outline-light" style="display: none;" onclick="showSection('admin-login-section')">Zirtirtu Luhna</button>
             </div>
         </div>
     </section>
@@ -771,15 +772,9 @@
                         <div class="card" style="margin-bottom: 0;">
                             <h3>Chawlh Report-na</h3>
                             <form onsubmit="applyLeave(event)">
-                                <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
-                                    <div class="input-group">
-                                        <label>Chawlh Ṭan Ni (Start Date)</label>
-                                        <input type="date" id="leave-start-date" required>
-                                    </div>
-                                    <div class="input-group">
-                                        <label>Chawlh Tawp Ni (End Date)</label>
-                                        <input type="date" id="leave-end-date" required>
-                                    </div>
+                                <div class="input-group">
+                                    <label>Chawlh Dil Ni (Date)</label>
+                                    <input type="date" id="leave-date" required>
                                 </div>
                                 <div class="input-group">
                                     <label>Chawlh chhan (Reason)</label>
@@ -881,7 +876,7 @@
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
         
-        const APP_VERSION = "3.10"; 
+        const APP_VERSION = "3.11"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '' };
         let studentLeaveUnsubscribe = null; 
@@ -894,8 +889,9 @@
         const todayISODate = new Date().toISOString().split('T')[0];
         document.getElementById('attendance-date').value = todayISODate;
         document.getElementById('fee-date').value = todayISODate;
-        document.getElementById('leave-start-date').value = todayISODate;
-        document.getElementById('leave-end-date').value = todayISODate;
+        if(document.getElementById('leave-date')) {
+            document.getElementById('leave-date').value = todayISODate;
+        }
 
         (function checkVersion() {
             let savedVersion = localStorage.getItem('bcc_portal_version');
@@ -987,7 +983,6 @@
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
-        // NEW: Online Shift WhatsApp Share Function
         window.shareOnlineWhatsApp = function(title, url) {
             let text = `📌 *Bethel Computer Centre*\n\n💻 *Online Shift Zirlaite Hriattirna*\n\n*${title}*`;
             if (url && url.trim() !== '') {
@@ -1468,10 +1463,26 @@
         // ================= LEAVES =================
         window.applyLeave = async function(event) {
             event.preventDefault();
-            const startDate = document.getElementById('leave-start-date').value; const endDate = document.getElementById('leave-end-date').value; const reason = document.getElementById('leave-reason').value.trim();
-            if (new Date(startDate) > new Date(endDate)) { alert("Chawlh ṭan ni hi chawlh tawp ni hnuah a nih theih lova, a dik lo."); return; }
-            let dateStr = startDate === endDate ? startDate : `${startDate} to ${endDate}`;
-            try { await addDoc(collection(db, "leave_requests"), { enrollment: window.currentStudent.enrollment, studentName: window.currentStudent.name, startDate: startDate, endDate: endDate, date: dateStr, reason: reason, status: "Pending", createdAt: serverTimestamp() }); alert("I in-report-na a lut hlawhtling e."); event.target.reset(); document.getElementById('leave-start-date').value = todayISODate; document.getElementById('leave-end-date').value = todayISODate; } catch (error) { alert("Thehluh theih a ni lo: " + error.message); }
+            const leaveDate = document.getElementById('leave-date').value; 
+            const reason = document.getElementById('leave-reason').value.trim();
+            
+            try { 
+                await addDoc(collection(db, "leave_requests"), { 
+                    enrollment: window.currentStudent.enrollment, 
+                    studentName: window.currentStudent.name, 
+                    startDate: leaveDate, 
+                    endDate: leaveDate, 
+                    date: leaveDate, 
+                    reason: reason, 
+                    status: "Pending", 
+                    createdAt: serverTimestamp() 
+                }); 
+                alert("I in-report-na a lut hlawhtling e."); 
+                event.target.reset(); 
+                document.getElementById('leave-date').value = todayISODate; 
+            } catch (error) { 
+                alert("Thehluh theih a ni lo: " + error.message); 
+            }
         }
 
         function loadStudentLeaves(enrollment) {
