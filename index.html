@@ -96,7 +96,12 @@
         .dark-mode .comment-item { border-bottom-color: #334155 !important; color: #f1f5f9 !important; }
         .dark-mode .leaderboard-row { border-bottom-color: #334155 !important; color: #ffffff !important; }
         
-        /* Force all inner dynamic cards/boxes to respect dark mode text and background */
+        /* Force badge colors in dark mode to remain readable (e.g. Red for Poor, Green for Excellent) */
+        .dark-mode span[style*="background: #fee2e2"] { background-color: #7f1d1d !important; color: #fca5a5 !important; }
+        .dark-mode span[style*="background: #dcfce7"] { background-color: #14532d !important; color: #86efac !important; }
+        .dark-mode span[style*="background: #e0f2fe"] { background-color: #0369a1 !important; color: #bae6fd !important; }
+        .dark-mode span[style*="background: #fef08a"] { background-color: #78350f !important; color: #fde047 !important; }
+
         .dark-mode div[style*="background"],
         .dark-mode span[style*="color"] {
             color: #ffffff !important;
@@ -391,7 +396,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "3.26"; 
+        const APP_VERSION = "3.27"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -824,7 +829,7 @@
                 const dateStr = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString() : 'Vawiin';
                 if(window.currentStudent && data.enrollment === window.currentStudent.enrollment) {
                     studentHtml += `
-                        <div class="notice-box" style="border-left-color: #10b981; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                        <div class="notice-box" style="border-left-color: #10b981; background: #ecfdf5; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
                             <div style="flex-grow: 1;">
                                 <strong>${data.title}</strong>
                                 <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">📅 Thehluh ni: ${dateStr}</div>
