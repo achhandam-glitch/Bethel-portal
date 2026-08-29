@@ -80,38 +80,58 @@
             .hero-content h1 { font-size: 32px; } 
         }
 
-        /* ================= DARK MODE STYLES ================= */
+        /* ================= DARK MODE OVERRIDES (FORCE EVERYTHING TO BE READABLE) ================= */
         body.dark-mode { background-color: #0b0f19 !important; color: #ffffff !important; }
-        .dark-mode .card, 
-        .dark-mode .admin-sidebar, 
-        .dark-mode .modal-overlay .card, 
-        .dark-mode .leave-item,
-        .dark-mode .notice-box,
-        .dark-mode .shared-link-box,
-        .dark-mode .mcq-card,
-        .dark-mode .mcq-option,
-        .dark-mode .comment-area,
-        .dark-mode div[style*="background"] { 
-            background-color: #1e293b !important; 
+        
+        body.dark-mode div, 
+        body.dark-mode span, 
+        body.dark-mode p, 
+        body.dark-mode h1, 
+        body.dark-mode h2, 
+        body.dark-mode h3, 
+        body.dark-mode h4, 
+        body.dark-mode label, 
+        body.dark-mode b, 
+        body.dark-mode strong, 
+        body.dark-mode li { 
             color: #ffffff !important; 
-            border-color: #334155 !important; 
         }
-        
-        .dark-mode h1, .dark-mode h2, .dark-mode h3, .dark-mode h4, .dark-mode label, .dark-mode b, .dark-mode strong { color: #ffffff !important; }
-        .dark-mode p, .dark-mode span, .dark-mode div, .dark-mode li, .dark-mode small { color: #f1f5f9 !important; }
-        .dark-mode input, .dark-mode select, .dark-mode textarea { background-color: #0f172a !important; color: #ffffff !important; border: 1px solid #475569 !important; }
-        .dark-mode input::placeholder, .dark-mode textarea::placeholder { color: #94a3b8 !important; }
-        .dark-mode .menu-btn { background-color: #0f172a !important; color: #ffffff !important; border-left-color: #38bdf8 !important; }
-        .dark-mode .menu-btn:hover { background-color: #334155 !important; color: #38bdf8 !important; }
-        .dark-mode .comment-item { border-bottom-color: #334155 !important; color: #f1f5f9 !important; }
-        .dark-mode .leaderboard-row { border-bottom-color: #334155 !important; color: #ffffff !important; }
-        
-        /* Specific Badges styling for dark mode */
-        .dark-mode span[style*="background: #fee2e2"] { background-color: #7f1d1d !important; color: #fca5a5 !important; }
-        .dark-mode span[style*="background: #dcfce7"] { background-color: #14532d !important; color: #86efac !important; }
-        .dark-mode span[style*="background: #e0f2fe"] { background-color: #0369a1 !important; color: #bae6fd !important; }
-        .dark-mode span[style*="background: #fef08a"] { background-color: #78350f !important; color: #fde047 !important; }
-        .dark-mode span[style*="background: #ecfdf5"] { background-color: #064e3b !important; color: #6ee7b7 !important; }
+
+        body.dark-mode .card, 
+        body.dark-mode .admin-sidebar, 
+        body.dark-mode .modal-overlay .card, 
+        body.dark-mode .leave-item,
+        body.dark-mode .notice-box,
+        body.dark-mode .shared-link-box,
+        body.dark-mode .mcq-card,
+        body.dark-mode .mcq-option,
+        body.dark-mode .comment-area,
+        body.dark-mode div[style*="background"] { 
+            background-color: #1e293b !important; 
+            border-color: #475569 !important; 
+        }
+
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { 
+            background-color: #0f172a !important; 
+            color: #ffffff !important; 
+            border: 1px solid #475569 !important; 
+        }
+        body.dark-mode input::placeholder, body.dark-mode textarea::placeholder { color: #94a3b8 !important; }
+
+        body.dark-mode .menu-btn { 
+            background-color: #0f172a !important; 
+            color: #ffffff !important; 
+            border-left-color: #38bdf8 !important; 
+        }
+        body.dark-mode .menu-btn:hover { background-color: #334155 !important; color: #38bdf8 !important; }
+
+        /* Coin & Badge text coloring in dark mode */
+        body.dark-mode span[style*="color: #a16207"],
+        body.dark-mode span[style*="color: #b45309"],
+        body.dark-mode span[style*="color: #854d0e"],
+        body.dark-mode span[style*="color: #0369a1"] {
+            color: #fde047 !important;
+        }
 
         /* Dark/Light Toggle Button */
         .theme-toggle-btn { position: fixed; bottom: 25px; right: 25px; background: #0f172a; color: #fde047; border: 2px solid #334155; border-radius: 50%; width: 50px; height: 50px; font-size: 22px; cursor: pointer; z-index: 9999; box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: transform 0.2s; display: flex; align-items: center; justify-content: center; }
@@ -128,7 +148,7 @@
             <h1>Bethel Computer Centre</h1>
             <p>Venglai, Lunglei</p>
             
-            <div class="card" style="text-align: left; color: #1e293b; margin-top: 10px;">
+            <div class="card" style="text-align: left; margin-top: 10px;">
                 <h2 style="text-align: center; border-bottom: none; margin-bottom: 20px; color: #0284c7;">Zirlai Log In</h2>
                 <form onsubmit="loginStudent(event)">
                     <div class="input-group">
@@ -191,14 +211,14 @@
                 </div>
 
                 <div class="admin-sidebar">
-                    <h4 style="font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Zirlai Menu</h4>
+                    <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Zirlai Menu</h4>
                     <div class="menu-box">
                         <button class="menu-btn" onclick="openStudentTab('student-tab-status')">📊 Zirlai Dinhmun (Fee & Attendance)</button>
-                        <button class="menu-btn" onclick="openStudentTab('student-tab-mcq')" style="border-left-color: #eab308; background: #fefce8; color: #a16207;">🎮 MCQ Quizzes & Reward Coins</button>
+                        <button class="menu-btn" onclick="openStudentTab('student-tab-mcq')" style="border-left-color: #eab308;">🎮 MCQ Quizzes & Reward Coins</button>
                         <button class="menu-btn" onclick="openStudentTab('student-tab-leave')">📝 Chawlh Dilna & In-Report-na</button>
                         <button class="menu-btn" onclick="openStudentTab('student-tab-notice')">📢 Notice Board</button>
                         <button class="menu-btn" onclick="openStudentTab('student-tab-materials')">📚 Study Materials, Assignments & Tests</button>
-                        <button class="menu-btn" id="student-menu-online" style="display: none; background: #faf5ff; border-left-color: #8b5cf6; color: #581c87;" onclick="openStudentTab('student-tab-online')">💻 Online Class & Materials</button>
+                        <button class="menu-btn" id="student-menu-online" style="display: none; border-left-color: #8b5cf6;" onclick="openStudentTab('student-tab-online')">💻 Online Class & Materials</button>
                     </div>
                 </div>
             </div>
@@ -211,16 +231,16 @@
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
                     <div class="card" style="border: 2px solid #eab308; padding: 20px;">
-                        <h3 style="color: #a16207; border-bottom: 1px solid #fde047;">🏆 Coin Leaderboard (Top 5)</h3>
+                        <h3 style="border-bottom: 1px solid #fde047;">🏆 Coin Leaderboard (Top 5)</h3>
                         <div id="mcq-leaderboard" style="margin-top: 15px;">
-                            <p style="color: gray;">Loading...</p>
+                            <p style="opacity: 0.7;">Loading...</p>
                         </div>
                     </div>
 
                     <div class="card" style="margin-bottom: 0;">
-                        <h3 style="color: #0f172a;">📝 Quizzes & Rewards</h3>
+                        <h3>📝 Quizzes & Rewards</h3>
                         <div id="student-mcq-list">
-                            <p style="color: gray;">Loading...</p>
+                            <p style="opacity: 0.7;">Loading...</p>
                         </div>
                     </div>
                 </div>
@@ -229,41 +249,41 @@
                 <div id="student-tab-status" class="student-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
-                    <div style="background: #e0f2fe; border: 1px solid #7dd3fc; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-                        <p style="color: #0369a1; font-weight: 600; font-size: 16px; margin: 0;">I Shift Hun:</p>
-                        <div style="font-size: 18px; font-weight: bold; color: #0c4a6e;" id="student-portal-shift">-</div>
+                    <div style="border: 1px solid #7dd3fc; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <p style="font-weight: 600; font-size: 16px; margin: 0;">I Shift Hun:</p>
+                        <div style="font-size: 18px; font-weight: bold;" id="student-portal-shift">-</div>
                     </div>
 
-                    <div class="dashboard-stat-card" style="background: #fffbeb; border-color: #fde68a; display: block; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fde68a;">
+                    <div class="dashboard-stat-card" style="display: block; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #fde68a;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <p style="color: #b45309; font-weight: 600; font-size: 16px; margin: 0;">I Fee Pek Dinhmun:</p>
+                            <p style="font-weight: 600; font-size: 16px; margin: 0;">I Fee Pek Dinhmun:</p>
                             <div id="student-fee-paid" style="font-size: 20px; font-weight: bold; color: #16a34a;">Pek Tawh: ₹0</div>
                         </div>
                         <div id="student-fee-history" style="margin-top: 15px; border-top: 1px solid #fde68a; padding-top: 10px;">
                         </div>
                     </div>
 
-                    <div style="background: #f3e8ff; border: 1px solid #d8b4fe; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px;">
+                    <div style="border: 1px solid #d8b4fe; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <p style="color: #6b21a8; font-weight: 600; font-size: 16px; margin: 0;">Total Attendance Points:</p>
-                            <div style="font-size: 28px; font-weight: bold; color: #7e22ce;" id="student-att-points">0 Points</div>
+                            <p style="font-weight: 600; font-size: 16px; margin: 0;">Total Attendance Points:</p>
+                            <div style="font-size: 28px; font-weight: bold;" id="student-att-points">0 Points</div>
                         </div>
-                        <button class="btn" style="background-color: #e9d5ff; color: #6b21a8; border: 1px solid #c084fc; font-size: 13px; padding: 8px;" onclick="document.getElementById('attendance-info-modal').classList.remove('hidden')">
+                        <button class="btn" style="background-color: #6b21a8; color: white; font-size: 13px; padding: 8px;" onclick="document.getElementById('attendance-info-modal').classList.remove('hidden')">
                             ℹ️ Attendance & Internal Mark Hriattirna
                         </button>
                     </div>
 
                     <!-- PRACTICAL SUBJECT ATTENDANCE PERCENTAGE & REMARK (THAR) -->
-                    <div class="card" style="border: 2px solid #0f766e; background: #f0fdfa; margin-bottom: 20px;">
-                        <h3 style="color: #0f766e; border-bottom: 1px solid #99f6e4; padding-bottom: 10px; margin-bottom: 15px;">📊 Practical Subject Attendance Breakdown</h3>
+                    <div class="card" style="border: 2px solid #0f766e; margin-bottom: 20px;">
+                        <h3 style="border-bottom: 1px solid #99f6e4; padding-bottom: 10px; margin-bottom: 15px;">📊 Practical Subject Attendance Breakdown</h3>
                         <div id="student-subject-attendance-list">
-                            <p style="color: gray; font-size: 14px;">Zirtirtuin subject zir hun chhung a la set rih lo emaw data a la in-load mek...</p>
+                            <p style="opacity: 0.7; font-size: 14px;">Zirtirtuin subject zir hun chhung a la set rih lo emaw data a la in-load mek...</p>
                         </div>
                     </div>
 
-                    <div style="background: #fefce8; border: 1px solid #fde047; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-                        <p style="color: #a16207; font-weight: 600; font-size: 16px; margin: 0;">Coins Neih Zat:</p>
-                        <div style="font-size: 28px; font-weight: bold; color: #ca8a04;">🪙 <span id="student-coin-balance-status">0</span></div>
+                    <div style="border: 1px solid #fde047; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <p style="font-weight: 600; font-size: 16px; margin: 0;">Coins Neih Zat:</p>
+                        <div style="font-size: 28px; font-weight: bold;">🪙 <span id="student-coin-balance-status">0</span></div>
                     </div>
                 </div>
 
@@ -289,7 +309,7 @@
                         <div class="card" style="margin-bottom: 0;">
                             <h3>I Chawlh In-Report-te</h3>
                             <div id="student-leave-history" style="max-height: 300px; overflow-y: auto;">
-                                <p style="color: gray;">Report i la nei lo.</p>
+                                <p style="opacity: 0.7;">Report i la nei lo.</p>
                             </div>
                         </div>
                     </div>
@@ -301,7 +321,7 @@
                     <div class="card" style="margin-bottom: 0;">
                         <h3>Notice Board</h3>
                         <div id="student-notice-list" style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
-                            <p style="color: gray;">Notice a la awm rih lo...</p>
+                            <p style="opacity: 0.7;">Notice a la awm rih lo...</p>
                         </div>
                     </div>
                 </div>
@@ -311,7 +331,7 @@
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     <div class="card" style="margin-bottom: 0;" id="student-links-container">
                         <h3>Study Material, Assignment, Test / Exam</h3>
-                        <p style="color: gray;">Database atangin a rawn in-load mek...</p>
+                        <p style="opacity: 0.7;">Database atangin a rawn in-load mek...</p>
                     </div>
                 </div>
                 
@@ -320,15 +340,15 @@
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
                     <div class="card" style="margin-bottom: 20px;" id="student-online-container">
-                        <h3 style="color: #6d28d9;">Online Shift Message & Links</h3>
-                        <p style="color: gray;">Database atangin a rawn in-load mek...</p>
+                        <h3 style="color: #a78bfa;">Online Shift Message & Links</h3>
+                        <p style="opacity: 0.7;">Database atangin a rawn in-load mek...</p>
                     </div>
 
                     <!-- ZIRLAI PRACTICAL FOLDER THEHLUHNA FORM -->
                     <div class="form-grid" style="grid-template-columns: 1fr;">
                         <div class="card" style="border: 2px solid #10b981;">
-                            <h3 style="color: #047857; border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">Practical Folder Thehluhna</h3>
-                            <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">I practical folder (Google Drive link) kha hetah hian rawn thehlut rawh. (Link i copy dawnin 'Anyone with the link' tihah i thlak hmasa dawn nia).</p>
+                            <h3 style="border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">Practical Folder Thehluhna</h3>
+                            <p style="font-size: 13px; opacity: 0.8; margin-bottom: 15px;">I practical folder (Google Drive link) kha hetah hian rawn thehlut rawh. (Link i copy dawnin 'Anyone with the link' tihah i thlak hmasa dawn nia).</p>
                             <form onsubmit="submitPracticalLink(event)">
                                 <div class="input-group">
                                     <label>Folder Hming / Entirnan: Ms Word Practical</label>
@@ -343,9 +363,9 @@
                         </div>
                         
                         <div class="card" style="margin-bottom: 0;">
-                            <h3 style="color: #047857;">I Thehluh Tawh Te</h3>
+                            <h3>I Thehluh Tawh Te</h3>
                             <div id="student-practical-list" style="max-height: 250px; overflow-y: auto;">
-                                <p style="color: gray;">I la thehlut lo.</p>
+                                <p style="opacity: 0.7;">I la thehlut lo.</p>
                             </div>
                         </div>
                     </div>
@@ -392,7 +412,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "3.29"; 
+        const APP_VERSION = "3.30"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -568,7 +588,7 @@
 
         function renderStudentMCQs() {
             const list = document.getElementById('student-mcq-list'); if(!list) return;
-            if(mcqTests.length === 0) { list.innerHTML = '<p style="color:gray;">Quiz a awm rih lo.</p>'; return; }
+            if(mcqTests.length === 0) { list.innerHTML = '<p style="opacity:0.7;">Quiz a awm rih lo.</p>'; return; }
             list.innerHTML = '';
             mcqTests.forEach(mcq => {
                 let isAnswered = mySubmissions.includes(mcq.id);
@@ -618,10 +638,10 @@
         function renderLeaderboard() {
             const board = document.getElementById('mcq-leaderboard'); if(!board) return;
             let sorted = [...allStudentsList].sort((a,b) => (b.coins || 0) - (a.coins || 0)).slice(0, 5);
-            if(sorted.length === 0 || (sorted[0].coins || 0) === 0) { board.innerHTML = '<p style="color:gray; font-size:14px;">Coin la an la awm lo.</p>'; return; }
+            if(sorted.length === 0 || (sorted[0].coins || 0) === 0) { board.innerHTML = '<p style="opacity:0.7; font-size:14px;">Coin la an la awm lo.</p>'; return; }
             board.innerHTML = sorted.map((s, i) => {
                 let medal = i===0 ? '🥇' : i===1 ? '🥈' : i===2 ? '🥉' : '🔹';
-                return `<div class="leaderboard-row"><span>${medal} <b>${s.name}</b></span><strong style="color:#a16207;">${s.coins || 0} Coins</strong></div>`;
+                return `<div class="leaderboard-row"><span>${medal} <b>${s.name}</b></span><strong>${s.coins || 0} Coins</strong></div>`;
             }).join('');
         }
 
@@ -825,7 +845,7 @@
                 const dateStr = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString() : 'Vawiin';
                 if(window.currentStudent && data.enrollment === window.currentStudent.enrollment) {
                     studentHtml += `
-                        <div class="notice-box" style="border-left-color: #10b981; background: #ecfdf5; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                        <div class="notice-box" style="border-left-color: #10b981; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
                             <div style="flex-grow: 1;">
                                 <strong>${data.title}</strong>
                                 <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">📅 Thehluh ni: ${dateStr}</div>
