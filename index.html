@@ -96,18 +96,20 @@
         .dark-mode .comment-item { border-bottom-color: #334155 !important; color: #f1f5f9 !important; }
         .dark-mode .leaderboard-row { border-bottom-color: #334155 !important; color: #ffffff !important; }
         
+        /* Force all inner dynamic cards/boxes to respect dark mode text and background */
+        .dark-mode div[style*="background"],
+        .dark-mode span[style*="color"] {
+            color: #ffffff !important;
+        }
         .dark-mode div[style*="background: #e0f2fe"], 
         .dark-mode div[style*="background: #fffbeb"], 
         .dark-mode div[style*="background: #f3e8ff"], 
         .dark-mode div[style*="background: #fefce8"],
         .dark-mode div[style*="background: #ecfdf5"],
-        .dark-mode div[style*="background: #faf5ff"] {
-            background-color: #1e293b !important; border-color: #475569 !important; color: #ffffff !important;
-        }
-        
+        .dark-mode div[style*="background: #faf5ff"],
         .dark-mode div[style*="background: white"], 
         .dark-mode div[style*="background: #fff"] {
-            background-color: #0f172a !important; color: #ffffff !important; border-color: #334155 !important;
+            background-color: #1e293b !important; border-color: #475569 !important; color: #ffffff !important;
         }
 
         /* Dark/Light Toggle Button */
@@ -389,7 +391,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "3.25"; 
+        const APP_VERSION = "3.26"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -529,7 +531,7 @@
                     }
 
                     html += `
-                        <div style="background: var(--card-bg, #ffffff); padding: 12px 15px; border-radius: 8px; border: 1px solid #99f6e4; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div style="padding: 12px 15px; border-radius: 8px; border: 1px solid #99f6e4; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                             <div>
                                 <h4 style="margin-bottom: 2px; font-size: 15px;">📘 ${subj}</h4>
                                 <span style="font-size: 12px; opacity: 0.8;">Zir Hun: ${start} to ${end} (Points: ${earned} / ${studentMax})</span>
