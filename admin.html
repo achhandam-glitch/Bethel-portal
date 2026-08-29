@@ -413,6 +413,7 @@
                 <div id="tab-attendance" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
+                    <!-- 1. ZIRLAI CHAWLH IN-REPORT TE (CHUNG BERAH) -->
                     <div class="card" style="border: 2px solid #3b82f6;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                             <h3 style="color: #1e3a8a; border: none; padding: 0; margin: 0;">Zirlai Chawlh In-Report Te</h3>
@@ -426,7 +427,8 @@
                         </div>
                     </div>
 
-                    <div class="card" style="border: 2px solid #8b5cf6; margin-bottom: 0;">
+                    <!-- 2. DAILY ATTENDANCE MARK-NA -->
+                    <div class="card" style="border: 2px solid #8b5cf6; margin-top: 20px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                             <h3 style="color: #4c1d95; border: none; padding: 0; margin: 0;">Attendance Mark-na</h3>
                             <div style="display: flex; gap: 8px;">
@@ -484,6 +486,16 @@
                             </div>
                         </div>
 
+                        <!-- Performance Filter Buttons -->
+                        <div style="margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap;" id="attendance-performance-filters">
+                            <button class="btn btn-outline" style="width:auto; padding:6px 12px; margin:0;" onclick="filterByPerformance('ALL')">All</button>
+                            <button class="btn" style="width:auto; padding:6px 12px; margin:0; background:#dcfce7; color:#166534;" onclick="filterByPerformance('Excellent')">🌟 Excellent</button>
+                            <button class="btn" style="width:auto; padding:6px 12px; margin:0; background:#e0f2fe; color:#0369a1;" onclick="filterByPerformance('Good')">👍 Good</button>
+                            <button class="btn" style="width:auto; padding:6px 12px; margin:0; background:#fef08a; color:#854d0e;" onclick="filterByPerformance('Average')">⚠️ Average</button>
+                            <button class="btn" style="width:auto; padding:6px 12px; margin:0; background:#fee2e2; color:#991b1b;" onclick="filterByPerformance('Poor')">🚨 Poor</button>
+                            <button class="btn" style="width:auto; padding:6px 12px; margin:0; background:#f1f5f9; color:#64748b;" onclick="filterByPerformance('N/A')">N/A</button>
+                        </div>
+
                         <div style="margin-bottom: 15px;">
                             <input type="text" id="attendance-search" placeholder="🔍 Hming emaw Enrollment No. zawng rawh..." style="width: 100%; padding: 10px; border: 1px solid #c4b5fd; border-radius: 6px; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);" onkeyup="filterAttendance()">
                         </div>
@@ -493,7 +505,7 @@
                                 <thead style="position: sticky; top: 0; z-index: 10;">
                                     <tr>
                                         <th>Enrollment</th>
-                                        <th>Hming</th>
+                                        <th>Hming & Performance</th>
                                         <th>Mark-na (Points)</th>
                                     </tr>
                                 </thead>
@@ -503,6 +515,62 @@
                             </table>
                         </div>
                         <button class="btn btn-primary" style="margin-top: 15px; background-color: #8b5cf6;" onclick="saveAttendance()">Attendance Save Rawh</button>
+                    </div>
+
+                    <!-- 3. PRACTICAL SUBJECT ATTENDANCE TRACKER -->
+                    <div class="card" style="border: 2px solid #0f766e; background: #f0fdfa; margin-top: 20px; margin-bottom: 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
+                            <div>
+                                <h3 style="color: #0f766e; border: none; padding: 0; margin: 0;">🎯 Practical Subject Attendance Tracker</h3>
+                                <p style="font-size: 13px; color: #475569; margin-top: 4px;">Subject tin zir ṭan ni leh zawh ni set-in, Weekday shift tan Mon-Fri (1 pt) leh Saturday shift tan Saturday (5 pts) a chhut a ni.</p>
+                            </div>
+                            <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportSubjectAttendanceToExcel()">📥 Subject Report Excel</button>
+                        </div>
+
+                        <div class="form-grid" style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #99f6e4; margin-bottom: 15px;">
+                            <div class="input-group">
+                                <label style="color: #0f766e;">Subject Thlang Rawh</label>
+                                <select id="subj-tracker-select" onchange="onSubjectSelectChange()" style="border-color: #0f766e; font-weight: 600;">
+                                    <option value="MS Word">MS Word</option>
+                                    <option value="MS Excel">MS Excel</option>
+                                    <option value="MS PowerPoint">MS PowerPoint</option>
+                                    <option value="Photoshop">Photoshop</option>
+                                    <option value="PageMaker">PageMaker</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label style="color: #0f766e;">Zir Ṭan Ni (Start Date)</label>
+                                <input type="date" id="subj-start-date" required>
+                            </div>
+                            <div class="input-group">
+                                <label style="color: #0f766e;">Zir Zawh Ni (End Date)</label>
+                                <input type="date" id="subj-end-date" required>
+                            </div>
+                            <div class="input-group" style="display: flex; align-items: flex-end;">
+                                <button class="btn btn-primary" style="background-color: #0f766e; margin: 0;" onclick="saveSubjectSchedule()">💾 Zir Hun Set & Check</button>
+                            </div>
+                        </div>
+
+                        <div id="subj-info-display" style="margin-bottom: 12px; font-size: 14px; padding: 8px 12px; background: white; border-radius: 6px; border-left: 4px solid #0f766e;">
+                            <span style="color: gray; font-style: italic;">Subject zir hun chhung a la in-set lo...</span>
+                        </div>
+
+                        <div style="overflow-x: auto; max-height: 350px; overflow-y: auto; background: white; border-radius: 6px; border: 1px solid #e2e8f0;">
+                            <table style="margin-top: 0;">
+                                <thead style="position: sticky; top: 0; z-index: 10;">
+                                    <tr>
+                                        <th>Enrollment</th>
+                                        <th>Hming & Shift</th>
+                                        <th>Points Hmuh / Total Max</th>
+                                        <th>Percentage (%)</th>
+                                        <th>Performance</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="subj-attendance-body">
+                                    <tr><td colspan="5" style="text-align:center; color:gray;">Subject zir hun chhung thlang la 'Set & Check' hmet rawh.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
@@ -733,8 +801,8 @@
 
     <!-- ================= FIREBASE SETUP & JAVASCRIPT LOGIC ================= -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, deleteDoc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, deleteDoc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAYardtj2WcBiUGSD9Ytqa0yZUWwjEXgis",
@@ -750,20 +818,31 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "3.13"; 
+        const APP_VERSION = "3.21"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
         let allStudentsList = []; 
+        let allAttendanceRecords = [];
         let attendancePointsMap = {}; 
         let attendanceStats = {}; 
         let feeDataMap = {}; 
         let mcqTests = []; 
         let mySubmissions = [];
 
+        window.currentPerformanceFilter = 'ALL';
+
+        let subjectSchedules = {
+            "MS Word": { start: "", end: "" },
+            "MS Excel": { start: "", end: "" },
+            "MS PowerPoint": { start: "", end: "" },
+            "Photoshop": { start: "", end: "" },
+            "PageMaker": { start: "", end: "" }
+        };
+
         const todayISODate = new Date().toISOString().split('T')[0];
-        document.getElementById('attendance-date').value = todayISODate;
-        document.getElementById('fee-date').value = todayISODate;
+        if (document.getElementById('attendance-date')) document.getElementById('attendance-date').value = todayISODate;
+        if (document.getElementById('fee-date')) document.getElementById('fee-date').value = todayISODate;
 
         (function checkVersion() {
             let savedVersion = localStorage.getItem('bcc_portal_version');
@@ -783,7 +862,6 @@
             document.getElementById('darkModeBtn').innerText = isDark ? '☀️' : '🌙';
         }
 
-        // Initialize Dark Mode on load
         if(localStorage.getItem('bcc_dark_mode') === 'true') {
             document.body.classList.add('dark-mode');
             const btn = document.getElementById('darkModeBtn');
@@ -815,6 +893,7 @@
             document.getElementById(tabId).classList.add('active-content');
             if(tabId === 'tab-attendance') {
                 loadAttendanceForDate();
+                onSubjectSelectChange();
             }
             window.scrollTo(0, 0);
         }
@@ -890,7 +969,6 @@
         onSnapshot(query(collection(db, "mcq_tests"), orderBy("createdAt", "desc")), (snapshot) => {
             mcqTests = []; snapshot.forEach(doc => mcqTests.push({id: doc.id, ...doc.data()}));
             
-            // Admin Render
             const adminList = document.getElementById('admin-mcq-list');
             if(adminList) {
                 adminList.innerHTML = '';
@@ -1066,11 +1144,224 @@
             XLSX.utils.book_append_sheet(workbook, worksheet, "Fee_Report"); XLSX.writeFile(workbook, "Bethel_Fee_Report.xlsx");
         }
 
-        // ================= ATTENDANCE =================
+        // ================= ATTENDANCE & PERFORMANCE CATEGORY =================
+        window.getAttendanceCategory = function(enrollment) {
+            let stats = attendanceStats[enrollment];
+            if (!stats || stats.days === 0 || stats.possible === 0) {
+                return { label: 'N/A', color: '#64748b', bg: '#f1f5f9', pct: 0 };
+            }
+            let pct = (stats.earned / stats.possible) * 100;
+            if (pct >= 90) return { label: 'Excellent', color: '#166534', bg: '#dcfce7', pct: pct.toFixed(1) };
+            if (pct >= 75) return { label: 'Good', color: '#0369a1', bg: '#e0f2fe', pct: pct.toFixed(1) };
+            if (pct >= 50) return { label: 'Average', color: '#854d0e', bg: '#fef08a', pct: pct.toFixed(1) };
+            return { label: 'Poor', color: '#991b1b', bg: '#fee2e2', pct: pct.toFixed(1) };
+        }
+
+        window.filterByPerformance = function(category) {
+            window.currentPerformanceFilter = category;
+            filterAttendance();
+        }
+
+        // ================= PRACTICAL SUBJECT SCHEDULE & ATTENDANCE TRACKER =================
+        onSnapshot(doc(db, "settings", "subject_schedules"), (docSnap) => {
+            if (docSnap.exists()) {
+                subjectSchedules = { ...subjectSchedules, ...docSnap.data() };
+            }
+            onSubjectSelectChange();
+        });
+
+        window.onSubjectSelectChange = function() {
+            const selectEl = document.getElementById('subj-tracker-select');
+            if(!selectEl) return;
+            const subj = selectEl.value;
+            const sched = subjectSchedules[subj] || { start: "", end: "" };
+            if(document.getElementById('subj-start-date')) document.getElementById('subj-start-date').value = sched.start || "";
+            if(document.getElementById('subj-end-date')) document.getElementById('subj-end-date').value = sched.end || "";
+            calculateSubjectAttendance();
+        };
+
+        window.saveSubjectSchedule = async function() {
+            const subj = document.getElementById('subj-tracker-select').value;
+            const start = document.getElementById('subj-start-date').value;
+            const end = document.getElementById('subj-end-date').value;
+            if(!start || !end) {
+                alert("Zir ṭan ni (Start Date) leh zir zawh ni (End Date) thlang rawh!");
+                return;
+            }
+            if(start > end) {
+                alert("Zir ṭan ni hi zir zawh ni aiin a hma tur a ni!");
+                return;
+            }
+            subjectSchedules[subj] = { start: start, end: end };
+            try {
+                await setDoc(doc(db, "settings", "subject_schedules"), subjectSchedules, { merge: true });
+                alert(`${subj} zir hun chhung save a ni e!`);
+                calculateSubjectAttendance();
+            } catch(e) {
+                alert("Save naah harsatna: " + e.message);
+            }
+        };
+
+        window.calculateSubjectAttendance = function() {
+            const selectEl = document.getElementById('subj-tracker-select');
+            if(!selectEl) return;
+            const subj = selectEl.value;
+            const start = document.getElementById('subj-start-date')?.value;
+            const end = document.getElementById('subj-end-date')?.value;
+            const infoBox = document.getElementById('subj-info-display');
+            const tbody = document.getElementById('subj-attendance-body');
+
+            if(!start || !end) {
+                if (infoBox) infoBox.innerHTML = `<span style="color:gray; font-style:italic;">${subj} zir hun chhung (Start & End Date) a la in-set lo. Set la, 'Save & Check' hmet rawh.</span>`;
+                if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:gray;">Zir hun chhung set phawt rawh.</td></tr>`;
+                return;
+            }
+
+            let recordsInRange = allAttendanceRecords.filter(r => r.date >= start && r.date <= end);
+            
+            // Weekday max points = Attendance record awm tawh zat (Mon-Fri) * 1 point
+            let uniqueWeekdayDates = [...new Set(recordsInRange.filter(r => {
+                let d = new Date(r.date).getDay();
+                return d >= 1 && d <= 5;
+            }).map(r => r.date))];
+            let weekdayMax = uniqueWeekdayDates.length * 1;
+
+            // Saturday shift max points = Saturday awm zat * 5 points
+            let curr = new Date(start);
+            let last = new Date(end);
+            let saturdayCount = 0;
+            while (curr <= last) {
+                if (curr.getDay() === 6) saturdayCount++;
+                curr.setDate(curr.getDate() + 1);
+            }
+            let saturdayMax = saturdayCount * 5;
+
+            if (infoBox) {
+                infoBox.innerHTML = `📅 <b>${subj}</b> Zir Hun: <span style="color:#0f766e; font-weight:bold;">${start}</span> aṭanga <span style="color:#0f766e; font-weight:bold;">${end}</span> thleng. (Weekday Max: <b>${weekdayMax} pts</b> | Saturday Shift Max: <b>${saturdayMax} pts</b>)`;
+            }
+
+            let subjStudentStats = {};
+            allStudentsList.forEach(s => {
+                subjStudentStats[s.enrollment] = {
+                    name: s.name,
+                    shift: s.shift || '10am shift',
+                    earned: 0
+                };
+            });
+
+            recordsInRange.forEach(r => {
+                if(subjStudentStats[r.enrollment]) {
+                    subjStudentStats[r.enrollment].earned += (r.points || 0);
+                }
+            });
+
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            
+            if(allStudentsList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:gray;">Zirlai an awm lo.</td></tr>`;
+                return;
+            }
+
+            allStudentsList.forEach(s => {
+                let st = subjStudentStats[s.enrollment];
+                let isSatShift = (st.shift === 'Saturday shift');
+                let studentMax = isSatShift ? saturdayMax : weekdayMax;
+                
+                let pct = studentMax > 0 ? ((st.earned / studentMax) * 100).toFixed(1) : 0;
+                let badge = '<span style="background:#f1f5f9; color:#64748b; font-size:11px; padding:2px 6px; border-radius:4px; font-weight:bold;">N/A</span>';
+                
+                if(studentMax > 0) {
+                    let pNum = parseFloat(pct);
+                    if (pNum > 100) pNum = 100;
+                    
+                    if (pNum >= 90) badge = `<span style="background:#dcfce7; color:#166534; font-size:11px; padding:2px 6px; border-radius:4px; font-weight:bold;">🌟 Excellent</span>`;
+                    else if (pNum >= 75) badge = `<span style="background:#e0f2fe; color:#0369a1; font-size:11px; padding:2px 6px; border-radius:4px; font-weight:bold;">👍 Good</span>`;
+                    else if (pNum >= 50) badge = `<span style="background:#fef08a; color:#854d0e; font-size:11px; padding:2px 6px; border-radius:4px; font-weight:bold;">⚠️ Average</span>`;
+                    else badge = `<span style="background:#fee2e2; color:#991b1b; font-size:11px; padding:2px 6px; border-radius:4px; font-weight:bold;">🚨 Poor</span>`;
+                }
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${s.enrollment}</td>
+                        <td><b>${s.name}</b> <span style="font-size:11px; color:#64748b;">(${st.shift})</span></td>
+                        <td><b style="color:#0f766e;">${st.earned} pts</b> / ${studentMax} max</td>
+                        <td style="font-weight:bold; color:#0369a1;">${pct}%</td>
+                        <td>${badge}</td>
+                    </tr>`;
+            });
+        };
+
+        window.exportSubjectAttendanceToExcel = function() {
+            const subj = document.getElementById('subj-tracker-select').value;
+            const start = document.getElementById('subj-start-date').value;
+            const end = document.getElementById('subj-end-date').value;
+            if(!start || !end) {
+                alert("Zir hun chhung a la in-set lo!");
+                return;
+            }
+
+            let recordsInRange = allAttendanceRecords.filter(r => r.date >= start && r.date <= end);
+            let uniqueWeekdayDates = [...new Set(recordsInRange.filter(r => {
+                let d = new Date(r.date).getDay();
+                return d >= 1 && d <= 5;
+            }).map(r => r.date))];
+            let weekdayMax = uniqueWeekdayDates.length * 1;
+
+            let curr = new Date(start);
+            let last = new Date(end);
+            let saturdayCount = 0;
+            while (curr <= last) {
+                if (curr.getDay() === 6) saturdayCount++;
+                curr.setDate(curr.getDate() + 1);
+            }
+            let saturdayMax = saturdayCount * 5;
+
+            let exportData = [];
+            allStudentsList.forEach(s => {
+                let earned = 0;
+                recordsInRange.filter(r => r.enrollment === s.enrollment).forEach(r => {
+                    earned += (r.points || 0);
+                });
+                let isSatShift = ((s.shift || '10am shift') === 'Saturday shift');
+                let studentMax = isSatShift ? saturdayMax : weekdayMax;
+
+                let pct = studentMax > 0 ? ((earned / studentMax) * 100).toFixed(1) + "%" : "0%";
+                let label = 'N/A';
+                let pNum = parseFloat(pct);
+                if(studentMax > 0) {
+                    if (pNum >= 90) label = 'Excellent';
+                    else if (pNum >= 75) label = 'Good';
+                    else if (pNum >= 50) label = 'Average';
+                    else label = 'Poor';
+                }
+
+                exportData.push({
+                    "Subject": subj,
+                    "Zir Hun Chhung": `${start} to ${end}`,
+                    "Enrollment No": s.enrollment,
+                    "Zirlai Hming": s.name,
+                    "Shift": s.shift || '10am shift',
+                    "Student Max Possible": studentMax,
+                    "Points Hmuh": earned,
+                    "Percentage (%)": pct,
+                    "Performance": label
+                });
+            });
+            if(exportData.length === 0) { alert("Data a awm lo."); return; }
+            let worksheet = XLSX.utils.json_to_sheet(exportData);
+            let workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, `${subj}_Report`);
+            XLSX.writeFile(workbook, `Bethel_${subj}_Attendance_Report.xlsx`);
+        };
+
         onSnapshot(collection(db, "attendance"), (snapshot) => {
-            attendancePointsMap = {}; attendanceStats = {}; 
+            allAttendanceRecords = [];
+            attendancePointsMap = {}; 
+            attendanceStats = {}; 
             snapshot.forEach(docSnap => {
                 let d = docSnap.data();
+                allAttendanceRecords.push(d);
                 if(!attendancePointsMap[d.enrollment]) attendancePointsMap[d.enrollment] = 0;
                 attendancePointsMap[d.enrollment] += d.points;
 
@@ -1081,6 +1372,7 @@
                 attendanceStats[d.enrollment].days += 1;
             });
             renderStudentManagementTable();
+            calculateSubjectAttendance();
         });
 
         window.loadAttendanceForDate = async function() {
@@ -1088,7 +1380,6 @@
             if(!dateStr) return;
             const isSaturday = new Date(dateStr).getDay() === 6;
             
-            // --- DROPDOWN DYNAMIC UPDATE ---
             const shiftSelect = document.getElementById('attendance-shift-filter');
             const currentShiftVal = shiftSelect.value;
             shiftSelect.innerHTML = '<option value="ALL">-- Shift ZAWNG ZAWNG --</option>';
@@ -1111,7 +1402,6 @@
                 shiftSelect.value = currentShiftVal || 'ALL';
             }
             const selectedShift = shiftSelect.value;
-            // --------------------------------
 
             const pts = isSaturday ? {p: 5, r: 2.5, a: 0} : {p: 1, r: 0.5, a: 0};
             const q = query(collection(db, "attendance"), where("date", "==", dateStr));
@@ -1120,7 +1410,6 @@
 
             const tbody = document.getElementById('attendance-list-body'); tbody.innerHTML = '';
             
-            // --- ZIRLAI FILTER-NA ---
             let filteredStudents = allStudentsList;
             if (isSaturday) {
                 filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift');
@@ -1146,10 +1435,18 @@
                 else if (status === 'Reported') reportList.push(s.name);
                 else absentCount++;
 
+                let perfData = getAttendanceCategory(s.enrollment);
+                let badgeHtml = perfData.label === 'N/A' 
+                    ? `<span style="background:${perfData.bg}; color:${perfData.color}; font-size:11px; padding:2px 6px; border-radius:4px; font-weight:bold; margin-left:5px;">N/A</span>`
+                    : `<span style="background:${perfData.bg}; color:${perfData.color}; font-size:11px; padding:2px 6px; border-radius:4px; font-weight:bold; margin-left:5px;">${perfData.label} (${perfData.pct}%)</span>`;
+
                 tbody.innerHTML += `
-                    <tr class="att-row">
+                    <tr class="att-row" data-category="${perfData.label}">
                         <td class="att-enrollment">${s.enrollment}</td>
-                        <td class="att-name"><b>${s.name}</b> <span style="font-size:11px; color:#64748b;">(${s.shift || '10am shift'})</span></td>
+                        <td class="att-name">
+                            <div style="margin-bottom: 4px;"><b>${s.name}</b> <span style="font-size:11px; color:#64748b;">(${s.shift || '10am shift'})</span></div>
+                            ${badgeHtml}
+                        </td>
                         <td>
                             <div class="radio-group" onchange="updateAttendanceSummary()">
                                 <label class="radio-present"><input type="radio" name="att_${s.enrollment}" value="Present" ${presentChecked}> Present (${pts.p})</label>
@@ -1202,11 +1499,16 @@
 
         window.filterAttendance = function() {
             const input = document.getElementById('attendance-search').value.toLowerCase();
-            const rows = document.querySelectorAll('#attendance-list-body tr');
+            const rows = document.querySelectorAll('#attendance-list-body .att-row');
             rows.forEach(row => {
-                if(row.cells.length < 3) return; 
-                const enr = row.querySelector('.att-enrollment').innerText.toLowerCase(); const nm = row.querySelector('.att-name').innerText.toLowerCase();
-                row.style.display = (enr.includes(input) || nm.includes(input)) ? '' : 'none';
+                const enr = row.querySelector('.att-enrollment').innerText.toLowerCase(); 
+                const nm = row.querySelector('.att-name').innerText.toLowerCase();
+                const perfCategory = row.getAttribute('data-category');
+                
+                let matchText = enr.includes(input) || nm.includes(input);
+                let matchFilter = window.currentPerformanceFilter === 'ALL' || perfCategory === window.currentPerformanceFilter;
+                
+                row.style.display = (matchText && matchFilter) ? '' : 'none';
             });
         }
 
@@ -1309,6 +1611,7 @@
             allStudentsList = []; snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
             renderStudentManagementTable(); renderFeeTable(); loadAttendanceForDate(); renderOnlineShiftStudents(); 
             renderAdminLeaderboard();
+            calculateSubjectAttendance();
         });
 
         window.openShiftModal = function(enrollment, currentShift) {
