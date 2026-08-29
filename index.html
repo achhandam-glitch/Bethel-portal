@@ -972,8 +972,8 @@
         });
     </script>
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, deleteDoc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, deleteDoc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAYardtj2WcBiUGSD9Ytqa0yZUWwjEXgis",
@@ -1004,11 +1004,9 @@
         let mySubmissions = [];
 
         const todayISODate = new Date().toISOString().split('T')[0];
-        document.getElementById('attendance-date').value = todayISODate;
-        document.getElementById('fee-date').value = todayISODate;
-        if(document.getElementById('leave-date')) {
-            document.getElementById('leave-date').value = todayISODate;
-        }
+        if (document.getElementById('attendance-date')) document.getElementById('attendance-date').value = todayISODate;
+        if (document.getElementById('fee-date')) document.getElementById('fee-date').value = todayISODate;
+        if (document.getElementById('leave-date')) document.getElementById('leave-date').value = todayISODate;
 
         (function checkVersion() {
             let savedVersion = localStorage.getItem('bcc_portal_version');
@@ -1813,7 +1811,7 @@
                 }); 
                 alert("I in-report-na a lut hlawhtling e."); 
                 event.target.reset(); 
-                document.getElementById('leave-date').value = todayISODate; 
+                if(document.getElementById('leave-date')) document.getElementById('leave-date').value = todayISODate; 
             } catch (error) { 
                 alert("Thehluh theih a ni lo: " + error.message); 
             }
@@ -1866,8 +1864,12 @@
 
         onSnapshot(query(collection(db, "notices"), orderBy("createdAt", "desc")), (snapshot) => {
             const adminList = document.getElementById('admin-notice-list'); const studentList = document.getElementById('student-notice-list');
-            adminList.innerHTML = ''; studentList.innerHTML = '';
-            if (snapshot.empty) { adminList.innerHTML = '<p style="color: gray;">Notice a la awm lo...</p>'; studentList.innerHTML = '<p style="color: gray;">Notice a la awm lo...</p>'; } 
+            if (adminList) adminList.innerHTML = ''; 
+            if (studentList) studentList.innerHTML = '';
+            if (snapshot.empty) { 
+                if (adminList) adminList.innerHTML = '<p style="color: gray;">Notice a la awm lo...</p>'; 
+                if (studentList) studentList.innerHTML = '<p style="color: gray;">Notice a la awm lo...</p>'; 
+            } 
             else {
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data(); const noticeId = docSnap.id; let commentsHTML = '';
@@ -1880,8 +1882,12 @@
                         commentsHTML += '</div>';
                     }
                     let safeTitle = data.title ? data.title.replace(/'/g, "\\'") : '';
-                    adminList.innerHTML += `<div class="notice-box"><h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4><p style="margin-bottom: 10px; color: #475569;">${data.content}</p>${commentsHTML}<div style="margin-top: 12px; display: flex; gap: 10px;"><input type="text" id="admin-comment-input-${noticeId}" placeholder="Comment chhanna (Reply)..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;"><button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="adminPostComment('${noticeId}')">Reply</button></div><div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;"><button class="btn btn-whatsapp" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="shareNoticeWhatsApp('${safeTitle}')">📲 WhatsApp-ah Share-na</button><button class="btn btn-primary" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="editNotice('${noticeId}')">Edit Notice</button><button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="deleteNotice('${noticeId}')">Paih</button></div></div>`;
-                    studentList.innerHTML += `<div class="notice-box"><h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4><p style="margin-bottom: 10px; color: #475569;">${data.content}</p>${commentsHTML}<div style="margin-top: 12px; display: flex; gap: 10px;"><input type="text" id="comment-input-${noticeId}" placeholder="Comment ziahna..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;"><button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="postComment('${noticeId}')">Post</button></div></div>`;
+                    if (adminList) {
+                        adminList.innerHTML += `<div class="notice-box"><h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4><p style="margin-bottom: 10px; color: #475569;">${data.content}</p>${commentsHTML}<div style="margin-top: 12px; display: flex; gap: 10px;"><input type="text" id="admin-comment-input-${noticeId}" placeholder="Comment chhanna (Reply)..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;"><button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="adminPostComment('${noticeId}')">Reply</button></div><div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;"><button class="btn btn-whatsapp" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="shareNoticeWhatsApp('${safeTitle}')">📲 WhatsApp-ah Share-na</button><button class="btn btn-primary" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="editNotice('${noticeId}')">Edit Notice</button><button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="deleteNotice('${noticeId}')">Paih</button></div></div>`;
+                    }
+                    if (studentList) {
+                        studentList.innerHTML += `<div class="notice-box"><h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4><p style="margin-bottom: 10px; color: #475569;">${data.content}</p>${commentsHTML}<div style="margin-top: 12px; display: flex; gap: 10px;"><input type="text" id="comment-input-${noticeId}" placeholder="Comment ziahna..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;"><button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="postComment('${noticeId}')">Post</button></div></div>`;
+                    }
                 });
             }
         });
@@ -1892,8 +1898,13 @@
 
         onSnapshot(query(collection(db, "shared_links"), orderBy("createdAt", "desc")), (snapshot) => {
             const studentContainer = document.getElementById('student-links-container'); const adminContainer = document.getElementById('admin-links-container');
-            studentContainer.innerHTML = '<h3>Study Material, Assignment, Test / Exam</h3>'; adminContainer.innerHTML = '';
-            if (snapshot.empty) { studentContainer.innerHTML += '<p style="color: gray;">Thil sem a la awm lo.</p>'; adminContainer.innerHTML = '<p style="color: gray;">A la awm rih lo...</p>'; } 
+            if (studentContainer) studentContainer.innerHTML = '<h3>Study Material, Assignment, Test / Exam</h3>'; 
+            if (adminContainer) adminContainer.innerHTML = '';
+            
+            if (snapshot.empty) { 
+                if (studentContainer) studentContainer.innerHTML += '<p style="color: gray;">Thil sem a la awm lo.</p>'; 
+                if (adminContainer) adminContainer.innerHTML = '<p style="color: gray;">A la awm rih lo...</p>'; 
+            } 
             else {
                 snapshot.forEach((docSnap) => {
                     let data = docSnap.data(); let icon = '🔗'; let color = '#333'; let btnText = 'Hawng Rawh'; let finalUrl = data.url;
@@ -1907,8 +1918,12 @@
                     }
                     else if (data.type === 'Google Form') { icon = '📝'; color = '#16a34a'; } else if (data.type === 'YouTube Video') { icon = '▶️'; color = '#2563eb'; }
                     let safeFileName = data.fileName ? data.fileName.replace(/'/g, "\\'") : ''; let safeType = data.type ? data.type.replace(/'/g, "\\'") : '';
-                    adminContainer.innerHTML += `<div class="list-row"><div class="list-row-info"><b style="font-size: 14px;">${data.fileName}</b><br><span style="font-size: 12px; color: gray;">(${data.type})</span></div><div style="display: flex; gap: 5px;"><button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Share-na" onclick="shareMaterialWhatsApp('${safeFileName}', '${safeType}')">📲</button><button class="btn btn-danger btn-icon" title="Paih" onclick="deleteLink('${docSnap.id}')">✕</button></div></div>`;
-                    studentContainer.innerHTML += `<div class="shared-link-box"><p style="margin-bottom: 0; font-weight: bold; color: ${color}; font-size: 15px;">${icon} ${data.fileName}</p><a href="${finalUrl}" target="_blank" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">${btnText}</a></div>`;
+                    if (adminContainer) {
+                        adminContainer.innerHTML += `<div class="list-row"><div class="list-row-info"><b style="font-size: 14px;">${data.fileName}</b><br><span style="font-size: 12px; color: gray;">(${data.type})</span></div><div style="display: flex; gap: 5px;"><button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Share-na" onclick="shareMaterialWhatsApp('${safeFileName}', '${safeType}')">📲</button><button class="btn btn-danger btn-icon" title="Paih" onclick="deleteLink('${docSnap.id}')">✕</button></div></div>`;
+                    }
+                    if (studentContainer) {
+                        studentContainer.innerHTML += `<div class="shared-link-box"><p style="margin-bottom: 0; font-weight: bold; color: ${color}; font-size: 15px;">${icon} ${data.fileName}</p><a href="${finalUrl}" target="_blank" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">${btnText}</a></div>`;
+                    }
                 });
             }
         });
