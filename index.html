@@ -82,45 +82,36 @@
 
         /* ================= DARK MODE STYLES ================= */
         body.dark-mode { background-color: #0b0f19 !important; color: #ffffff !important; }
-        .dark-mode .card, .dark-mode .admin-sidebar, .dark-mode .modal-overlay .card, .dark-mode .leave-item { background-color: #1e293b !important; color: #ffffff !important; border-color: #334155 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important; }
-        .dark-mode h1, .dark-mode h2, .dark-mode h3, .dark-mode h4, .dark-mode label, .dark-mode .menu-btn { color: #ffffff !important; }
-        .dark-mode p, .dark-mode span, .dark-mode div, .dark-mode li { color: #f1f5f9 !important; }
+        .dark-mode .card, 
+        .dark-mode .admin-sidebar, 
+        .dark-mode .modal-overlay .card, 
+        .dark-mode .leave-item,
+        .dark-mode .notice-box,
+        .dark-mode .shared-link-box,
+        .dark-mode .mcq-card,
+        .dark-mode .mcq-option,
+        .dark-mode .comment-area,
+        .dark-mode div[style*="background"] { 
+            background-color: #1e293b !important; 
+            color: #ffffff !important; 
+            border-color: #334155 !important; 
+        }
+        
+        .dark-mode h1, .dark-mode h2, .dark-mode h3, .dark-mode h4, .dark-mode label, .dark-mode b, .dark-mode strong { color: #ffffff !important; }
+        .dark-mode p, .dark-mode span, .dark-mode div, .dark-mode li, .dark-mode small { color: #f1f5f9 !important; }
         .dark-mode input, .dark-mode select, .dark-mode textarea { background-color: #0f172a !important; color: #ffffff !important; border: 1px solid #475569 !important; }
         .dark-mode input::placeholder, .dark-mode textarea::placeholder { color: #94a3b8 !important; }
         .dark-mode .menu-btn { background-color: #0f172a !important; color: #ffffff !important; border-left-color: #38bdf8 !important; }
         .dark-mode .menu-btn:hover { background-color: #334155 !important; color: #38bdf8 !important; }
-        .dark-mode .shared-link-box, .dark-mode .notice-box, .dark-mode .mcq-card, .dark-mode .mcq-option { background-color: #1e293b !important; color: #ffffff !important; border-color: #475569 !important; }
-        .dark-mode .mcq-option { background-color: #0f172a !important; color: #ffffff !important; }
-        .dark-mode .mcq-option:hover { background-color: #334155 !important; }
-        .dark-mode .comment-area { background-color: #0f172a !important; color: #ffffff !important; border-color: #475569 !important; }
         .dark-mode .comment-item { border-bottom-color: #334155 !important; color: #f1f5f9 !important; }
         .dark-mode .leaderboard-row { border-bottom-color: #334155 !important; color: #ffffff !important; }
         
-        /* Modal inside dark mode fixing */
-        .dark-mode #attendance-info-modal div[style*="background-color: #f0fdf4"],
-        .dark-mode #attendance-info-modal div[style*="background: #f0fdf4"] {
-            background-color: #0f172a !important; border-color: #16a34a !important; color: #ffffff !important;
-        }
-
+        /* Specific Badges styling for dark mode */
         .dark-mode span[style*="background: #fee2e2"] { background-color: #7f1d1d !important; color: #fca5a5 !important; }
         .dark-mode span[style*="background: #dcfce7"] { background-color: #14532d !important; color: #86efac !important; }
         .dark-mode span[style*="background: #e0f2fe"] { background-color: #0369a1 !important; color: #bae6fd !important; }
         .dark-mode span[style*="background: #fef08a"] { background-color: #78350f !important; color: #fde047 !important; }
-
-        .dark-mode div[style*="background"],
-        .dark-mode span[style*="color"] {
-            color: #ffffff !important;
-        }
-        .dark-mode div[style*="background: #e0f2fe"], 
-        .dark-mode div[style*="background: #fffbeb"], 
-        .dark-mode div[style*="background: #f3e8ff"], 
-        .dark-mode div[style*="background: #fefce8"],
-        .dark-mode div[style*="background: #ecfdf5"],
-        .dark-mode div[style*="background: #faf5ff"],
-        .dark-mode div[style*="background: white"], 
-        .dark-mode div[style*="background: #fff"] {
-            background-color: #1e293b !important; border-color: #475569 !important; color: #ffffff !important;
-        }
+        .dark-mode span[style*="background: #ecfdf5"] { background-color: #064e3b !important; color: #6ee7b7 !important; }
 
         /* Dark/Light Toggle Button */
         .theme-toggle-btn { position: fixed; bottom: 25px; right: 25px; background: #0f172a; color: #fde047; border: 2px solid #334155; border-radius: 50%; width: 50px; height: 50px; font-size: 22px; cursor: pointer; z-index: 9999; box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: transform 0.2s; display: flex; align-items: center; justify-content: center; }
@@ -401,7 +392,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "3.28"; 
+        const APP_VERSION = "3.29"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
