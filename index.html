@@ -1690,6 +1690,24 @@
             const leaveDate = document.getElementById('leave-date').value; 
             const reason = document.getElementById('leave-reason').value.trim();
             
+            // --- CHAWLH DIL THEIH NI LEH SHIFT CHECK-NA (START) ---
+            const selectedDate = new Date(leaveDate);
+            const dayOfWeek = selectedDate.getDay(); // 0 = Sunday, 1-5 = Weekdays, 6 = Saturday
+            const myShift = window.currentStudent.shift || '10am shift';
+
+            // Rule 1: Saturday shift te chuan Inrinni (Saturday) ah chauh an report thei.
+            if (myShift === 'Saturday shift' && dayOfWeek !== 6) {
+                alert("Saturday shift i nih avangin Inrinni (Saturday)-ah chauh chawlh i report thei ang.");
+                return; // Code a kal tlang tur a dang
+            }
+
+            // Rule 2: Weekday shift te chuan Inrinni (Saturday) leh Pathianni (Sunday) ah an report thei lo.
+            if (myShift !== 'Saturday shift' && (dayOfWeek === 6 || dayOfWeek === 0)) {
+                alert("Weekday shift i nih avangin Inrinni (Saturday) emaw Pathianni (Sunday)-ah chawlh i report thei lo.");
+                return; // Code a kal tlang tur a dang
+            }
+            // --- CHAWLH DIL THEIH NI LEH SHIFT CHECK-NA (END) ---
+
             try { 
                 await addDoc(collection(db, "leave_requests"), { 
                     enrollment: window.currentStudent.enrollment, 
