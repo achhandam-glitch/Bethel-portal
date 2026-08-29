@@ -238,6 +238,14 @@
                         </button>
                     </div>
 
+                    <!-- PRACTICAL SUBJECT ATTENDANCE PERCENTAGE & REMARK (THAR) -->
+                    <div class="card" style="border: 2px solid #0f766e; background: #f0fdfa; margin-bottom: 20px;">
+                        <h3 style="color: #0f766e; border-bottom: 1px solid #99f6e4; padding-bottom: 10px; margin-bottom: 15px;">📊 Practical Subject Attendance Breakdown</h3>
+                        <div id="student-subject-attendance-list">
+                            <p style="color: gray; font-size: 14px;">Zirtirtuin subject zir hun chhung a la set lo emaw data a la in-load mek...</p>
+                        </div>
+                    </div>
+
                     <div style="background: #fefce8; border: 1px solid #fde047; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
                         <p style="color: #a16207; font-weight: 600; font-size: 16px; margin: 0;">Coins Neih Zat:</p>
                         <div style="font-size: 28px; font-weight: bold; color: #ca8a04;">🪙 <span id="student-coin-balance-status">0</span></div>
@@ -354,7 +362,7 @@
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAYardtj2WcBiUGSD9Ytqa0yZUWwjEXgis",
@@ -369,17 +377,18 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "3.14"; 
+        const APP_VERSION = "3.22"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
         
         let allStudentsList = []; 
+        let allAttendanceRecords = [];
         let attendancePointsMap = {}; 
         let feeDataMap = {}; 
-        
         let mcqTests = []; 
         let mySubmissions = [];
+        let globalSubjectSchedules = {};
 
         const todayISODate = new Date().toISOString().split('T')[0];
         if (document.getElementById('leave-date')) document.getElementById('leave-date').value = todayISODate;
@@ -392,7 +401,6 @@
             }
         })();
 
-        // Simple Routing
         window.showSection = function(sectionId) {
             const sections = ['student-login-section', 'student-portal-section'];
             sections.forEach(id => {
@@ -406,7 +414,6 @@
                 document.getElementById('student-menu-view').style.display = 'block';
                 document.querySelectorAll('.student-tab-content').forEach(el => el.classList.remove('active-content'));
             }
-            
             window.scrollTo(0, 0);
             
             if((sectionId === 'student-login-section') && studentLeaveUnsubscribe) {
@@ -426,6 +433,113 @@
             document.querySelectorAll('.student-tab-content').forEach(el => { el.classList.remove('active-content'); });
             document.getElementById('student-menu-view').style.display = 'block';
             window.scrollTo(0, 0);
+        }
+
+        // ================= SUBJECT SCHEDULES LISTENER =================
+        onSnapshot(doc(db, "settings", "subject_schedules"), (docSnap) => {
+            if (docSnap.exists()) {
+                globalSubjectSchedules = docSnap.data();
+            }
+            renderStudentSubjectAttendance();
+        });
+
+        onSnapshot(collection(db, "attendance"), (snapshot) => {
+            allAttendanceRecords = [];
+            attendancePointsMap = {}; 
+            snapshot.forEach(docSnap => {
+                let d = docSnap.data();
+                allAttendanceRecords.push(d);
+                if(!attendancePointsMap[d.enrollment]) attendancePointsMap[d.enrollment] = 0;
+                attendancePointsMap[d.enrollment] += d.points;
+            });
+            if(window.currentStudent.enrollment) {
+                const ptsUI = document.getElementById('student-att-points');
+                if(ptsUI) ptsUI.innerText = (attendancePointsMap[window.currentStudent.enrollment] || 0) + " Points";
+            }
+            renderStudentSubjectAttendance();
+        });
+
+        function renderStudentSubjectAttendance() {
+            const container = document.getElementById('student-subject-attendance-list');
+            if(!container || !window.currentStudent.enrollment) return;
+
+            let subjects = ["MS Word", "MS Excel", "MS PowerPoint", "Photoshop", "PageMaker"];
+            let html = '';
+            let enr = window.currentStudent.enrollment;
+            let isSatShift = (window.currentStudent.shift === 'Saturday shift');
+
+            let hasActiveSubj = false;
+
+            subjects.forEach(subj => {
+                let sched = globalSubjectSchedules[subj];
+                if (sched && sched.start && sched.end) {
+                    hasActiveSubj = true;
+                    let start = sched.start;
+                    let end = sched.end;
+
+                    // Calculate max points for this subject range
+                    let recordsInRange = allAttendanceRecords.filter(r => r.date >= start && r.date <= end);
+                    
+                    let weekdayCount = 0;
+                    let saturdayCount = 0;
+                    let curr = new Date(start);
+                    let last = new Date(end);
+                    while (curr <= last) {
+                        let day = curr.getDay();
+                        if (day >= 1 && day <= 5) weekdayCount++;
+                        else if (day === 6) saturdayCount++;
+                        curr.setDate(curr.getDate() + 1);
+                    }
+
+                    let uniqueWeekdayDates = [...new Set(recordsInRange.filter(r => {
+                        let d = new Date(r.date).getDay();
+                        return d >= 1 && d <= 5;
+                    }).map(r => r.date))];
+                    let weekdayMax = uniqueWeekdayDates.length * 1;
+                    let saturdayMax = saturdayCount * 5;
+
+                    let studentMax = isSatShift ? saturdayMax : weekdayMax;
+
+                    // Student earned points in this range
+                    let earned = 0;
+                    recordsInRange.filter(r => r.enrollment === enr).forEach(r => {
+                        earned += (r.points || 0);
+                    });
+
+                    let pct = studentMax > 0 ? ((earned / studentMax) * 100).toFixed(1) : 0;
+                    let remark = 'N/A';
+                    let badgeBg = '#f1f5f9';
+                    let badgeColor = '#64748b';
+
+                    if (studentMax > 0) {
+                        let pNum = parseFloat(pct);
+                        if (pNum > 100) pNum = 100;
+
+                        if (pNum >= 90) { remark = 'Excellent'; badgeBg = '#dcfce7'; badgeColor = '#166534'; }
+                        else if (pNum >= 75) { remark = 'Good'; badgeBg = '#e0f2fe'; badgeColor = '#0369a1'; }
+                        else if (pNum >= 50) { remark = 'Average'; badgeBg = '#fef08a'; badgeColor = '#854d0e'; }
+                        else { remark = 'Poor'; badgeBg = '#fee2e2'; badgeColor = '#991b1b'; }
+                    }
+
+                    html += `
+                        <div style="background: white; padding: 12px 15px; border-radius: 8px; border: 1px solid #99f6e4; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <h4 style="color: #0f766e; margin-bottom: 2px; font-size: 15px;">📘 ${subj}</h4>
+                                <span style="font-size: 12px; color: gray;">Zir Hun: ${start} to ${end} (Points: ${earned} / ${studentMax})</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-weight: bold; color: #0369a1; font-size: 16px;">${pct}%</span>
+                                <span style="background: ${badgeBg}; color: ${badgeColor}; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">${remark}</span>
+                            </div>
+                        </div>`;
+                }
+            });
+
+            if (!hasActiveSubj) {
+                container.innerHTML = '<p style="color: gray; font-size: 14px; font-style: italic;">Zirtirtuin subject zir hun chhung a la set rih lo.</p>';
+            } else {
+                container.innerHTML = html;
+            }
         }
 
         // ================= MCQ & COINS LOGIC =================
@@ -501,7 +615,6 @@
             }).join('');
         }
 
-        // ================= FETCH ALL STUDENTS =================
         onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
             allStudentsList = []; snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
             renderLeaderboard();
@@ -550,20 +663,6 @@
             }
         }
 
-        // ================= ATTENDANCE =================
-        onSnapshot(collection(db, "attendance"), (snapshot) => {
-            attendancePointsMap = {}; 
-            snapshot.forEach(docSnap => {
-                let d = docSnap.data();
-                if(!attendancePointsMap[d.enrollment]) attendancePointsMap[d.enrollment] = 0;
-                attendancePointsMap[d.enrollment] += d.points;
-            });
-            if(window.currentStudent.enrollment) {
-                const ptsUI = document.getElementById('student-att-points');
-                if(ptsUI) ptsUI.innerText = (attendancePointsMap[window.currentStudent.enrollment] || 0) + " Points";
-            }
-        });
-
         // ================= LEAVES =================
         window.applyLeave = async function(event) {
             event.preventDefault();
@@ -591,7 +690,7 @@
 
                 const maxLeaves = (myShift === 'Saturday shift') ? 2 : 10;
                 if (totalLeaves >= maxLeaves) {
-                    alert("Tun thlaah chawlh i dil thei tawh rih lo, chawlh dil theih zat i pelh a, class i kal loh chuan a bak chu in report-in point a awm thei tawh lo."); return; 
+                    alert("Tun thlaah chawlh i dil thei tawh rih lo, chawlh dil theih zat i pelh a, class i kal loH chuan a bak chu in report-in point a awm thei tawh lo."); return; 
                 }
 
                 await addDoc(collection(db, "leave_requests"), { 
@@ -628,7 +727,7 @@
         onSnapshot(query(collection(db, "notices"), orderBy("createdAt", "desc")), (snapshot) => {
             const studentList = document.getElementById('student-notice-list');
             if (studentList) studentList.innerHTML = '';
-            if (snapshot.empty) { if (studentList) studentList.innerHTML = '<p style="color: gray;">Notice a la awm lo...</p>'; } 
+            if (snapshot.empty) { if (studentList) studentList.innerHTML = '<p style="color: gray;">Notice a la awm rih lo...</p>'; } 
             else {
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data(); const noticeId = docSnap.id; let commentsHTML = '';
@@ -783,7 +882,7 @@
                             if (window.currentStudent.shift === 'Online shift') { onlineMenuBtn.style.display = 'block'; } else { onlineMenuBtn.style.display = 'none'; }
                         }
 
-                        renderStudentFeePortal(); loadStudentLeaves(enrollmentStr); loadMySubmissions(); showSection('student-portal-section');
+                        renderStudentFeePortal(); loadStudentLeaves(enrollmentStr); loadMySubmissions(); renderStudentSubjectAttendance(); showSection('student-portal-section');
                     } else { alert("Date of birth a dik lo! I date of birth kha 0 telh kim in han chhut teh (Entirnan: 15-05-2005)"); }
                 } else { alert("Enrollment Number a dik lo! Zirlai list-ah a awm lo emaw check ṭha rawh."); }
             } catch (e) { alert("Harsatna: " + e.message); }
