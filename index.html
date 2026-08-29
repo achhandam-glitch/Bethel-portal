@@ -1426,17 +1426,48 @@
             const selectedShift = document.getElementById('attendance-shift-filter').value;
             if(!dateStr) return;
             const isSaturday = new Date(dateStr).getDay() === 6;
-            const pts = isSaturday ? {p: 5, r: 2.5, a: 0} : {p: 1, r: 0.5, a: 0};
+            
+            // --- DROPDOWN DYNAMIC UPDATE ---
+            const shiftSelect = document.getElementById('attendance-shift-filter');
+            const currentShiftVal = shiftSelect.value;
+            shiftSelect.innerHTML = '<option value="ALL">-- Shift ZAWNG ZAWNG --</option>';
+            
+            const allShifts = ["6am shift", "7am shift", "8am shift", "10am shift", "11am shift", "1pm shift", "2pm shift", "3pm shift", "4pm shift", "5pm shift", "7pm shift", "Saturday shift", "Online shift", "Flexible shift"];
+            
+            allShifts.forEach(shift => {
+                if (isSaturday) {
+                    if (shift === 'Saturday shift') shiftSelect.innerHTML += `<option value="${shift}">${shift}</option>`;
+                } else {
+                    if (shift !== 'Saturday shift') shiftSelect.innerHTML += `<option value="${shift}">${shift}</option>`;
+                }
+            });
+            
+            if (isSaturday && currentShiftVal !== 'Saturday shift' && currentShiftVal !== 'ALL') {
+                shiftSelect.value = 'ALL';
+            } else if (!isSaturday && currentShiftVal === 'Saturday shift') {
+                shiftSelect.value = 'ALL';
+            } else {
+                shiftSelect.value = currentShiftVal || 'ALL';
+            }
+            const selectedShift = shiftSelect.value;
+            // --------------------------------
 
+            const pts = isSaturday ? {p: 5, r: 2.5, a: 0} : {p: 1, r: 0.5, a: 0};
             const q = query(collection(db, "attendance"), where("date", "==", dateStr));
             const snap = await getDocs(q); let existingAtt = {};
             snap.forEach(doc => { existingAtt[doc.data().enrollment] = doc.data().status; });
 
             const tbody = document.getElementById('attendance-list-body'); tbody.innerHTML = '';
             
+            // --- ZIRLAI FILTER-NA ---
             let filteredStudents = allStudentsList;
-            if (selectedShift !== 'ALL') {
-                filteredStudents = allStudentsList.filter(s => (s.shift || '10am shift') === selectedShift);
+            if (isSaturday) {
+                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift');
+            } else {
+                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') !== 'Saturday shift');
+                if (selectedShift !== 'ALL') {
+                    filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === selectedShift);
+                }
             }
 
             if(filteredStudents.length === 0) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">He shift-ah hian zirlai an awm lo.</td></tr>'; return; }
@@ -1480,8 +1511,19 @@
         window.updateAttendanceSummary = function() {
             let presentList = []; let reportList = []; let absentCount = 0;
             const selectedShift = document.getElementById('attendance-shift-filter').value;
+            const dateStr = document.getElementById('attendance-date').value;
+            const isSaturday = new Date(dateStr).getDay() === 6;
+            
             let filteredStudents = allStudentsList;
-            if (selectedShift !== 'ALL') { filteredStudents = allStudentsList.filter(s => (s.shift || '10am shift') === selectedShift); }
+            if (isSaturday) {
+                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift');
+            } else {
+                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') !== 'Saturday shift');
+                if (selectedShift !== 'ALL') { 
+                    filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === selectedShift); 
+                }
+            }
+            
             filteredStudents.forEach(s => {
                 const radios = document.getElementsByName(`att_${s.enrollment}`); let val = '';
                 for(let r of radios) { if(r.checked) val = r.value; }
@@ -1489,6 +1531,7 @@
                 else if (val === 'Reported') reportList.push(s.name);
                 else absentCount++;
             });
+            
             document.getElementById('count-present').innerText = presentList.length;
             document.getElementById('list-present').innerText = presentList.length > 0 ? presentList.join(', ') : 'A la awm lo';
             document.getElementById('count-report').innerText = reportList.length;
@@ -1510,21 +1553,40 @@
             const dateStr = document.getElementById('attendance-date').value;
             const selectedShift = document.getElementById('attendance-shift-filter').value;
             if(!dateStr) { alert("Date thlang phawt rawh!"); return; }
+            
             const isSaturday = new Date(dateStr).getDay() === 6;
             const pts = isSaturday ? {Present: 5, Reported: 2.5, Absent: 0} : {Present: 1, Reported: 0.5, Absent: 0};
 
             let targetStudents = allStudentsList;
-            if (selectedShift !== 'ALL') {
-                targetStudents = allStudentsList.filter(s => (s.shift || '10am shift') === selectedShift);
+            if (isSaturday) {
+                targetStudents = targetStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift');
+            } else {
+                targetStudents = targetStudents.filter(s => (s.shift || '10am shift') !== 'Saturday shift');
+                if (selectedShift !== 'ALL') {
+                    targetStudents = targetStudents.filter(s => (s.shift || '10am shift') === selectedShift);
+                }
             }
 
             let promises = [];
             targetStudents.forEach(s => {
                 const radios = document.getElementsByName(`att_${s.enrollment}`); let val = 'Absent';
                 for(let r of radios) { if(r.checked) val = r.value; }
-                promises.push(setDoc(doc(db, "attendance", `${dateStr}_${s.enrollment}`), { date: dateStr, enrollment: s.enrollment, name: s.name, status: val, points: pts[val], timestamp: serverTimestamp() }));
+                promises.push(setDoc(doc(db, "attendance", `${dateStr}_${s.enrollment}`), { 
+                    date: dateStr, 
+                    enrollment: s.enrollment, 
+                    name: s.name, 
+                    status: val, 
+                    points: pts[val], 
+                    timestamp: serverTimestamp() 
+                }));
             });
-            try { await Promise.all(promises); alert(`${dateStr} Attendance save a ni e!`); } catch(e) { alert("Save naah harsatna: " + e.message); }
+            
+            try { 
+                await Promise.all(promises); 
+                alert(`${dateStr} Attendance save a ni e!`); 
+            } catch(e) { 
+                alert("Save naah harsatna: " + e.message); 
+            }
         }
 
         window.exportAttendanceToExcel = async function() {
@@ -1689,6 +1751,7 @@
             event.preventDefault();
             const leaveDate = document.getElementById('leave-date').value; 
             const reason = document.getElementById('leave-reason').value.trim();
+            const enrollment = window.currentStudent.enrollment;
             
             // --- CHAWLH DIL THEIH NI LEH SHIFT CHECK-NA (START) ---
             const selectedDate = new Date(leaveDate);
@@ -1707,10 +1770,45 @@
                 return; // Code a kal tlang tur a dang
             }
             // --- CHAWLH DIL THEIH NI LEH SHIFT CHECK-NA (END) ---
+            
+            // --- LIMIT CHECK-NA (START) ---
+            const monthPrefix = leaveDate.substring(0, 7);
+            
+            try {
+                // 1. Thla kal meka 'Reported' zat lakchhuahna
+                const attQuery = query(collection(db, "attendance"), where("enrollment", "==", enrollment));
+                const attSnap = await getDocs(attQuery);
+                let totalLeaves = 0;
+                
+                attSnap.forEach(doc => {
+                    let data = doc.data();
+                    if (data.date.startsWith(monthPrefix) && data.status === 'Reported') {
+                        totalLeaves++;
+                    }
+                });
+                
+                // 2. Chawlh dil mek (Pending) zat zawn telna
+                const leaveQuery = query(collection(db, "leave_requests"), where("enrollment", "==", enrollment));
+                const leaveSnap = await getDocs(leaveQuery);
+                
+                leaveSnap.forEach(doc => {
+                    let data = doc.data();
+                    if (data.date && data.date.startsWith(monthPrefix) && data.status === 'Pending') {
+                        totalLeaves++;
+                    }
+                });
 
-            try { 
+                // 3. Limit Check-na
+                const maxLeaves = (myShift === 'Saturday shift') ? 2 : 10;
+                
+                if (totalLeaves >= maxLeaves) {
+                    alert("Tun thlaah chawlh i dil thei tawh rih lo, chawlh dil theih zat i pelh a, class i kal loh chuan a bak chu in report-in point a awm thei tawh lo.");
+                    return; // Code a ti tawp ang
+                }
+            // --- LIMIT CHECK-NA (END) ---
+
                 await addDoc(collection(db, "leave_requests"), { 
-                    enrollment: window.currentStudent.enrollment, 
+                    enrollment: enrollment, 
                     studentName: window.currentStudent.name, 
                     startDate: leaveDate, 
                     endDate: leaveDate, 
