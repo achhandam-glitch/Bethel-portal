@@ -80,7 +80,7 @@
             .hero-content h1 { font-size: 32px; } 
         }
 
-        /* ================= HIGH-CONTRAST DARK MODE OVERRIDES ================= */
+        /* ================= BULLETPROOF DARK MODE ================= */
         body.dark-mode { background-color: #0b0f19 !important; color: #ffffff !important; }
 
         body.dark-mode .card, 
@@ -147,6 +147,12 @@
             color: #ffffff !important; 
         }
 
+        /* FIX: Poor, Excellent, Good, Average badges in dark mode */
+        body.dark-mode span[style*="background: #fee2e2"] { background-color: #7f1d1d !important; color: #fca5a5 !important; }
+        body.dark-mode span[style*="background: #dcfce7"] { background-color: #14532d !important; color: #86efac !important; }
+        body.dark-mode span[style*="background: #e0f2fe"] { background-color: #0369a1 !important; color: #bae6fd !important; }
+        body.dark-mode span[style*="background: #fef08a"] { background-color: #78350f !important; color: #fde047 !important; }
+
         /* Dark/Light Toggle Button */
         .theme-toggle-btn { position: fixed; bottom: 25px; right: 25px; background: #0f172a; color: #fde047; border: 2px solid #334155; border-radius: 50%; width: 50px; height: 50px; font-size: 22px; cursor: pointer; z-index: 9999; box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: transform 0.2s; display: flex; align-items: center; justify-content: center; }
         .theme-toggle-btn:active { transform: scale(0.9); }
@@ -183,8 +189,8 @@
     <div id="attendance-info-modal" class="modal-overlay hidden">
         <div class="card" style="width: 100%; max-width: 450px; margin: 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
-                <h3 style="color: #6b21a8; margin: 0; border: none; padding: 0;">Attendance & Internal Mark</h3>
-                <button style="background: none; border: none; font-size: 20px; cursor: pointer; color: #ef4444;" onclick="document.getElementById('attendance-info-modal').classList.add('hidden')">✕</button>
+                <h3 style="color: #c084fc; margin: 0; border: none; padding: 0;">Attendance & Internal Mark</h3>
+                <button style="background: none; border: none; font-size: 20px; cursor: pointer; color: #ef4444;" onclick="closeAttendanceModal()">✕</button>
             </div>
             
             <div style="font-size: 14px; line-height: 1.6;">
@@ -199,12 +205,12 @@
                 <p style="margin-bottom: 15px;">Class i kal theih dawn loh chuan Menu aṭangin <b>"📝 Chawlh Dilna & In-Report-na"</b> ah lut la, i chawlh chhan ziakin thehlut rawh. Zirtirtuin a pawm (approve) hunah i attendance kha 'Reported' ah a inthlak ang a, point chanve i hmu ang.</p>
 
                 <h4 style="margin-bottom: 5px;">3. Internal Mark Hamthatna</h4>
-                <p style="margin-bottom: 15px; padding: 10px; background-color: #f0fdf4; border-left: 4px solid #16a34a; border-radius: 4px;">
+                <p style="margin-bottom: 15px; padding: 10px; background-color: #14532d; border-left: 4px solid #22c55e; border-radius: 4px; color: #86efac;">
                     Class i kal ṭhat dan (percentage) hian Internal Mark-ah nghawng thui tak a nei a ni. Entirnan, <b>DCA 104</b> subject-ah phei chuan i <b>Attendance Percentage aṭangin Practical Exam Mark (Max 40) pek auto i ni dawn a ni.</b> Class i kal that poh leh i exam mark a tha dawn tihna a ni.
                 </p>
             </div>
             
-            <button class="btn btn-primary" style="margin-top: 10px; background-color: #6b21a8;" onclick="document.getElementById('attendance-info-modal').classList.add('hidden')">Ka Hrethiam E</button>
+            <button class="btn btn-primary" style="margin-top: 10px; background-color: #6b21a8;" onclick="closeAttendanceModal()">Ka Hrethiam E</button>
         </div>
     </div>
 
@@ -282,7 +288,7 @@
                             <p style="font-weight: 600; font-size: 16px; margin: 0;">Total Attendance Points:</p>
                             <div style="font-size: 28px; font-weight: bold;" id="student-att-points">0 Points</div>
                         </div>
-                        <button class="btn" style="background-color: #6b21a8; color: white; font-size: 13px; padding: 8px;" onclick="document.getElementById('attendance-info-modal').classList.add('hidden')">
+                        <button class="btn" style="background-color: #6b21a8; color: white; font-size: 13px; padding: 8px;" onclick="openAttendanceModal()">
                             ℹ️ Attendance & Internal Mark Hriattirna
                         </button>
                     </div>
@@ -407,6 +413,16 @@
                 document.getElementById('theme-toggle').innerText = '☀️';
             }
         });
+
+        window.openAttendanceModal = function() {
+            const modal = document.getElementById('attendance-info-modal');
+            if(modal) modal.classList.remove('hidden');
+        }
+
+        window.closeAttendanceModal = function() {
+            const modal = document.getElementById('attendance-info-modal');
+            if(modal) modal.classList.add('hidden');
+        }
     </script>
     
     <script type="module">
@@ -426,7 +442,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "3.31"; 
+        const APP_VERSION = "3.32"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
