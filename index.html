@@ -147,13 +147,11 @@
             color: #ffffff !important; 
         }
 
-        /* FIX: Poor, Excellent, Good, Average badges in dark mode */
         body.dark-mode span[style*="background: #fee2e2"] { background-color: #7f1d1d !important; color: #fca5a5 !important; }
         body.dark-mode span[style*="background: #dcfce7"] { background-color: #14532d !important; color: #86efac !important; }
         body.dark-mode span[style*="background: #e0f2fe"] { background-color: #0369a1 !important; color: #bae6fd !important; }
         body.dark-mode span[style*="background: #fef08a"] { background-color: #78350f !important; color: #fde047 !important; }
 
-        /* Dark/Light Toggle Button */
         .theme-toggle-btn { position: fixed; bottom: 25px; right: 25px; background: #0f172a; color: #fde047; border: 2px solid #334155; border-radius: 50%; width: 50px; height: 50px; font-size: 22px; cursor: pointer; z-index: 9999; box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: transform 0.2s; display: flex; align-items: center; justify-content: center; }
         .theme-toggle-btn:active { transform: scale(0.9); }
         .dark-mode .theme-toggle-btn { background: #fde047; color: #0f172a; border-color: #ca8a04; }
@@ -162,7 +160,6 @@
 <body>
     <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()" title="Dark/Light Mode">🌙</button>
 
-    <!-- 1. HOMEPAGE / ZIRLAI LOGIN -->
     <section id="student-login-section" class="hero-section">
         <div class="hero-content" style="width: 100%; max-width: 450px; padding: 0 20px;">
             <h1>Bethel Computer Centre</h1>
@@ -185,7 +182,6 @@
         </div>
     </section>
 
-    <!-- ATTENDANCE INFO MODAL (STUDENT) -->
     <div id="attendance-info-modal" class="modal-overlay hidden">
         <div class="card" style="width: 100%; max-width: 450px; margin: 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
@@ -214,13 +210,10 @@
         </div>
     </div>
 
-    <!-- CONTAINER FOR STUDENT PORTAL -->
     <div class="container">
 
-        <!-- 2. ZIRLAI DASHBOARD (STUDENT PORTAL) -->
         <section id="student-portal-section" class="hidden">
             
-            <!-- STUDENT MAIN MENU VIEW -->
             <div id="student-menu-view">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto; flex-wrap: wrap; gap: 10px;">
                     <div>
@@ -243,10 +236,8 @@
                 </div>
             </div>
 
-            <!-- STUDENT TAB CONTENT VIEWS -->
             <div id="student-content-view">
 
-                <!-- TAB: MCQ STUDENT -->
                 <div id="student-tab-mcq" class="student-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
@@ -265,7 +256,6 @@
                     </div>
                 </div>
 
-                <!-- TAB 1: STATUS (Fee & Attendance) -->
                 <div id="student-tab-status" class="student-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
@@ -293,11 +283,11 @@
                         </button>
                     </div>
 
-                    <!-- PRACTICAL SUBJECT ATTENDANCE PERCENTAGE & REMARK (THAR) -->
                     <div class="card" style="border: 2px solid #0f766e; margin-bottom: 20px;">
-                        <h3 style="border-bottom: 1px solid #99f6e4; padding-bottom: 10px; margin-bottom: 15px;">📊 Practical Subject Attendance Breakdown</h3>
-                        <div id="student-subject-attendance-list">
-                            <p style="opacity: 0.7; font-size: 14px;">Zirtirtuin subject zir hun chhung a la set rih lo emaw data a la in-load mek...</p>
+                        <h3 style="border-bottom: 1px solid #99f6e4; padding-bottom: 10px; margin-bottom: 15px;">📊 <span id="student-period-title">Attendance Percentage</span></h3>
+                        
+                        <div id="student-period-result" style="padding: 12px 15px; border-radius: 8px; border: 1px solid #99f6e4; background: #f0fdfa; color: #1e293b;">
+                            <p style="opacity: 0.7; font-size: 14px; margin: 0;">Zirtirtuin attendance tarlan tur a la set lo...</p>
                         </div>
                     </div>
 
@@ -307,7 +297,6 @@
                     </div>
                 </div>
 
-                <!-- TAB 2: LEAVE REQUESTS -->
                 <div id="student-tab-leave" class="student-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     <div class="form-grid">
@@ -335,7 +324,6 @@
                     </div>
                 </div>
 
-                <!-- TAB 3: NOTICE BOARD -->
                 <div id="student-tab-notice" class="student-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     <div class="card" style="margin-bottom: 0;">
@@ -346,7 +334,6 @@
                     </div>
                 </div>
 
-                <!-- TAB 4: STUDY MATERIALS & ASSIGNMENTS -->
                 <div id="student-tab-materials" class="student-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     <div class="card" style="margin-bottom: 0;" id="student-links-container">
@@ -355,7 +342,6 @@
                     </div>
                 </div>
                 
-                <!-- TAB 5: ONLINE SHIFT BIK (Student) -->
                 <div id="student-tab-online" class="student-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
@@ -364,7 +350,6 @@
                         <p style="opacity: 0.7;">Database atangin a rawn in-load mek...</p>
                     </div>
 
-                    <!-- ZIRLAI PRACTICAL FOLDER THEHLUHNA FORM -->
                     <div class="form-grid" style="grid-template-columns: 1fr;">
                         <div class="card" style="border: 2px solid #10b981;">
                             <h3 style="border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">Practical Folder Thehluhna</h3>
@@ -398,7 +383,6 @@
 
     </div>
 
-    <!-- ================= FIREBASE SETUP & JAVASCRIPT LOGIC ================= -->
     <script>
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
@@ -442,7 +426,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "3.32"; 
+        const APP_VERSION = "3.34"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -453,7 +437,7 @@
         let feeDataMap = {}; 
         let mcqTests = []; 
         let mySubmissions = [];
-        let globalSubjectSchedules = {};
+        let globalAttendancePeriod = null; // Admin set period
 
         const todayISODate = new Date().toISOString().split('T')[0];
         if (document.getElementById('leave-date')) document.getElementById('leave-date').value = todayISODate;
@@ -500,13 +484,84 @@
             window.scrollTo(0, 0);
         }
 
-        // ================= SUBJECT SCHEDULES LISTENER =================
-        onSnapshot(doc(db, "settings", "subject_schedules"), (docSnap) => {
+        // ================= PERIOD ATTENDANCE (ADMIN SET) =================
+        onSnapshot(doc(db, "settings", "attendance_period"), (docSnap) => {
             if (docSnap.exists()) {
-                globalSubjectSchedules = docSnap.data();
+                globalAttendancePeriod = docSnap.data();
+            } else {
+                globalAttendancePeriod = null;
             }
-            renderStudentSubjectAttendance();
+            if (window.currentStudent && window.currentStudent.enrollment) {
+                autoCalculatePeriodAttendance();
+            }
         });
+
+        function autoCalculatePeriodAttendance() {
+            const resultBox = document.getElementById('student-period-result');
+            const titleBox = document.getElementById('student-period-title');
+            const enr = window.currentStudent?.enrollment;
+
+            if (!globalAttendancePeriod || !globalAttendancePeriod.startDate || !globalAttendancePeriod.endDate) {
+                if(resultBox) resultBox.innerHTML = '<p style="opacity: 0.7; font-size: 14px; margin: 0;">Zirtirtuin attendance tarlan tur a la set lo...</p>';
+                if(titleBox) titleBox.innerText = 'Attendance Percentage';
+                return;
+            }
+
+            if (!enr) return; // Login a la ti lo
+
+            const start = globalAttendancePeriod.startDate;
+            const end = globalAttendancePeriod.endDate;
+            const periodName = globalAttendancePeriod.name || 'Attendance Percentage';
+            
+            if(titleBox) titleBox.innerText = periodName;
+
+            let recordsInRange = allAttendanceRecords.filter(r => r.date >= start && r.date <= end);
+            
+            let uniqueWeekdayDates = [...new Set(recordsInRange.filter(r => {
+                let d = new Date(r.date).getDay();
+                return d >= 1 && d <= 5;
+            }).map(r => r.date))];
+            let weekdayMax = uniqueWeekdayDates.length * 1;
+
+            let curr = new Date(start); let last = new Date(end); let saturdayCount = 0;
+            while (curr <= last) {
+                if (curr.getDay() === 6) saturdayCount++;
+                curr.setDate(curr.getDate() + 1);
+            }
+            let saturdayMax = saturdayCount * 5;
+
+            let isSatShift = (window.currentStudent.shift === 'Saturday shift');
+            let studentMax = isSatShift ? saturdayMax : weekdayMax;
+
+            let earned = 0;
+            recordsInRange.filter(r => r.enrollment === enr).forEach(r => { earned += (r.points || 0); });
+
+            let pct = studentMax > 0 ? ((earned / studentMax) * 100).toFixed(1) : 0;
+            let remark = 'N/A'; let badgeBg = '#f1f5f9'; let badgeColor = '#64748b';
+
+            if (studentMax > 0) {
+                let pNum = parseFloat(pct); if (pNum > 100) pNum = 100;
+                if (pNum >= 90) { remark = 'Excellent'; badgeBg = '#dcfce7'; badgeColor = '#166534'; }
+                else if (pNum >= 75) { remark = 'Good'; badgeBg = '#e0f2fe'; badgeColor = '#0369a1'; }
+                else if (pNum >= 50) { remark = 'Average'; badgeBg = '#fef08a'; badgeColor = '#854d0e'; }
+                else { remark = 'Poor'; badgeBg = '#fee2e2'; badgeColor = '#991b1b'; }
+            }
+
+            if(resultBox) {
+                resultBox.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <span style="font-size: 13px; opacity: 0.8;">Hun chhung: ${start} to ${end}</span><br>
+                            <span style="font-size: 14px; margin-top: 4px; display: inline-block;">I Points Hmuh: <b style="color: #0f766e;">${earned}</b> / ${studentMax} (Max Possible)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-weight: bold; font-size: 20px; color: #0f766e;">${pct}%</span>
+                            <span style="background: ${badgeBg}; color: ${badgeColor}; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold;">${remark}</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
 
         onSnapshot(collection(db, "attendance"), (snapshot) => {
             allAttendanceRecords = [];
@@ -520,87 +575,9 @@
             if(window.currentStudent.enrollment) {
                 const ptsUI = document.getElementById('student-att-points');
                 if(ptsUI) ptsUI.innerText = (attendancePointsMap[window.currentStudent.enrollment] || 0) + " Points";
+                autoCalculatePeriodAttendance();
             }
-            renderStudentSubjectAttendance();
         });
-
-        function renderStudentSubjectAttendance() {
-            const container = document.getElementById('student-subject-attendance-list');
-            if(!container || !window.currentStudent.enrollment) return;
-
-            let subjects = ["MS Word", "MS Excel", "MS PowerPoint", "Photoshop", "PageMaker"];
-            let html = '';
-            let enr = window.currentStudent.enrollment;
-            let isSatShift = (window.currentStudent.shift === 'Saturday shift');
-
-            let hasActiveSubj = false;
-
-            subjects.forEach(subj => {
-                let sched = globalSubjectSchedules[subj];
-                if (sched && sched.start && sched.end) {
-                    hasActiveSubj = true;
-                    let start = sched.start;
-                    let end = sched.end;
-
-                    let recordsInRange = allAttendanceRecords.filter(r => r.date >= start && r.date <= end);
-                    
-                    let uniqueWeekdayDates = [...new Set(recordsInRange.filter(r => {
-                        let d = new Date(r.date).getDay();
-                        return d >= 1 && d <= 5;
-                    }).map(r => r.date))];
-                    let weekdayMax = uniqueWeekdayDates.length * 1;
-
-                    let curr = new Date(start);
-                    let last = new Date(end);
-                    let saturdayCount = 0;
-                    while (curr <= last) {
-                        if (curr.getDay() === 6) saturdayCount++;
-                        curr.setDate(curr.getDate() + 1);
-                    }
-                    let saturdayMax = saturdayCount * 5;
-
-                    let studentMax = isSatShift ? saturdayMax : weekdayMax;
-
-                    let earned = 0;
-                    recordsInRange.filter(r => r.enrollment === enr).forEach(r => {
-                        earned += (r.points || 0);
-                    });
-
-                    let pct = studentMax > 0 ? ((earned / studentMax) * 100).toFixed(1) : 0;
-                    let remark = 'N/A';
-                    let badgeBg = '#f1f5f9';
-                    let badgeColor = '#64748b';
-
-                    if (studentMax > 0) {
-                        let pNum = parseFloat(pct);
-                        if (pNum > 100) pNum = 100;
-
-                        if (pNum >= 90) { remark = 'Excellent'; badgeBg = '#dcfce7'; badgeColor = '#166534'; }
-                        else if (pNum >= 75) { remark = 'Good'; badgeBg = '#e0f2fe'; badgeColor = '#0369a1'; }
-                        else if (pNum >= 50) { remark = 'Average'; badgeBg = '#fef08a'; badgeColor = '#854d0e'; }
-                        else { remark = 'Poor'; badgeBg = '#fee2e2'; badgeColor = '#991b1b'; }
-                    }
-
-                    html += `
-                        <div style="padding: 12px 15px; border-radius: 8px; border: 1px solid #99f6e4; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                            <div>
-                                <h4 style="margin-bottom: 2px; font-size: 15px;">📘 ${subj}</h4>
-                                <span style="font-size: 12px; opacity: 0.8;">Zir Hun: ${start} to ${end} (Points: ${earned} / ${studentMax})</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span style="font-weight: bold; font-size: 16px;">${pct}%</span>
-                                <span style="background: ${badgeBg}; color: ${badgeColor}; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">${remark}</span>
-                            </div>
-                        </div>`;
-                }
-            });
-
-            if (!hasActiveSubj) {
-                container.innerHTML = '<p style="font-size: 14px; font-style: italic; opacity: 0.7;">Zirtirtuin subject zir hun chhung a la set rih lo.</p>';
-            } else {
-                container.innerHTML = html;
-            }
-        }
 
         // ================= MCQ & COINS LOGIC =================
         onSnapshot(query(collection(db, "mcq_tests"), orderBy("createdAt", "desc")), (snapshot) => {
@@ -942,7 +919,7 @@
                             if (window.currentStudent.shift === 'Online shift') { onlineMenuBtn.style.display = 'block'; } else { onlineMenuBtn.style.display = 'none'; }
                         }
 
-                        renderStudentFeePortal(); loadStudentLeaves(enrollmentStr); loadMySubmissions(); renderStudentSubjectAttendance(); showSection('student-portal-section');
+                        renderStudentFeePortal(); loadStudentLeaves(enrollmentStr); loadMySubmissions(); autoCalculatePeriodAttendance(); showSection('student-portal-section');
                     } else { alert("Date of birth a dik lo! I date of birth kha 0 telh kim in han chhut teh (Entirnan: 15-05-2005)"); }
                 } else { alert("Enrollment Number a dik lo! Zirlai list-ah a awm lo emaw check ṭha rawh."); }
             } catch (e) { alert("Harsatna: " + e.message); }
