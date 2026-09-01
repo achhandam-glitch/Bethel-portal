@@ -426,7 +426,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "3.34"; 
+        const APP_VERSION = "4.0"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -507,31 +507,20 @@
                 return;
             }
 
-            if (!enr) return; // Login a la ti lo
+            if (!enr) return;
 
             const start = globalAttendancePeriod.startDate;
             const end = globalAttendancePeriod.endDate;
+            const wMax = globalAttendancePeriod.weekdayMax || 0;
+            const sMax = globalAttendancePeriod.saturdayMax || 0;
             const periodName = globalAttendancePeriod.name || 'Attendance Percentage';
             
             if(titleBox) titleBox.innerText = periodName;
 
             let recordsInRange = allAttendanceRecords.filter(r => r.date >= start && r.date <= end);
             
-            let uniqueWeekdayDates = [...new Set(recordsInRange.filter(r => {
-                let d = new Date(r.date).getDay();
-                return d >= 1 && d <= 5;
-            }).map(r => r.date))];
-            let weekdayMax = uniqueWeekdayDates.length * 1;
-
-            let curr = new Date(start); let last = new Date(end); let saturdayCount = 0;
-            while (curr <= last) {
-                if (curr.getDay() === 6) saturdayCount++;
-                curr.setDate(curr.getDate() + 1);
-            }
-            let saturdayMax = saturdayCount * 5;
-
             let isSatShift = (window.currentStudent.shift === 'Saturday shift');
-            let studentMax = isSatShift ? saturdayMax : weekdayMax;
+            let studentMax = isSatShift ? sMax : wMax;
 
             let earned = 0;
             recordsInRange.filter(r => r.enrollment === enr).forEach(r => { earned += (r.points || 0); });
