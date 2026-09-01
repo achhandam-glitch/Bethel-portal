@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bethel Computer Centre (Admin)</title>
     
-    <!-- SheetJS Excel Export & Import -->
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 
     <style>
@@ -124,7 +123,6 @@
 </head>
 <body>
 
-    <!-- HOMEPAGE / ADMIN LOGIN -->
     <section id="home-section" class="hero-section">
         <div class="hero-content" style="width: 100%; max-width: 400px; padding: 0 20px;">
             <h1>Bethel Computer Centre</h1>
@@ -145,7 +143,6 @@
         </div>
     </section>
 
-    <!-- EDIT FEE MODAL -->
     <div id="fee-edit-modal" class="modal-overlay hidden">
         <div class="card" style="width: 100%; max-width: 400px; margin: 0;">
             <h3 style="color: #b45309; border-color: #fde68a;">Fee Record Siamthatna (Edit)</h3>
@@ -174,7 +171,6 @@
         </div>
     </div>
 
-    <!-- SHIFT EDIT MODAL -->
     <div id="shift-edit-modal" class="modal-overlay hidden">
         <div class="card" style="width: 100%; max-width: 400px; margin: 0;">
             <h3 style="color: #0284c7; border-color: #bae6fd;">Zirlai Shift Thlakna</h3>
@@ -206,7 +202,6 @@
     </div>
 
     <div class="container">
-        <!-- ADMIN DASHBOARD -->
         <section id="teacher-dashboard-section" class="hidden">
             <div id="admin-menu-view">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto;">
@@ -240,10 +235,8 @@
                 </div>
             </div>
 
-            <!-- ADMIN TAB CONTENT VIEWS -->
             <div id="admin-content-view">
                 
-                <!-- TAB: MCQ ADMIN -->
                 <div id="tab-mcq" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
@@ -294,7 +287,6 @@
                     </div>
                 </div>
 
-                <!-- TAB 1: ZIRLAI REGISTER -->
                 <div id="tab-register" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
@@ -347,7 +339,6 @@
                     </div>
                 </div>
 
-                <!-- TAB 2: FEE MANAGEMENT -->
                 <div id="tab-fee" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     <div class="card" style="border: 2px solid #f59e0b; margin-bottom: 0;">
@@ -409,11 +400,9 @@
                     </div>
                 </div>
 
-                <!-- TAB 3: ATTENDANCE & CHAWLH -->
                 <div id="tab-attendance" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
-                    <!-- 1. ZIRLAI CHAWLH IN-REPORT TE (CHUNG BERAH) -->
                     <div class="card" style="border: 2px solid #3b82f6;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                             <h3 style="color: #1e3a8a; border: none; padding: 0; margin: 0;">Zirlai Chawlh In-Report Te</h3>
@@ -427,7 +416,6 @@
                         </div>
                     </div>
 
-                    <!-- 2. DAILY ATTENDANCE MARK-NA -->
                     <div class="card" style="border: 2px solid #8b5cf6; margin-top: 20px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                             <h3 style="color: #4c1d95; border: none; padding: 0; margin: 0;">Attendance Mark-na</h3>
@@ -463,30 +451,6 @@
                             </div>
                         </div>
                         
-                        <div style="background: #faf5ff; border: 1px solid #e9d5ff; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleSummaryBox()">
-                                <h4 style="font-size: 14px; color: #6b21a8; margin: 0;">📋 Vawiin Attendance Summary (Hmet rawh)</h4>
-                                <span id="summary-toggle-icon" style="font-weight: bold; color: #6b21a8;">▼ Khup / Hawng</span>
-                            </div>
-                            <div id="summary-content-box" style="margin-top: 10px; display: none;">
-                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; font-size: 13px;">
-                                    <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #16a34a;">
-                                        <b style="color: #15803d;">Present: <span id="count-present">0</span></b>
-                                        <div id="list-present" style="margin-top: 5px; color: #334155; max-height: 80px; overflow-y: auto;">-</div>
-                                    </div>
-                                    <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #f59e0b;">
-                                        <b style="color: #b45309;">Report: <span id="count-report">0</span></b>
-                                        <div id="list-report" style="margin-top: 5px; color: #334155; max-height: 80px; overflow-y: auto;">-</div>
-                                    </div>
-                                    <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #ef4444;">
-                                        <b style="color: #dc2626;">Absent: <span id="count-absent">0</span></b>
-                                        <div style="margin-top: 5px; color: #334155; font-size: 12px;">(Zirlai kal lo zawng zawng)</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Performance Filter Buttons -->
                         <div style="margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap;" id="attendance-performance-filters">
                             <button class="btn btn-outline" style="width:auto; padding:6px 12px; margin:0;" onclick="filterByPerformance('ALL')">All</button>
                             <button class="btn" style="width:auto; padding:6px 12px; margin:0; background:#dcfce7; color:#166534;" onclick="filterByPerformance('Excellent')">🌟 Excellent</button>
@@ -517,25 +481,28 @@
                         <button class="btn btn-primary" style="margin-top: 15px; background-color: #8b5cf6;" onclick="saveAttendance()">Attendance Save Rawh</button>
                     </div>
 
-                    <!-- ZIRLAI PORTAL A LANG TUR SET NA (ADMIN CONTROL) -->
                     <div class="card" style="border: 2px solid #0ea5e9; background: #f0f9ff; margin-top: 20px; margin-bottom: 20px;">
                         <h3 style="color: #0369a1; border-bottom: 1px solid #bae6fd; padding-bottom: 10px; margin-bottom: 15px;">📢 Zirlai Portala Attendance Tarlanna Set-na</h3>
-                        <p style="font-size: 13px; color: #475569; margin-bottom: 10px;">Hetia i set hi Zirlai (Student) Portal-ah anmahni Percentage an lo in-hmu ve thei dawn a ni.</p>
+                        <p style="font-size: 13px; color: #475569; margin-bottom: 10px;">Zirlai portal-a an percentage in-chhut chhuah theihna a ni a. I numbers type luh aṭang chiah hian system in a chhut ang.</p>
                         
-                        <div class="form-grid" style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #7dd3fc; margin-bottom: 15px; grid-template-columns: 1fr 1fr 1fr auto;">
+                        <div class="form-grid" style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #7dd3fc; margin-bottom: 15px; grid-template-columns: 1fr 1fr;">
                             <div class="input-group">
-                                <label style="color: #0369a1;">Thupui (Entirnan: September Attendance)</label>
+                                <label style="color: #0369a1;">Thupui (Entirnan: August Attendance)</label>
                                 <input type="text" id="admin-period-name" placeholder="Thupui type rawh..." required>
                             </div>
-                            <div class="input-group">
-                                <label style="color: #0369a1;">A Ṭan Ni</label>
-                                <input type="date" id="admin-period-start" required>
+                            <div class="input-group" style="display: flex; gap: 10px; flex-direction: row;">
+                                <div style="flex:1;"><label style="color: #0369a1;">A Ṭan Ni</label><input type="date" id="admin-period-start" required></div>
+                                <div style="flex:1;"><label style="color: #0369a1;">A Tawp Ni</label><input type="date" id="admin-period-end" required></div>
                             </div>
                             <div class="input-group">
-                                <label style="color: #0369a1;">A Tawp Ni</label>
-                                <input type="date" id="admin-period-end" required>
+                                <label style="color: #0369a1;">Weekday Max Points (Class kal theih ni zat)</label>
+                                <input type="number" id="admin-period-wmax" placeholder="Entirnan: 10" required>
                             </div>
-                            <div class="input-group" style="display: flex; align-items: flex-end;">
+                            <div class="input-group">
+                                <label style="color: #0369a1;">Saturday Max Points (Sat class x 5)</label>
+                                <input type="number" id="admin-period-smax" placeholder="Entirnan: 10" value="0" required>
+                            </div>
+                            <div class="input-group" style="grid-column: 1 / -1;">
                                 <button class="btn btn-primary" style="background-color: #0ea5e9; margin: 0; padding: 10px 15px;" onclick="saveAttendancePeriod()">Student Portal-ah Tarlang Rawh</button>
                             </div>
                         </div>
@@ -545,32 +512,39 @@
                         </div>
                     </div>
 
-                    <!-- 3. MONTHLY / PERIOD ATTENDANCE TRACKER (ADMIN VIEW ONLY) -->
                     <div class="card" style="border: 2px solid #0f766e; background: #f0fdfa; margin-top: 20px; margin-bottom: 0;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                             <div>
-                                <h3 style="color: #0f766e; border: none; padding: 0; margin: 0;">🎯 Monthly / Period Attendance Tracker</h3>
-                                <p style="font-size: 13px; color: #475569; margin-top: 4px;">Thla khat (emaw ni engemawzat) chhung attendance percentage chhutna. Weekday shift tan Mon-Fri (1 pt) leh Saturday shift tan Saturday (5 pts) a chhut a ni.</p>
+                                <h3 style="color: #0f766e; border: none; padding: 0; margin: 0;">🎯 Admin Internal Percentage Tracker</h3>
+                                <p style="font-size: 13px; color: #475569; margin-top: 4px;">Admin-in a check duh hun apianga mahnia numbers type luha check theihna a ni.</p>
                             </div>
                             <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportPeriodAttendanceToExcel()">📥 Report Excel</button>
                         </div>
 
-                        <div class="form-grid" style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #99f6e4; margin-bottom: 15px; grid-template-columns: 1fr 1fr auto;">
+                        <div class="form-grid" style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #99f6e4; margin-bottom: 15px; grid-template-columns: 1fr 1fr 1fr 1fr auto;">
                             <div class="input-group">
-                                <label style="color: #0f766e;">A Ṭan Ni (Start Date)</label>
+                                <label style="color: #0f766e;">A Ṭan Ni</label>
                                 <input type="date" id="period-start-date" required>
                             </div>
                             <div class="input-group">
-                                <label style="color: #0f766e;">A Tawp Ni (End Date)</label>
+                                <label style="color: #0f766e;">A Tawp Ni</label>
                                 <input type="date" id="period-end-date" required>
                             </div>
+                            <div class="input-group">
+                                <label style="color: #0f766e;">Weekday Max</label>
+                                <input type="number" id="period-wmax" placeholder="Class ni zat" required>
+                            </div>
+                            <div class="input-group">
+                                <label style="color: #0f766e;">Sat Max</label>
+                                <input type="number" id="period-smax" placeholder="Sat ni zat x 5" value="0" required>
+                            </div>
                             <div class="input-group" style="display: flex; align-items: flex-end;">
-                                <button class="btn btn-primary" style="background-color: #0f766e; margin: 0; padding: 10px 20px;" onclick="calculatePeriodAttendance()">📊 Chhut Rawh (Calculate)</button>
+                                <button class="btn btn-primary" style="background-color: #0f766e; margin: 0; padding: 10px 15px;" onclick="calculatePeriodAttendance()">📊 Chhut Rawh</button>
                             </div>
                         </div>
 
                         <div id="period-info-display" style="margin-bottom: 12px; font-size: 14px; padding: 8px 12px; background: white; border-radius: 6px; border-left: 4px solid #0f766e;">
-                            <span style="color: gray; font-style: italic;">Date thlang la 'Chhut Rawh' hmet rawh...</span>
+                            <span style="color: gray; font-style: italic;">Date leh Max points type la 'Chhut Rawh' hmet rawh...</span>
                         </div>
 
                         <div style="overflow-x: auto; max-height: 350px; overflow-y: auto; background: white; border-radius: 6px; border: 1px solid #e2e8f0;">
@@ -585,14 +559,13 @@
                                     </tr>
                                 </thead>
                                 <tbody id="period-attendance-body">
-                                    <tr><td colspan="5" style="text-align:center; color:gray;">Date thlang la 'Chhut Rawh' hmet rawh.</td></tr>
+                                    <tr><td colspan="5" style="text-align:center; color:gray;">Date leh Max points type la 'Chhut Rawh' hmet rawh.</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- TAB 4: NOTICE BOARD -->
                 <div id="tab-notice" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     <div class="form-grid" style="grid-template-columns: 1fr;">
@@ -620,7 +593,6 @@
                     </div>
                 </div>
 
-                <!-- TAB 5: LINK SEMCHHUAHNA -->
                 <div id="tab-links" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     <div class="form-grid" style="grid-template-columns: 1fr;">
@@ -656,7 +628,6 @@
                     </div>
                 </div>
                 
-                <!-- TAB ONLINE SHIFT BIK -->
                 <div id="tab-online" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
@@ -694,7 +665,6 @@
                         </div>
                     </div>
 
-                    <!-- ZIRLAI PRACTICAL FOLDER THEHLUHNA LIST (ADMIN VIEW) -->
                     <div class="card" style="border: 2px solid #10b981; margin-top: 20px;">
                         <h3 style="color: #047857; border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">📥 Zirlai Practical Thehluh Te (Google Drive Links)</h3>
                         <div id="admin-practical-list" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
@@ -704,7 +674,6 @@
 
                 </div>
 
-                <!-- TAB 6: GRADEBOOK -->
                 <div id="tab-gradebook" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     <div class="card" style="border: 2px solid #0f766e; margin-bottom: 0;">
@@ -780,7 +749,6 @@
                     </div>
                 </div>
 
-                <!-- TAB 7: ZIRLAI MANAGEMENT -->
                 <div id="tab-management" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     <div class="card" style="margin-bottom: 0;">
@@ -814,10 +782,8 @@
 
     </div>
 
-    <!-- Floating Dark Mode Toggle -->
     <button class="dark-mode-toggle-btn" id="darkModeBtn" onclick="toggleDarkMode()" title="Thim/Eng Thlakna">🌙</button>
 
-    <!-- ================= FIREBASE SETUP & JAVASCRIPT LOGIC ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, deleteDoc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -836,7 +802,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "3.35"; // Updated Version
+        const APP_VERSION = "4.0"; // Updated Version
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -1171,10 +1137,13 @@
             filterAttendance();
         }
 
-        // ================= MONTHLY / PERIOD ATTENDANCE TRACKER =================
+        // ================= MONTHLY / PERIOD ATTENDANCE TRACKER (ADMIN ONLY) =================
         window.calculatePeriodAttendance = function() {
             const start = document.getElementById('period-start-date').value;
             const end = document.getElementById('period-end-date').value;
+            const weekdayMax = parseInt(document.getElementById('period-wmax').value) || 0;
+            const saturdayMax = parseInt(document.getElementById('period-smax').value) || 0;
+            
             const infoBox = document.getElementById('period-info-display');
             const tbody = document.getElementById('period-attendance-body');
 
@@ -1189,23 +1158,6 @@
 
             let recordsInRange = allAttendanceRecords.filter(r => r.date >= start && r.date <= end);
             
-            // Weekday max points
-            let uniqueWeekdayDates = [...new Set(recordsInRange.filter(r => {
-                let d = new Date(r.date).getDay();
-                return d >= 1 && d <= 5;
-            }).map(r => r.date))];
-            let weekdayMax = uniqueWeekdayDates.length * 1;
-
-            // Saturday shift max points
-            let curr = new Date(start);
-            let last = new Date(end);
-            let saturdayCount = 0;
-            while (curr <= last) {
-                if (curr.getDay() === 6) saturdayCount++;
-                curr.setDate(curr.getDate() + 1);
-            }
-            let saturdayMax = saturdayCount * 5;
-
             if (infoBox) {
                 infoBox.innerHTML = `📅 <b>Attendance Hun:</b> <span style="color:#0f766e; font-weight:bold;">${start}</span> aṭanga <span style="color:#0f766e; font-weight:bold;">${end}</span> thleng. (Weekday Max: <b>${weekdayMax} pts</b> | Saturday Shift Max: <b>${saturdayMax} pts</b>)`;
             }
@@ -1265,27 +1217,16 @@
         window.exportPeriodAttendanceToExcel = function() {
             const start = document.getElementById('period-start-date').value;
             const end = document.getElementById('period-end-date').value;
+            const weekdayMax = parseInt(document.getElementById('period-wmax').value) || 0;
+            const saturdayMax = parseInt(document.getElementById('period-smax').value) || 0;
+            
             if(!start || !end) {
                 alert("A ṭan ni leh a tawp ni thlang phawt rawh!");
                 return;
             }
 
             let recordsInRange = allAttendanceRecords.filter(r => r.date >= start && r.date <= end);
-            let uniqueWeekdayDates = [...new Set(recordsInRange.filter(r => {
-                let d = new Date(r.date).getDay();
-                return d >= 1 && d <= 5;
-            }).map(r => r.date))];
-            let weekdayMax = uniqueWeekdayDates.length * 1;
-
-            let curr = new Date(start);
-            let last = new Date(end);
-            let saturdayCount = 0;
-            while (curr <= last) {
-                if (curr.getDay() === 6) saturdayCount++;
-                curr.setDate(curr.getDate() + 1);
-            }
-            let saturdayMax = saturdayCount * 5;
-
+            
             let exportData = [];
             allStudentsList.forEach(s => {
                 let earned = 0;
@@ -1330,6 +1271,9 @@
                 if(document.getElementById('admin-period-name')) document.getElementById('admin-period-name').value = data.name || '';
                 if(document.getElementById('admin-period-start')) document.getElementById('admin-period-start').value = data.startDate || '';
                 if(document.getElementById('admin-period-end')) document.getElementById('admin-period-end').value = data.endDate || '';
+                if(document.getElementById('admin-period-wmax')) document.getElementById('admin-period-wmax').value = data.weekdayMax || '';
+                if(document.getElementById('admin-period-smax')) document.getElementById('admin-period-smax').value = data.saturdayMax || '0';
+                
                 if(document.getElementById('admin-period-status')) {
                     document.getElementById('admin-period-status').innerHTML = `Tuna Zirlai portal-a lang mek chu: <b style="color:#0ea5e9;">${data.name}</b> (${data.startDate} aṭanga ${data.endDate})`;
                 }
@@ -1340,9 +1284,14 @@
             const name = document.getElementById('admin-period-name').value;
             const start = document.getElementById('admin-period-start').value;
             const end = document.getElementById('admin-period-end').value;
+            const wmax = parseInt(document.getElementById('admin-period-wmax').value) || 0;
+            const smax = parseInt(document.getElementById('admin-period-smax').value) || 0;
+            
             if(!name || !start || !end) { alert("Dah kim rawh!"); return; }
             try {
-                await setDoc(doc(db, "settings", "attendance_period"), { name: name, startDate: start, endDate: end });
+                await setDoc(doc(db, "settings", "attendance_period"), { 
+                    name: name, startDate: start, endDate: end, weekdayMax: wmax, saturdayMax: smax 
+                });
                 alert("Zirlai portal-a lang tur hlawhtling taka set a ni e!");
             } catch(e) { alert("Harsatna: " + e.message); }
         }
