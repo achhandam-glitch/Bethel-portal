@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bethel Computer Centre (Admin)</title>
     
+    <!-- SheetJS Excel Export & Import -->
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 
     <style>
@@ -123,6 +124,7 @@
 </head>
 <body>
 
+    <!-- HOMEPAGE / ADMIN LOGIN -->
     <section id="home-section" class="hero-section">
         <div class="hero-content" style="width: 100%; max-width: 400px; padding: 0 20px;">
             <h1>Bethel Computer Centre</h1>
@@ -143,6 +145,7 @@
         </div>
     </section>
 
+    <!-- EDIT FEE MODAL -->
     <div id="fee-edit-modal" class="modal-overlay hidden">
         <div class="card" style="width: 100%; max-width: 400px; margin: 0;">
             <h3 style="color: #b45309; border-color: #fde68a;">Fee Record Siamthatna (Edit)</h3>
@@ -171,6 +174,7 @@
         </div>
     </div>
 
+    <!-- SHIFT EDIT MODAL -->
     <div id="shift-edit-modal" class="modal-overlay hidden">
         <div class="card" style="width: 100%; max-width: 400px; margin: 0;">
             <h3 style="color: #0284c7; border-color: #bae6fd;">Zirlai Shift Thlakna</h3>
@@ -202,6 +206,7 @@
     </div>
 
     <div class="container">
+        <!-- ADMIN DASHBOARD -->
         <section id="teacher-dashboard-section" class="hidden">
             <div id="admin-menu-view">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; max-width: 500px; margin-left: auto; margin-right: auto;">
@@ -235,8 +240,10 @@
                 </div>
             </div>
 
+            <!-- ADMIN TAB CONTENT VIEWS -->
             <div id="admin-content-view">
                 
+                <!-- TAB: MCQ ADMIN -->
                 <div id="tab-mcq" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
@@ -287,6 +294,7 @@
                     </div>
                 </div>
 
+                <!-- TAB 1: ZIRLAI REGISTER -->
                 <div id="tab-register" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
@@ -339,6 +347,7 @@
                     </div>
                 </div>
 
+                <!-- TAB 2: FEE MANAGEMENT -->
                 <div id="tab-fee" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     <div class="card" style="border: 2px solid #f59e0b; margin-bottom: 0;">
@@ -400,9 +409,11 @@
                     </div>
                 </div>
 
+                <!-- TAB 3: ATTENDANCE & CHAWLH -->
                 <div id="tab-attendance" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
+                    <!-- 1. ZIRLAI CHAWLH IN-REPORT TE -->
                     <div class="card" style="border: 2px solid #3b82f6;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                             <h3 style="color: #1e3a8a; border: none; padding: 0; margin: 0;">Zirlai Chawlh In-Report Te</h3>
@@ -416,6 +427,7 @@
                         </div>
                     </div>
 
+                    <!-- 2. DAILY ATTENDANCE MARK-NA -->
                     <div class="card" style="border: 2px solid #8b5cf6; margin-top: 20px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                             <h3 style="color: #4c1d95; border: none; padding: 0; margin: 0;">Attendance Mark-na</h3>
@@ -451,15 +463,28 @@
                             </div>
                         </div>
                         
-                        <div style="margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap;" id="attendance-performance-filters">
-                            <button class="btn btn-outline" style="width:auto; padding:6px 12px; margin:0;" onclick="filterByPerformance('ALL')">All</button>
-                            <button class="btn" style="width:auto; padding:6px 12px; margin:0; background:#dcfce7; color:#166534;" onclick="filterByPerformance('Excellent')">🌟 Excellent</button>
-                            <button class="btn" style="width:auto; padding:6px 12px; margin:0; background:#e0f2fe; color:#0369a1;" onclick="filterByPerformance('Good')">👍 Good</button>
-                            <button class="btn" style="width:auto; padding:6px 12px; margin:0; background:#fef08a; color:#854d0e;" onclick="filterByPerformance('Average')">⚠️ Average</button>
-                            <button class="btn" style="width:auto; padding:6px 12px; margin:0; background:#fee2e2; color:#991b1b;" onclick="filterByPerformance('Poor')">🚨 Poor</button>
-                            <button class="btn" style="width:auto; padding:6px 12px; margin:0; background:#f1f5f9; color:#64748b;" onclick="filterByPerformance('N/A')">N/A</button>
+                        <!-- Visible Attendance Summary (Removed Toggle) -->
+                        <div style="background: #faf5ff; border: 1px solid #e9d5ff; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px;">
+                            <h4 style="font-size: 14px; color: #6b21a8; margin: 0; margin-bottom: 10px; border-bottom: 1px solid #e9d5ff; padding-bottom: 8px;">📋 Vawiin Attendance Summary</h4>
+                            <div id="summary-content-box">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; font-size: 13px;">
+                                    <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #16a34a;">
+                                        <b style="color: #15803d;">Present: <span id="count-present">0</span></b>
+                                        <div id="list-present" style="margin-top: 5px; color: #334155; max-height: 80px; overflow-y: auto;">-</div>
+                                    </div>
+                                    <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #f59e0b;">
+                                        <b style="color: #b45309;">Report: <span id="count-report">0</span></b>
+                                        <div id="list-report" style="margin-top: 5px; color: #334155; max-height: 80px; overflow-y: auto;">-</div>
+                                    </div>
+                                    <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #ef4444;">
+                                        <b style="color: #dc2626;">Absent: <span id="count-absent">0</span></b>
+                                        <div style="margin-top: 5px; color: #334155; font-size: 12px;">(Zirlai kal lo zawng zawng)</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
+                        <!-- Search Bar -->
                         <div style="margin-bottom: 15px;">
                             <input type="text" id="attendance-search" placeholder="🔍 Hming emaw Enrollment No. zawng rawh..." style="width: 100%; padding: 10px; border: 1px solid #c4b5fd; border-radius: 6px; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);" onkeyup="filterAttendance()">
                         </div>
@@ -481,6 +506,7 @@
                         <button class="btn btn-primary" style="margin-top: 15px; background-color: #8b5cf6;" onclick="saveAttendance()">Attendance Save Rawh</button>
                     </div>
 
+                    <!-- 3. ZIRLAI PORTAL A LANG TUR SET NA (ADMIN CONTROL) -->
                     <div class="card" style="border: 2px solid #0ea5e9; background: #f0f9ff; margin-top: 20px; margin-bottom: 20px;">
                         <h3 style="color: #0369a1; border-bottom: 1px solid #bae6fd; padding-bottom: 10px; margin-bottom: 15px;">📢 Zirlai Portala Attendance Tarlanna Set-na</h3>
                         <p style="font-size: 13px; color: #475569; margin-bottom: 10px;">Zirlai portal-a an percentage in-chhut chhuah theihna a ni a. I numbers type luh aṭang chiah hian system in a chhut ang.</p>
@@ -512,6 +538,7 @@
                         </div>
                     </div>
 
+                    <!-- 4. MONTHLY / PERIOD ATTENDANCE TRACKER (ADMIN VIEW ONLY) -->
                     <div class="card" style="border: 2px solid #0f766e; background: #f0fdfa; margin-top: 20px; margin-bottom: 0;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                             <div>
@@ -566,6 +593,7 @@
                     </div>
                 </div>
 
+                <!-- TAB 4: NOTICE BOARD -->
                 <div id="tab-notice" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     <div class="form-grid" style="grid-template-columns: 1fr;">
@@ -593,6 +621,7 @@
                     </div>
                 </div>
 
+                <!-- TAB 5: LINK SEMCHHUAHNA -->
                 <div id="tab-links" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     <div class="form-grid" style="grid-template-columns: 1fr;">
@@ -628,6 +657,7 @@
                     </div>
                 </div>
                 
+                <!-- TAB ONLINE SHIFT BIK -->
                 <div id="tab-online" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
@@ -665,6 +695,7 @@
                         </div>
                     </div>
 
+                    <!-- ZIRLAI PRACTICAL FOLDER THEHLUHNA LIST (ADMIN VIEW) -->
                     <div class="card" style="border: 2px solid #10b981; margin-top: 20px;">
                         <h3 style="color: #047857; border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">📥 Zirlai Practical Thehluh Te (Google Drive Links)</h3>
                         <div id="admin-practical-list" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
@@ -674,6 +705,7 @@
 
                 </div>
 
+                <!-- TAB 6: GRADEBOOK -->
                 <div id="tab-gradebook" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     <div class="card" style="border: 2px solid #0f766e; margin-bottom: 0;">
@@ -749,6 +781,7 @@
                     </div>
                 </div>
 
+                <!-- TAB 7: ZIRLAI MANAGEMENT -->
                 <div id="tab-management" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     <div class="card" style="margin-bottom: 0;">
@@ -782,8 +815,10 @@
 
     </div>
 
+    <!-- Floating Dark Mode Toggle -->
     <button class="dark-mode-toggle-btn" id="darkModeBtn" onclick="toggleDarkMode()" title="Thim/Eng Thlakna">🌙</button>
 
+    <!-- ================= FIREBASE SETUP & JAVASCRIPT LOGIC ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, deleteDoc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -802,7 +837,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "4.0"; // Updated Version
+        const APP_VERSION = "4.1"; // Updated Version
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -877,18 +912,6 @@
             document.querySelectorAll('.admin-tab-content').forEach(el => { el.classList.remove('active-content'); });
             document.getElementById('admin-menu-view').style.display = 'block';
             window.scrollTo(0, 0);
-        }
-
-        window.toggleSummaryBox = function() {
-            const box = document.getElementById('summary-content-box');
-            const icon = document.getElementById('summary-toggle-icon');
-            if (box.style.display === 'none') {
-                box.style.display = 'block';
-                icon.innerText = '▲ Khup / Hawng';
-            } else {
-                box.style.display = 'none';
-                icon.innerText = '▼ Khup / Hawng';
-            }
         }
 
         // ================= WHATSAPP SHARING =================
