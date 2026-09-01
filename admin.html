@@ -517,42 +517,60 @@
                         <button class="btn btn-primary" style="margin-top: 15px; background-color: #8b5cf6;" onclick="saveAttendance()">Attendance Save Rawh</button>
                     </div>
 
-                    <!-- 3. PRACTICAL SUBJECT ATTENDANCE TRACKER -->
+                    <!-- ZIRLAI PORTAL A LANG TUR SET NA (ADMIN CONTROL) -->
+                    <div class="card" style="border: 2px solid #0ea5e9; background: #f0f9ff; margin-top: 20px; margin-bottom: 20px;">
+                        <h3 style="color: #0369a1; border-bottom: 1px solid #bae6fd; padding-bottom: 10px; margin-bottom: 15px;">📢 Zirlai Portala Attendance Tarlanna Set-na</h3>
+                        <p style="font-size: 13px; color: #475569; margin-bottom: 10px;">Hetia i set hi Zirlai (Student) Portal-ah anmahni Percentage an lo in-hmu ve thei dawn a ni.</p>
+                        
+                        <div class="form-grid" style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #7dd3fc; margin-bottom: 15px; grid-template-columns: 1fr 1fr 1fr auto;">
+                            <div class="input-group">
+                                <label style="color: #0369a1;">Thupui (Entirnan: September Attendance)</label>
+                                <input type="text" id="admin-period-name" placeholder="Thupui type rawh..." required>
+                            </div>
+                            <div class="input-group">
+                                <label style="color: #0369a1;">A Ṭan Ni</label>
+                                <input type="date" id="admin-period-start" required>
+                            </div>
+                            <div class="input-group">
+                                <label style="color: #0369a1;">A Tawp Ni</label>
+                                <input type="date" id="admin-period-end" required>
+                            </div>
+                            <div class="input-group" style="display: flex; align-items: flex-end;">
+                                <button class="btn btn-primary" style="background-color: #0ea5e9; margin: 0; padding: 10px 15px;" onclick="saveAttendancePeriod()">Student Portal-ah Tarlang Rawh</button>
+                            </div>
+                        </div>
+                        
+                        <div id="admin-period-status" style="font-size: 14px; padding: 8px 12px; background: white; border-radius: 6px; border-left: 4px solid #0ea5e9;">
+                            <span style="color: gray; font-style: italic;">A la in-set lo...</span>
+                        </div>
+                    </div>
+
+                    <!-- 3. MONTHLY / PERIOD ATTENDANCE TRACKER (ADMIN VIEW ONLY) -->
                     <div class="card" style="border: 2px solid #0f766e; background: #f0fdfa; margin-top: 20px; margin-bottom: 0;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                             <div>
-                                <h3 style="color: #0f766e; border: none; padding: 0; margin: 0;">🎯 Practical Subject Attendance Tracker</h3>
-                                <p style="font-size: 13px; color: #475569; margin-top: 4px;">Subject tin zir ṭan ni leh zawh ni set-in, Weekday shift tan Mon-Fri (1 pt) leh Saturday shift tan Saturday (5 pts) a chhut a ni.</p>
+                                <h3 style="color: #0f766e; border: none; padding: 0; margin: 0;">🎯 Monthly / Period Attendance Tracker</h3>
+                                <p style="font-size: 13px; color: #475569; margin-top: 4px;">Thla khat (emaw ni engemawzat) chhung attendance percentage chhutna. Weekday shift tan Mon-Fri (1 pt) leh Saturday shift tan Saturday (5 pts) a chhut a ni.</p>
                             </div>
-                            <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportSubjectAttendanceToExcel()">📥 Subject Report Excel</button>
+                            <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportPeriodAttendanceToExcel()">📥 Report Excel</button>
                         </div>
 
-                        <div class="form-grid" style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #99f6e4; margin-bottom: 15px;">
+                        <div class="form-grid" style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #99f6e4; margin-bottom: 15px; grid-template-columns: 1fr 1fr auto;">
                             <div class="input-group">
-                                <label style="color: #0f766e;">Subject Thlang Rawh</label>
-                                <select id="subj-tracker-select" onchange="onSubjectSelectChange()" style="border-color: #0f766e; font-weight: 600;">
-                                    <option value="MS Word">MS Word</option>
-                                    <option value="MS Excel">MS Excel</option>
-                                    <option value="MS PowerPoint">MS PowerPoint</option>
-                                    <option value="Photoshop">Photoshop</option>
-                                    <option value="PageMaker">PageMaker</option>
-                                </select>
+                                <label style="color: #0f766e;">A Ṭan Ni (Start Date)</label>
+                                <input type="date" id="period-start-date" required>
                             </div>
                             <div class="input-group">
-                                <label style="color: #0f766e;">Zir Ṭan Ni (Start Date)</label>
-                                <input type="date" id="subj-start-date" required>
-                            </div>
-                            <div class="input-group">
-                                <label style="color: #0f766e;">Zir Zawh Ni (End Date)</label>
-                                <input type="date" id="subj-end-date" required>
+                                <label style="color: #0f766e;">A Tawp Ni (End Date)</label>
+                                <input type="date" id="period-end-date" required>
                             </div>
                             <div class="input-group" style="display: flex; align-items: flex-end;">
-                                <button class="btn btn-primary" style="background-color: #0f766e; margin: 0;" onclick="saveSubjectSchedule()">💾 Zir Hun Set & Check</button>
+                                <button class="btn btn-primary" style="background-color: #0f766e; margin: 0; padding: 10px 20px;" onclick="calculatePeriodAttendance()">📊 Chhut Rawh (Calculate)</button>
                             </div>
                         </div>
 
-                        <div id="subj-info-display" style="margin-bottom: 12px; font-size: 14px; padding: 8px 12px; background: white; border-radius: 6px; border-left: 4px solid #0f766e;">
-                            <span style="color: gray; font-style: italic;">Subject zir hun chhung a la in-set lo...</span>
+                        <div id="period-info-display" style="margin-bottom: 12px; font-size: 14px; padding: 8px 12px; background: white; border-radius: 6px; border-left: 4px solid #0f766e;">
+                            <span style="color: gray; font-style: italic;">Date thlang la 'Chhut Rawh' hmet rawh...</span>
                         </div>
 
                         <div style="overflow-x: auto; max-height: 350px; overflow-y: auto; background: white; border-radius: 6px; border: 1px solid #e2e8f0;">
@@ -566,8 +584,8 @@
                                         <th>Performance</th>
                                     </tr>
                                 </thead>
-                                <tbody id="subj-attendance-body">
-                                    <tr><td colspan="5" style="text-align:center; color:gray;">Subject zir hun chhung thlang la 'Set & Check' hmet rawh.</td></tr>
+                                <tbody id="period-attendance-body">
+                                    <tr><td colspan="5" style="text-align:center; color:gray;">Date thlang la 'Chhut Rawh' hmet rawh.</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -818,7 +836,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "3.21"; 
+        const APP_VERSION = "3.35"; // Updated Version
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -831,14 +849,6 @@
         let mySubmissions = [];
 
         window.currentPerformanceFilter = 'ALL';
-
-        let subjectSchedules = {
-            "MS Word": { start: "", end: "" },
-            "MS Excel": { start: "", end: "" },
-            "MS PowerPoint": { start: "", end: "" },
-            "Photoshop": { start: "", end: "" },
-            "PageMaker": { start: "", end: "" }
-        };
 
         const todayISODate = new Date().toISOString().split('T')[0];
         if (document.getElementById('attendance-date')) document.getElementById('attendance-date').value = todayISODate;
@@ -893,7 +903,6 @@
             document.getElementById(tabId).classList.add('active-content');
             if(tabId === 'tab-attendance') {
                 loadAttendanceForDate();
-                onSubjectSelectChange();
             }
             window.scrollTo(0, 0);
         }
@@ -1162,71 +1171,32 @@
             filterAttendance();
         }
 
-        // ================= PRACTICAL SUBJECT SCHEDULE & ATTENDANCE TRACKER =================
-        onSnapshot(doc(db, "settings", "subject_schedules"), (docSnap) => {
-            if (docSnap.exists()) {
-                subjectSchedules = { ...subjectSchedules, ...docSnap.data() };
-            }
-            onSubjectSelectChange();
-        });
+        // ================= MONTHLY / PERIOD ATTENDANCE TRACKER =================
+        window.calculatePeriodAttendance = function() {
+            const start = document.getElementById('period-start-date').value;
+            const end = document.getElementById('period-end-date').value;
+            const infoBox = document.getElementById('period-info-display');
+            const tbody = document.getElementById('period-attendance-body');
 
-        window.onSubjectSelectChange = function() {
-            const selectEl = document.getElementById('subj-tracker-select');
-            if(!selectEl) return;
-            const subj = selectEl.value;
-            const sched = subjectSchedules[subj] || { start: "", end: "" };
-            if(document.getElementById('subj-start-date')) document.getElementById('subj-start-date').value = sched.start || "";
-            if(document.getElementById('subj-end-date')) document.getElementById('subj-end-date').value = sched.end || "";
-            calculateSubjectAttendance();
-        };
-
-        window.saveSubjectSchedule = async function() {
-            const subj = document.getElementById('subj-tracker-select').value;
-            const start = document.getElementById('subj-start-date').value;
-            const end = document.getElementById('subj-end-date').value;
             if(!start || !end) {
-                alert("Zir ṭan ni (Start Date) leh zir zawh ni (End Date) thlang rawh!");
+                alert("A ṭan ni (Start Date) leh a tawp ni (End Date) thlang phawt rawh.");
                 return;
             }
             if(start > end) {
-                alert("Zir ṭan ni hi zir zawh ni aiin a hma tur a ni!");
-                return;
-            }
-            subjectSchedules[subj] = { start: start, end: end };
-            try {
-                await setDoc(doc(db, "settings", "subject_schedules"), subjectSchedules, { merge: true });
-                alert(`${subj} zir hun chhung save a ni e!`);
-                calculateSubjectAttendance();
-            } catch(e) {
-                alert("Save naah harsatna: " + e.message);
-            }
-        };
-
-        window.calculateSubjectAttendance = function() {
-            const selectEl = document.getElementById('subj-tracker-select');
-            if(!selectEl) return;
-            const subj = selectEl.value;
-            const start = document.getElementById('subj-start-date')?.value;
-            const end = document.getElementById('subj-end-date')?.value;
-            const infoBox = document.getElementById('subj-info-display');
-            const tbody = document.getElementById('subj-attendance-body');
-
-            if(!start || !end) {
-                if (infoBox) infoBox.innerHTML = `<span style="color:gray; font-style:italic;">${subj} zir hun chhung (Start & End Date) a la in-set lo. Set la, 'Save & Check' hmet rawh.</span>`;
-                if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:gray;">Zir hun chhung set phawt rawh.</td></tr>`;
+                alert("A ṭan ni hi a tawp ni aiin a hma tur a ni!");
                 return;
             }
 
             let recordsInRange = allAttendanceRecords.filter(r => r.date >= start && r.date <= end);
             
-            // Weekday max points = Attendance record awm tawh zat (Mon-Fri) * 1 point
+            // Weekday max points
             let uniqueWeekdayDates = [...new Set(recordsInRange.filter(r => {
                 let d = new Date(r.date).getDay();
                 return d >= 1 && d <= 5;
             }).map(r => r.date))];
             let weekdayMax = uniqueWeekdayDates.length * 1;
 
-            // Saturday shift max points = Saturday awm zat * 5 points
+            // Saturday shift max points
             let curr = new Date(start);
             let last = new Date(end);
             let saturdayCount = 0;
@@ -1237,12 +1207,12 @@
             let saturdayMax = saturdayCount * 5;
 
             if (infoBox) {
-                infoBox.innerHTML = `📅 <b>${subj}</b> Zir Hun: <span style="color:#0f766e; font-weight:bold;">${start}</span> aṭanga <span style="color:#0f766e; font-weight:bold;">${end}</span> thleng. (Weekday Max: <b>${weekdayMax} pts</b> | Saturday Shift Max: <b>${saturdayMax} pts</b>)`;
+                infoBox.innerHTML = `📅 <b>Attendance Hun:</b> <span style="color:#0f766e; font-weight:bold;">${start}</span> aṭanga <span style="color:#0f766e; font-weight:bold;">${end}</span> thleng. (Weekday Max: <b>${weekdayMax} pts</b> | Saturday Shift Max: <b>${saturdayMax} pts</b>)`;
             }
 
-            let subjStudentStats = {};
+            let periodStudentStats = {};
             allStudentsList.forEach(s => {
-                subjStudentStats[s.enrollment] = {
+                periodStudentStats[s.enrollment] = {
                     name: s.name,
                     shift: s.shift || '10am shift',
                     earned: 0
@@ -1250,8 +1220,8 @@
             });
 
             recordsInRange.forEach(r => {
-                if(subjStudentStats[r.enrollment]) {
-                    subjStudentStats[r.enrollment].earned += (r.points || 0);
+                if(periodStudentStats[r.enrollment]) {
+                    periodStudentStats[r.enrollment].earned += (r.points || 0);
                 }
             });
 
@@ -1264,7 +1234,7 @@
             }
 
             allStudentsList.forEach(s => {
-                let st = subjStudentStats[s.enrollment];
+                let st = periodStudentStats[s.enrollment];
                 let isSatShift = (st.shift === 'Saturday shift');
                 let studentMax = isSatShift ? saturdayMax : weekdayMax;
                 
@@ -1292,12 +1262,11 @@
             });
         };
 
-        window.exportSubjectAttendanceToExcel = function() {
-            const subj = document.getElementById('subj-tracker-select').value;
-            const start = document.getElementById('subj-start-date').value;
-            const end = document.getElementById('subj-end-date').value;
+        window.exportPeriodAttendanceToExcel = function() {
+            const start = document.getElementById('period-start-date').value;
+            const end = document.getElementById('period-end-date').value;
             if(!start || !end) {
-                alert("Zir hun chhung a la in-set lo!");
+                alert("A ṭan ni leh a tawp ni thlang phawt rawh!");
                 return;
             }
 
@@ -1337,8 +1306,7 @@
                 }
 
                 exportData.push({
-                    "Subject": subj,
-                    "Zir Hun Chhung": `${start} to ${end}`,
+                    "Hun Chhung (Period)": `${start} to ${end}`,
                     "Enrollment No": s.enrollment,
                     "Zirlai Hming": s.name,
                     "Shift": s.shift || '10am shift',
@@ -1351,10 +1319,35 @@
             if(exportData.length === 0) { alert("Data a awm lo."); return; }
             let worksheet = XLSX.utils.json_to_sheet(exportData);
             let workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, `${subj}_Report`);
-            XLSX.writeFile(workbook, `Bethel_${subj}_Attendance_Report.xlsx`);
+            XLSX.utils.book_append_sheet(workbook, worksheet, `Period_Report`);
+            XLSX.writeFile(workbook, `Bethel_Period_Attendance_Report.xlsx`);
         };
 
+        // ================= ZIRLAI PORTAL ATTENDANCE SET-NA (ADMIN) =================
+        onSnapshot(doc(db, "settings", "attendance_period"), (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if(document.getElementById('admin-period-name')) document.getElementById('admin-period-name').value = data.name || '';
+                if(document.getElementById('admin-period-start')) document.getElementById('admin-period-start').value = data.startDate || '';
+                if(document.getElementById('admin-period-end')) document.getElementById('admin-period-end').value = data.endDate || '';
+                if(document.getElementById('admin-period-status')) {
+                    document.getElementById('admin-period-status').innerHTML = `Tuna Zirlai portal-a lang mek chu: <b style="color:#0ea5e9;">${data.name}</b> (${data.startDate} aṭanga ${data.endDate})`;
+                }
+            }
+        });
+
+        window.saveAttendancePeriod = async function() {
+            const name = document.getElementById('admin-period-name').value;
+            const start = document.getElementById('admin-period-start').value;
+            const end = document.getElementById('admin-period-end').value;
+            if(!name || !start || !end) { alert("Dah kim rawh!"); return; }
+            try {
+                await setDoc(doc(db, "settings", "attendance_period"), { name: name, startDate: start, endDate: end });
+                alert("Zirlai portal-a lang tur hlawhtling taka set a ni e!");
+            } catch(e) { alert("Harsatna: " + e.message); }
+        }
+
+        // ================= FETCH ATTENDANCE =================
         onSnapshot(collection(db, "attendance"), (snapshot) => {
             allAttendanceRecords = [];
             attendancePointsMap = {}; 
@@ -1372,7 +1365,10 @@
                 attendanceStats[d.enrollment].days += 1;
             });
             renderStudentManagementTable();
-            calculateSubjectAttendance();
+            
+            if (document.getElementById('period-start-date').value && document.getElementById('period-end-date').value) {
+                calculatePeriodAttendance();
+            }
         });
 
         window.loadAttendanceForDate = async function() {
@@ -1611,7 +1607,10 @@
             allStudentsList = []; snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
             renderStudentManagementTable(); renderFeeTable(); loadAttendanceForDate(); renderOnlineShiftStudents(); 
             renderAdminLeaderboard();
-            calculateSubjectAttendance();
+            
+            if (document.getElementById('period-start-date').value && document.getElementById('period-end-date').value) {
+                calculatePeriodAttendance();
+            }
         });
 
         window.openShiftModal = function(enrollment, currentShift) {
