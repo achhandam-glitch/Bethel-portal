@@ -111,7 +111,14 @@
         body.dark-mode .comment-item { border-bottom-color: #334155 !important; }
         body.dark-mode .list-row { border-bottom-color: #334155 !important; }
         body.dark-mode .leaderboard-row { border-bottom-color: #334155 !important; }
+        
+        /* Dark mode overrides for colors and lists */
         body.dark-mode span[style*="color: #0369a1"], body.dark-mode span[style*="color: #4c1d95"], body.dark-mode b[style*="color: #15803d"], body.dark-mode b[style*="color: #dc2626"], body.dark-mode strong[style*="color: #0f172a"], body.dark-mode div[style*="background: white"], body.dark-mode div[style*="background: #fffbeb"], body.dark-mode div[style*="background: #f0fdf4"], body.dark-mode div[style*="background: #faf5ff"], body.dark-mode div[style*="background: #f8fafc"] { color: #e2e8f0 !important; background-color: transparent !important; }
+        
+        /* Set Summary Lists to white in Dark Mode */
+        body.dark-mode #list-present, body.dark-mode #list-report, body.dark-mode .summary-list-text { color: #ffffff !important; }
+        body.dark-mode h4[style*="color: #6b21a8"], body.dark-mode span[style*="color: #6b21a8"] { color: #e2e8f0 !important; }
+
         body.dark-mode .badge-student { background-color: #334155 !important; color: #38bdf8 !important; border-color: #475569 !important; }
         body.dark-mode .badge-shift { background-color: #334155 !important; color: #cbd5e1 !important; border-color: #475569 !important; }
         body.dark-mode .dark-mode-toggle-btn { background-color: #f8fafc; color: #0f172a; }
@@ -463,28 +470,31 @@
                             </div>
                         </div>
                         
-                        <!-- Visible Attendance Summary (Removed Toggle) -->
+                        <!-- Toggleable Attendance Summary -->
                         <div style="background: #faf5ff; border: 1px solid #e9d5ff; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px;">
-                            <h4 style="font-size: 14px; color: #6b21a8; margin: 0; margin-bottom: 10px; border-bottom: 1px solid #e9d5ff; padding-bottom: 8px;">📋 Vawiin Attendance Summary</h4>
-                            <div id="summary-content-box">
+                            <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleSummaryBox()">
+                                <h4 style="font-size: 14px; color: #6b21a8; margin: 0;">📋 Vawiin Attendance Summary (Hmet rawh)</h4>
+                                <span id="summary-toggle-icon" style="font-weight: bold; color: #6b21a8;">▼ Khup / Hawng</span>
+                            </div>
+                            <div id="summary-content-box" style="margin-top: 10px; display: none;">
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; font-size: 13px;">
                                     <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #16a34a;">
                                         <b style="color: #15803d;">Present: <span id="count-present">0</span></b>
-                                        <div id="list-present" style="margin-top: 5px; color: #334155; max-height: 80px; overflow-y: auto;">-</div>
+                                        <div id="list-present" class="summary-list-text" style="margin-top: 5px; color: #334155; max-height: 80px; overflow-y: auto;">-</div>
                                     </div>
                                     <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #f59e0b;">
                                         <b style="color: #b45309;">Report: <span id="count-report">0</span></b>
-                                        <div id="list-report" style="margin-top: 5px; color: #334155; max-height: 80px; overflow-y: auto;">-</div>
+                                        <div id="list-report" class="summary-list-text" style="margin-top: 5px; color: #334155; max-height: 80px; overflow-y: auto;">-</div>
                                     </div>
                                     <div style="background: white; padding: 10px; border-radius: 6px; border-left: 4px solid #ef4444;">
                                         <b style="color: #dc2626;">Absent: <span id="count-absent">0</span></b>
-                                        <div style="margin-top: 5px; color: #334155; font-size: 12px;">(Zirlai kal lo zawng zawng)</div>
+                                        <div class="summary-list-text" style="margin-top: 5px; color: #334155; font-size: 12px;">(Zirlai kal lo zawng zawng)</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Search Bar -->
+                        <!-- Search Bar (Removed Performance Filters) -->
                         <div style="margin-bottom: 15px;">
                             <input type="text" id="attendance-search" placeholder="🔍 Hming emaw Enrollment No. zawng rawh..." style="width: 100%; padding: 10px; border: 1px solid #c4b5fd; border-radius: 6px; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);" onkeyup="filterAttendance()">
                         </div>
@@ -494,7 +504,7 @@
                                 <thead style="position: sticky; top: 0; z-index: 10;">
                                     <tr>
                                         <th>Enrollment</th>
-                                        <th>Hming & Performance</th>
+                                        <th>Hming & Shift</th>
                                         <th>Mark-na (Points)</th>
                                     </tr>
                                 </thead>
@@ -837,7 +847,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "4.1"; // Updated Version
+        const APP_VERSION = "4.2"; // Updated Version
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -912,6 +922,18 @@
             document.querySelectorAll('.admin-tab-content').forEach(el => { el.classList.remove('active-content'); });
             document.getElementById('admin-menu-view').style.display = 'block';
             window.scrollTo(0, 0);
+        }
+
+        window.toggleSummaryBox = function() {
+            const box = document.getElementById('summary-content-box');
+            const icon = document.getElementById('summary-toggle-icon');
+            if (box.style.display === 'none') {
+                box.style.display = 'block';
+                icon.innerText = '▲ Khup / Hawng';
+            } else {
+                box.style.display = 'none';
+                icon.innerText = '▼ Khup / Hawng';
+            }
         }
 
         // ================= WHATSAPP SHARING =================
@@ -1413,7 +1435,6 @@
                         <td class="att-enrollment">${s.enrollment}</td>
                         <td class="att-name">
                             <div style="margin-bottom: 4px;"><b>${s.name}</b> <span style="font-size:11px; color:#64748b;">(${s.shift || '10am shift'})</span></div>
-                            ${badgeHtml}
                         </td>
                         <td>
                             <div class="radio-group" onchange="updateAttendanceSummary()">
