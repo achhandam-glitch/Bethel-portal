@@ -226,17 +226,28 @@
                 <div class="admin-sidebar">
                     <h4 style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;">Zirlai Menu</h4>
                     <div class="menu-box">
-                        <button class="menu-btn" onclick="openStudentTab('student-tab-status')">📊 Zirlai Dinhmun (Fee & Attendance)</button>
-                        <button class="menu-btn" onclick="openStudentTab('student-tab-mcq')" style="border-left-color: #eab308;">🎮 MCQ Quizzes & Reward Coins</button>
+                        <button class="menu-btn" onclick="openStudentTab('student-tab-status')">
+                            📊 Zirlai Dinhmun (Fee & Attendance)
+                            <span id="badge-status" class="hidden" style="background: #ef4444; color: white; border-radius: 12px; padding: 2px 6px; font-size: 11px; margin-left: 5px; font-weight: bold;">New</span>
+                        </button>
+                        
+                        <button class="menu-btn" onclick="openStudentTab('student-tab-mcq')" style="border-left-color: #eab308;">
+                            🎮 MCQ Quizzes & Reward Coins
+                            <span id="badge-mcq" class="hidden" style="background: #ef4444; color: white; border-radius: 12px; padding: 2px 6px; font-size: 11px; margin-left: 5px; font-weight: bold;">New</span>
+                        </button>
+                        
                         <button class="menu-btn" onclick="openStudentTab('student-tab-leave')">📝 Chawlh Dilna & In-Report-na</button>
+                        
                         <button class="menu-btn" onclick="openStudentTab('student-tab-notice')">
                             📢 Notice Board 
                             <span id="badge-notice" class="hidden" style="background: #ef4444; color: white; border-radius: 12px; padding: 2px 6px; font-size: 11px; margin-left: 5px; font-weight: bold;">New</span>
                         </button>
+                        
                         <button class="menu-btn" onclick="openStudentTab('student-tab-materials')">
                             📚 Study Materials, Assignments & Tests 
                             <span id="badge-materials" class="hidden" style="background: #ef4444; color: white; border-radius: 12px; padding: 2px 6px; font-size: 11px; margin-left: 5px; font-weight: bold;">New</span>
                         </button>
+                        
                         <button class="menu-btn" id="student-menu-online" style="display: none; border-left-color: #8b5cf6;" onclick="openStudentTab('student-tab-online')">💻 Online Class & Materials</button>
                     </div>
                 </div>
@@ -448,6 +459,7 @@
         // NOTIFICATION VARIABLES & FUNCTION
         let latestNoticeTime = 0;
         let latestMaterialTime = 0;
+        let latestMcqTime = 0;
 
         window.checkNotifications = function() {
             if (!window.currentStudent || !window.currentStudent.enrollment) return;
@@ -467,6 +479,31 @@
             if (matBadge) {
                 if (latestMaterialTime > lastMatView) matBadge.classList.remove('hidden');
                 else matBadge.classList.add('hidden');
+            }
+
+            // MCQ check
+            let lastMcqView = localStorage.getItem('last_view_mcq_' + enr) || 0;
+            let mcqBadge = document.getElementById('badge-mcq');
+            if (mcqBadge) {
+                if (latestMcqTime > lastMcqView) mcqBadge.classList.remove('hidden');
+                else mcqBadge.classList.add('hidden');
+            }
+
+            // Fee payment update check
+            let feeRecord = feeDataMap[enr];
+            let payments = (feeRecord && feeRecord.payments) ? feeRecord.payments : [];
+            let count = payments.length;
+            let total = payments.reduce((s, p) => s + parseFloat(p.amount || 0), 0);
+            let currentFeeSig = `${count}_${total}`;
+            let lastFeeSig = localStorage.getItem('last_fee_sig_' + enr);
+            let feeBadge = document.getElementById('badge-status');
+
+            if (feeBadge) {
+                if (count > 0 && lastFeeSig !== currentFeeSig) {
+                    feeBadge.classList.remove('hidden');
+                } else {
+                    feeBadge.classList.add('hidden');
+                }
             }
         }
 
@@ -520,6 +557,20 @@
                 if(tabId === 'student-tab-materials') {
                     localStorage.setItem('last_view_materials_' + enr, now);
                     let b = document.getElementById('badge-materials');
+                    if(b) b.classList.add('hidden');
+                }
+                if(tabId === 'student-tab-mcq') {
+                    localStorage.setItem('last_view_mcq_' + enr, now);
+                    let b = document.getElementById('badge-mcq');
+                    if(b) b.classList.add('hidden');
+                }
+                if(tabId === 'student-tab-status') {
+                    let feeRecord = feeDataMap[enr];
+                    let payments = (feeRecord && feeRecord.payments) ? feeRecord.payments : [];
+                    let count = payments.length;
+                    let total = payments.reduce((s, p) => s + parseFloat(p.amount || 0), 0);
+                    localStorage.setItem('last_fee_sig_' + enr, `${count}_${total}`);
+                    let b = document.getElementById('badge-status');
                     if(b) b.classList.add('hidden');
                 }
             }
@@ -617,8 +668,18 @@
 
         // ================= MCQ & COINS LOGIC =================
         onSnapshot(query(collection(db, "mcq_tests"), orderBy("createdAt", "desc")), (snapshot) => {
-            mcqTests = []; snapshot.forEach(doc => mcqTests.push({id: doc.id, ...doc.data()}));
+            mcqTests = []; 
+            latestMcqTime = 0;
+            
+            snapshot.forEach(docSnap => {
+                let data = docSnap.data();
+                mcqTests.push({id: docSnap.id, ...data});
+                let docTime = data.createdAt ? data.createdAt.toMillis() : 0;
+                if (docTime > latestMcqTime) latestMcqTime = docTime;
+            });
+            
             renderStudentMCQs();
+            checkNotifications();
         });
 
         function loadMySubmissions() {
@@ -706,6 +767,7 @@
             feeDataMap = {};
             snapshot.forEach(docSnap => { feeDataMap[docSnap.id] = docSnap.data(); });
             if(window.currentStudent.enrollment) renderStudentFeePortal();
+            checkNotifications(); // Fee pek snapshot-ah notification update nghal tur
         });
 
         function renderStudentFeePortal() {
@@ -800,14 +862,12 @@
         onSnapshot(query(collection(db, "notices"), orderBy("createdAt", "desc")), (snapshot) => {
             const studentList = document.getElementById('student-notice-list');
             if (studentList) studentList.innerHTML = '';
-            latestNoticeTime = 0; // Reset
+            latestNoticeTime = 0;
             
             if (snapshot.empty) { if (studentList) studentList.innerHTML = '<p style="opacity: 0.7;">Notice a la awm rih lo...</p>'; } 
             else {
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data(); const noticeId = docSnap.id; let commentsHTML = '';
-                    
-                    // Hun record thar ber lakchhuahna
                     let docTime = data.createdAt ? data.createdAt.toMillis() : 0;
                     if (docTime > latestNoticeTime) latestNoticeTime = docTime;
                     
@@ -831,14 +891,12 @@
         onSnapshot(query(collection(db, "shared_links"), orderBy("createdAt", "desc")), (snapshot) => {
             const studentContainer = document.getElementById('student-links-container');
             if (studentContainer) studentContainer.innerHTML = '<h3>Study Material, Assignment, Test / Exam</h3>'; 
-            latestMaterialTime = 0; // Reset
+            latestMaterialTime = 0;
             
             if (snapshot.empty) { if (studentContainer) studentContainer.innerHTML += '<p style="opacity: 0.7;">Thil sem a la awm lo.</p>'; } 
             else {
                 snapshot.forEach((docSnap) => {
                     let data = docSnap.data(); let icon = '🔗'; let btnText = 'Hawng Rawh'; let finalUrl = data.url;
-                    
-                    // Hun record thar ber lakchhuahna
                     let docTime = data.createdAt ? data.createdAt.toMillis() : 0;
                     if (docTime > latestMaterialTime) latestMaterialTime = docTime;
                     
@@ -973,7 +1031,7 @@
 
                         renderStudentFeePortal(); loadStudentLeaves(enrollmentStr); loadMySubmissions(); autoCalculatePeriodAttendance(); 
                         
-                        checkNotifications(); // LOGIN HLAWH TLIN RUALA CHECK-NA
+                        checkNotifications(); // Login rualin badge zawng zawng check-na
                         
                         showSection('student-portal-section');
                     } else { alert("Date of birth a dik lo! I date of birth kha 0 telh kim in han chhut teh (Entirnan: 15-05-2005)"); }
