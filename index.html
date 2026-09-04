@@ -229,8 +229,14 @@
                         <button class="menu-btn" onclick="openStudentTab('student-tab-status')">📊 Zirlai Dinhmun (Fee & Attendance)</button>
                         <button class="menu-btn" onclick="openStudentTab('student-tab-mcq')" style="border-left-color: #eab308;">🎮 MCQ Quizzes & Reward Coins</button>
                         <button class="menu-btn" onclick="openStudentTab('student-tab-leave')">📝 Chawlh Dilna & In-Report-na</button>
-                        <button class="menu-btn" onclick="openStudentTab('student-tab-notice')">📢 Notice Board</button>
-                        <button class="menu-btn" onclick="openStudentTab('student-tab-materials')">📚 Study Materials, Assignments & Tests</button>
+                        <button class="menu-btn" onclick="openStudentTab('student-tab-notice')">
+                            📢 Notice Board 
+                            <span id="badge-notice" class="hidden" style="background: #ef4444; color: white; border-radius: 12px; padding: 2px 6px; font-size: 11px; margin-left: 5px; font-weight: bold;">New</span>
+                        </button>
+                        <button class="menu-btn" onclick="openStudentTab('student-tab-materials')">
+                            📚 Study Materials, Assignments & Tests 
+                            <span id="badge-materials" class="hidden" style="background: #ef4444; color: white; border-radius: 12px; padding: 2px 6px; font-size: 11px; margin-left: 5px; font-weight: bold;">New</span>
+                        </button>
                         <button class="menu-btn" id="student-menu-online" style="display: none; border-left-color: #8b5cf6;" onclick="openStudentTab('student-tab-online')">💻 Online Class & Materials</button>
                     </div>
                 </div>
@@ -437,7 +443,32 @@
         let feeDataMap = {}; 
         let mcqTests = []; 
         let mySubmissions = [];
-        let globalAttendancePeriod = null; // Admin set period
+        let globalAttendancePeriod = null; 
+
+        // NOTIFICATION VARIABLES & FUNCTION
+        let latestNoticeTime = 0;
+        let latestMaterialTime = 0;
+
+        window.checkNotifications = function() {
+            if (!window.currentStudent || !window.currentStudent.enrollment) return;
+            let enr = window.currentStudent.enrollment;
+            
+            // Notice check
+            let lastNoticeView = localStorage.getItem('last_view_notice_' + enr) || 0;
+            let noticeBadge = document.getElementById('badge-notice');
+            if (noticeBadge) {
+                if (latestNoticeTime > lastNoticeView) noticeBadge.classList.remove('hidden');
+                else noticeBadge.classList.add('hidden');
+            }
+
+            // Materials check
+            let lastMatView = localStorage.getItem('last_view_materials_' + enr) || 0;
+            let matBadge = document.getElementById('badge-materials');
+            if (matBadge) {
+                if (latestMaterialTime > lastMatView) matBadge.classList.remove('hidden');
+                else matBadge.classList.add('hidden');
+            }
+        }
 
         const todayISODate = new Date().toISOString().split('T')[0];
         if (document.getElementById('leave-date')) document.getElementById('leave-date').value = todayISODate;
@@ -476,6 +507,22 @@
             document.querySelectorAll('.student-tab-content').forEach(el => { el.classList.remove('active-content'); });
             document.getElementById(tabId).classList.add('active-content');
             window.scrollTo(0, 0);
+
+            // Notification thar tih bona leh view hun save-na
+            let enr = window.currentStudent?.enrollment;
+            if(enr) {
+                let now = Date.now();
+                if(tabId === 'student-tab-notice') {
+                    localStorage.setItem('last_view_notice_' + enr, now);
+                    let b = document.getElementById('badge-notice');
+                    if(b) b.classList.add('hidden');
+                }
+                if(tabId === 'student-tab-materials') {
+                    localStorage.setItem('last_view_materials_' + enr, now);
+                    let b = document.getElementById('badge-materials');
+                    if(b) b.classList.add('hidden');
+                }
+            }
         }
 
         window.backToStudentMenu = function() {
@@ -753,10 +800,17 @@
         onSnapshot(query(collection(db, "notices"), orderBy("createdAt", "desc")), (snapshot) => {
             const studentList = document.getElementById('student-notice-list');
             if (studentList) studentList.innerHTML = '';
+            latestNoticeTime = 0; // Reset
+            
             if (snapshot.empty) { if (studentList) studentList.innerHTML = '<p style="opacity: 0.7;">Notice a la awm rih lo...</p>'; } 
             else {
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data(); const noticeId = docSnap.id; let commentsHTML = '';
+                    
+                    // Hun record thar ber lakchhuahna
+                    let docTime = data.createdAt ? data.createdAt.toMillis() : 0;
+                    if (docTime > latestNoticeTime) latestNoticeTime = docTime;
+                    
                     if (data.comments && data.comments.length > 0) {
                         commentsHTML = '<div class="comment-area"><b>Comments:</b><br>';
                         data.comments.forEach(c => { 
@@ -770,16 +824,24 @@
                     }
                 });
             }
+            checkNotifications();
         });
 
         // ================= SHARED LINKS =================
         onSnapshot(query(collection(db, "shared_links"), orderBy("createdAt", "desc")), (snapshot) => {
             const studentContainer = document.getElementById('student-links-container');
             if (studentContainer) studentContainer.innerHTML = '<h3>Study Material, Assignment, Test / Exam</h3>'; 
+            latestMaterialTime = 0; // Reset
+            
             if (snapshot.empty) { if (studentContainer) studentContainer.innerHTML += '<p style="opacity: 0.7;">Thil sem a la awm lo.</p>'; } 
             else {
                 snapshot.forEach((docSnap) => {
                     let data = docSnap.data(); let icon = '🔗'; let btnText = 'Hawng Rawh'; let finalUrl = data.url;
+                    
+                    // Hun record thar ber lakchhuahna
+                    let docTime = data.createdAt ? data.createdAt.toMillis() : 0;
+                    if (docTime > latestMaterialTime) latestMaterialTime = docTime;
+                    
                     if (data.type === 'PDF Note') { icon = '📕'; let match = finalUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/); if(match && match[1]) { finalUrl = `https://drive.google.com/uc?export=download&id=${match[1]}`; btnText = 'Download'; } }
                     else if (data.type === 'GitHub Project') { 
                         icon = '💻'; 
@@ -795,6 +857,7 @@
                     }
                 });
             }
+            checkNotifications();
         });
 
         // ================= ONLINE SHIFT BIK =================
@@ -908,7 +971,11 @@
                             if (window.currentStudent.shift === 'Online shift') { onlineMenuBtn.style.display = 'block'; } else { onlineMenuBtn.style.display = 'none'; }
                         }
 
-                        renderStudentFeePortal(); loadStudentLeaves(enrollmentStr); loadMySubmissions(); autoCalculatePeriodAttendance(); showSection('student-portal-section');
+                        renderStudentFeePortal(); loadStudentLeaves(enrollmentStr); loadMySubmissions(); autoCalculatePeriodAttendance(); 
+                        
+                        checkNotifications(); // LOGIN HLAWH TLIN RUALA CHECK-NA
+                        
+                        showSection('student-portal-section');
                     } else { alert("Date of birth a dik lo! I date of birth kha 0 telh kim in han chhut teh (Entirnan: 15-05-2005)"); }
                 } else { alert("Enrollment Number a dik lo! Zirlai list-ah a awm lo emaw check ṭha rawh."); }
             } catch (e) { alert("Harsatna: " + e.message); }
