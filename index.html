@@ -248,7 +248,7 @@
                             <span id="badge-materials" class="hidden" style="background: #ef4444; color: white; border-radius: 12px; padding: 2px 6px; font-size: 11px; margin-left: 5px; font-weight: bold;">New</span>
                         </button>
                         
-                        <button class="menu-btn" id="student-menu-online" style="display: none; border-left-color: #8b5cf6;" onclick="openStudentTab('student-tab-online')">💻 Online Class & Materials</button>
+                        <button class="menu-btn" id="student-menu-online" style="display: none; border-left-color: #8b5cf6;" onclick="openStudentTab('student-tab-online')">💻 Special class</button>
                     </div>
                 </div>
             </div>
@@ -363,7 +363,7 @@
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
                     <div class="card" style="margin-bottom: 20px;" id="student-online-container">
-                        <h3 style="color: #a78bfa;">Online Shift Message & Links</h3>
+                        <h3 style="color: #a78bfa;">Saturday (O) Message & Links</h3>
                         <p style="opacity: 0.7;">Database atangin a rawn in-load mek...</p>
                     </div>
 
@@ -617,7 +617,7 @@
 
             let recordsInRange = allAttendanceRecords.filter(r => r.date >= start && r.date <= end);
             
-            let isSatShift = (window.currentStudent.shift === 'Saturday shift');
+            let isSatShift = (window.currentStudent.shift === 'Saturday shift' || window.currentStudent.shift === 'Saturday (O)');
             let studentMax = isSatShift ? sMax : wMax;
 
             let earned = 0;
@@ -809,8 +809,8 @@
             const dayOfWeek = selectedDate.getDay(); 
             const myShift = window.currentStudent.shift || '10am shift';
 
-            if (myShift === 'Saturday shift' && dayOfWeek !== 6) { alert("Saturday shift i nih avangin Inrinni (Saturday)-ah chauh chawlh i report thei ang."); return; }
-            if (myShift !== 'Saturday shift' && (dayOfWeek === 6 || dayOfWeek === 0)) { alert("Weekday shift i nih avangin Inrinni (Saturday) emaw Pathianni (Sunday)-ah chawlh i report thei lo."); return; }
+            if ((myShift === 'Saturday shift' || myShift === 'Saturday (O)') && dayOfWeek !== 6) { alert("Saturday shift i nih avangin Inrinni (Saturday)-ah chauh chawlh i report thei ang."); return; }
+            if ((myShift !== 'Saturday shift' && myShift !== 'Saturday (O)') && (dayOfWeek === 6 || dayOfWeek === 0)) { alert("Weekday shift i nih avangin Inrinni (Saturday) emaw Pathianni (Sunday)-ah chawlh i report thei lo."); return; }
             
             const monthPrefix = leaveDate.substring(0, 7);
             try {
@@ -823,7 +823,7 @@
                 const leaveSnap = await getDocs(leaveQuery);
                 leaveSnap.forEach(doc => { let data = doc.data(); if (data.date && data.date.startsWith(monthPrefix) && data.status === 'Pending') { totalLeaves++; } });
 
-                const maxLeaves = (myShift === 'Saturday shift') ? 2 : 10;
+                const maxLeaves = (myShift === 'Saturday shift' || myShift === 'Saturday (O)') ? 2 : 10;
                 if (totalLeaves >= maxLeaves) {
                     alert("Tun thlaah chawlh i dil thei tawh rih lo, chawlh dil theih zat i pelh a, class i kal loh chuan a bak chu in report-in point a awm thei tawh lo."); return; 
                 }
@@ -921,7 +921,7 @@
         // ================= ONLINE SHIFT BIK =================
         onSnapshot(query(collection(db, "online_materials"), orderBy("createdAt", "desc")), (snapshot) => {
             const studentContainer = document.getElementById('student-online-container');
-            if(studentContainer) studentContainer.innerHTML = '<h3 style="color: #a78bfa;">Online Shift Message & Links</h3>';
+            if(studentContainer) studentContainer.innerHTML = '<h3 style="color: #a78bfa;">Saturday (O) Message & Links</h3>';
             if (snapshot.empty) { if(studentContainer) studentContainer.innerHTML += '<p style="opacity: 0.7;">Thil thawn a la awm lo.</p>'; } 
             else {
                 snapshot.forEach((docSnap) => {
@@ -1026,7 +1026,7 @@
                         
                         const onlineMenuBtn = document.getElementById('student-menu-online');
                         if (onlineMenuBtn) {
-                            if (window.currentStudent.shift === 'Online shift') { onlineMenuBtn.style.display = 'block'; } else { onlineMenuBtn.style.display = 'none'; }
+                            if (window.currentStudent.shift === 'Saturday (O)') { onlineMenuBtn.style.display = 'block'; } else { onlineMenuBtn.style.display = 'none'; }
                         }
 
                         renderStudentFeePortal(); loadStudentLeaves(enrollmentStr); loadMySubmissions(); autoCalculatePeriodAttendance(); 
