@@ -201,7 +201,7 @@
                     <option value="5pm shift">5pm shift</option>
                     <option value="7pm shift">7pm shift</option>
                     <option value="Saturday shift">Saturday shift</option>
-                    <option value="Online shift">Online shift</option>
+                    <option value="Saturday (O)">Saturday (O)</option>
                     <option value="Flexible shift">Flexible shift</option>
                 </select>
             </div>
@@ -240,7 +240,7 @@
                         <button class="menu-btn" onclick="openAdminTab('tab-attendance')">📅 Attendance Mark-na & Chawlh</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-notice')">📢 Notice Board</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-links')">🔗 Link Semchhuahna</button>
-                        <button class="menu-btn" onclick="openAdminTab('tab-online')" style="border-left-color: #8b5cf6; background: #faf5ff; color: #581c87;">💻 Online Shift Bik</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-online')" style="border-left-color: #8b5cf6; background: #faf5ff; color: #581c87;">💻 Saturday (O) Bik</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-gradebook')">📊 Comprehensive Gradebook</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-management')">👥 Zirlai Management</button>
                     </div>
@@ -335,7 +335,7 @@
                                     <option value="5pm shift">5pm shift</option>
                                     <option value="7pm shift">7pm shift</option>
                                     <option value="Saturday shift">Saturday shift</option>
-                                    <option value="Online shift">Online shift</option>
+                                    <option value="Saturday (O)">Saturday (O)</option>
                                     <option value="Flexible shift">Flexible shift</option>
                                 </select>
                             </div>
@@ -464,7 +464,7 @@
                                     <option value="5pm shift">5pm shift</option>
                                     <option value="7pm shift">7pm shift</option>
                                     <option value="Saturday shift">Saturday shift</option>
-                                    <option value="Online shift">Online shift</option>
+                                    <option value="Saturday (O)">Saturday (O)</option>
                                     <option value="Flexible shift">Flexible shift</option>
                                 </select>
                             </div>
@@ -672,7 +672,7 @@
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
                     <div class="card" style="border: 2px solid #3b82f6; margin-bottom: 20px; padding: 20px;">
-                        <h3 style="color: #1d4ed8; border-bottom: 1px solid #bfdbfe; padding-bottom: 10px; margin-bottom: 15px;">👥 Online Shift Zirlaite</h3>
+                        <h3 style="color: #1d4ed8; border-bottom: 1px solid #bfdbfe; padding-bottom: 10px; margin-bottom: 15px;">👥 Saturday (O) Zirlaite</h3>
                         <div id="admin-online-students-list" style="display: flex; flex-wrap: wrap; gap: 8px; max-height: 150px; overflow-y: auto;">
                             <p style="color: gray; font-size: 14px;">Zirlai an rawn in-load mek...</p>
                         </div>
@@ -680,7 +680,7 @@
 
                     <div class="form-grid" style="grid-template-columns: 1fr;">
                         <div class="card" style="border: 2px solid #8b5cf6;">
-                            <h3 style="color: #6d28d9; border-bottom: 1px solid #ddd6fe; padding-bottom: 10px;">Online Shift Thawnna (Message & Link)</h3>
+                            <h3 style="color: #6d28d9; border-bottom: 1px solid #ddd6fe; padding-bottom: 10px;">Saturday (O) Thawnna (Message & Link)</h3>
                             <form onsubmit="shareOnlineMaterial(event)">
                                 <div class="input-group">
                                     <label>Thupui (Title)</label>
@@ -694,11 +694,11 @@
                                     <label>Link (URL) - Optional</label>
                                     <input type="url" id="online-url" placeholder="https://...">
                                 </div>
-                                <button type="submit" class="btn btn-primary" style="margin-top: 5px; background-color: #8b5cf6;">Online Shift-te Hnenah Thawn Rawh</button>
+                                <button type="submit" class="btn btn-primary" style="margin-top: 5px; background-color: #8b5cf6;">Saturday (O) te Hnenah Thawn Rawh</button>
                             </form>
                         </div>
                         <div class="card" style="margin-bottom: 0;">
-                            <h3 style="color: #581c87;">Online Shift Thawn Tawh Te</h3>
+                            <h3 style="color: #581c87;">Saturday (O) Thawn Tawh Te</h3>
                             <div id="admin-online-container" style="max-height: 350px; overflow-y: auto; padding-right: 5px;">
                                 <p style="color: gray;">A la awm rih lo...</p>
                             </div>
@@ -953,7 +953,7 @@
         }
 
         window.shareOnlineWhatsApp = function(title, url) {
-            let text = `📌 *Bethel Computer Centre*\n\n💻 *Online Shift Zirlaite Hriattirna*\n\n*${title}*`;
+            let text = `📌 *Bethel Computer Centre*\n\n💻 *Saturday (O) Zirlaite Hriattirna*\n\n*${title}*`;
             if (url && url.trim() !== '') {
                 text += `\n🔗 Link: ${url}`;
             }
@@ -1232,7 +1232,7 @@
 
             allStudentsList.forEach(s => {
                 let st = periodStudentStats[s.enrollment];
-                let isSatShift = (st.shift === 'Saturday shift');
+                let isSatShift = (st.shift === 'Saturday shift' || st.shift === 'Saturday (O)');
                 let studentMax = isSatShift ? saturdayMax : weekdayMax;
                 
                 let pct = studentMax > 0 ? ((st.earned / studentMax) * 100).toFixed(1) : 0;
@@ -1278,7 +1278,7 @@
                 recordsInRange.filter(r => r.enrollment === s.enrollment).forEach(r => {
                     earned += (r.points || 0);
                 });
-                let isSatShift = ((s.shift || '10am shift') === 'Saturday shift');
+                let isSatShift = ((s.shift || '10am shift') === 'Saturday shift' || (s.shift || '10am shift') === 'Saturday (O)');
                 let studentMax = isSatShift ? saturdayMax : weekdayMax;
 
                 let pct = studentMax > 0 ? ((earned / studentMax) * 100).toFixed(1) + "%" : "0%";
@@ -1374,19 +1374,19 @@
             const currentShiftVal = shiftSelect.value;
             shiftSelect.innerHTML = '<option value="ALL">-- Shift ZAWNG ZAWNG --</option>';
             
-            const allShifts = ["6am shift", "7am shift", "8am shift", "10am shift", "11am shift", "1pm shift", "2pm shift", "3pm shift", "4pm shift", "5pm shift", "7pm shift", "Saturday shift", "Online shift", "Flexible shift"];
+            const allShifts = ["6am shift", "7am shift", "8am shift", "10am shift", "11am shift", "1pm shift", "2pm shift", "3pm shift", "4pm shift", "5pm shift", "7pm shift", "Saturday shift", "Saturday (O)", "Flexible shift"];
             
             allShifts.forEach(shift => {
                 if (isSaturday) {
-                    if (shift === 'Saturday shift') shiftSelect.innerHTML += `<option value="${shift}">${shift}</option>`;
+                    if (shift === 'Saturday shift' || shift === 'Saturday (O)') shiftSelect.innerHTML += `<option value="${shift}">${shift}</option>`;
                 } else {
-                    if (shift !== 'Saturday shift') shiftSelect.innerHTML += `<option value="${shift}">${shift}</option>`;
+                    if (shift !== 'Saturday shift' && shift !== 'Saturday (O)') shiftSelect.innerHTML += `<option value="${shift}">${shift}</option>`;
                 }
             });
             
-            if (isSaturday && currentShiftVal !== 'Saturday shift' && currentShiftVal !== 'ALL') {
+            if (isSaturday && currentShiftVal !== 'Saturday shift' && currentShiftVal !== 'Saturday (O)' && currentShiftVal !== 'ALL') {
                 shiftSelect.value = 'ALL';
-            } else if (!isSaturday && currentShiftVal === 'Saturday shift') {
+            } else if (!isSaturday && (currentShiftVal === 'Saturday shift' || currentShiftVal === 'Saturday (O)')) {
                 shiftSelect.value = 'ALL';
             } else {
                 shiftSelect.value = currentShiftVal || 'ALL';
@@ -1402,9 +1402,9 @@
             
             let filteredStudents = allStudentsList;
             if (isSaturday) {
-                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift');
+                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift' || (s.shift || '10am shift') === 'Saturday (O)');
             } else {
-                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') !== 'Saturday shift');
+                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') !== 'Saturday shift' && (s.shift || '10am shift') !== 'Saturday (O)');
                 if (selectedShift !== 'ALL') {
                     filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === selectedShift);
                 }
@@ -1463,9 +1463,9 @@
             
             let filteredStudents = allStudentsList;
             if (isSaturday) {
-                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift');
+                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift' || (s.shift || '10am shift') === 'Saturday (O)');
             } else {
-                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') !== 'Saturday shift');
+                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') !== 'Saturday shift' && (s.shift || '10am shift') !== 'Saturday (O)');
                 if (selectedShift !== 'ALL') { 
                     filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === selectedShift); 
                 }
@@ -1511,9 +1511,9 @@
 
             let targetStudents = allStudentsList;
             if (isSaturday) {
-                targetStudents = targetStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift');
+                targetStudents = targetStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift' || (s.shift || '10am shift') === 'Saturday (O)');
             } else {
-                targetStudents = targetStudents.filter(s => (s.shift || '10am shift') !== 'Saturday shift');
+                targetStudents = targetStudents.filter(s => (s.shift || '10am shift') !== 'Saturday shift' && (s.shift || '10am shift') !== 'Saturday (O)');
                 if (selectedShift !== 'ALL') {
                     targetStudents = targetStudents.filter(s => (s.shift || '10am shift') === selectedShift);
                 }
@@ -1587,9 +1587,9 @@
         function renderOnlineShiftStudents() {
             const container = document.getElementById('admin-online-students-list');
             if (!container) return;
-            const onlineStudents = allStudentsList.filter(s => (s.shift || '10am shift') === 'Online shift');
+            const onlineStudents = allStudentsList.filter(s => (s.shift || '10am shift') === 'Saturday (O)');
             if (onlineStudents.length === 0) {
-                container.innerHTML = '<span style="color: gray; font-size: 14px; font-style: italic;">Online shift-ah zirlai an la awm lo...</span>';
+                container.innerHTML = '<span style="color: gray; font-size: 14px; font-style: italic;">Saturday (O)-ah zirlai an la awm lo...</span>';
             } else {
                 container.innerHTML = onlineStudents.map(s => `<span class="badge-student" style="background-color: #f3e8ff; color: #6b21a8; border-color: #d8b4fe; font-size: 14px; padding: 6px 12px;">${s.name} <small style="color: #64748b; font-weight: normal; margin-left: 4px;">(${s.enrollment})</small></span>`).join('');
             }
@@ -1784,7 +1784,7 @@
                     url: document.getElementById('online-url').value,
                     createdAt: serverTimestamp()
                 });
-                alert("Online shift te hnenah thawn a ni e!");
+                alert("Saturday (O) te hnenah thawn a ni e!");
                 event.target.reset();
             } catch (error) { alert("Harsatna: " + error.message); }
         }
