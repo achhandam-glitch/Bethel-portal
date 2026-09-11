@@ -50,6 +50,7 @@
         .status-badge { display: inline-block; padding: 5px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }
         .status-pending { background-color: #fef08a; color: #854d0e; }
         .status-approved { background-color: #bbf7d0; color: #166534; }
+        .status-rejected { background-color: #fee2e2; color: #991b1b; }
         .leave-item { background: #ffffff; color: #1e293b; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
 
         .badge-cash { background-color: #dcfce7; color: #166534; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
@@ -443,7 +444,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "4.0"; 
+        const APP_VERSION = "4.1"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -465,7 +466,6 @@
             if (!window.currentStudent || !window.currentStudent.enrollment) return;
             let enr = window.currentStudent.enrollment;
             
-            // Notice check
             let lastNoticeView = localStorage.getItem('last_view_notice_' + enr) || 0;
             let noticeBadge = document.getElementById('badge-notice');
             if (noticeBadge) {
@@ -473,7 +473,6 @@
                 else noticeBadge.classList.add('hidden');
             }
 
-            // Materials check
             let lastMatView = localStorage.getItem('last_view_materials_' + enr) || 0;
             let matBadge = document.getElementById('badge-materials');
             if (matBadge) {
@@ -481,7 +480,6 @@
                 else matBadge.classList.add('hidden');
             }
 
-            // MCQ check
             let lastMcqView = localStorage.getItem('last_view_mcq_' + enr) || 0;
             let mcqBadge = document.getElementById('badge-mcq');
             if (mcqBadge) {
@@ -489,7 +487,6 @@
                 else mcqBadge.classList.add('hidden');
             }
 
-            // Fee payment update check
             let feeRecord = feeDataMap[enr];
             let payments = (feeRecord && feeRecord.payments) ? feeRecord.payments : [];
             let count = payments.length;
@@ -545,7 +542,6 @@
             document.getElementById(tabId).classList.add('active-content');
             window.scrollTo(0, 0);
 
-            // Notification thar tih bona leh view hun save-na
             let enr = window.currentStudent?.enrollment;
             if(enr) {
                 let now = Date.now();
@@ -767,7 +763,7 @@
             feeDataMap = {};
             snapshot.forEach(docSnap => { feeDataMap[docSnap.id] = docSnap.data(); });
             if(window.currentStudent.enrollment) renderStudentFeePortal();
-            checkNotifications(); // Fee pek snapshot-ah notification update nghal tur
+            checkNotifications();
         });
 
         function renderStudentFeePortal() {
@@ -821,7 +817,7 @@
                 
                 const leaveQuery = query(collection(db, "leave_requests"), where("enrollment", "==", enrollment));
                 const leaveSnap = await getDocs(leaveQuery);
-                leaveSnap.forEach(doc => { let data = doc.data(); if (data.date && data.date.startsWith(monthPrefix) && data.status === 'Pending') { totalLeaves++; } });
+                leaveSnap.forEach(doc => { let data = doc.data(); if (data.date && data.date.startsWith(monthPrefix) && (data.status === 'Pending' || data.status === 'Approved')) { totalLeaves++; } });
 
                 const maxLeaves = (myShift === 'Saturday shift' || myShift === 'Saturday (O)') ? 2 : 10;
                 if (totalLeaves >= maxLeaves) {
@@ -830,7 +826,7 @@
 
                 await addDoc(collection(db, "leave_requests"), { 
                     enrollment: enrollment, studentName: window.currentStudent.name, startDate: leaveDate, endDate: leaveDate, 
-                    date: leaveDate, reason: reason, status: "Pending", createdAt: serverTimestamp() 
+                    date: leaveDate, reason: reason, status: "Pending", rejectReason: "", createdAt: serverTimestamp() 
                 }); 
                 alert("I in-report-na a lut hlawhtling e."); 
                 event.target.reset(); 
@@ -845,7 +841,23 @@
                 container.innerHTML = '';
                 if (snapshot.empty) { container.innerHTML = '<p style="opacity: 0.7;">Report i la thehlut lo.</p>'; return; }
                 let leaves = []; snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()})); leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
-                leaves.forEach(data => { let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending'; let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek'; container.innerHTML += `<div class="leave-item"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><strong>📅 ${data.date}</strong><span class="status-badge ${badgeClass}">${statusText}</span></div><p style="font-size:14px; margin:0;">${data.reason}</p></div>`; });
+                
+                leaves.forEach(data => { 
+                    let badgeClass = data.status === 'Approved' ? 'status-approved' : data.status === 'Rejected' ? 'status-rejected' : 'status-pending'; 
+                    let statusText = data.status === 'Approved' ? 'Pawm a ni' : data.status === 'Rejected' ? 'Hnial a ni' : 'Nghak mek';
+                    
+                    let rejectReasonHtml = (data.status === 'Rejected' && data.rejectReason) ? `<div style="font-size:12px; color:#991b1b; margin-top:6px;"><b>Hnial Chhan:</b> ${data.rejectReason}</div>` : '';
+
+                    container.innerHTML += `
+                        <div class="leave-item" style="border-left: 4px solid ${data.status === 'Approved' ? '#22c55e' : data.status === 'Rejected' ? '#ef4444' : '#eab308'};">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                                <strong>📅 ${data.date}</strong>
+                                <span class="status-badge ${badgeClass}">${statusText}</span>
+                            </div>
+                            <p style="font-size:14px; margin:0;">${data.reason}</p>
+                            ${rejectReasonHtml}
+                        </div>`; 
+                });
             });
         }
 
@@ -1031,7 +1043,7 @@
 
                         renderStudentFeePortal(); loadStudentLeaves(enrollmentStr); loadMySubmissions(); autoCalculatePeriodAttendance(); 
                         
-                        checkNotifications(); // Login rualin badge zawng zawng check-na
+                        checkNotifications();
                         
                         showSection('student-portal-section');
                     } else { alert("Date of birth a dik lo! I date of birth kha 0 telh kim in han chhut teh (Entirnan: 15-05-2005)"); }
