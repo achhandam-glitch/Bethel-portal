@@ -71,6 +71,7 @@
         .status-badge { display: inline-block; padding: 5px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }
         .status-pending { background-color: #fef08a; color: #854d0e; }
         .status-approved { background-color: #bbf7d0; color: #166534; }
+        .status-rejected { background-color: #fee2e2; color: #991b1b; }
         .leave-item { background: #fff; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
 
         .badge-cash { background-color: #dcfce7; color: #166534; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
@@ -112,10 +113,8 @@
         body.dark-mode .list-row { border-bottom-color: #334155 !important; }
         body.dark-mode .leaderboard-row { border-bottom-color: #334155 !important; }
         
-        /* Dark mode overrides for colors and lists */
         body.dark-mode span[style*="color: #0369a1"], body.dark-mode span[style*="color: #4c1d95"], body.dark-mode b[style*="color: #15803d"], body.dark-mode b[style*="color: #dc2626"], body.dark-mode strong[style*="color: #0f172a"], body.dark-mode div[style*="background: white"], body.dark-mode div[style*="background: #fffbeb"], body.dark-mode div[style*="background: #f0fdf4"], body.dark-mode div[style*="background: #faf5ff"], body.dark-mode div[style*="background: #f8fafc"] { color: #e2e8f0 !important; background-color: transparent !important; }
         
-        /* Set Summary Lists to white in Dark Mode */
         body.dark-mode #list-present, body.dark-mode #list-report, body.dark-mode .summary-list-text { color: #ffffff !important; }
         body.dark-mode h4[style*="color: #6b21a8"], body.dark-mode span[style*="color: #6b21a8"] { color: #e2e8f0 !important; }
 
@@ -494,7 +493,7 @@
                             </div>
                         </div>
 
-                        <!-- Search Bar (Removed Performance Filters) -->
+                        <!-- Search Bar -->
                         <div style="margin-bottom: 15px;">
                             <input type="text" id="attendance-search" placeholder="🔍 Hming emaw Enrollment No. zawng rawh..." style="width: 100%; padding: 10px; border: 1px solid #c4b5fd; border-radius: 6px; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);" onkeyup="filterAttendance()">
                         </div>
@@ -847,7 +846,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "4.2"; // Updated Version
+        const APP_VERSION = "4.3"; // Updated Version with Leave Reject feature
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -1700,15 +1699,35 @@
             if (snapshot.empty) { adminContainer.innerHTML = '<p style="color: gray; text-align: center; padding: 10px 0;">In-report an la awm lo...</p>'; return; }
             let leaves = []; snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()})); leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
             leaves.forEach(data => {
-                let badgeClass = data.status === 'Approved' ? 'status-approved' : 'status-pending'; let statusText = data.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek';
+                let badgeClass = data.status === 'Approved' ? 'status-approved' : data.status === 'Rejected' ? 'status-rejected' : 'status-pending'; 
+                let statusText = data.status === 'Approved' ? 'Pawm a ni' : data.status === 'Rejected' ? 'Hnial a ni' : 'Nghak mek';
                 let sDate = data.startDate || data.date; let eDate = data.endDate || data.date;
-                adminContainer.innerHTML += `<div class="leave-item" style="border-left: 4px solid ${data.status === 'Approved' ? '#22c55e' : '#eab308'};"><div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:8px;"><strong style="font-size: 15px; color: #0f172a;">${data.studentName} <span style="color: gray; font-size: 12px;">(${data.enrollment})</span></strong><span class="status-badge ${badgeClass}">${statusText}</span></div><div style="font-size:13px; color:#334155; margin-bottom: 10px; background: #f8fafc; padding: 6px; border-radius: 4px;"><span style="color:#0284c7; font-weight:bold;">Chawlh Ni:</span> ${data.date} | <span style="color:#0284c7; font-weight:bold;">A Chhan:</span> ${data.reason}</div>${data.status === 'Pending' ? `<button class="btn btn-success" style="padding: 6px 12px; font-size:12px; margin:0; width: auto;" onclick="approveLeaveStatus('${data.id}', '${data.enrollment}', '${sDate}', '${eDate}')">Pawm (Approve)</button>` : ''}</div>`;
+                
+                let rejectReasonHtml = (data.status === 'Rejected' && data.rejectReason) ? `<div style="font-size:12px; color:#991b1b; margin-top:4px;"><b>Hnial Chhan:</b> ${data.rejectReason}</div>` : '';
+
+                adminContainer.innerHTML += `
+                    <div class="leave-item" style="border-left: 4px solid ${data.status === 'Approved' ? '#22c55e' : data.status === 'Rejected' ? '#ef4444' : '#eab308'};">
+                        <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:8px;">
+                            <strong style="font-size: 15px; color: #0f172a;">${data.studentName} <span style="color: gray; font-size: 12px;">(${data.enrollment})</span></strong>
+                            <span class="status-badge ${badgeClass}">${statusText}</span>
+                        </div>
+                        <div style="font-size:13px; color:#334155; margin-bottom: 10px; background: #f8fafc; padding: 6px; border-radius: 4px;">
+                            <span style="color:#0284c7; font-weight:bold;">Chawlh Ni:</span> ${data.date} | <span style="color:#0284c7; font-weight:bold;">A Chhan:</span> ${data.reason}
+                            ${rejectReasonHtml}
+                        </div>
+                        ${data.status === 'Pending' ? `
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button class="btn btn-success" style="padding: 6px 12px; font-size:12px; margin:0; width: auto;" onclick="approveLeaveStatus('${data.id}', '${data.enrollment}', '${sDate}', '${eDate}')">Pawm (Approve)</button>
+                                <button class="btn btn-danger" style="padding: 6px 12px; font-size:12px; margin:0; width: auto;" onclick="rejectLeaveStatus('${data.id}')">Hnial (Reject)</button>
+                            </div>
+                        ` : ''}
+                    </div>`;
             });
         });
 
         window.approveLeaveStatus = async function(leaveId, enrollment, startDate, endDate) {
             try {
-                await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Approved' });
+                await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Approved', rejectReason: '' });
                 let currDate = new Date(startDate); let lastDate = new Date(endDate); let studentName = allStudentsList.find(s => s.enrollment === enrollment)?.name || '';
                 let promises = [];
                 while (currDate <= lastDate) {
@@ -1720,7 +1739,19 @@
             } catch(error) { alert("Harsatna: " + error.message); }
         }
 
-        window.exportLeaveToExcel = async function() { try { const querySnapshot = await getDocs(collection(db, "leave_requests")); let leaveData = []; querySnapshot.forEach((doc) => { let d = doc.data(); leaveData.push({ "Enrollment No": d.enrollment, "Zirlai Hming": d.studentName, "Chawlh Ni": d.date, "Chhan": d.reason, "Status": d.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek' }); }); if(leaveData.length === 0) { alert("Record a la awm lo."); return; } let worksheet = XLSX.utils.json_to_sheet(leaveData); let workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Chawlh_Report"); XLSX.writeFile(workbook, "Bethel_Zirlai_Chawlh.xlsx"); } catch (error) { alert("Harsatna: " + error.message); } }
+        window.rejectLeaveStatus = async function(leaveId) {
+            let reason = prompt("Hnial anih chhan (Entirnan: Attendance a tlahniam dawn a, class kal ngei tur a ni):", "Attendance a pawimawh avangin chawlh approve a rem lo.");
+            if (reason !== null) {
+                try {
+                    await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Rejected', rejectReason: reason.trim() });
+                    alert("Chawlh dilna chu hnial (reject) a ni e.");
+                } catch(error) {
+                    alert("Harsatna: " + error.message);
+                }
+            }
+        }
+
+        window.exportLeaveToExcel = async function() { try { const querySnapshot = await getDocs(collection(db, "leave_requests")); let leaveData = []; querySnapshot.forEach((doc) => { let d = doc.data(); leaveData.push({ "Enrollment No": d.enrollment, "Zirlai Hming": d.studentName, "Chawlh Ni": d.date, "Chhan": d.reason, "Status": d.status === 'Approved' ? 'Pawm a ni' : d.status === 'Rejected' ? 'Hnial a ni' : 'Nghak mek', "Hnial Chhan": d.rejectReason || '' }); }); if(leaveData.length === 0) { alert("Record a la awm lo."); return; } let worksheet = XLSX.utils.json_to_sheet(leaveData); let workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Chawlh_Report"); XLSX.writeFile(workbook, "Bethel_Zirlai_Chawlh.xlsx"); } catch (error) { alert("Harsatna: " + error.message); } }
         window.clearAllLeaveRequests = async function() { if (confirm("Paih fai takzet i duh em?")) { try { const querySnapshot = await getDocs(collection(db, "leave_requests")); let deletePromises = []; querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "leave_requests", document.id)))); await Promise.all(deletePromises); alert("Paih fai a ni tawh e!"); } catch (error) { alert("Harsatna: " + error.message); } } }
 
         // ================= NOTICES =================
