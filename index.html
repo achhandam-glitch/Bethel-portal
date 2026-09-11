@@ -237,7 +237,7 @@
                             <span id="badge-mcq" class="hidden" style="background: #ef4444; color: white; border-radius: 12px; padding: 2px 6px; font-size: 11px; margin-left: 5px; font-weight: bold;">New</span>
                         </button>
                         
-                        <button class="menu-btn" onclick="openStudentTab('student-tab-leave')">📝 Chawlh Dilna & In-Report-na</button>
+                        <button class="menu-btn" id="student-menu-leave" onclick="openStudentTab('student-tab-leave')">📝 Chawlh Dilna & In-Report-na</button>
                         
                         <button class="menu-btn" onclick="openStudentTab('student-tab-notice')">
                             📢 Notice Board 
@@ -291,7 +291,7 @@
                         </div>
                     </div>
 
-                    <div style="border: 1px solid #d8b4fe; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px;">
+                    <div style="border: 1px solid #d8b4fe; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px;" id="attendance-points-card">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <p style="font-weight: 600; font-size: 16px; margin: 0;">Total Attendance Points:</p>
                             <div style="font-size: 28px; font-weight: bold;" id="student-att-points">0 Points</div>
@@ -301,7 +301,7 @@
                         </button>
                     </div>
 
-                    <div class="card" style="border: 2px solid #0f766e; margin-bottom: 20px;">
+                    <div class="card" style="border: 2px solid #0f766e; margin-bottom: 20px;" id="attendance-percentage-card">
                         <h3 style="border-bottom: 1px solid #99f6e4; padding-bottom: 10px; margin-bottom: 15px;">📊 <span id="student-period-title">Attendance Percentage</span></h3>
                         
                         <div id="student-period-result" style="padding: 12px 15px; border-radius: 8px; border: 1px solid #99f6e4; background: #f0fdfa; color: #1e293b;">
@@ -370,8 +370,8 @@
 
                     <div class="form-grid" style="grid-template-columns: 1fr;">
                         <div class="card" style="border: 2px solid #10b981;">
-                            <h3 style="border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">Practical Folder Thehluhna</h3>
-                            <p style="font-size: 13px; opacity: 0.8; margin-bottom: 15px;">I practical folder (Google Drive link) kha hetah hian rawn thehlut rawh. (Link i copy dawnin 'Anyone with the link' tihah i thlak hmasa dawn nia).</p>
+                            <h3 style="border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">Practical Folder Thehluhna (Attendance Alternative)</h3>
+                            <p style="font-size: 13px; opacity: 0.8; margin-bottom: 15px;">Saturday (O) zirlaite tan hetah hian i practical folder (Google Drive link) rawn thehlut la, hemi hi i attendance alternative a ni ang. (Link i copy dawnin 'Anyone with the link' tihah i thlak hmasa dawn nia).</p>
                             <form onsubmit="submitPracticalLink(event)">
                                 <div class="input-group">
                                     <label>Folder Hming / Entirnan: Ms Word Practical</label>
@@ -444,7 +444,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "4.1"; 
+        const APP_VERSION = "4.2"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -457,7 +457,6 @@
         let mySubmissions = [];
         let globalAttendancePeriod = null; 
 
-        // NOTIFICATION VARIABLES & FUNCTION
         let latestNoticeTime = 0;
         let latestMaterialTime = 0;
         let latestMcqTime = 0;
@@ -578,7 +577,7 @@
             window.scrollTo(0, 0);
         }
 
-        // ================= PERIOD ATTENDANCE (ADMIN SET) =================
+        // ================= PERIOD ATTENDANCE & SATURDAY (O) ALTERNATIVE =================
         onSnapshot(doc(db, "settings", "attendance_period"), (docSnap) => {
             if (docSnap.exists()) {
                 globalAttendancePeriod = docSnap.data();
@@ -605,44 +604,85 @@
 
             const start = globalAttendancePeriod.startDate;
             const end = globalAttendancePeriod.endDate;
-            const wMax = globalAttendancePeriod.weekdayMax || 0;
-            const sMax = globalAttendancePeriod.saturdayMax || 0;
             const periodName = globalAttendancePeriod.name || 'Attendance Percentage';
             
             if(titleBox) titleBox.innerText = periodName;
 
-            let recordsInRange = allAttendanceRecords.filter(r => r.date >= start && r.date <= end);
-            
-            let isSatShift = (window.currentStudent.shift === 'Saturday shift' || window.currentStudent.shift === 'Saturday (O)');
-            let studentMax = isSatShift ? sMax : wMax;
+            let isSatShift = (window.currentStudent.shift === 'Saturday (O)');
 
-            let earned = 0;
-            recordsInRange.filter(r => r.enrollment === enr).forEach(r => { earned += (r.points || 0); });
+            if (isSatShift) {
+                // Saturday (O) tan: Practical folder an thehluh atanga chhut a ni ang
+                onSnapshot(query(collection(db, "practical_submissions"), where("enrollment", "==", enr)), (subSnap) => {
+                    let submittedCount = 0;
+                    subSnap.forEach(docSnap => {
+                        let subData = docSnap.data();
+                        let subDate = subData.timestamp ? subData.timestamp.toDate().toISOString().split('T')[0] : '';
+                        if (subDate >= start && subDate <= end) {
+                            submittedCount++;
+                        }
+                    });
 
-            let pct = studentMax > 0 ? ((earned / studentMax) * 100).toFixed(1) : 0;
-            let remark = 'N/A'; let badgeBg = '#f1f5f9'; let badgeColor = '#64748b';
+                    let expectedSubmissions = 4; // Entirnan thla khatah 4 vawi a nih chuan
+                    let pct = ((submittedCount / expectedSubmissions) * 100).toFixed(1);
+                    if (pct > 100) pct = 100;
 
-            if (studentMax > 0) {
-                let pNum = parseFloat(pct); if (pNum > 100) pNum = 100;
-                if (pNum >= 90) { remark = 'Excellent'; badgeBg = '#dcfce7'; badgeColor = '#166534'; }
-                else if (pNum >= 75) { remark = 'Good'; badgeBg = '#e0f2fe'; badgeColor = '#0369a1'; }
-                else if (pNum >= 50) { remark = 'Average'; badgeBg = '#fef08a'; badgeColor = '#854d0e'; }
-                else { remark = 'Poor'; badgeBg = '#fee2e2'; badgeColor = '#991b1b'; }
-            }
+                    let remark = 'N/A'; let badgeBg = '#f1f5f9'; let badgeColor = '#64748b';
+                    let pNum = parseFloat(pct);
+                    if (pNum >= 90) { remark = 'Excellent'; badgeBg = '#dcfce7'; badgeColor = '#166534'; }
+                    else if (pNum >= 75) { remark = 'Good'; badgeBg = '#e0f2fe'; badgeColor = '#0369a1'; }
+                    else if (pNum >= 50) { remark = 'Average'; badgeBg = '#fef08a'; badgeColor = '#854d0e'; }
+                    else { remark = 'Poor'; badgeBg = '#fee2e2'; badgeColor = '#991b1b'; }
 
-            if(resultBox) {
-                resultBox.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                        <div>
-                            <span style="font-size: 13px; opacity: 0.8;">Hun chhung: ${start} to ${end}</span><br>
-                            <span style="font-size: 14px; margin-top: 4px; display: inline-block;">I Points Hmuh: <b style="color: #0f766e;">${earned}</b> / ${studentMax} (Max Possible)</span>
+                    if(resultBox) {
+                        resultBox.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <span style="font-size: 13px; opacity: 0.8;">Hun chhung: ${start} to ${end}</span><br>
+                                    <span style="font-size: 14px; margin-top: 4px; display: inline-block;">Practical Thehluh Zat: <b style="color: #0f766e;">${submittedCount}</b> (Attendance Alternative)</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-weight: bold; font-size: 20px; color: #0f766e;">${pct}%</span>
+                                    <span style="background: ${badgeBg}; color: ${badgeColor}; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold;">${remark}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            } else {
+                // Normal zirlaite tan
+                const wMax = globalAttendancePeriod.weekdayMax || 0;
+                const sMax = globalAttendancePeriod.saturdayMax || 0;
+                let studentMax = (window.currentStudent.shift === 'Saturday shift') ? sMax : wMax;
+
+                let recordsInRange = allAttendanceRecords.filter(r => r.date >= start && r.date <= end);
+                let earned = 0;
+                recordsInRange.filter(r => r.enrollment === enr).forEach(r => { earned += (r.points || 0); });
+
+                let pct = studentMax > 0 ? ((earned / studentMax) * 100).toFixed(1) : 0;
+                let remark = 'N/A'; let badgeBg = '#f1f5f9'; let badgeColor = '#64748b';
+
+                if (studentMax > 0) {
+                    let pNum = parseFloat(pct); if (pNum > 100) pNum = 100;
+                    if (pNum >= 90) { remark = 'Excellent'; badgeBg = '#dcfce7'; badgeColor = '#166534'; }
+                    else if (pNum >= 75) { remark = 'Good'; badgeBg = '#e0f2fe'; badgeColor = '#0369a1'; }
+                    else if (pNum >= 50) { remark = 'Average'; badgeBg = '#fef08a'; badgeColor = '#854d0e'; }
+                    else { remark = 'Poor'; badgeBg = '#fee2e2'; badgeColor = '#991b1b'; }
+                }
+
+                if(resultBox) {
+                    resultBox.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <span style="font-size: 13px; opacity: 0.8;">Hun chhung: ${start} to ${end}</span><br>
+                                <span style="font-size: 14px; margin-top: 4px; display: inline-block;">I Points Hmuh: <b style="color: #0f766e;">${earned}</b> / ${studentMax} (Max Possible)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-weight: bold; font-size: 20px; color: #0f766e;">${pct}%</span>
+                                <span style="background: ${badgeBg}; color: ${badgeColor}; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold;">${remark}</span>
+                            </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span style="font-weight: bold; font-size: 20px; color: #0f766e;">${pct}%</span>
-                            <span style="background: ${badgeBg}; color: ${badgeColor}; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold;">${remark}</span>
-                        </div>
-                    </div>
-                `;
+                    `;
+                }
             }
         }
 
@@ -805,7 +845,8 @@
             const dayOfWeek = selectedDate.getDay(); 
             const myShift = window.currentStudent.shift || '10am shift';
 
-            if ((myShift === 'Saturday shift' || myShift === 'Saturday (O)') && dayOfWeek !== 6) { alert("Saturday shift i nih avangin Inrinni (Saturday)-ah chauh chawlh i report thei ang."); return; }
+            if (myShift === 'Saturday (O)') { alert("Saturday (O) zirlaite tan chawlh dil a ngai lo."); return; }
+            if ((myShift === 'Saturday shift') && dayOfWeek !== 6) { alert("Saturday shift i nih avangin Inrinni (Saturday)-ah chauh chawlh i report thei ang."); return; }
             if ((myShift !== 'Saturday shift' && myShift !== 'Saturday (O)') && (dayOfWeek === 6 || dayOfWeek === 0)) { alert("Weekday shift i nih avangin Inrinni (Saturday) emaw Pathianni (Sunday)-ah chawlh i report thei lo."); return; }
             
             const monthPrefix = leaveDate.substring(0, 7);
@@ -819,7 +860,7 @@
                 const leaveSnap = await getDocs(leaveQuery);
                 leaveSnap.forEach(doc => { let data = doc.data(); if (data.date && data.date.startsWith(monthPrefix) && (data.status === 'Pending' || data.status === 'Approved')) { totalLeaves++; } });
 
-                const maxLeaves = (myShift === 'Saturday shift' || myShift === 'Saturday (O)') ? 2 : 10;
+                const maxLeaves = (myShift === 'Saturday shift') ? 2 : 10;
                 if (totalLeaves >= maxLeaves) {
                     alert("Tun thlaah chawlh i dil thei tawh rih lo, chawlh dil theih zat i pelh a, class i kal loh chuan a bak chu in report-in point a awm thei tawh lo."); return; 
                 }
@@ -962,6 +1003,7 @@
                     enrollment: window.currentStudent.enrollment, studentName: window.currentStudent.name, title: title, url: link, timestamp: serverTimestamp()
                 });
                 alert("I practical link chu thehluh a ni e. Zirtirtuin a lo check dawn nia."); event.target.reset();
+                autoCalculatePeriodAttendance();
             } catch(e) { alert("Harsatna: " + e.message); }
         }
 
@@ -1037,8 +1079,17 @@
                         if(ptsUI) ptsUI.innerText = (attendancePointsMap[enrollmentStr] || attendancePointsMap[enrollmentNum] || 0) + " Points";
                         
                         const onlineMenuBtn = document.getElementById('student-menu-online');
-                        if (onlineMenuBtn) {
-                            if (window.currentStudent.shift === 'Saturday (O)') { onlineMenuBtn.style.display = 'block'; } else { onlineMenuBtn.style.display = 'none'; }
+                        const leaveMenuBtn = document.getElementById('student-menu-leave');
+                        const attPointsCard = document.getElementById('attendance-points-card');
+
+                        if (window.currentStudent.shift === 'Saturday (O)') {
+                            if (onlineMenuBtn) onlineMenuBtn.style.display = 'block';
+                            if (leaveMenuBtn) leaveMenuBtn.style.display = 'none'; // Saturday (O) tan chawlh dil button a bo ang
+                            if (attPointsCard) attPointsCard.style.display = 'none'; // Points card a bo ang
+                        } else {
+                            if (onlineMenuBtn) onlineMenuBtn.style.display = 'none';
+                            if (leaveMenuBtn) leaveMenuBtn.style.display = 'block';
+                            if (attPointsCard) attPointsCard.style.display = 'flex';
                         }
 
                         renderStudentFeePortal(); loadStudentLeaves(enrollmentStr); loadMySubmissions(); autoCalculatePeriodAttendance(); 
