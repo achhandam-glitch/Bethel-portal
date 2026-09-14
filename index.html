@@ -611,7 +611,6 @@
             let isSatShift = (window.currentStudent.shift === 'Saturday (O)');
 
             if (isSatShift) {
-                // Saturday (O) tan: Practical folder an thehluh atanga chhut a ni ang
                 onSnapshot(query(collection(db, "practical_submissions"), where("enrollment", "==", enr)), (subSnap) => {
                     let submittedCount = 0;
                     subSnap.forEach(docSnap => {
@@ -649,7 +648,6 @@
                     }
                 });
             } else {
-                // Normal zirlaite tan
                 const wMax = globalAttendancePeriod.weekdayMax || 0;
                 const sMax = globalAttendancePeriod.saturdayMax || 0;
                 let studentMax = (window.currentStudent.shift === 'Saturday shift') ? sMax : wMax;
@@ -753,13 +751,34 @@
             });
         }
 
+        // DOUBLE CLICK VEN NANA FUNCTION THAR
         window.submitMCQAnswer = async function(event, mcqId) {
             event.preventDefault();
+
+            // Button disable nghal turin (Double click venna)
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerText = "Submitting...";
+                submitBtn.style.opacity = "0.7";
+                submitBtn.style.cursor = "not-allowed";
+            }
+
             const radios = document.getElementsByName(`ans_${mcqId}`);
             let selected = '';
             for(let r of radios) { if(r.checked) selected = r.value; }
             let mcq = mcqTests.find(m => m.id === mcqId);
-            if(!mcq || !selected) return;
+            
+            if(!mcq || !selected) {
+                if (submitBtn) { 
+                    submitBtn.disabled = false; 
+                    submitBtn.innerText = "Submit Answer"; 
+                    submitBtn.style.opacity = "1"; 
+                    submitBtn.style.cursor = "pointer";
+                }
+                alert("Khawngaihin chhanna thlang phawt rawh.");
+                return;
+            }
 
             try {
                 await setDoc(doc(db, "mcq_submissions", `${mcqId}_${window.currentStudent.enrollment}`), {
@@ -772,7 +791,15 @@
                 } else {
                     alert(`❌ I chhang sual. A dik chu: ${mcq.answer}`);
                 }
-            } catch(e) { alert("Harsatna: " + e.message); }
+            } catch(e) { 
+                alert("Harsatna: " + e.message); 
+                if (submitBtn) { 
+                    submitBtn.disabled = false; 
+                    submitBtn.innerText = "Submit Answer"; 
+                    submitBtn.style.opacity = "1"; 
+                    submitBtn.style.cursor = "pointer";
+                }
+            }
         }
 
         function renderLeaderboard() {
