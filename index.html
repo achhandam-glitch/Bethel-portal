@@ -1095,7 +1095,7 @@
             } catch (e) { alert("Harsatna: " + e.message); }
         }
 
-        // ================= AI ZIRTIRTU LOGIC (Updated with error handling & correct model) =================
+        // ================= AI ZIRTIRTU LOGIC (Updated with v1 API & gemini-2.5-flash) =================
         window.sendAIMessage = async function(event) {
             event.preventDefault();
             const inputEl = document.getElementById('ai-user-input');
@@ -1130,7 +1130,7 @@
 
                 const systemPrompt = `Nang chu Bethel Computer Centre-a computer zirtirtu i ni. Zirlaite zawhna chhangtu tur i ni a. I chhan theih chin subject te chu: Fundamentals of Computer, Operating System (DOS, Windows 7, Windows 10), MS Office (Word, Excel, PowerPoint), Photoshop 7.0, PageMaker, leh Internet Technology chauh a ni. Heng subject pawna thil an rawn zawh che chuan tha takin he portal-a i puih theihna chin i hrilh dawn nia.\n\nTAWNG HMAN TUR (LANGUAGE):\nZirlaiin Mizo tawnga an zawh che chuan Mizo tawng hlangin chhang la. English-a an rawn zawh che pawhin English tha tak hmangin chhang ang che.\n\nCHHANNA LAKNA (KNOWLEDGE SOURCE):\nA hnuaiah hian zirlaite note pek i ni a. Zirlaiten zawhna an zawh chein he note hi tlawhchhan ber (primary reference) ah hmang ang che. Mahse, an thil zawh chu i subject huam chhung a nih phawt chuan, note-a a inziak kher lo a nih pawhin i hriatna hmangin i hrillhfiah thei ang.\n\nZIRLAI NOTE:\n${aiKnowledge}`;
 
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: systemPrompt + "\n\nZirlai zawhna: " + message }] }] })
