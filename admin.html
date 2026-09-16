@@ -243,7 +243,7 @@
                         <button class="menu-btn" onclick="openAdminTab('tab-gradebook')">📊 Comprehensive Gradebook</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-management')">👥 Zirlai Management</button>
                         
-                        <!-- Subject Notes Management Menu Button THAR -->
+                        <!-- Subject Notes Management Menu Button -->
                         <button class="menu-btn" onclick="openAdminTab('tab-subject-notes')" style="border-left-color: #3b82f6; background: #eff6ff; color: #1e40af;">
                             📚 Subject Notes Management
                         </button>
@@ -828,7 +828,7 @@
                     </div>
                 </div>
 
-                <!-- TAB: SUBJECT NOTES MANAGEMENT THAR -->
+                <!-- TAB: SUBJECT NOTES MANAGEMENT -->
                 <div id="tab-subject-notes" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
@@ -859,13 +859,12 @@
                     </div>
                 </div>
 
-                <!-- TAB 8: AI SETTINGS -->
+                <!-- TAB: AI SETTINGS (API KEY ONLY) -->
                 <div id="tab-ai-settings" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
-                    <!-- 1. API Key Setup -->
-                    <div class="card" style="border: 2px solid #0284c7; margin-bottom: 20px;">
-                        <h3 style="color: #0369a1; border-bottom: 1px solid #bae6fd; padding-bottom: 10px;">1. AI Thluak (Gemini API Key) Dahna</h3>
+                    <div class="card" style="border: 2px solid #0284c7; margin-bottom: 0;">
+                        <h3 style="color: #0369a1; border-bottom: 1px solid #bae6fd; padding-bottom: 10px;">AI Thluak (Gemini API Key) Dahna</h3>
                         <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">Google AI Studio aṭanga i API Key lak kha hetah hian dah rawh.</p>
                         
                         <form onsubmit="saveApiKey(event)">
@@ -875,21 +874,6 @@
                             </div>
                             <button type="submit" class="btn btn-primary" style="margin-top: 5px;">API Key Save Rawh</button>
                         </form>
-                    </div>
-
-                    <!-- 2. AI Note (Knowledge Base) Setup -->
-                    <div class="card" style="border: 2px solid #10b981; margin-bottom: 0;">
-                        <h3 style="color: #047857; border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">2. AI Hriatna (Zirlai Note) Dahna</h3>
-                        <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">He box hi subject hrang hranga note i save-te aṭanga a in-compile khawmna a ni.</p>
-                        
-                        <form onsubmit="saveAiKnowledgeBase(event)">
-                            <div class="input-group">
-                                <label>Zirlai Note Zawng Zawng (Combined Text)</label>
-                                <textarea id="admin-ai-note" rows="15" placeholder="Heta tang hian i note text zawng zawng chu paste vek rawh..." required style="font-family: monospace; font-size: 13px;"></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-success" style="margin-top: 5px; background-color: #10b981;">Note Hriattirna Save Rawh</button>
-                        </form>
-                        <div id="ai-note-status" style="margin-top: 10px; font-size: 13px; color: #047857; font-weight: bold;"></div>
                     </div>
                 </div>
 
@@ -921,7 +905,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "4.4";
+        const APP_VERSION = "4.5";
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -1069,7 +1053,6 @@
                 subjectNotesCache[subjKey] = content;
                 statusDiv.innerText = "✅ He subject note hi hlawhtling taka save a ni e!";
                 
-                // Update combined AI Knowledge base automatically
                 await updateCombinedAiKnowledgeBase();
             } catch(e) {
                 alert("Harsatna: " + e.message);
@@ -1116,9 +1099,6 @@
 
             try {
                 await setDoc(doc(db, "settings", "ai_config"), { knowledgeBase: combinedText.trim() }, { merge: true });
-                if(document.getElementById('admin-ai-note')) {
-                    document.getElementById('admin-ai-note').value = combinedText.trim();
-                }
             } catch(e) {
                 console.error("AI Knowledge base update error:", e);
             }
@@ -2065,20 +2045,6 @@
         window.deleteStudent = async function(enrollment) { if(confirm(`Enrollment No: ${enrollment} hi i paih duh takzet em?`)) { try { await deleteDoc(doc(db, "students", enrollment)); alert("Zirlai hi paih a ni tawh e."); } catch(error) { alert("Paih naah harsatna: " + error.message); } } }
 
         // ================= AI SETTINGS LOGIC =================
-        onSnapshot(doc(db, "settings", "ai_config"), (docSnap) => {
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                if(document.getElementById('admin-api-key')) document.getElementById('admin-api-key').value = data.geminiApiKey || '';
-                if(document.getElementById('admin-ai-note') && !document.getElementById('admin-ai-note').value) {
-                    document.getElementById('admin-ai-note').value = data.knowledgeBase || '';
-                }
-                if(document.getElementById('ai-note-status')) {
-                    const charCount = data.knowledgeBase ? data.knowledgeBase.length : 0;
-                    document.getElementById('ai-note-status').innerText = `Tuna note in-save mek sei zawng: ${charCount.toLocaleString()} characters.`;
-                }
-            }
-        });
-
         window.saveApiKey = async function(event) {
             event.preventDefault();
             const apiKey = document.getElementById('admin-api-key').value.trim();
@@ -2086,18 +2052,6 @@
             try {
                 await setDoc(doc(db, "settings", "ai_config"), { geminiApiKey: apiKey }, { merge: true });
                 alert("API Key hlawhtling taka save a ni e!");
-            } catch(e) {
-                alert("Harsatna: " + e.message);
-            }
-        }
-
-        window.saveAiKnowledgeBase = async function(event) {
-            event.preventDefault();
-            const noteText = document.getElementById('admin-ai-note').value.trim();
-            if(!noteText) return;
-            try {
-                await setDoc(doc(db, "settings", "ai_config"), { knowledgeBase: noteText }, { merge: true });
-                alert("Zirlai Note chu AI hriat turin save a ni e!");
             } catch(e) {
                 alert("Harsatna: " + e.message);
             }
