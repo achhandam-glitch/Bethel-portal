@@ -270,9 +270,20 @@
                         </div>
                     </div>
 
+                    <!-- BULK UPLOAD MCQ SECTION (THAR) -->
+                    <div class="card" style="border: 2px solid #16a34a; margin-bottom: 20px;">
+                        <h3 style="color: #15803d; border-bottom: 1px solid #bbf7d0;">📥 MCQ A Hlawm-a Thunluhna (Excel/CSV Upload)</h3>
+                        <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">Excel file-ah Column hmingah hetiang hian dah ang che: <b>Question</b>, <b>OptionA</b>, <b>OptionB</b>, <b>OptionC</b>, <b>OptionD</b>, <b>Answer</b> (A/B/C/D), <b>Coins</b>.</p>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <input type="file" id="mcq-excel-upload" accept=".xlsx, .xls, .csv" style="flex-grow: 1; border: 1px dashed #cbd5e1; padding: 10px; border-radius: 6px;">
+                            <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 20px;" onclick="uploadMCQExcel()">Bulk Upload Rawh</button>
+                        </div>
+                        <div id="mcq-upload-status" style="margin-top: 10px; font-size: 14px; font-weight: bold;"></div>
+                    </div>
+
                     <div class="form-grid" style="grid-template-columns: 1fr;">
                         <div class="card" style="border: 2px solid #eab308;">
-                            <h3 style="color: #a16207; border-bottom: 1px solid #fde047;">MCQ Zawhna Thar Siamna</h3>
+                            <h3 style="color: #a16207; border-bottom: 1px solid #fde047;">MCQ Zawhna Thar Siamna (Manual)</h3>
                             <form onsubmit="createMCQ(event)">
                                 <div class="input-group">
                                     <label>Zawhna (Question)</label>
@@ -905,7 +916,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "4.6";
+        const APP_VERSION = "4.7";
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -1127,6 +1138,75 @@
             if(confirm("Paih duh takzet em?")) {
                 await deleteDoc(doc(db, "mcq_tests", id));
             }
+        }
+
+        // BULK UPLOAD MCQ EXCEL FUNCTION (THAR)
+        window.uploadMCQExcel = async function() {
+            const fileInput = document.getElementById('mcq-excel-upload');
+            const statusDiv = document.getElementById('mcq-upload-status');
+            const file = fileInput.files[0];
+            if (!file) { alert("MCQ Excel emaw CSV file thlang phawt rawh!"); return; }
+            
+            statusDiv.style.color = "#0369a1";
+            statusDiv.innerText = "MCQ data lakluh mek a ni, khawngaihin nghak lawk rawh...";
+            
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { raw: false });
+                    
+                    if (json.length === 0) {
+                        statusDiv.style.color = "red";
+                        statusDiv.innerText = "Excel file-ah data a awm lo.";
+                        return;
+                    }
+                    
+                    let successCount = 0;
+                    let errorCount = 0;
+                    
+                    for (let i = 0; i < json.length; i++) {
+                        let row = json[i];
+                        let q = row.Question || row.question || row.Zawhna;
+                        let optA = row.OptionA || row.optiona || row.Option_A;
+                        let optB = row.OptionB || row.optionb || row.Option_B;
+                        let optC = row.OptionC || row.optionc || row.Option_C;
+                        let optD = row.OptionD || row.optiond || row.Option_D;
+                        let ans = String(row.Answer || row.answer || row.Chhanna || "A").trim().toUpperCase();
+                        let coins = parseInt(row.Coins || row.coins) || 10;
+                        
+                        if (q && optA && optB && optC && optD) {
+                            try {
+                                await addDoc(collection(db, "mcq_tests"), {
+                                    question: String(q),
+                                    optA: String(optA),
+                                    optB: String(optB),
+                                    optC: String(optC),
+                                    optD: String(optD),
+                                    answer: ans.includes('B') ? 'B' : ans.includes('C') ? 'C' : ans.includes('D') ? 'D' : 'A',
+                                    coins: coins,
+                                    createdAt: serverTimestamp()
+                                });
+                                successCount++;
+                            } catch(err) {
+                                errorCount++;
+                            }
+                        } else {
+                            errorCount++;
+                        }
+                    }
+                    
+                    statusDiv.style.color = "#15803d";
+                    statusDiv.innerText = `✅ Tluang takin MCQ zawhna ${successCount} thunluh an ni e! (Fail: ${errorCount})`;
+                    fileInput.value = "";
+                    setTimeout(() => { statusDiv.innerText = ""; }, 6000);
+                } catch (error) {
+                    statusDiv.style.color = "red";
+                    statusDiv.innerText = "Harsatna: " + error.message;
+                }
+            };
+            reader.readAsArrayBuffer(file);
         }
 
         onSnapshot(query(collection(db, "mcq_tests"), orderBy("createdAt", "desc")), (snapshot) => {
@@ -2044,7 +2124,7 @@
         // ================= DELETE STUDENT =================
         window.deleteStudent = async function(enrollment) { if(confirm(`Enrollment No: ${enrollment} hi i paih duh takzet em?`)) { try { await deleteDoc(doc(db, "students", enrollment)); alert("Zirlai hi paih a ni tawh e."); } catch(error) { alert("Paih naah harsatna: " + error.message); } } }
 
-        // ================= AI SETTINGS (API KEY LOGIC) =================
+        // ================= AI SETTINGS (API KEY) =================
         onSnapshot(doc(db, "settings", "ai_config"), (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
