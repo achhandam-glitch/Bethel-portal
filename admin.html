@@ -243,7 +243,7 @@
                         <button class="menu-btn" onclick="openAdminTab('tab-gradebook')">📊 Comprehensive Gradebook</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-management')">👥 Zirlai Management</button>
                         
-                        <!-- Subject Notes Management Menu Button -->
+                        <!-- Subject Notes Management Menu Button (DCA Code nena in-mil) -->
                         <button class="menu-btn" onclick="openAdminTab('tab-subject-notes')" style="border-left-color: #3b82f6; background: #eff6ff; color: #1e40af;">
                             📚 Subject Notes Management
                         </button>
@@ -270,7 +270,7 @@
                         </div>
                     </div>
 
-                    <!-- BULK UPLOAD MCQ SECTION (THAR - QUIZ TITLE TEL) -->
+                    <!-- BULK UPLOAD MCQ SECTION -->
                     <div class="card" style="border: 2px solid #16a34a; margin-bottom: 20px;">
                         <h3 style="color: #15803d; border-bottom: 1px solid #bbf7d0;">📥 MCQ A Hlawm-a Thunluhna (Excel/CSV Upload)</h3>
                         <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">Excel file-ah Column hmingah hetiang hian dah ang che: <b>QuizTitle</b> (e.g. DCA 101 Test), <b>Question</b>, <b>OptionA</b>, <b>OptionB</b>, <b>OptionC</b>, <b>OptionD</b>, <b>Answer</b> (A/B/C/D), <b>Coins</b>.</p>
@@ -843,7 +843,7 @@
                     </div>
                 </div>
 
-                <!-- TAB: SUBJECT NOTES MANAGEMENT -->
+                <!-- TAB: SUBJECT NOTES MANAGEMENT (DCA Code nena in-mil) -->
                 <div id="tab-subject-notes" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
@@ -853,19 +853,19 @@
                         
                         <!-- Subject Selector Tab Buttons -->
                         <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px;" id="subject-tabs-container">
-                            <button class="btn btn-primary" onclick="switchSubjectNote('fundamentals', event)" style="width: auto; padding: 8px 12px; font-size: 13px;">Fundamentals</button>
-                            <button class="btn btn-outline" onclick="switchSubjectNote('os', event)" style="width: auto; padding: 8px 12px; font-size: 13px;">Operating Systems</button>
-                            <button class="btn btn-outline" onclick="switchSubjectNote('msoffice', event)" style="width: auto; padding: 8px 12px; font-size: 13px;">MS Office</button>
-                            <button class="btn btn-outline" onclick="switchSubjectNote('internet', event)" style="width: auto; padding: 8px 12px; font-size: 13px;">Internet Tech</button>
-                            <button class="btn btn-outline" onclick="switchSubjectNote('graphics', event)" style="width: auto; padding: 8px 12px; font-size: 13px;">Photoshop 7.0</button>
-                            <button class="btn btn-outline" onclick="switchSubjectNote('dtp', event)" style="width: auto; padding: 8px 12px; font-size: 13px;">PageMaker (DTP)</button>
+                            <button class="btn btn-primary" onclick="switchSubjectNote('fundamentals', event)" style="width: auto; padding: 8px 12px; font-size: 13px;">DCA 101 - Fundamentals</button>
+                            <button class="btn btn-outline" onclick="switchSubjectNote('os', event)" style="width: auto; padding: 8px 12px; font-size: 13px;">DCA 102 - Operating Systems</button>
+                            <button class="btn btn-outline" onclick="switchSubjectNote('msoffice', event)" style="width: auto; padding: 8px 12px; font-size: 13px;">DCA 103 - Office Automation</button>
+                            <button class="btn btn-outline" onclick="switchSubjectNote('internet', event)" style="width: auto; padding: 8px 12px; font-size: 13px;">DCA 104 - Internet Tech</button>
+                            <button class="btn btn-outline" onclick="switchSubjectNote('graphics', event)" style="width: auto; padding: 8px 12px; font-size: 13px;">DCA 105 - Photoshop 7.0</button>
+                            <button class="btn btn-outline" onclick="switchSubjectNote('dtp', event)" style="width: auto; padding: 8px 12px; font-size: 13px;">DCA 106 - PageMaker (DTP)</button>
                         </div>
 
                         <!-- Subject Note Forms -->
                         <form onsubmit="saveSubjectNote(event)">
                             <input type="hidden" id="current-active-subject" value="fundamentals">
                             <div class="input-group">
-                                <label id="subject-label-title" style="color: #1e40af; font-size: 15px; font-weight: bold;">Fundamentals of Computer Note</label>
+                                <label id="subject-label-title" style="color: #1e40af; font-size: 15px; font-weight: bold;">DCA 101 - Computer Fundamentals Note</label>
                                 <textarea id="subject-note-content" rows="12" placeholder="He subject note tur hi hetah hian paste lut rawh..." required style="font-family: monospace; font-size: 13px;"></textarea>
                             </div>
                             <button type="submit" class="btn btn-success" style="margin-top: 5px; background-color: #3b82f6;">He Subject Note Hi Save Rawh</button>
@@ -920,7 +920,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "4.8";
+        const APP_VERSION = "4.9";
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -1039,12 +1039,12 @@
             document.getElementById('current-active-subject').value = subjectKey;
             
             let titleMap = {
-                'fundamentals': 'Fundamentals of Computer Note',
-                'os': 'Operating Systems (DOS, Windows 7, 10) Note',
-                'msoffice': 'MS Office (Word, Excel, PowerPoint) Note',
-                'internet': 'Internet Technology Note',
-                'graphics': 'Computer Graphics (Photoshop 7.0) Note',
-                'dtp': 'Desktop Publishing (PageMaker) Note'
+                'fundamentals': 'DCA 101 - Computer Fundamentals Note',
+                'os': 'DCA 102 - Operating Systems (DOS, Windows 7, 10) Note',
+                'msoffice': 'DCA 103 - Office Automation Software (Word, Excel, PPT) Note',
+                'internet': 'DCA 104 - Internet Technology Note',
+                'graphics': 'DCA 105 - Computer Graphics (Photoshop 7.0) Note',
+                'dtp': 'DCA 106 - Desktop Publishing (PageMaker) Note'
             };
             document.getElementById('subject-label-title').innerText = titleMap[subjectKey] || 'Subject Note';
             document.getElementById('subject-note-content').value = subjectNotesCache[subjectKey] || '';
@@ -1098,12 +1098,12 @@
             let subjects = ['fundamentals', 'os', 'msoffice', 'internet', 'graphics', 'dtp'];
             let combinedText = "";
             let subNames = {
-                'fundamentals': '--- FUNDAMENTALS OF COMPUTER ---',
-                'os': '--- OPERATING SYSTEMS (DOS, WINDOWS 7, 10) ---',
-                'msoffice': '--- MS OFFICE (WORD, EXCEL, POWERPOWER) ---',
-                'internet': '--- INTERNET TECHNOLOGY ---',
-                'graphics': '--- COMPUTER GRAPHICS (PHOTOSHOP 7.0) ---',
-                'dtp': '--- DESKTOP PUBLISHING (PAGEMAKER) ---'
+                'fundamentals': '--- DCA 101: COMPUTER FUNDAMENTALS ---',
+                'os': '--- DCA 102: OPERATING SYSTEMS (DOS, WINDOWS 7, 10) ---',
+                'msoffice': '--- DCA 103: OFFICE AUTOMATION SOFTWARE (WORD, EXCEL, PPT) ---',
+                'internet': '--- DCA 104: INTERNET TECHNOLOGY ---',
+                'graphics': '--- DCA 105: COMPUTER GRAPHICS (PHOTOSHOP 7.0) ---',
+                'dtp': '--- DCA 106: DESKTOP PUBLISHING (PAGEMAKER) ---'
             };
 
             for(let s of subjects) {
@@ -1149,7 +1149,7 @@
             }
         }
 
-        // BULK UPLOAD MCQ EXCEL FUNCTION (QUIZ TITLE TEL)
+        // BULK UPLOAD MCQ EXCEL FUNCTION
         window.uploadMCQExcel = async function() {
             const fileInput = document.getElementById('mcq-excel-upload');
             const statusDiv = document.getElementById('mcq-upload-status');
