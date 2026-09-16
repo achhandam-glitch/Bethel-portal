@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bethel Computer Centre - Student Portal</title>
     
+    <!-- html2pdf library for exporting chat to PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f0f2f5; color: #1e293b; position: relative; min-height: 100vh; padding-bottom: 50px; }
@@ -175,7 +178,7 @@
 
                 <h4 style="margin-bottom: 5px;">3. Internal Mark Hamthatna</h4>
                 <p style="margin-bottom: 15px; padding: 10px; background-color: #14532d; border-left: 4px solid #22c55e; border-radius: 4px; color: #86efac;">
-                    Class i kal ṭhat dan (percentage) hian Internal Mark-ah nghawng thui tak a nei a ni. Entirnan, <b>DCA 104</b> subject-ah phei chuan i <b>Attendance Percentage aṭangin Practical Exam Mark (Max 40) pek auto i ni dawn a ni.</b> Class i kal that poh leh i exam mark a tha dawn tihna a ni.
+                    Class i kal ṭhat dan (percentage) hian Internal Mark-ah nghawng thui tak a nei a ni. Entirnan, <b>DCA 103</b> subject-ah phei chuan i <b>Attendance Percentage aṭangin Practical Exam Mark (Max 40) pek auto i ni dawn a ni.</b> Class i kal that poh leh i exam mark a tha dawn tihna a ni.
                 </p>
             </div>
             
@@ -387,6 +390,7 @@
                                     <option value="DCA 105 - Computer Graphics (Photoshop 7.0)">DCA 105 - Computer Graphics (Photoshop 7.0)</option>
                                     <option value="DCA 106 - Desktop Publishing (PageMaker)">DCA 106 - Desktop Publishing (PageMaker)</option>
                                 </select>
+                                <button class="btn btn-primary" style="width: auto; margin: 0; padding: 6px 12px; font-size: 13px; background-color: #0284c7;" onclick="exportChatToPDF()" title="PDF in Download Rawh">📥 PDF</button>
                                 <button class="btn btn-danger" style="width: auto; margin: 0; padding: 6px 12px; font-size: 13px;" onclick="clearAIChat()" title="Chat hlui nawt faina">🗑️</button>
                             </div>
                         </div>
@@ -453,7 +457,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "4.6"; 
+        const APP_VERSION = "4.8"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -1124,13 +1128,15 @@
 
                         renderStudentFeePortal(); loadStudentLeaves(enrollmentStr); loadMySubmissions(); autoCalculatePeriodAttendance(); 
                         checkNotifications();
+                        loadAIChatHistory();
+
                         showSection('student-portal-section');
                     } else { alert("Date of birth a dik lo! I date of birth kha 0 telh kim in han chhut teh (Entirnan: 15-05-2005)"); }
                 } else { alert("Enrollment Number a dik lo! Zirlai list-ah a awm lo emaw check ṭha rawh."); }
             } catch (e) { alert("Harsatna: " + e.message); }
         }
 
-        // ================= AI ZIRTIRTU LOGIC (with DCA 103 Office Automation) =================
+        // ================= AI ZIRTIRTU LOGIC (WITH LOCALSTORAGE & PDF EXPORT) =================
         window.sendAIMessage = async function(event) {
             event.preventDefault();
             const inputEl = document.getElementById('ai-user-input');
@@ -1193,6 +1199,8 @@
                 }
                 chatHistory.scrollTop = chatHistory.scrollHeight;
                 
+                saveAIChatHistory();
+
             } catch (error) {
                 document.getElementById(loadingId).remove();
                 submitBtn.disabled = false;
@@ -1202,10 +1210,55 @@
             }
         }
 
+        window.exportChatToPDF = function() {
+            const chatElement = document.getElementById('chat-history');
+            if(!chatElement || chatElement.children.length <= 1) {
+                alert("Download tur chat history a la ruak a ni!");
+                return;
+            }
+
+            let studentName = window.currentStudent.name ? window.currentStudent.name.replace(/\s+/g, '_') : 'Student';
+            let filename = `Bethel_AI_Chat_${studentName}.pdf`;
+
+            let opt = {
+                margin:       10,
+                filename:     filename,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().from(chatElement).set(opt).save().then(() => {
+                alert("✅ PDF file hlawhtling taka download a ni e!");
+            }).catch(err => {
+                alert("PDF export-naah harsatna a awm: " + err.message);
+            });
+        }
+
+        function saveAIChatHistory() {
+            const chatHistory = document.getElementById('chat-history');
+            if(chatHistory && window.currentStudent.enrollment) {
+                localStorage.setItem('bcc_chat_history_' + window.currentStudent.enrollment, chatHistory.innerHTML);
+            }
+        }
+
+        function loadAIChatHistory() {
+            const chatHistory = document.getElementById('chat-history');
+            if(chatHistory && window.currentStudent.enrollment) {
+                let savedChat = localStorage.getItem('bcc_chat_history_' + window.currentStudent.enrollment);
+                if(savedChat) {
+                    chatHistory.innerHTML = savedChat;
+                }
+            }
+        }
+
         window.clearAIChat = function() {
             if (confirm("I inbiakna (chat history) zawng zawng hi paih fai i duh takzet em?")) {
                 const chatHistory = document.getElementById('chat-history');
                 chatHistory.innerHTML = `<div class="ai-msg">Chibai! Bethel Computer Centre AI Assistant ka ni e. Subject i duh ber thlang la, i zawhna chu ziak rawh le!</div>`;
+                if(window.currentStudent.enrollment) {
+                    localStorage.removeItem('bcc_chat_history_' + window.currentStudent.enrollment);
+                }
             }
         }
     </script>
