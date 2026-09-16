@@ -270,10 +270,10 @@
                         </div>
                     </div>
 
-                    <!-- BULK UPLOAD MCQ SECTION (THAR) -->
+                    <!-- BULK UPLOAD MCQ SECTION (THAR - QUIZ TITLE TEL) -->
                     <div class="card" style="border: 2px solid #16a34a; margin-bottom: 20px;">
                         <h3 style="color: #15803d; border-bottom: 1px solid #bbf7d0;">📥 MCQ A Hlawm-a Thunluhna (Excel/CSV Upload)</h3>
-                        <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">Excel file-ah Column hmingah hetiang hian dah ang che: <b>Question</b>, <b>OptionA</b>, <b>OptionB</b>, <b>OptionC</b>, <b>OptionD</b>, <b>Answer</b> (A/B/C/D), <b>Coins</b>.</p>
+                        <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">Excel file-ah Column hmingah hetiang hian dah ang che: <b>QuizTitle</b> (e.g. DCA 101 Test), <b>Question</b>, <b>OptionA</b>, <b>OptionB</b>, <b>OptionC</b>, <b>OptionD</b>, <b>Answer</b> (A/B/C/D), <b>Coins</b>.</p>
                         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                             <input type="file" id="mcq-excel-upload" accept=".xlsx, .xls, .csv" style="flex-grow: 1; border: 1px dashed #cbd5e1; padding: 10px; border-radius: 6px;">
                             <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 20px;" onclick="uploadMCQExcel()">Bulk Upload Rawh</button>
@@ -285,6 +285,10 @@
                         <div class="card" style="border: 2px solid #eab308;">
                             <h3 style="color: #a16207; border-bottom: 1px solid #fde047;">MCQ Zawhna Thar Siamna (Manual)</h3>
                             <form onsubmit="createMCQ(event)">
+                                <div class="input-group">
+                                    <label>Quiz Thupui (Entirnan: DCA 101 Chapter 1 Test)</label>
+                                    <input type="text" id="mcq-title" placeholder="Quiz hming type rawh..." required>
+                                </div>
                                 <div class="input-group">
                                     <label>Zawhna (Question)</label>
                                     <input type="text" id="mcq-q" placeholder="Entirnan: HTML awmzia chu?" required>
@@ -916,7 +920,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "4.7";
+        const APP_VERSION = "4.8";
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -1096,7 +1100,7 @@
             let subNames = {
                 'fundamentals': '--- FUNDAMENTALS OF COMPUTER ---',
                 'os': '--- OPERATING SYSTEMS (DOS, WINDOWS 7, 10) ---',
-                'msoffice': '--- MS OFFICE (WORD, EXCEL, POWERPOINT) ---',
+                'msoffice': '--- MS OFFICE (WORD, EXCEL, POWERPOWER) ---',
                 'internet': '--- INTERNET TECHNOLOGY ---',
                 'graphics': '--- COMPUTER GRAPHICS (PHOTOSHOP 7.0) ---',
                 'dtp': '--- DESKTOP PUBLISHING (PAGEMAKER) ---'
@@ -1120,6 +1124,7 @@
             e.preventDefault();
             try {
                 await addDoc(collection(db, "mcq_tests"), {
+                    quizTitle: document.getElementById('mcq-title').value.trim(),
                     question: document.getElementById('mcq-q').value,
                     optA: document.getElementById('mcq-a').value,
                     optB: document.getElementById('mcq-b').value,
@@ -1130,7 +1135,11 @@
                     createdAt: serverTimestamp()
                 });
                 alert("MCQ hlawhtling takin i siam e!");
-                e.target.reset();
+                document.getElementById('mcq-q').value = '';
+                document.getElementById('mcq-a').value = '';
+                document.getElementById('mcq-b').value = '';
+                document.getElementById('mcq-c').value = '';
+                document.getElementById('mcq-d').value = '';
             } catch(err) { alert("Error: " + err.message); }
         }
 
@@ -1140,7 +1149,7 @@
             }
         }
 
-        // BULK UPLOAD MCQ EXCEL FUNCTION (THAR)
+        // BULK UPLOAD MCQ EXCEL FUNCTION (QUIZ TITLE TEL)
         window.uploadMCQExcel = async function() {
             const fileInput = document.getElementById('mcq-excel-upload');
             const statusDiv = document.getElementById('mcq-upload-status');
@@ -1168,6 +1177,7 @@
                     
                     for (let i = 0; i < json.length; i++) {
                         let row = json[i];
+                        let quizTitle = row.QuizTitle || row.quiztitle || row.Quiz_Title || "General Test";
                         let q = row.Question || row.question || row.Zawhna;
                         let optA = row.OptionA || row.optiona || row.Option_A;
                         let optB = row.OptionB || row.optionb || row.Option_B;
@@ -1179,6 +1189,7 @@
                         if (q && optA && optB && optC && optD) {
                             try {
                                 await addDoc(collection(db, "mcq_tests"), {
+                                    quizTitle: String(quizTitle),
                                     question: String(q),
                                     optA: String(optA),
                                     optB: String(optB),
@@ -1221,7 +1232,10 @@
                         adminList.innerHTML += `
                             <div style="border: 1px solid #fde047; background: #fefce8; padding: 15px; border-radius: 6px; margin-bottom: 10px; color: #333;">
                                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                                    <strong style="color:#a16207;">${d.question}</strong>
+                                    <div>
+                                        <span style="background:#eab308; color:white; font-size:11px; padding:2px 6px; border-radius:4px; font-weight:bold;">${d.quizTitle || 'General Test'}</span>
+                                        <strong style="color:#a16207; display:block; margin-top:4px;">${d.question}</strong>
+                                    </div>
                                     <button class="btn btn-danger btn-icon" onclick="deleteMCQ('${d.id}')">✕</button>
                                 </div>
                                 <ul style="font-size:13px; color:#475569; margin-left:15px; margin-bottom:10px;">
