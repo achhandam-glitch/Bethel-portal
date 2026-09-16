@@ -30,6 +30,8 @@
         .btn-success:hover { background-color: #15803d; }
         .btn-warning { background-color: #f59e0b; color: white; }
         .btn-warning:hover { background-color: #d97706; }
+        .btn-danger { background-color: #ef4444; color: white; }
+        .btn-danger:hover { background-color: #dc2626; }
         .btn-outline { background-color: transparent; border: 1px solid #0284c7; color: #0284c7; }
         .btn-outline:hover { background-color: #f0f9ff; }
 
@@ -221,6 +223,7 @@
                         
                         <button class="menu-btn" id="student-menu-online" style="display: none; border-left-color: #8b5cf6;" onclick="openStudentTab('student-tab-online')">💻 Special class</button>
 
+                        <!-- AI ZIRTIRTU BUTTON -->
                         <button class="menu-btn" onclick="openStudentTab('student-tab-ai')" style="border-left-color: #10b981;">
                             🤖 AI Zirtirtu (Zawhna Zawt Rawh)
                         </button>
@@ -368,11 +371,15 @@
                     </div>
                 </div>
 
+                <!-- AI CHAT TAB (Updated with Delete button) -->
                 <div id="student-tab-ai" class="student-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
                     <div class="card" style="display: flex; flex-direction: column; height: 65vh; margin-bottom: 0; border: 2px solid #10b981;">
-                        <h3 style="border-bottom: 1px solid #a7f3d0; padding-bottom: 10px; margin-bottom: 15px; color: #047857;">🤖 AI Zirtirtu</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #a7f3d0; padding-bottom: 10px; margin-bottom: 15px;">
+                            <h3 style="margin: 0; border: none; padding: 0; color: #047857;">🤖 AI Zirtirtu</h3>
+                            <button class="btn btn-danger" style="width: auto; margin: 0; padding: 5px 12px; font-size: 13px;" onclick="clearAIChat()" title="Chat hlui nawt faina">🗑️ Paihna</button>
+                        </div>
                         
                         <div id="chat-history" style="flex-grow: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
                             <div class="ai-msg">Chibai! Bethel Computer Centre AI Assistant ka ni e. Fundamentals of Computer, DOS, Windows, MS Office, Photoshop, PageMaker leh Internet lamah zawhna i nei em?</div>
@@ -434,7 +441,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "4.2"; 
+        const APP_VERSION = "4.3"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -1193,6 +1200,14 @@
                 submitBtn.innerText = 'Thawnna';
                 chatHistory.innerHTML += `<div class="ai-msg" style="color: #ef4444;">Harsatna: ${error.message}</div>`;
                 chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
+        }
+
+        // ================= AI CHAT CLEAR LOGIC =================
+        window.clearAIChat = function() {
+            if (confirm("I inbiakna (chat history) zawng zawng hi paih fai i duh takzet em?")) {
+                const chatHistory = document.getElementById('chat-history');
+                chatHistory.innerHTML = `<div class="ai-msg">Chibai! Bethel Computer Centre AI Assistant ka ni e. Fundamentals of Computer, DOS, Windows, MS Office, Photoshop, PageMaker leh Internet lamah zawhna i nei em?</div>`;
             }
         }
     </script>
