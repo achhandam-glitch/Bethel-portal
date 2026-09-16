@@ -859,12 +859,12 @@
                     </div>
                 </div>
 
-                <!-- TAB: AI SETTINGS (API KEY ONLY) -->
+                <!-- TAB: AI SETTINGS (API KEY) -->
                 <div id="tab-ai-settings" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
                     <div class="card" style="border: 2px solid #0284c7; margin-bottom: 0;">
-                        <h3 style="color: #0369a1; border-bottom: 1px solid #bae6fd; padding-bottom: 10px;">AI Thluak (Gemini API Key) Dahna</h3>
+                        <h3 style="color: #0369a1; border-bottom: 1px solid #bae6fd; padding-bottom: 10px;">🤖 AI Thluak (Gemini API Key) Dahna</h3>
                         <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">Google AI Studio aṭanga i API Key lak kha hetah hian dah rawh.</p>
                         
                         <form onsubmit="saveApiKey(event)">
@@ -905,7 +905,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "4.5";
+        const APP_VERSION = "4.6";
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -2044,7 +2044,16 @@
         // ================= DELETE STUDENT =================
         window.deleteStudent = async function(enrollment) { if(confirm(`Enrollment No: ${enrollment} hi i paih duh takzet em?`)) { try { await deleteDoc(doc(db, "students", enrollment)); alert("Zirlai hi paih a ni tawh e."); } catch(error) { alert("Paih naah harsatna: " + error.message); } } }
 
-        // ================= AI SETTINGS LOGIC =================
+        // ================= AI SETTINGS (API KEY LOGIC) =================
+        onSnapshot(doc(db, "settings", "ai_config"), (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if(document.getElementById('admin-api-key')) {
+                    document.getElementById('admin-api-key').value = data.geminiApiKey || '';
+                }
+            }
+        });
+
         window.saveApiKey = async function(event) {
             event.preventDefault();
             const apiKey = document.getElementById('admin-api-key').value.trim();
