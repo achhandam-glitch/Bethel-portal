@@ -174,7 +174,7 @@
                 </ul>
 
                 <h4 style="margin-bottom: 5px;">2. Chawlh In-Report Dan</h4>
-                <p style="margin-bottom: 15px;">Class i kal theih dawn loh chuan Menu aṭangin <b>"📝 Chawlh Dilna & In-Report-na"</b> ah lut la, i chawlh chhan ziakin thehlut rawh. Zirtirtuin a pawm (approve) hunah i attendance kha 'Reported' ah a inthlak ang a, point chanve i hmu ang.</p>
+                <p style="margin-bottom: 15px;">Class i kal theih dawn lo chuan Menu aṭangin <b>"📝 Chawlh Dilna & In-Report-na"</b> ah lut la, i chawlh chhan ziakin thehlut rawh. Zirtirtuin a pawm (approve) hunah i attendance kha 'Reported' ah a inthlak ang a, point chanve i hmu ang.</p>
 
                 <h4 style="margin-bottom: 5px;">3. Internal Mark Hamthatna</h4>
                 <p style="margin-bottom: 15px; padding: 10px; background-color: #14532d; border-left: 4px solid #22c55e; border-radius: 4px; color: #86efac;">
@@ -1172,9 +1172,9 @@
 
                 if(!apiKey) throw new Error("Admin-in API Key a la dah lut lo. Khawngaihin zirtirtu hrilh rawh.");
 
-                const systemPrompt = `Nang chu Bethel Computer Centre-a computer zirtirtu i ni. Zirlaite zawhna chhangtu tur i ni a. Zirlai hian an zawhna tur subject atan '${selectedSubject}' an thlang a ni. I chhan theih chin subject te chu: DCA 101 Computer Fundamentals, DCA 102 Operating Systems (DOS, Windows 7, Windows 10), DCA 103 Office Automation Software (MS Word, Excel, PowerPoint) leh Internet Technology, DCA 105 Computer Graphics (Photoshop 7.0), DCA 106 Desktop Publishing (PageMaker) te an ni.\n\nTAWNG HMAN TUR (LANGUAGE):\nZirlaiin Mizo tawnga an zawh che chuan Mizo tawng hlangin chhang la. English-a an rawn zawh che pawhin English tha tak hmangin chhang ang che.\n\nCHHANNA LAKNA (KNOWLEDGE SOURCE):\nA hnuaiah hian zirlaite note pek i ni a. Zirlaiten zawhna an zawh chein he note hi tlawhchhan ber (primary reference) ah hmang ang che. Mahse, an thil zawh chu i subject huam chhung a nih phawt chuan, note-a a inziak kher lo a nih pawhin i hriatna hmangin i hrillhfiah thei ang.\n\nZIRLAI NOTE:\n${aiKnowledge}`;
+                const systemPrompt = `Nang chu Bethel Computer Centre-a computer zirtirtu i ni. Zirlaite zawhna chhangtu tur i ni a. Zirlai hian an zawhna tur subject atan '${selectedSubject}' an thlang a ni. I chhan theih chin subject te chu: DCA 101 Computer Fundamentals, DCA 102 Operating Systems (DOS, Windows 7, Windows 10), DCA 103 Office Automation Software (MS Word, Excel, PowerPoint) leh Internet Technology, DCA 105 Computer Graphics (Photoshop 7.0), DCA 106 Desktop Publishing (PageMaker) te an ni.\n\nTAWNG HMAN TUR (LANGUAGE):\nZirlaiin Mizo tawnga an zawh che chuan Mizo tawng hlangin chhang la. English-a an rawn zawh che pawhin English tha tak hmangin chhang ang che.\n\nCHHANNA LAKNA (KNOWLEDGE SOURCE):\nA hnuaiah hian zirlaite note pek i ni a. Zirlaite'n an zawhna zawh chein he note hi tlawhchhan ber (primary reference) ah hmang ang che. Mahse, an thil zawh chu i subject huam chhung a nih phawt chuan, note-a a inziak kher lo a nih pawhin i hriatna hmangin i hrillhfiah thei ang.\n\nZIRLAI NOTE:\n${aiKnowledge}`;
 
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-3.5-flash:generateContent?key=${apiKey}`, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: systemPrompt + "\n\nZirlai thlan subject: " + selectedSubject + "\n\nZirlai zawhna: " + message }] }] })
@@ -1205,7 +1205,14 @@
                 document.getElementById(loadingId).remove();
                 submitBtn.disabled = false;
                 submitBtn.innerText = 'Thawnna 🚀';
-                chatHistory.innerHTML += `<div class="ai-msg" style="color: #ef4444;">Harsatna: ${error.message}</div>`;
+                
+                // Quota a zawh (exceeded) hun a chang tur error message
+                if (error.message.includes("quota") || error.message.includes("429") || error.message.includes("RESOURCE_EXHAUSTED")) {
+                    chatHistory.innerHTML += `<div class="ai-msg" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171;">⚠️ <b>AI Zirtirtu Quota a zo rih tlat!</b><br>Tunah chuan hman theih a ni rih lo a. Naktuk chhun dar 1:30 PM velah a rawn nung leh ang, emaw zirtirtuin API Key a thlak hunah a nung leh ang. Khawngaihin lo nghak hram rawh u.</div>`;
+                } else {
+                    chatHistory.innerHTML += `<div class="ai-msg" style="color: #ef4444;">Harsatna: ${error.message}</div>`;
+                }
+                
                 chatHistory.scrollTop = chatHistory.scrollHeight;
             }
         }
