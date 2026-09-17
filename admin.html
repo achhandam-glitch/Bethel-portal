@@ -242,11 +242,6 @@
                         <button class="menu-btn" onclick="openAdminTab('tab-online')" style="border-left-color: #8b5cf6; background: #faf5ff; color: #581c87;">💻 Saturday (O) Bik</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-gradebook')">📊 Comprehensive Gradebook</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-management')">👥 Zirlai Management</button>
-                        
-                        <!-- Subject Notes Management Menu Button (DCA Code nena in-mil) -->
-                        <button class="menu-btn" onclick="openAdminTab('tab-subject-notes')" style="border-left-color: #3b82f6; background: #eff6ff; color: #1e40af;">
-                            📚 Subject Notes Management
-                        </button>
 
                         <!-- AI Settings Menu Button -->
                         <button class="menu-btn" onclick="openAdminTab('tab-ai-settings')" style="border-left-color: #10b981; background: #ecfdf5; color: #065f46;">
@@ -842,37 +837,6 @@
                     </div>
                 </div>
 
-                <!-- TAB: SUBJECT NOTES MANAGEMENT (DCA Code nena in-mil) -->
-                <div id="tab-subject-notes" class="admin-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
-                    
-                    <div class="card" style="border: 2px solid #3b82f6; margin-bottom: 20px;">
-                        <h3 style="color: #1e40af; border-bottom: 1px solid #bfdbfe; padding-bottom: 10px;">📚 Subject Hrang Hrang Note Dah Luhna</h3>
-                        <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">Subject tin tan a hran vekin note text i dah lut thei a, AI in a chhiar tel ve zel bawk ang.</p>
-                        
-                        <!-- Subject Selector Tab Buttons -->
-                        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px;" id="subject-tabs-container">
-                            <button class="btn btn-primary" onclick="switchSubjectNote('fundamentals', event)" style="width: auto; padding: 8px 12px; font-size: 13px;">DCA 101 - Fundamentals</button>
-                            <button class="btn btn-outline" onclick="switchSubjectNote('os', event)" style="width: auto; padding: 8px 12px; font-size: 13px;">DCA 102 - Operating Systems</button>
-                            <button class="btn btn-outline" onclick="switchSubjectNote('msoffice', event)" style="width: auto; padding: 8px 12px; font-size: 13px;">DCA 103 - Office Automation</button>
-                            <button class="btn btn-outline" onclick="switchSubjectNote('internet', event)" style="width: auto; padding: 8px 12px; font-size: 13px;">DCA 104 - Internet Tech</button>
-                            <button class="btn btn-outline" onclick="switchSubjectNote('graphics', event)" style="width: auto; padding: 8px 12px; font-size: 13px;">DCA 105 - Photoshop 7.0</button>
-                            <button class="btn btn-outline" onclick="switchSubjectNote('dtp', event)" style="width: auto; padding: 8px 12px; font-size: 13px;">DCA 106 - PageMaker (DTP)</button>
-                        </div>
-
-                        <!-- Subject Note Forms -->
-                        <form onsubmit="saveSubjectNote(event)">
-                            <input type="hidden" id="current-active-subject" value="fundamentals">
-                            <div class="input-group">
-                                <label id="subject-label-title" style="color: #1e40af; font-size: 15px; font-weight: bold;">DCA 101 - Computer Fundamentals Note</label>
-                                <textarea id="subject-note-content" rows="12" placeholder="He subject note tur hi hetah hian paste lut rawh..." required style="font-family: monospace; font-size: 13px;"></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-success" style="margin-top: 5px; background-color: #3b82f6;">He Subject Note Hi Save Rawh</button>
-                        </form>
-                        <div id="subject-note-status" style="margin-top: 10px; font-size: 13px; color: #1e40af; font-weight: bold;"></div>
-                    </div>
-                </div>
-
                 <!-- TAB: AI SETTINGS (API KEY) -->
                 <div id="tab-ai-settings" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
@@ -928,7 +892,6 @@
         let attendanceStats = {}; 
         let feeDataMap = {}; 
         let mcqTests = []; 
-        let subjectNotesCache = {};
 
         window.currentPerformanceFilter = 'ALL';
 
@@ -975,7 +938,6 @@
                 if(adminMenu) adminMenu.style.display = 'block';
                 document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.remove('active-content'));
                 if(typeof loadAttendanceForDate === 'function') loadAttendanceForDate();
-                loadAllSubjectNotes();
             }
             window.scrollTo(0, 0);
         }
@@ -1031,91 +993,6 @@
             }
             text += `\n\nKhawngaihin in Portal-ah log in ula kimchangin lo check ngei ngei ru.\n\n🌐 Portal Link: ${PORTAL_LINK}`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-        }
-
-        // ================= SUBJECT NOTES MANAGEMENT =================
-        window.switchSubjectNote = function(subjectKey, event) {
-            document.getElementById('current-active-subject').value = subjectKey;
-            
-            let titleMap = {
-                'fundamentals': 'DCA 101 - Computer Fundamentals Note',
-                'os': 'DCA 102 - Operating Systems (DOS, Windows 7, 10) Note',
-                'msoffice': 'DCA 103 - Office Automation Software (Word, Excel, PPT) Note',
-                'internet': 'DCA 104 - Internet Technology Note',
-                'graphics': 'DCA 105 - Computer Graphics (Photoshop 7.0) Note',
-                'dtp': 'DCA 106 - Desktop Publishing (PageMaker) Note'
-            };
-            document.getElementById('subject-label-title').innerText = titleMap[subjectKey] || 'Subject Note';
-            document.getElementById('subject-note-content').value = subjectNotesCache[subjectKey] || '';
-            document.getElementById('subject-note-status').innerText = '';
-            
-            const btns = document.querySelectorAll('#subject-tabs-container button');
-            btns.forEach(b => { b.className = 'btn btn-outline'; });
-            if(event && event.target) {
-                event.target.className = 'btn btn-primary';
-            }
-        }
-
-        window.saveSubjectNote = async function(event) {
-            event.preventDefault();
-            const subjKey = document.getElementById('current-active-subject').value;
-            const content = document.getElementById('subject-note-content').value.trim();
-            const statusDiv = document.getElementById('subject-note-status');
-            
-            try {
-                await setDoc(doc(db, "settings", `note_${subjKey}`), { noteText: content, updatedAt: serverTimestamp() }, { merge: true });
-                subjectNotesCache[subjKey] = content;
-                statusDiv.innerText = "✅ He subject note hi hlawhtling taka save a ni e!";
-                
-                await updateCombinedAiKnowledgeBase();
-            } catch(e) {
-                alert("Harsatna: " + e.message);
-            }
-        }
-
-        async function loadAllSubjectNotes() {
-            let subjects = ['fundamentals', 'os', 'msoffice', 'internet', 'graphics', 'dtp'];
-            for(let s of subjects) {
-                try {
-                    let dSnap = await getDoc(doc(db, "settings", `note_${s}`));
-                    if(dSnap.exists()) {
-                        subjectNotesCache[s] = dSnap.data().noteText || '';
-                    } else {
-                        subjectNotesCache[s] = '';
-                    }
-                } catch(err) {
-                    subjectNotesCache[s] = '';
-                }
-            }
-            let activeSubj = document.getElementById('current-active-subject')?.value || 'fundamentals';
-            if(document.getElementById('subject-note-content')) {
-                document.getElementById('subject-note-content').value = subjectNotesCache[activeSubj] || '';
-            }
-        }
-
-        async function updateCombinedAiKnowledgeBase() {
-            let subjects = ['fundamentals', 'os', 'msoffice', 'internet', 'graphics', 'dtp'];
-            let combinedText = "";
-            let subNames = {
-                'fundamentals': '--- DCA 101: COMPUTER FUNDAMENTALS ---',
-                'os': '--- DCA 102: OPERATING SYSTEMS (DOS, WINDOWS 7, 10) ---',
-                'msoffice': '--- DCA 103: OFFICE AUTOMATION SOFTWARE (WORD, EXCEL, PPT) ---',
-                'internet': '--- DCA 104: INTERNET TECHNOLOGY ---',
-                'graphics': '--- DCA 105: COMPUTER GRAPHICS (PHOTOSHOP 7.0) ---',
-                'dtp': '--- DCA 106: DESKTOP PUBLISHING (PAGEMAKER) ---'
-            };
-
-            for(let s of subjects) {
-                if(subjectNotesCache[s] && subjectNotesCache[s].trim() !== '') {
-                    combinedText += `${subNames[s]}\n${subjectNotesCache[s]}\n\n`;
-                }
-            }
-
-            try {
-                await setDoc(doc(db, "settings", "ai_config"), { knowledgeBase: combinedText.trim() }, { merge: true });
-            } catch(e) {
-                console.error("AI Knowledge base update error:", e);
-            }
         }
 
         // ================= MCQ & COINS LOGIC =================
@@ -2032,7 +1909,6 @@
                 snapshot.forEach((docSnap) => {
                     let data = docSnap.data(); let icon = '🔗'; let color = '#333'; let btnText = 'Hawng Rawh'; let finalUrl = data.url;
                     if (data.type === 'PDF Note') { icon = '📕'; color = '#dc2626'; let match = finalUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/); if(match && match[1]) { finalUrl = `https://drive.google.com/uc?export=download&id=${match[1]}`; btnText = 'Download'; } }
-                    else if (data.type === 'GitHub Project') { icon = '💻'; color = '#111827'; }
                     else if (data.type === 'Google Form') { icon = '📝'; color = '#16a34a'; } else if (data.type === 'YouTube Video') { icon = '▶️'; color = '#2563eb'; }
                     let safeFileName = data.fileName ? data.fileName.replace(/'/g, "\\'") : ''; let safeType = data.type ? data.type.replace(/'/g, "\\'") : '';
                     if(adminContainer) {
@@ -2162,7 +2038,7 @@
         // ================= LOGIN LOGIC =================
         window.loginAdmin = function(event) {
             event.preventDefault();
-            if (document.getElementById('admin-password').value === "Bethel@123") { document.getElementById('admin-password').value = ''; showSection('teacher-dashboard-section'); loadAllSubjectNotes(); } 
+            if (document.getElementById('admin-password').value === "Bethel@123") { document.getElementById('admin-password').value = ''; showSection('teacher-dashboard-section'); } 
             else { alert("Password a dik lo!"); }
         }
     </script>
