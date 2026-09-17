@@ -457,7 +457,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "4.8"; 
+        const APP_VERSION = "4.9"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -991,13 +991,6 @@
                     if (docTime > latestMaterialTime) latestMaterialTime = docTime;
                     
                     if (data.type === 'PDF Note') { icon = '📕'; let match = finalUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/); if(match && match[1]) { finalUrl = `https://drive.google.com/uc?export=download&id=${match[1]}`; btnText = 'Download'; } }
-                    else if (data.type === 'GitHub Project') { 
-                        icon = '💻'; 
-                        if (window.currentStudent && window.currentStudent.enrollment) {
-                            try { let urlObj = new URL(finalUrl); urlObj.searchParams.set('enrollment', window.currentStudent.enrollment); urlObj.searchParams.set('name', window.currentStudent.name); finalUrl = urlObj.toString(); } 
-                            catch(e) { let separator = finalUrl.includes('?') ? '&' : '?'; finalUrl = `${finalUrl}${separator}enrollment=${window.currentStudent.enrollment}&name=${encodeURIComponent(window.currentStudent.name)}`; }
-                        }
-                    }
                     else if (data.type === 'Google Form') { icon = '📝'; } else if (data.type === 'YouTube Video') { icon = '▶️'; }
                     
                     if (studentContainer) {
@@ -1132,7 +1125,7 @@
 
                         showSection('student-portal-section');
                     } else { alert("Date of birth a dik lo! I date of birth kha 0 telh kim in han chhut teh (Entirnan: 15-05-2005)"); }
-                } else { alert("Enrollment Number a dik lo! Zirlai list-ah a awm lo emaw check 7ha rawh."); }
+                } else { alert("Enrollment Number a dik lo! Zirlai list-ah a awm lo emaw check ṭha rawh."); }
             } catch (e) { alert("Harsatna: " + e.message); }
         }
 
@@ -1161,18 +1154,17 @@
 
             try {
                 const aiConfigSnap = await getDocs(query(collection(db, "settings")));
-                let apiKey = ""; let aiKnowledge = "";
+                let apiKey = ""; 
                 
                 aiConfigSnap.forEach(doc => {
                     if(doc.id === "ai_config") {
                         apiKey = doc.data().geminiApiKey || "";
-                        aiKnowledge = doc.data().knowledgeBase || "Note a awm rih lo.";
                     }
                 });
 
                 if(!apiKey) throw new Error("Admin-in API Key a la dah lut lo. Khawngaihin zirtirtu hrilh rawh.");
 
-                const systemPrompt = `Nang chu Bethel Computer Centre-a computer zirtirtu i ni. Zirlaite zawhna chhangtu tur i ni a. Zirlai hian an zawhna tur subject atan '${selectedSubject}' an thlang a ni. I chhan theih chin subject te chu: DCA 101 Computer Fundamentals, DCA 102 Operating Systems (DOS, Windows 7, Windows 10), DCA 103 Office Automation Software (MS Word, Excel, PowerPoint) leh Internet Technology, DCA 105 Computer Graphics (Photoshop 7.0), DCA 106 Desktop Publishing (PageMaker) te an ni.\n\nTAWNG HMAN TUR (LANGUAGE):\nZirlaiin Mizo tawnga an zawh che chuan Mizo tawng hlangin chhang la. English-a an rawn zawh che pawhin English tha tak hmangin chhang ang che.\n\nCHHANNA LAKNA (KNOWLEDGE SOURCE):\nA hnuaiah hian zirlaite note pek i ni a. Zirlaite'n an zawhna zawh chein he note hi tlawhchhan ber (primary reference) ah hmang ang che. Mahse, an thil zawh chu i subject huam chhung a nih phawt chuan, note-a a inziak kher lo a nih pawhin i hriatna hmangin i hrillhfiah thei ang.\n\nZIRLAI NOTE:\n${aiKnowledge}`;
+                const systemPrompt = `Nang chu Bethel Computer Centre-a computer zirtirtu i ni. Zirlaite zawhna chhangtu tur i ni a. Zirlai hian an zawhna tur subject atan '${selectedSubject}' an thlang a ni. I chhan theih chin subject te chu: DCA 101 Computer Fundamentals, DCA 102 Operating Systems (DOS, Windows 7, Windows 10), DCA 103 Office Automation Software (MS Word, Excel, PowerPoint) leh Internet Technology, DCA 105 Computer Graphics (Photoshop 7.0), DCA 106 Desktop Publishing (PageMaker) te an ni.\n\nTAWNG HMAN TUR (LANGUAGE):\nZirlaiin Mizo tawnga an zawh che chuan Mizo tawng hlangin chhang la. English-a an rawn zawh che pawhin English tha tak hmangin chhang ang che.\n\nZirchianna dik tak pe la, computer subject huam chhung a nih phawt chuan i hriatna hmangin ṭha takin hrilhfiah rawh.`;
 
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
@@ -1206,7 +1198,6 @@
                 submitBtn.disabled = false;
                 submitBtn.innerText = 'Thawnna 🚀';
                 
-                // Quota a zawh (exceeded) hun a chang tur error message
                 if (error.message.includes("quota") || error.message.includes("429") || error.message.includes("RESOURCE_EXHAUSTED")) {
                     chatHistory.innerHTML += `<div class="ai-msg" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171;">⚠️ <b>AI Zirtirtu Quota a zo rih tlat!</b><br>Tunah chuan hman theih a ni rih lo a. Naktuk chhun dar 1:30 PM velah a rawn nung leh ang, emaw zirtirtuin API Key a thlak hunah a nung leh ang. Khawngaihin lo nghak hram rawh u.</div>`;
                 } else {
