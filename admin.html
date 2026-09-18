@@ -1811,8 +1811,32 @@
         onSnapshot(collection(db, "leave_requests"), (snapshot) => {
             const adminContainer = document.getElementById('admin-leave-list'); if(!adminContainer) return; adminContainer.innerHTML = '';
             if (snapshot.empty) { adminContainer.innerHTML = '<p style="color: gray; text-align: center; padding: 10px 0;">In-report an la awm lo...</p>'; return; }
-            let leaves = []; snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()})); leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
+            
+            let leaves = []; 
+            snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()})); 
+            leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
+            
+            // DUPLICATE FILTER-NA (Zirlai in ni inangah a rawn submit nawn a nih pawhin pakhat chauh tarlang turin)
+            let uniqueMap = {};
             leaves.forEach(data => {
+                let sDate = data.startDate || data.date; 
+                let eDate = data.endDate || data.date;
+                let key = data.enrollment + "_" + sDate + "_" + eDate;
+                
+                if (!uniqueMap[key]) {
+                    uniqueMap[key] = data;
+                } else {
+                    // Pakhat aia tam a awm chuan, Approved emaw Rejected tawh zawk kha tarlang turin
+                    if (uniqueMap[key].status === 'Pending' && data.status !== 'Pending') {
+                        uniqueMap[key] = data;
+                    }
+                }
+            });
+
+            let finalLeaves = Object.values(uniqueMap);
+            finalLeaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
+
+            finalLeaves.forEach(data => {
                 let badgeClass = data.status === 'Approved' ? 'status-approved' : data.status === 'Rejected' ? 'status-rejected' : 'status-pending'; 
                 let statusText = data.status === 'Approved' ? 'Pawm a ni' : data.status === 'Rejected' ? 'Hnial a ni' : 'Nghak mek';
                 let sDate = data.startDate || data.date; let eDate = data.endDate || data.date;
@@ -1832,7 +1856,7 @@
                         ${data.status === 'Pending' ? `
                             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                                 <button class="btn btn-success" style="padding: 6px 12px; font-size:12px; margin:0; width: auto;" onclick="approveLeaveStatus('${data.id}', '${data.enrollment}', '${sDate}', '${eDate}')">Pawm (Approve)</button>
-                                <button class="btn btn-danger" style="padding: 6px 12px; font-size:12px; margin:0; width: auto;" onclick="rejectLeaveStatus('${data.id}')">Hnial (Reject)</button>
+                                <button class="btn btn-danger" style="padding: 6px 12px; font-size:12px; margin:0; width: auto;" onclick="rejectLeaveStatus('${data.id}', '${data.enrollment}', '${sDate}', '${eDate}')">Hnial (Reject)</button>
                             </div>
                         ` : ''}
                     </div>`;
@@ -1841,7 +1865,23 @@
 
         window.approveLeaveStatus = async function(leaveId, enrollment, startDate, endDate) {
             try {
-                await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Approved', rejectReason: '' });
+                // Duplicates a lo awm a nih pawhin pakhat approve rualin a dang zawng chu automatically in approve nghal turin
+                const q = query(collection(db, "leave_requests"), where("enrollment", "==", enrollment), where("status", "==", "Pending"));
+                const querySnapshot = await getDocs(q);
+                let updatePromises = [];
+                querySnapshot.forEach((docSnap) => {
+                    let d = docSnap.data();
+                    if((d.startDate || d.date) === startDate && (d.endDate || d.date) === endDate) {
+                        updatePromises.push(updateDoc(docSnap.ref, { status: 'Approved', rejectReason: '' }));
+                    }
+                });
+                
+                if(updatePromises.length > 0) {
+                    await Promise.all(updatePromises);
+                } else {
+                    await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Approved', rejectReason: '' });
+                }
+                
                 let currDate = new Date(startDate); let lastDate = new Date(endDate); let studentName = allStudentsList.find(s => s.enrollment === enrollment)?.name || '';
                 let promises = [];
                 while (currDate <= lastDate) {
@@ -1853,11 +1893,26 @@
             } catch(error) { alert("Harsatna: " + error.message); }
         }
 
-        window.rejectLeaveStatus = async function(leaveId) {
+        window.rejectLeaveStatus = async function(leaveId, enrollment, startDate, endDate) {
             let reason = prompt("Hnial anih chhan (Entirnan: Attendance a tlahniam dawn a, class kal ngei tur a ni):", "Attendance a pawimawh avangin chawlh approve a rem lo.");
             if (reason !== null) {
                 try {
-                    await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Rejected', rejectReason: reason.trim() });
+                    // Duplicates reject tel nghalna
+                    const q = query(collection(db, "leave_requests"), where("enrollment", "==", enrollment), where("status", "==", "Pending"));
+                    const querySnapshot = await getDocs(q);
+                    let updatePromises = [];
+                    querySnapshot.forEach((docSnap) => {
+                        let d = docSnap.data();
+                        if((d.startDate || d.date) === startDate && (d.endDate || d.date) === endDate) {
+                            updatePromises.push(updateDoc(docSnap.ref, { status: 'Rejected', rejectReason: reason.trim() }));
+                        }
+                    });
+                    
+                    if(updatePromises.length > 0) {
+                        await Promise.all(updatePromises);
+                    } else {
+                        await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Rejected', rejectReason: reason.trim() });
+                    }
                     alert("Chawlh dilna chu hnial (reject) a ni e.");
                 } catch(error) {
                     alert("Harsatna: " + error.message);
