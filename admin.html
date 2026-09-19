@@ -847,8 +847,13 @@
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
                     
                     <div class="card" style="border: 2px solid #f43f5e; margin-bottom: 0;">
-                        <h3 style="color: #9f1239; border-bottom: 1px solid #fecdd3; padding-bottom: 10px;">📈 Zirlaite AI Hman Dan Record</h3>
-                        <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">Zirlai ten AI Zirtirtu an zawh apiangin hetah hian a rawn in-record zel ang.</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
+                            <div>
+                                <h3 style="color: #9f1239; border: none; padding: 0; margin: 0;">📈 Zirlaite AI Hman Dan Record</h3>
+                                <p style="font-size: 13px; color: #475569; margin-top: 4px;">Zirlai ten AI Zirtirtu an zawh apiangin hetah hian a rawn in-record zel ang.</p>
+                            </div>
+                            <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAILogs()">🗑️ Logs Paih Faina</button>
+                        </div>
                         
                         <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
                             <table>
@@ -2146,6 +2151,25 @@
                 `;
             });
         });
+
+        window.clearAILogs = async function() {
+            if (confirm("AI hman dan record (logs) zawng zawng hi i paih fai duh takzet em?")) {
+                try {
+                    const querySnapshot = await getDocs(collection(db, "ai_logs"));
+                    let deletePromises = [];
+                    querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "ai_logs", document.id))));
+                    
+                    if(deletePromises.length > 0) {
+                        await Promise.all(deletePromises);
+                        alert("AI Logs paih fai a ni tawh e!");
+                    } else {
+                        alert("Paih tur record a awm lo.");
+                    }
+                } catch (error) {
+                    alert("Harsatna: " + error.message);
+                }
+            }
+        }
 
         // ================= LOGIN LOGIC =================
         window.loginAdmin = function(event) {
