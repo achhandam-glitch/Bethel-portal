@@ -243,6 +243,11 @@
                         <button class="menu-btn" onclick="openAdminTab('tab-gradebook')">📊 Comprehensive Gradebook</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-management')">👥 Zirlai Management</button>
 
+                        <!-- AI Hman Dan Logs Tab -->
+                        <button class="menu-btn" onclick="openAdminTab('tab-ai-logs')" style="border-left-color: #f43f5e; background: #fff1f2; color: #9f1239;">
+                            📈 AI Hman Dan (Logs)
+                        </button>
+
                         <!-- AI Settings Menu Button -->
                         <button class="menu-btn" onclick="openAdminTab('tab-ai-settings')" style="border-left-color: #10b981; background: #ecfdf5; color: #065f46;">
                             🤖 AI Zirtirtu Settings
@@ -831,6 +836,32 @@
                                     <tr>
                                         <td colspan="7" style="text-align: center; color: gray;">Data a la awm lo...</td>
                                     </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: AI LOGS (HMAN DAN ENNA) -->
+                <div id="tab-ai-logs" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-ah Let Leh Na</button></div>
+                    
+                    <div class="card" style="border: 2px solid #f43f5e; margin-bottom: 0;">
+                        <h3 style="color: #9f1239; border-bottom: 1px solid #fecdd3; padding-bottom: 10px;">📈 Zirlaite AI Hman Dan Record</h3>
+                        <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">Zirlai ten AI Zirtirtu an zawh apiangin hetah hian a rawn in-record zel ang.</p>
+                        
+                        <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
+                            <table>
+                                <thead style="position: sticky; top: 0; z-index: 10; background: #fff1f2;">
+                                    <tr>
+                                        <th style="min-width: 150px;">Zirlai Hming</th>
+                                        <th>Subject Thlan</th>
+                                        <th style="min-width: 250px;">Zawhna (Question)</th>
+                                        <th>Hun (Time)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-ai-logs-body">
+                                    <tr><td colspan="4" style="text-align:center; color:gray;">Data a rawn in-load mek...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -2089,6 +2120,32 @@
                 alert("Harsatna: " + e.message);
             }
         }
+
+        // ================= AI LOGS (USAGE TRACKING) =================
+        onSnapshot(query(collection(db, "ai_logs"), orderBy("timestamp", "desc")), (snapshot) => {
+            const tbody = document.getElementById('admin-ai-logs-body');
+            if(!tbody) return;
+            
+            if (snapshot.empty) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:gray;">AI hmang an la awm lo...</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            snapshot.forEach((docSnap) => {
+                let d = docSnap.data();
+                let timeStr = d.timestamp ? new Date(d.timestamp.toDate()).toLocaleString() : 'Hun hriat loh';
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td><b>${d.studentName}</b><br><span style="font-size:11px; color:gray;">(${d.enrollment})</span></td>
+                        <td><span style="background: #e0f2fe; color: #0369a1; padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: bold;">${d.subject || 'General'}</span></td>
+                        <td style="color: #1e293b;">${d.question}</td>
+                        <td style="font-size: 12px; color: #64748b;">${timeStr}</td>
+                    </tr>
+                `;
+            });
+        });
 
         // ================= LOGIN LOGIC =================
         window.loginAdmin = function(event) {
