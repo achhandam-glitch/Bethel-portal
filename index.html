@@ -1193,6 +1193,19 @@
                 
                 saveAIChatHistory();
 
+                // Zirlaiin AI a hmang tih Firebase-ah save-na
+                try {
+                    await addDoc(collection(db, "ai_logs"), {
+                        enrollment: window.currentStudent.enrollment,
+                        studentName: window.currentStudent.name,
+                        subject: selectedSubject,
+                        question: message,
+                        timestamp: serverTimestamp()
+                    });
+                } catch(logErr) {
+                    console.log("AI Log save naah harsatna: ", logErr);
+                }
+
             } catch (error) {
                 document.getElementById(loadingId).remove();
                 submitBtn.disabled = false;
