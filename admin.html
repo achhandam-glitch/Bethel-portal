@@ -543,7 +543,7 @@
                     <!-- 3. ZIRLAI PORTAL A LANG TUR SET NA (ADMIN CONTROL) -->
                     <div class="card" style="border: 2px solid #0ea5e9; background: #f0f9ff; margin-top: 20px; margin-bottom: 20px;">
                         <h3 style="color: #0369a1; border-bottom: 1px solid #bae6fd; padding-bottom: 10px; margin-bottom: 15px;">📢 Zirlai Portala Attendance Tarlanna Set-na</h3>
-                        <p style="font-size: 13px; color: #475569; margin-bottom: 10px;">Zirlai portal-a an percentage in-chhut chhuah theihna a ni a. I numbers type luh aṭang chiah hian system in a chhut ang.</p>
+                        <p style="font-size: 13px; color: #475569; margin-bottom: 10px;">Zirlai portal-a an percentage in-chhut chhuah theihna a ni a. I numbers type luh aṭang chahah hian system in a chhut ang.</p>
                         
                         <div class="form-grid" style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #7dd3fc; margin-bottom: 15px; grid-template-columns: 1fr 1fr;">
                             <div class="input-group">
@@ -873,12 +873,28 @@
                     </div>
                 </div>
 
-                <!-- TAB: AI SETTINGS (API KEY) -->
+                <!-- TAB: AI SETTINGS (API KEY) - LOCKED FOR SUPER ADMIN -->
                 <div id="tab-ai-settings" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
                     
-                    <div class="card" style="border: 2px solid #0284c7; margin-bottom: 0;">
-                        <h3 style="color: #0369a1; border-bottom: 1px solid #bae6fd; padding-bottom: 10px;">🤖 AI Thluak (Gemini API Key) Dahna</h3>
+                    <!-- API SETTINGS LOCK SCREEN -->
+                    <div id="ai-settings-lock" class="card" style="border: 2px solid #f59e0b; margin-bottom: 0;">
+                        <h3 style="color: #b45309; border-bottom: 1px solid #fde68a; padding-bottom: 10px;">🔒 Security Lock</h3>
+                        <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">He hmun hi Super Admin chauh khawih theih a ni. Khawngaihin i Admin Password chhu rawh.</p>
+                        
+                        <div class="input-group" style="margin-bottom: 12px;">
+                            <label>Super Admin Password</label>
+                            <input type="password" id="ai-lock-password" placeholder="Password chhu rawh...">
+                        </div>
+                        <button class="btn btn-warning" onclick="unlockAISettings()">Hawng Rawh</button>
+                    </div>
+
+                    <!-- API SETTINGS FORM (A in-hawng tawh ang) -->
+                    <div id="ai-settings-form-box" class="card hidden" style="border: 2px solid #0284c7; margin-bottom: 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 style="color: #0369a1; border: none; margin: 0; padding: 0;">🤖 AI Thluak (Gemini API Key) Dahna</h3>
+                            <button class="btn btn-danger" style="width: auto; padding: 5px 10px; font-size: 12px; margin: 0;" onclick="lockAISettingsAgain()">🔒 Kalh Leh Rawh</button>
+                        </div>
                         <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">Google AI Studio aṭanga i API Key lak kha hetah hian dah rawh.</p>
                         
                         <form onsubmit="saveApiKey(event)">
@@ -982,6 +998,12 @@
             document.getElementById('admin-menu-view').style.display = 'none';
             document.querySelectorAll('.admin-tab-content').forEach(el => { el.classList.remove('active-content'); });
             document.getElementById(tabId).classList.add('active-content');
+            
+            // AI Settings tab an hmeh chuan a lo in-lock leh hmasa ang
+            if(tabId === 'tab-ai-settings') {
+                lockAISettingsAgain();
+            }
+
             if(tabId === 'tab-attendance') {
                 loadAttendanceForDate();
             }
@@ -1852,7 +1874,6 @@
             snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()})); 
             leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
             
-            // DUPLICATE FILTER-NA (Zirlai in ni inangah a rawn submit nawn a nih pawhin pakhat chauh tarlang turin)
             let uniqueMap = {};
             leaves.forEach(data => {
                 let sDate = data.startDate || data.date; 
@@ -1862,7 +1883,6 @@
                 if (!uniqueMap[key]) {
                     uniqueMap[key] = data;
                 } else {
-                    // Pakhat aia tam a awm chuan, Approved emaw Rejected tawh zawk kha tarlang turin
                     if (uniqueMap[key].status === 'Pending' && data.status !== 'Pending') {
                         uniqueMap[key] = data;
                     }
@@ -1901,7 +1921,6 @@
 
         window.approveLeaveStatus = async function(leaveId, enrollment, startDate, endDate) {
             try {
-                // Duplicates a lo awm a nih pawhin pakhat approve rualin a dang zawng chu automatically in approve nghal turin
                 const q = query(collection(db, "leave_requests"), where("enrollment", "==", enrollment), where("status", "==", "Pending"));
                 const querySnapshot = await getDocs(q);
                 let updatePromises = [];
@@ -1933,7 +1952,6 @@
             let reason = prompt("Hnial anih chhan (Entirnan: Attendance a tlahniam dawn a, class kal ngei tur a ni):", "Attendance a pawimawh avangin chawlh approve a rem lo.");
             if (reason !== null) {
                 try {
-                    // Duplicates reject tel nghalna
                     const q = query(collection(db, "leave_requests"), where("enrollment", "==", enrollment), where("status", "==", "Pending"));
                     const querySnapshot = await getDocs(q);
                     let updatePromises = [];
@@ -2104,7 +2122,25 @@
         // ================= DELETE STUDENT =================
         window.deleteStudent = async function(enrollment) { if(confirm(`Enrollment No: ${enrollment} hi i paih duh takzet em?`)) { try { await deleteDoc(doc(db, "students", enrollment)); alert("Zirlai hi paih a ni tawh e."); } catch(error) { alert("Paih naah harsatna: " + error.message); } } }
 
-        // ================= AI SETTINGS (API KEY) =================
+        // ================= AI SETTINGS (API KEY) & LOCK FUNCTIONS =================
+        window.unlockAISettings = function() {
+            const pass = document.getElementById('ai-lock-password').value;
+            // Nangmah chauhin i hriat tur password (i duh chuan i thlak thei ang)
+            if (pass === "Bethel@123") { 
+                document.getElementById('ai-settings-lock').classList.add('hidden');
+                document.getElementById('ai-settings-form-box').classList.remove('hidden');
+                document.getElementById('ai-lock-password').value = '';
+            } else {
+                alert("Password a dik lo!");
+            }
+        }
+
+        window.lockAISettingsAgain = function() {
+            document.getElementById('ai-settings-form-box').classList.add('hidden');
+            document.getElementById('ai-settings-lock').classList.remove('hidden');
+            document.getElementById('ai-lock-password').value = '';
+        }
+
         onSnapshot(doc(db, "settings", "ai_config"), (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
@@ -2121,6 +2157,7 @@
             try {
                 await setDoc(doc(db, "settings", "ai_config"), { geminiApiKey: apiKey }, { merge: true });
                 alert("API Key hlawhtling taka save a ni e!");
+                lockAISettingsAgain();
             } catch(e) {
                 alert("Harsatna: " + e.message);
             }
@@ -2153,7 +2190,7 @@
         });
 
         window.clearAILogs = async function() {
-            if (confirm("AI hman dan record (logs) zawng zawng hi i paih fai duh takzet em?")) {
+            if (confirm("AI hman dan record (logs) zawng zawng hi i paih fai takzet i duh em?")) {
                 try {
                     const querySnapshot = await getDocs(collection(db, "ai_logs"));
                     let deletePromises = [];
