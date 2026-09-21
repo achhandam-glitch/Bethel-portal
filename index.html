@@ -487,7 +487,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "5.2"; 
+        const APP_VERSION = "5.3"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -801,6 +801,13 @@
                     `;
                 } else { // SINGLE DAILY MCQ
                     let mcq = groups[title][0];
+                    let imgHtml = mcq.imageURL ? `<img src="${mcq.imageURL}" style="max-width: 100%; max-height: 200px; border-radius: 8px; margin: 10px 0; border: 1px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">` : '';
+                    
+                    let aHtml = mcq.optAImg ? `${mcq.optA}<br><img src="${mcq.optAImg}" style="max-height: 100px; margin-top: 5px; border-radius: 4px;">` : mcq.optA;
+                    let bHtml = mcq.optBImg ? `${mcq.optB}<br><img src="${mcq.optBImg}" style="max-height: 100px; margin-top: 5px; border-radius: 4px;">` : mcq.optB;
+                    let cHtml = mcq.optCImg ? `${mcq.optC}<br><img src="${mcq.optCImg}" style="max-height: 100px; margin-top: 5px; border-radius: 4px;">` : mcq.optC;
+                    let dHtml = mcq.optDImg ? `${mcq.optD}<br><img src="${mcq.optDImg}" style="max-height: 100px; margin-top: 5px; border-radius: 4px;">` : mcq.optD;
+
                     singleHtml += `
                         <div class="mcq-card" id="mcq-box-${mcq.id}">
                             <div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:center;">
@@ -810,11 +817,12 @@
                                 </div>
                                 <span style="background:#fef08a; color:#854d0e; padding:3px 8px; border-radius:12px; font-size:12px; font-weight:bold;">🪙 ${mcq.coins} Coins</span>
                             </div>
+                            ${imgHtml}
                             <form onsubmit="submitSingleMCQAnswer(event, '${mcq.id}')">
-                                <label class="mcq-option"><input type="radio" name="ans_${mcq.id}" value="A" required> A. ${mcq.optA}</label>
-                                <label class="mcq-option"><input type="radio" name="ans_${mcq.id}" value="B"> B. ${mcq.optB}</label>
-                                <label class="mcq-option"><input type="radio" name="ans_${mcq.id}" value="C"> C. ${mcq.optC}</label>
-                                <label class="mcq-option"><input type="radio" name="ans_${mcq.id}" value="D"> D. ${mcq.optD}</label>
+                                <label class="mcq-option"><input type="radio" name="ans_${mcq.id}" value="A" required> A. ${aHtml}</label>
+                                <label class="mcq-option"><input type="radio" name="ans_${mcq.id}" value="B"> B. ${bHtml}</label>
+                                <label class="mcq-option"><input type="radio" name="ans_${mcq.id}" value="C"> C. ${cHtml}</label>
+                                <label class="mcq-option"><input type="radio" name="ans_${mcq.id}" value="D"> D. ${dHtml}</label>
                                 <button type="submit" class="btn btn-warning" style="margin-top:10px;">Submit Answer</button>
                             </form>
                         </div>`;
@@ -903,6 +911,13 @@
             mcqListUI.innerHTML = '';
             
             activeBulkQuestions.forEach((mcq, index) => {
+                let imgHtml = mcq.imageURL ? `<img src="${mcq.imageURL}" style="max-width: 100%; max-height: 200px; border-radius: 8px; margin: 10px 0; border: 1px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">` : '';
+                
+                let aHtml = mcq.optAImg ? `${mcq.optA}<br><img src="${mcq.optAImg}" style="max-height: 100px; margin-top: 5px; border-radius: 4px;">` : mcq.optA;
+                let bHtml = mcq.optBImg ? `${mcq.optB}<br><img src="${mcq.optBImg}" style="max-height: 100px; margin-top: 5px; border-radius: 4px;">` : mcq.optB;
+                let cHtml = mcq.optCImg ? `${mcq.optC}<br><img src="${mcq.optCImg}" style="max-height: 100px; margin-top: 5px; border-radius: 4px;">` : mcq.optC;
+                let dHtml = mcq.optDImg ? `${mcq.optD}<br><img src="${mcq.optDImg}" style="max-height: 100px; margin-top: 5px; border-radius: 4px;">` : mcq.optD;
+
                 mcqListUI.innerHTML += `
                     <div class="mcq-card" style="margin-bottom: 20px;">
                         <div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:flex-start;">
@@ -911,11 +926,12 @@
                             </div>
                             <span style="background:#fef08a; color:#854d0e; padding:3px 8px; border-radius:12px; font-size:12px; font-weight:bold; white-space: nowrap;">🪙 ${mcq.coins}</span>
                         </div>
+                        ${imgHtml}
                         <div style="margin-top: 10px;">
-                            <label class="mcq-option"><input type="radio" name="bulk_ans_${mcq.id}" value="A"> A. ${mcq.optA}</label>
-                            <label class="mcq-option"><input type="radio" name="bulk_ans_${mcq.id}" value="B"> B. ${mcq.optB}</label>
-                            <label class="mcq-option"><input type="radio" name="bulk_ans_${mcq.id}" value="C"> C. ${mcq.optC}</label>
-                            <label class="mcq-option"><input type="radio" name="bulk_ans_${mcq.id}" value="D"> D. ${mcq.optD}</label>
+                            <label class="mcq-option"><input type="radio" name="bulk_ans_${mcq.id}" value="A"> A. ${aHtml}</label>
+                            <label class="mcq-option"><input type="radio" name="bulk_ans_${mcq.id}" value="B"> B. ${bHtml}</label>
+                            <label class="mcq-option"><input type="radio" name="bulk_ans_${mcq.id}" value="C"> C. ${cHtml}</label>
+                            <label class="mcq-option"><input type="radio" name="bulk_ans_${mcq.id}" value="D"> D. ${dHtml}</label>
                         </div>
                     </div>`;
             });
