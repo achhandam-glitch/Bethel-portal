@@ -242,16 +242,8 @@
                         <button class="menu-btn" onclick="openAdminTab('tab-online')" style="border-left-color: #8b5cf6; background: #faf5ff; color: #581c87;">💻 Saturday (O) Bik</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-gradebook')">📊 Comprehensive Gradebook</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-management')">👥 Zirlai Management</button>
-
-                        <!-- AI Hman Dan Logs Tab -->
-                        <button class="menu-btn" onclick="openAdminTab('tab-ai-logs')" style="border-left-color: #f43f5e; background: #fff1f2; color: #9f1239;">
-                            📈 AI Hman Dan (Logs)
-                        </button>
-
-                        <!-- AI Settings Menu Button -->
-                        <button class="menu-btn" onclick="openAdminTab('tab-ai-settings')" style="border-left-color: #10b981; background: #ecfdf5; color: #065f46;">
-                            🤖 AI Zirtirtu Settings
-                        </button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-ai-logs')" style="border-left-color: #f43f5e; background: #fff1f2; color: #9f1239;">📈 AI Hman Dan (Logs)</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-ai-settings')" style="border-left-color: #10b981; background: #ecfdf5; color: #065f46;">🤖 AI Zirtirtu Settings</button>
                     </div>
                 </div>
             </div>
@@ -273,7 +265,11 @@
                     <!-- BULK UPLOAD MCQ SECTION -->
                     <div class="card" style="border: 2px solid #16a34a; margin-bottom: 20px;">
                         <h3 style="color: #15803d; border-bottom: 1px solid #bbf7d0;">📥 MCQ A Hlawm-a Thunluhna (Excel/CSV Upload)</h3>
-                        <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">Excel file-ah Column hmingah hetiang hian dah ang che: <b>QuizTitle</b> (e.g. DCA 101 Test), <b>Question</b>, <b>OptionA</b>, <b>OptionB</b>, <b>OptionC</b>, <b>OptionD</b>, <b>Answer</b> (A/B/C/D), <b>Coins</b>.</p>
+                        <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">
+                            Excel file-ah Column hmingah hetiang hian dah ang che: <br>
+                            <b>QuizTitle</b>, <b>Question</b>, <b>ImageURL</b>, <b>OptionA</b>, <b>OptAImg</b>, <b>OptionB</b>, <b>OptBImg</b>, <b>OptionC</b>, <b>OptCImg</b>, <b>OptionD</b>, <b>OptDImg</b>, <b>Answer</b>, <b>Coins</b>.<br>
+                            <i>(Thlalak awm lohnaah chuan a ruakin blank in i dah mai dawn nia).</i>
+                        </p>
                         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                             <input type="file" id="mcq-excel-upload" accept=".xlsx, .xls, .csv" style="flex-grow: 1; border: 1px dashed #cbd5e1; padding: 10px; border-radius: 6px;">
                             <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 20px;" onclick="uploadMCQExcel()">Bulk Upload Rawh</button>
@@ -282,6 +278,7 @@
                     </div>
 
                     <div class="form-grid" style="grid-template-columns: 1fr;">
+                        <!-- MANUAL MCQ CREATION FORM -->
                         <div class="card" style="border: 2px solid #eab308;">
                             <h3 style="color: #a16207; border-bottom: 1px solid #fde047;">MCQ Zawhna Thar Siamna (Manual)</h3>
                             <form onsubmit="createMCQ(event)">
@@ -293,13 +290,37 @@
                                     <label>Zawhna (Question)</label>
                                     <input type="text" id="mcq-q" placeholder="Entirnan: HTML awmzia chu?" required>
                                 </div>
-                                <div class="form-grid">
-                                    <div class="input-group"><label>Option A</label><input type="text" id="mcq-a" required></div>
-                                    <div class="input-group"><label>Option B</label><input type="text" id="mcq-b" required></div>
-                                    <div class="input-group"><label>Option C</label><input type="text" id="mcq-c" required></div>
-                                    <div class="input-group"><label>Option D</label><input type="text" id="mcq-d" required></div>
+                                
+                                <!-- Zawhna Image Link -->
+                                <div class="input-group" style="margin-bottom: 10px;">
+                                    <label style="color: #0284c7;">Zawhna Thlalak Link (A awm chuan)</label>
+                                    <input type="url" id="mcq-q-img" placeholder="https://i.ibb.co/..." style="border-color: #bae6fd;">
                                 </div>
+
                                 <div class="form-grid">
+                                    <div class="input-group">
+                                        <label>Option A</label>
+                                        <input type="text" id="mcq-a" required placeholder="Text">
+                                        <input type="url" id="mcq-a-img" placeholder="Thlalak Link (Optional)" style="font-size: 13px; margin-top: 3px;">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Option B</label>
+                                        <input type="text" id="mcq-b" required placeholder="Text">
+                                        <input type="url" id="mcq-b-img" placeholder="Thlalak Link (Optional)" style="font-size: 13px; margin-top: 3px;">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Option C</label>
+                                        <input type="text" id="mcq-c" required placeholder="Text">
+                                        <input type="url" id="mcq-c-img" placeholder="Thlalak Link (Optional)" style="font-size: 13px; margin-top: 3px;">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Option D</label>
+                                        <input type="text" id="mcq-d" required placeholder="Text">
+                                        <input type="url" id="mcq-d-img" placeholder="Thlalak Link (Optional)" style="font-size: 13px; margin-top: 3px;">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-grid" style="margin-top: 15px;">
                                     <div class="input-group">
                                         <label>Chhanna Dik (Correct Answer)</label>
                                         <select id="mcq-ans" required>
@@ -444,7 +465,6 @@
                 <div id="tab-attendance" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
                     
-                    <!-- 1. ZIRLAI CHAWLH IN-REPORT TE -->
                     <div class="card" style="border: 2px solid #3b82f6;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                             <h3 style="color: #1e3a8a; border: none; padding: 0; margin: 0;">Zirlai Chawlh In-Report Te</h3>
@@ -458,7 +478,6 @@
                         </div>
                     </div>
 
-                    <!-- 2. DAILY ATTENDANCE MARK-NA -->
                     <div class="card" style="border: 2px solid #8b5cf6; margin-top: 20px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                             <h3 style="color: #4c1d95; border: none; padding: 0; margin: 0;">Attendance Mark-na</h3>
@@ -494,7 +513,6 @@
                             </div>
                         </div>
                         
-                        <!-- Toggleable Attendance Summary -->
                         <div style="background: #faf5ff; border: 1px solid #e9d5ff; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleSummaryBox()">
                                 <h4 style="font-size: 14px; color: #6b21a8; margin: 0;">📋 Vawiin Attendance Summary (Hmet rawh)</h4>
@@ -518,7 +536,6 @@
                             </div>
                         </div>
 
-                        <!-- Search Bar -->
                         <div style="margin-bottom: 15px;">
                             <input type="text" id="attendance-search" placeholder="🔍 Hming emaw Enrollment No. zawng rawh..." style="width: 100%; padding: 10px; border: 1px solid #c4b5fd; border-radius: 6px; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);" onkeyup="filterAttendance()">
                         </div>
@@ -540,7 +557,6 @@
                         <button class="btn btn-primary" style="margin-top: 15px; background-color: #8b5cf6;" onclick="saveAttendance()">Attendance Save Rawh</button>
                     </div>
 
-                    <!-- 3. ZIRLAI PORTAL A LANG TUR SET NA (ADMIN CONTROL) -->
                     <div class="card" style="border: 2px solid #0ea5e9; background: #f0f9ff; margin-top: 20px; margin-bottom: 20px;">
                         <h3 style="color: #0369a1; border-bottom: 1px solid #bae6fd; padding-bottom: 10px; margin-bottom: 15px;">📢 Zirlai Portala Attendance Tarlanna Set-na</h3>
                         <p style="font-size: 13px; color: #475569; margin-bottom: 10px;">Zirlai portal-a an percentage in-chhut chhuah theihna a ni a. I numbers type luh aṭang chiah hian system in a chhut ang.</p>
@@ -572,7 +588,6 @@
                         </div>
                     </div>
 
-                    <!-- 4. MONTHLY / PERIOD ATTENDANCE TRACKER (ADMIN VIEW ONLY) -->
                     <div class="card" style="border: 2px solid #0f766e; background: #f0fdfa; margin-top: 20px; margin-bottom: 0;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
                             <div>
@@ -728,14 +743,12 @@
                         </div>
                     </div>
 
-                    <!-- ZIRLAI PRACTICAL FOLDER THEHLUHNA LIST (ADMIN VIEW) -->
                     <div class="card" style="border: 2px solid #10b981; margin-top: 20px;">
                         <h3 style="color: #047857; border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">📥 Zirlai Practical Thehluh Te (Google Drive Links)</h3>
                         <div id="admin-practical-list" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
                             <p style="color: gray;">Thehlut an la awm lo...</p>
                         </div>
                     </div>
-
                 </div>
 
                 <!-- TAB 6: GRADEBOOK -->
@@ -842,7 +855,7 @@
                     </div>
                 </div>
 
-                <!-- TAB: AI LOGS (HMAN DAN ENNA) -->
+                <!-- TAB: AI LOGS -->
                 <div id="tab-ai-logs" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
                     
@@ -873,11 +886,10 @@
                     </div>
                 </div>
 
-                <!-- TAB: AI SETTINGS (API KEY) - LOCKED FOR SUPER ADMIN -->
+                <!-- TAB: AI SETTINGS -->
                 <div id="tab-ai-settings" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
                     
-                    <!-- API SETTINGS LOCK SCREEN -->
                     <div id="ai-settings-lock" class="card" style="border: 2px solid #f59e0b; margin-bottom: 0;">
                         <h3 style="color: #b45309; border-bottom: 1px solid #fde68a; padding-bottom: 10px;">🔒 Security Lock</h3>
                         <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">He hmun hi Super Admin chauh khawih theih a ni. Khawngaihin i Admin Password bik chu chhu rawh.</p>
@@ -889,7 +901,6 @@
                         <button class="btn btn-warning" onclick="unlockAISettings()">Hawng Rawh</button>
                     </div>
 
-                    <!-- API SETTINGS FORM (A in-hawng tawh ang) -->
                     <div id="ai-settings-form-box" class="card hidden" style="border: 2px solid #0284c7; margin-bottom: 0;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                             <h3 style="color: #0369a1; border: none; margin: 0; padding: 0;">🤖 AI Thluak (Gemini API Key) Dahna</h3>
@@ -916,7 +927,6 @@
     <!-- Floating Dark Mode Toggle -->
     <button class="dark-mode-toggle-btn" id="darkModeBtn" onclick="toggleDarkMode()" title="Thim/Eng Thlakna">🌙</button>
 
-    <!-- ================= FIREBASE SETUP & JAVASCRIPT LOGIC ================= -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, getDoc, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, deleteDoc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -935,7 +945,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "4.9";
+        const APP_VERSION = "5.1";
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -999,14 +1009,8 @@
             document.querySelectorAll('.admin-tab-content').forEach(el => { el.classList.remove('active-content'); });
             document.getElementById(tabId).classList.add('active-content');
             
-            // AI Settings tab an hmeh chuan a lo in-lock leh hmasa ang
-            if(tabId === 'tab-ai-settings') {
-                lockAISettingsAgain();
-            }
-
-            if(tabId === 'tab-attendance') {
-                loadAttendanceForDate();
-            }
+            if(tabId === 'tab-ai-settings') { lockAISettingsAgain(); }
+            if(tabId === 'tab-attendance') { loadAttendanceForDate(); }
             window.scrollTo(0, 0);
         }
 
@@ -1054,26 +1058,34 @@
         }
 
         // ================= MCQ & COINS LOGIC =================
+        
+        // Manual MCQ Creation (Thlalak dah theih tawh)
         window.createMCQ = async function(e) {
             e.preventDefault();
             try {
                 await addDoc(collection(db, "mcq_tests"), {
                     quizTitle: document.getElementById('mcq-title').value.trim(),
                     question: document.getElementById('mcq-q').value,
+                    imageURL: document.getElementById('mcq-q-img').value.trim(),
+                    
                     optA: document.getElementById('mcq-a').value,
+                    optAImg: document.getElementById('mcq-a-img').value.trim(),
+                    
                     optB: document.getElementById('mcq-b').value,
+                    optBImg: document.getElementById('mcq-b-img').value.trim(),
+                    
                     optC: document.getElementById('mcq-c').value,
+                    optCImg: document.getElementById('mcq-c-img').value.trim(),
+                    
                     optD: document.getElementById('mcq-d').value,
+                    optDImg: document.getElementById('mcq-d-img').value.trim(),
+                    
                     answer: document.getElementById('mcq-ans').value,
                     coins: parseInt(document.getElementById('mcq-coins').value),
                     createdAt: serverTimestamp()
                 });
                 alert("MCQ hlawhtling takin i siam e!");
-                document.getElementById('mcq-q').value = '';
-                document.getElementById('mcq-a').value = '';
-                document.getElementById('mcq-b').value = '';
-                document.getElementById('mcq-c').value = '';
-                document.getElementById('mcq-d').value = '';
+                e.target.reset(); 
             } catch(err) { alert("Error: " + err.message); }
         }
 
@@ -1083,7 +1095,7 @@
             }
         }
 
-        // BULK UPLOAD MCQ EXCEL FUNCTION
+        // Bulk Upload MCQ Excel (Option Image URLs theih tawh)
         window.uploadMCQExcel = async function() {
             const fileInput = document.getElementById('mcq-excel-upload');
             const statusDiv = document.getElementById('mcq-upload-status');
@@ -1113,10 +1125,20 @@
                         let row = json[i];
                         let quizTitle = row.QuizTitle || row.quiztitle || row.Quiz_Title || "General Test";
                         let q = row.Question || row.question || row.Zawhna;
+                        let imgUrl = row.ImageURL || row.imageurl || row.image_url || "";
+                        
                         let optA = row.OptionA || row.optiona || row.Option_A;
+                        let optAImg = row.OptAImg || row.optaimg || row.opt_a_img || "";
+
                         let optB = row.OptionB || row.optionb || row.Option_B;
+                        let optBImg = row.OptBImg || row.optbimg || row.opt_b_img || "";
+
                         let optC = row.OptionC || row.optionc || row.Option_C;
+                        let optCImg = row.OptCImg || row.optcimg || row.opt_c_img || "";
+
                         let optD = row.OptionD || row.optiond || row.Option_D;
+                        let optDImg = row.OptDImg || row.optdimg || row.opt_d_img || "";
+
                         let ans = String(row.Answer || row.answer || row.Chhanna || "A").trim().toUpperCase();
                         let coins = parseInt(row.Coins || row.coins) || 10;
                         
@@ -1125,10 +1147,11 @@
                                 await addDoc(collection(db, "mcq_tests"), {
                                     quizTitle: String(quizTitle),
                                     question: String(q),
-                                    optA: String(optA),
-                                    optB: String(optB),
-                                    optC: String(optC),
-                                    optD: String(optD),
+                                    imageURL: String(imgUrl),
+                                    optA: String(optA), optAImg: String(optAImg),
+                                    optB: String(optB), optBImg: String(optBImg),
+                                    optC: String(optC), optCImg: String(optCImg),
+                                    optD: String(optD), optDImg: String(optDImg),
                                     answer: ans.includes('B') ? 'B' : ans.includes('C') ? 'C' : ans.includes('D') ? 'D' : 'A',
                                     coins: coins,
                                     createdAt: serverTimestamp()
@@ -1163,17 +1186,22 @@
                 if(snapshot.empty) { adminList.innerHTML = '<p style="color:gray;">MCQ a la awm lo.</p>'; } 
                 else {
                     mcqTests.forEach(d => {
+                        let imgBadge = d.imageURL ? `<span style="background:#0284c7; color:white; font-size:10px; padding:2px 4px; border-radius:4px; margin-left:5px;">📷 Image</span>` : '';
+                        
                         adminList.innerHTML += `
                             <div style="border: 1px solid #fde047; background: #fefce8; padding: 15px; border-radius: 6px; margin-bottom: 10px; color: #333;">
                                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                                     <div>
                                         <span style="background:#eab308; color:white; font-size:11px; padding:2px 6px; border-radius:4px; font-weight:bold;">${d.quizTitle || 'General Test'}</span>
-                                        <strong style="color:#a16207; display:block; margin-top:4px;">${d.question}</strong>
+                                        <strong style="color:#a16207; display:block; margin-top:4px;">${d.question} ${imgBadge}</strong>
                                     </div>
                                     <button class="btn btn-danger btn-icon" onclick="deleteMCQ('${d.id}')">✕</button>
                                 </div>
                                 <ul style="font-size:13px; color:#475569; margin-left:15px; margin-bottom:10px;">
-                                    <li>A. ${d.optA}</li><li>B. ${d.optB}</li><li>C. ${d.optC}</li><li>D. ${d.optD}</li>
+                                    <li>A. ${d.optA} ${d.optAImg ? '🖼️' : ''}</li>
+                                    <li>B. ${d.optB} ${d.optBImg ? '🖼️' : ''}</li>
+                                    <li>C. ${d.optC} ${d.optCImg ? '🖼️' : ''}</li>
+                                    <li>D. ${d.optD} ${d.optDImg ? '🖼️' : ''}</li>
                                 </ul>
                                 <span style="font-size:13px; background:#dcfce7; color:#166534; padding:3px 8px; border-radius:4px;">Dik: <b>${d.answer}</b></span>
                                 <span style="font-size:13px; background:#fef08a; color:#854d0e; padding:3px 8px; border-radius:4px;">Coins: <b>${d.coins}</b></span>
@@ -1353,7 +1381,6 @@
             filterAttendance();
         }
 
-        // ================= MONTHLY / PERIOD ATTENDANCE TRACKER (ADMIN ONLY) =================
         window.calculatePeriodAttendance = function() {
             const start = document.getElementById('period-start-date').value;
             const end = document.getElementById('period-end-date').value;
@@ -1380,26 +1407,17 @@
 
             let periodStudentStats = {};
             allStudentsList.forEach(s => {
-                periodStudentStats[s.enrollment] = {
-                    name: s.name,
-                    shift: s.shift || '10am shift',
-                    earned: 0
-                };
+                periodStudentStats[s.enrollment] = { name: s.name, shift: s.shift || '10am shift', earned: 0 };
             });
 
             recordsInRange.forEach(r => {
-                if(periodStudentStats[r.enrollment]) {
-                    periodStudentStats[r.enrollment].earned += (r.points || 0);
-                }
+                if(periodStudentStats[r.enrollment]) { periodStudentStats[r.enrollment].earned += (r.points || 0); }
             });
 
             if(!tbody) return;
             tbody.innerHTML = '';
             
-            if(allStudentsList.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:gray;">Zirlai an awm lo.</td></tr>`;
-                return;
-            }
+            if(allStudentsList.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:gray;">Zirlai an awm lo.</td></tr>`; return; }
 
             allStudentsList.forEach(s => {
                 let st = periodStudentStats[s.enrollment];
@@ -1436,19 +1454,14 @@
             const weekdayMax = parseInt(document.getElementById('period-wmax').value) || 0;
             const saturdayMax = parseInt(document.getElementById('period-smax').value) || 0;
             
-            if(!start || !end) {
-                alert("A ṭan ni leh a tawp ni thlang phawt rawh!");
-                return;
-            }
+            if(!start || !end) { alert("A ṭan ni leh a tawp ni thlang phawt rawh!"); return; }
 
             let recordsInRange = allAttendanceRecords.filter(r => r.date >= start && r.date <= end);
             
             let exportData = [];
             allStudentsList.forEach(s => {
                 let earned = 0;
-                recordsInRange.filter(r => r.enrollment === s.enrollment).forEach(r => {
-                    earned += (r.points || 0);
-                });
+                recordsInRange.filter(r => r.enrollment === s.enrollment).forEach(r => { earned += (r.points || 0); });
                 let isSatShift = ((s.shift || '10am shift') === 'Saturday shift' || (s.shift || '10am shift') === 'Saturday (O)');
                 let studentMax = isSatShift ? saturdayMax : weekdayMax;
 
@@ -1464,13 +1477,8 @@
 
                 exportData.push({
                     "Hun Chhung (Period)": `${start} to ${end}`,
-                    "Enrollment No": s.enrollment,
-                    "Zirlai Hming": s.name,
-                    "Shift": s.shift || '10am shift',
-                    "Student Max Possible": studentMax,
-                    "Points Hmuh": earned,
-                    "Percentage (%)": pct,
-                    "Performance": label
+                    "Enrollment No": s.enrollment, "Zirlai Hming": s.name, "Shift": s.shift || '10am shift',
+                    "Student Max Possible": studentMax, "Points Hmuh": earned, "Percentage (%)": pct, "Performance": label
                 });
             });
             if(exportData.length === 0) { alert("Data a awm lo."); return; }
@@ -1505,9 +1513,7 @@
             
             if(!name || !start || !end) { alert("Dah kim rawh!"); return; }
             try {
-                await setDoc(doc(db, "settings", "attendance_period"), { 
-                    name: name, startDate: start, endDate: end, weekdayMax: wmax, saturdayMax: smax 
-                });
+                await setDoc(doc(db, "settings", "attendance_period"), { name: name, startDate: start, endDate: end, weekdayMax: wmax, saturdayMax: smax });
                 alert("Zirlai portal-a lang tur hlawhtling taka set a ni e!");
             } catch(e) { alert("Harsatna: " + e.message); }
         }
@@ -1530,10 +1536,7 @@
                 attendanceStats[d.enrollment].days += 1;
             });
             renderStudentManagementTable();
-            
-            if (document.getElementById('period-start-date').value && document.getElementById('period-end-date').value) {
-                calculatePeriodAttendance();
-            }
+            if (document.getElementById('period-start-date').value && document.getElementById('period-end-date').value) { calculatePeriodAttendance(); }
         });
 
         window.loadAttendanceForDate = async function() {
@@ -1555,15 +1558,11 @@
                 }
             });
             
-            if (isSaturday && currentShiftVal !== 'Saturday shift' && currentShiftVal !== 'Saturday (O)' && currentShiftVal !== 'ALL') {
-                shiftSelect.value = 'ALL';
-            } else if (!isSaturday && (currentShiftVal === 'Saturday shift' || currentShiftVal === 'Saturday (O)')) {
-                shiftSelect.value = 'ALL';
-            } else {
-                shiftSelect.value = currentShiftVal || 'ALL';
-            }
+            if (isSaturday && currentShiftVal !== 'Saturday shift' && currentShiftVal !== 'Saturday (O)' && currentShiftVal !== 'ALL') { shiftSelect.value = 'ALL'; } 
+            else if (!isSaturday && (currentShiftVal === 'Saturday shift' || currentShiftVal === 'Saturday (O)')) { shiftSelect.value = 'ALL'; } 
+            else { shiftSelect.value = currentShiftVal || 'ALL'; }
+            
             const selectedShift = shiftSelect.value;
-
             const pts = isSaturday ? {p: 5, r: 2.5, a: 0} : {p: 1, r: 0.5, a: 0};
             const q = query(collection(db, "attendance"), where("date", "==", dateStr));
             const snap = await getDocs(q); let existingAtt = {};
@@ -1572,13 +1571,10 @@
             const tbody = document.getElementById('attendance-list-body'); tbody.innerHTML = '';
             
             let filteredStudents = allStudentsList;
-            if (isSaturday) {
-                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift' || (s.shift || '10am shift') === 'Saturday (O)');
-            } else {
+            if (isSaturday) { filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift' || (s.shift || '10am shift') === 'Saturday (O)'); } 
+            else {
                 filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') !== 'Saturday shift' && (s.shift || '10am shift') !== 'Saturday (O)');
-                if (selectedShift !== 'ALL') {
-                    filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === selectedShift);
-                }
+                if (selectedShift !== 'ALL') { filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === selectedShift); }
             }
 
             if(filteredStudents.length === 0) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">He shift-ah hian zirlai an awm lo.</td></tr>'; return; }
@@ -1587,7 +1583,6 @@
 
             filteredStudents.forEach(s => {
                 let status = existingAtt[s.enrollment] !== undefined ? existingAtt[s.enrollment] : ''; 
-
                 let presentChecked = (status === 'Present') ? 'checked' : '';
                 let reportedChecked = (status === 'Reported') ? 'checked' : '';
                 let absentChecked = (status === 'Absent') ? 'checked' : '';
@@ -1622,7 +1617,6 @@
             document.getElementById('count-report').innerText = reportList.length;
             document.getElementById('list-report').innerText = reportList.length > 0 ? reportList.join(', ') : 'A la awm lo';
             document.getElementById('count-absent').innerText = absentCount;
-
             filterAttendance();
         }
 
@@ -1633,13 +1627,10 @@
             const isSaturday = new Date(dateStr).getDay() === 6;
             
             let filteredStudents = allStudentsList;
-            if (isSaturday) {
-                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift' || (s.shift || '10am shift') === 'Saturday (O)');
-            } else {
+            if (isSaturday) { filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift' || (s.shift || '10am shift') === 'Saturday (O)'); } 
+            else {
                 filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') !== 'Saturday shift' && (s.shift || '10am shift') !== 'Saturday (O)');
-                if (selectedShift !== 'ALL') { 
-                    filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === selectedShift); 
-                }
+                if (selectedShift !== 'ALL') { filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === selectedShift); }
             }
             
             filteredStudents.forEach(s => {
@@ -1667,7 +1658,6 @@
                 
                 let matchText = enr.includes(input) || nm.includes(input);
                 let matchFilter = window.currentPerformanceFilter === 'ALL' || perfCategory === window.currentPerformanceFilter;
-                
                 row.style.display = (matchText && matchFilter) ? '' : 'none';
             });
         }
@@ -1681,35 +1671,21 @@
             const pts = isSaturday ? {Present: 5, Reported: 2.5, Absent: 0} : {Present: 1, Reported: 0.5, Absent: 0};
 
             let targetStudents = allStudentsList;
-            if (isSaturday) {
-                targetStudents = targetStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift' || (s.shift || '10am shift') === 'Saturday (O)');
-            } else {
+            if (isSaturday) { targetStudents = targetStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift' || (s.shift || '10am shift') === 'Saturday (O)'); } 
+            else {
                 targetStudents = targetStudents.filter(s => (s.shift || '10am shift') !== 'Saturday shift' && (s.shift || '10am shift') !== 'Saturday (O)');
-                if (selectedShift !== 'ALL') {
-                    targetStudents = targetStudents.filter(s => (s.shift || '10am shift') === selectedShift);
-                }
+                if (selectedShift !== 'ALL') { targetStudents = targetStudents.filter(s => (s.shift || '10am shift') === selectedShift); }
             }
 
             let promises = [];
             targetStudents.forEach(s => {
                 const radios = document.getElementsByName(`att_${s.enrollment}`); let val = 'Absent';
                 for(let r of radios) { if(r.checked) val = r.value; }
-                promises.push(setDoc(doc(db, "attendance", `${dateStr}_${s.enrollment}`), { 
-                    date: dateStr, 
-                    enrollment: s.enrollment, 
-                    name: s.name, 
-                    status: val, 
-                    points: pts[val], 
-                    timestamp: serverTimestamp() 
-                }));
+                promises.push(setDoc(doc(db, "attendance", `${dateStr}_${s.enrollment}`), { date: dateStr, enrollment: s.enrollment, name: s.name, status: val, points: pts[val], timestamp: serverTimestamp() }));
             });
             
-            try { 
-                await Promise.all(promises); 
-                alert(`${dateStr} Attendance save a ni e!`); 
-            } catch(e) { 
-                alert("Save naah harsatna: " + e.message); 
-            }
+            try { await Promise.all(promises); alert(`${dateStr} Attendance save a ni e!`); } 
+            catch(e) { alert("Save naah harsatna: " + e.message); }
         }
 
         window.exportAttendanceToExcel = async function() {
@@ -1766,20 +1742,13 @@
             }
         }
 
-        // FETCH ALL STUDENTS
         onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
             allStudentsList = []; snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
-            renderStudentManagementTable(); renderFeeTable(); loadAttendanceForDate(); renderOnlineShiftStudents(); 
-            renderAdminLeaderboard();
-            
-            if (document.getElementById('period-start-date').value && document.getElementById('period-end-date').value) {
-                calculatePeriodAttendance();
-            }
+            renderStudentManagementTable(); renderFeeTable(); loadAttendanceForDate(); renderOnlineShiftStudents(); renderAdminLeaderboard();
+            if (document.getElementById('period-start-date').value && document.getElementById('period-end-date').value) { calculatePeriodAttendance(); }
         });
 
-        window.openShiftModal = function(enrollment, currentShift) {
-            document.getElementById('edit-shift-enrollment').value = enrollment; document.getElementById('edit-student-shift').value = currentShift; document.getElementById('shift-edit-modal').classList.remove('hidden');
-        }
+        window.openShiftModal = function(enrollment, currentShift) { document.getElementById('edit-shift-enrollment').value = enrollment; document.getElementById('edit-student-shift').value = currentShift; document.getElementById('shift-edit-modal').classList.remove('hidden'); }
         window.closeShiftModal = function() { document.getElementById('shift-edit-modal').classList.add('hidden'); }
         window.updateStudentShift = async function() {
             const enrollment = document.getElementById('edit-shift-enrollment').value; const newShift = document.getElementById('edit-student-shift').value;
@@ -1883,9 +1852,7 @@
                 if (!uniqueMap[key]) {
                     uniqueMap[key] = data;
                 } else {
-                    if (uniqueMap[key].status === 'Pending' && data.status !== 'Pending') {
-                        uniqueMap[key] = data;
-                    }
+                    if (uniqueMap[key].status === 'Pending' && data.status !== 'Pending') { uniqueMap[key] = data; }
                 }
             });
 
@@ -1931,11 +1898,8 @@
                     }
                 });
                 
-                if(updatePromises.length > 0) {
-                    await Promise.all(updatePromises);
-                } else {
-                    await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Approved', rejectReason: '' });
-                }
+                if(updatePromises.length > 0) { await Promise.all(updatePromises); } 
+                else { await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Approved', rejectReason: '' }); }
                 
                 let currDate = new Date(startDate); let lastDate = new Date(endDate); let studentName = allStudentsList.find(s => s.enrollment === enrollment)?.name || '';
                 let promises = [];
@@ -1962,15 +1926,10 @@
                         }
                     });
                     
-                    if(updatePromises.length > 0) {
-                        await Promise.all(updatePromises);
-                    } else {
-                        await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Rejected', rejectReason: reason.trim() });
-                    }
+                    if(updatePromises.length > 0) { await Promise.all(updatePromises); } 
+                    else { await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Rejected', rejectReason: reason.trim() }); }
                     alert("Chawlh dilna chu hnial (reject) a ni e.");
-                } catch(error) {
-                    alert("Harsatna: " + error.message);
-                }
+                } catch(error) { alert("Harsatna: " + error.message); }
             }
         }
 
@@ -2031,31 +1990,19 @@
         window.shareOnlineMaterial = async function(event) {
             event.preventDefault();
             try {
-                await addDoc(collection(db, "online_materials"), {
-                    title: document.getElementById('online-title').value,
-                    message: document.getElementById('online-message').value,
-                    url: document.getElementById('online-url').value,
-                    createdAt: serverTimestamp()
-                });
-                alert("Saturday (O) te hnenah thawn a ni e!");
-                event.target.reset();
+                await addDoc(collection(db, "online_materials"), { title: document.getElementById('online-title').value, message: document.getElementById('online-message').value, url: document.getElementById('online-url').value, createdAt: serverTimestamp() });
+                alert("Saturday (O) te hnenah thawn a ni e!"); event.target.reset();
             } catch (error) { alert("Harsatna: " + error.message); }
         }
 
-        window.deleteOnlineMaterial = async function(docId) {
-            if(confirm("He online thawn hi paih duh takzet em?")) {
-                try { await deleteDoc(doc(db, "online_materials", docId)); } 
-                catch(error) { alert("Harsatna: " + error.message); }
-            }
-        }
+        window.deleteOnlineMaterial = async function(docId) { if(confirm("He online thawn hi paih duh takzet em?")) { try { await deleteDoc(doc(db, "online_materials", docId)); } catch(error) { alert("Harsatna: " + error.message); } } }
 
         onSnapshot(query(collection(db, "online_materials"), orderBy("createdAt", "desc")), (snapshot) => {
             const adminContainer = document.getElementById('admin-online-container');
             if(adminContainer) adminContainer.innerHTML = '';
             
-            if (snapshot.empty) {
-                if(adminContainer) adminContainer.innerHTML = '<p style="color: gray;">A la awm rih lo...</p>';
-            } else {
+            if (snapshot.empty) { if(adminContainer) adminContainer.innerHTML = '<p style="color: gray;">A la awm rih lo...</p>'; } 
+            else {
                 snapshot.forEach((docSnap) => {
                     let data = docSnap.data();
                     let safeTitle = data.title ? data.title.replace(/'/g, "\\'") : '';
@@ -2083,25 +2030,14 @@
         });
 
         // ================= PRACTICAL SUBMISSION =================
-        window.deletePracticalSubmission = async function(docId) {
-            if(confirm("He link thehluh hi paih i duh takzet em?")) {
-                try {
-                    await deleteDoc(doc(db, "practical_submissions", docId));
-                } catch(e) {
-                    alert("Harsatna: " + e.message);
-                }
-            }
-        }
+        window.deletePracticalSubmission = async function(docId) { if(confirm("He link thehluh hi paih i duh takzet em?")) { try { await deleteDoc(doc(db, "practical_submissions", docId)); } catch(e) { alert("Harsatna: " + e.message); } } }
 
         onSnapshot(query(collection(db, "practical_submissions"), orderBy("timestamp", "desc")), (snapshot) => {
             const adminList = document.getElementById('admin-practical-list');
             let adminHtml = '';
-            
             snapshot.forEach(docSnap => {
-                const data = docSnap.data();
-                const docId = docSnap.id;
+                const data = docSnap.data(); const docId = docSnap.id;
                 const dateStr = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString() : 'Vawiin';
-                
                 adminHtml += `
                     <div class="notice-box" style="border-left-color: #10b981; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
                         <div style="flex-grow: 1;">
@@ -2115,7 +2051,6 @@
                         </div>
                     </div>`;
             });
-            
             if(adminList) { adminList.innerHTML = adminHtml || '<p style="color: gray;">Thehlut an la awm lo...</p>'; }
         });
 
@@ -2125,14 +2060,11 @@
         // ================= AI SETTINGS (API KEY) & PASSWORD LOCK =================
         window.unlockAISettings = function() {
             const pass = document.getElementById('ai-lock-password').value;
-            // Heta password hi i duh danin i thlak thei ang (Entirnan: 'BccAdmin@2026')
             if (pass === "BccAdmin@2026") { 
                 document.getElementById('ai-settings-lock').classList.add('hidden');
                 document.getElementById('ai-settings-form-box').classList.remove('hidden');
                 document.getElementById('ai-lock-password').value = '';
-            } else {
-                alert("Super Admin password a dik lo!");
-            }
+            } else { alert("Super Admin password a dik lo!"); }
         }
 
         window.lockAISettingsAgain = function() {
@@ -2144,9 +2076,7 @@
         onSnapshot(doc(db, "settings", "ai_config"), (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                if(document.getElementById('admin-api-key')) {
-                    document.getElementById('admin-api-key').value = data.geminiApiKey || '';
-                }
+                if(document.getElementById('admin-api-key')) { document.getElementById('admin-api-key').value = data.geminiApiKey || ''; }
             }
         });
 
@@ -2154,13 +2084,8 @@
             event.preventDefault();
             const apiKey = document.getElementById('admin-api-key').value.trim();
             if(!apiKey) return;
-            try {
-                await setDoc(doc(db, "settings", "ai_config"), { geminiApiKey: apiKey }, { merge: true });
-                alert("API Key hlawhtling taka save a ni e!");
-                lockAISettingsAgain();
-            } catch(e) {
-                alert("Harsatna: " + e.message);
-            }
+            try { await setDoc(doc(db, "settings", "ai_config"), { geminiApiKey: apiKey }, { merge: true }); alert("API Key hlawhtling taka save a ni e!"); lockAISettingsAgain(); } 
+            catch(e) { alert("Harsatna: " + e.message); }
         }
 
         // ================= AI LOGS (USAGE TRACKING) =================
@@ -2168,10 +2093,7 @@
             const tbody = document.getElementById('admin-ai-logs-body');
             if(!tbody) return;
             
-            if (snapshot.empty) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:gray;">AI hmang an la awm lo...</td></tr>';
-                return;
-            }
+            if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:gray;">AI hmang an la awm lo...</td></tr>'; return; }
 
             tbody.innerHTML = '';
             snapshot.forEach((docSnap) => {
@@ -2184,8 +2106,7 @@
                         <td><span style="background: #e0f2fe; color: #0369a1; padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: bold;">${d.subject || 'General'}</span></td>
                         <td style="color: #1e293b;">${d.question}</td>
                         <td style="font-size: 12px; color: #64748b;">${timeStr}</td>
-                    </tr>
-                `;
+                    </tr>`;
             });
         });
 
@@ -2196,15 +2117,9 @@
                     let deletePromises = [];
                     querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "ai_logs", document.id))));
                     
-                    if(deletePromises.length > 0) {
-                        await Promise.all(deletePromises);
-                        alert("AI Logs paih fai a ni tawh e!");
-                    } else {
-                        alert("Paih tur record a awm lo.");
-                    }
-                } catch (error) {
-                    alert("Harsatna: " + error.message);
-                }
+                    if(deletePromises.length > 0) { await Promise.all(deletePromises); alert("AI Logs paih fai a ni tawh e!"); } 
+                    else { alert("Paih tur record a awm lo."); }
+                } catch (error) { alert("Harsatna: " + error.message); }
             }
         }
 
