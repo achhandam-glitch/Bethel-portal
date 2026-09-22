@@ -224,7 +224,7 @@
                             <span id="badge-materials" class="hidden" style="background: #ef4444; color: white; border-radius: 12px; padding: 2px 6px; font-size: 11px; margin-left: 5px; font-weight: bold;">New</span>
                         </button>
                         
-                        <button class="menu-btn" id="student-menu-online" style="display: none; border-left-color: #8b5cf6;" onclick="openStudentTab('student-tab-online')">💻 Special class</button>
+                        <button class="menu-btn" id="student-menu-online" style="display: none; border-left-color: #8b5cf6;" onclick="openStudentTab('student-tab-online')">💻 Saturday O (Practical)</button>
 
                         <button class="menu-btn" onclick="openStudentTab('student-tab-ai')" style="border-left-color: #10b981;">
                             🤖 Zirtirtu zawt rawh
@@ -380,29 +380,15 @@
                         <p style="opacity: 0.7;">Database atangin a rawn in-load mek...</p>
                     </div>
 
-                    <div class="form-grid" style="grid-template-columns: 1fr;">
-                        <div class="card" style="border: 2px solid #10b981;">
-                            <h3 style="border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">Practical Folder Thehluhna (Attendance Alternative)</h3>
-                            <p style="font-size: 13px; opacity: 0.8; margin-bottom: 15px;">Saturday (O) zirlaite tan hetah hian i practical folder (Google Drive link) rawn thehlut la, hemi hi i attendance alternative a ni ang. (Link i copy dawnin 'Anyone with the link' tihah i thlak hmasa dawn nia).</p>
-                            <form onsubmit="submitPracticalLink(event)">
-                                <div class="input-group">
-                                    <label>Folder Hming / Entirnan: Ms Word Practical</label>
-                                    <input type="text" id="practical-title" required>
-                                </div>
-                                <div class="input-group">
-                                    <label>Google Drive Link</label>
-                                    <input type="url" id="practical-link" placeholder="https://drive.google.com/..." required>
-                                </div>
-                                <button type="submit" class="btn btn-success" style="margin-top: 5px; background-color: #10b981;">Link Thehlut Rawh</button>
-                            </form>
-                        </div>
-                        
-                        <div class="card" style="margin-bottom: 0;">
-                            <h3>I Thehluh Tawh Te</h3>
-                            <div id="student-practical-list" style="max-height: 250px; overflow-y: auto;">
-                                <p style="opacity: 0.7;">I la thehlut lo.</p>
-                            </div>
-                        </div>
+                    <!-- THLAK THAR LAAI: Saturday O Practical Submission form paihin WhatsApp Notice zawk dah a ni -->
+                    <div class="card" style="border: 2px solid #10b981;">
+                        <h3 style="border-bottom: 1px solid #a7f3d0; padding-bottom: 10px; color: #047857;">✅ Practical Thehluh Dan (Saturday O)</h3>
+                        <p style="font-size: 14px; line-height: 1.6; margin-bottom: 15px; margin-top: 10px;">
+                            Saturday (O) zirlaite chuan in Practical (Assignments) in tih zawh apiangin <b>Zip file</b>-ah siam la, i hming leh Enrollment No. tarlangin Zirtirtu hnenah <b>WhatsApp</b> kaltlangin rawn thawn ṭhin tur a ni.
+                        </p>
+                        <p style="font-size: 14px; line-height: 1.6; color: #047857; background: #d1fae5; padding: 10px; border-radius: 6px;">
+                            I thil thehluh hi zirtirtuin a lo check ang a, a ṭhat dan a zirin i <b>Attendance Points</b>-ah points a lo thun lut ṭhin dawn a ni. I points hmuh zat hi i "Zirlai Dinhmun" tab-ah i check thei ang.
+                        </p>
                     </div>
                 </div>
 
@@ -487,7 +473,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "6.0"; 
+        const APP_VERSION = "6.2"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -634,6 +620,7 @@
             }
         });
 
+        // THLAK THAR: Saturday (O) leh Regular Attendance chhut dan kha tih inang a ni tawh
         function autoCalculatePeriodAttendance() {
             const resultBox = document.getElementById('student-period-result');
             const titleBox = document.getElementById('student-period-title');
@@ -653,79 +640,39 @@
             
             if(titleBox) titleBox.innerText = periodName;
 
-            let isSatShift = (window.currentStudent.shift === 'Saturday (O)');
+            const wMax = globalAttendancePeriod.weekdayMax || 0;
+            const sMax = globalAttendancePeriod.saturdayMax || 0;
+            let isSatShift = (window.currentStudent.shift === 'Saturday shift' || window.currentStudent.shift === 'Saturday (O)');
+            let studentMax = isSatShift ? sMax : wMax;
 
-            if (isSatShift) {
-                onSnapshot(query(collection(db, "practical_submissions"), where("enrollment", "==", enr)), (subSnap) => {
-                    let submittedCount = 0;
-                    subSnap.forEach(docSnap => {
-                        let subData = docSnap.data();
-                        let subDate = subData.timestamp ? subData.timestamp.toDate().toISOString().split('T')[0] : '';
-                        if (subDate >= start && subDate <= end) {
-                            submittedCount++;
-                        }
-                    });
+            let recordsInRange = allAttendanceRecords.filter(r => r.date >= start && r.date <= end);
+            let earned = 0;
+            recordsInRange.filter(r => r.enrollment === enr).forEach(r => { earned += (r.points || 0); });
 
-                    let expectedSubmissions = 4;
-                    let pct = ((submittedCount / expectedSubmissions) * 100).toFixed(1);
-                    if (pct > 100) pct = 100;
+            let pct = studentMax > 0 ? ((earned / studentMax) * 100).toFixed(1) : 0;
+            let remark = 'N/A'; let badgeBg = '#f1f5f9'; let badgeColor = '#64748b';
 
-                    let remark = 'N/A'; let badgeBg = '#f1f5f9'; let badgeColor = '#64748b';
-                    let pNum = parseFloat(pct);
-                    if (pNum >= 90) { remark = 'Excellent'; badgeBg = '#dcfce7'; badgeColor = '#166534'; }
-                    else if (pNum >= 75) { remark = 'Good'; badgeBg = '#e0f2fe'; badgeColor = '#0369a1'; }
-                    else if (pNum >= 50) { remark = 'Average'; badgeBg = '#fef08a'; badgeColor = '#854d0e'; }
-                    else { remark = 'Poor'; badgeBg = '#fee2e2'; badgeColor = '#991b1b'; }
+            if (studentMax > 0) {
+                let pNum = parseFloat(pct); if (pNum > 100) pNum = 100;
+                if (pNum >= 90) { remark = 'Excellent'; badgeBg = '#dcfce7'; badgeColor = '#166534'; }
+                else if (pNum >= 75) { remark = 'Good'; badgeBg = '#e0f2fe'; badgeColor = '#0369a1'; }
+                else if (pNum >= 50) { remark = 'Average'; badgeBg = '#fef08a'; badgeColor = '#854d0e'; }
+                else { remark = 'Poor'; badgeBg = '#fee2e2'; badgeColor = '#991b1b'; }
+            }
 
-                    if(resultBox) {
-                        resultBox.innerHTML = `
-                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                                <div>
-                                    <span style="font-size: 13px; opacity: 0.8;">Hun chhung: ${start} to ${end}</span><br>
-                                    <span style="font-size: 14px; margin-top: 4px; display: inline-block;">Practical Thehluh Zat: <b style="color: #0f766e;">${submittedCount}</b> (Attendance Alternative)</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <span style="font-weight: bold; font-size: 20px; color: #0f766e;">${pct}%</span>
-                                    <span style="background: ${badgeBg}; color: ${badgeColor}; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold;">${remark}</span>
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-            } else {
-                const wMax = globalAttendancePeriod.weekdayMax || 0;
-                const sMax = globalAttendancePeriod.saturdayMax || 0;
-                let studentMax = (window.currentStudent.shift === 'Saturday shift') ? sMax : wMax;
-
-                let recordsInRange = allAttendanceRecords.filter(r => r.date >= start && r.date <= end);
-                let earned = 0;
-                recordsInRange.filter(r => r.enrollment === enr).forEach(r => { earned += (r.points || 0); });
-
-                let pct = studentMax > 0 ? ((earned / studentMax) * 100).toFixed(1) : 0;
-                let remark = 'N/A'; let badgeBg = '#f1f5f9'; let badgeColor = '#64748b';
-
-                if (studentMax > 0) {
-                    let pNum = parseFloat(pct); if (pNum > 100) pNum = 100;
-                    if (pNum >= 90) { remark = 'Excellent'; badgeBg = '#dcfce7'; badgeColor = '#166534'; }
-                    else if (pNum >= 75) { remark = 'Good'; badgeBg = '#e0f2fe'; badgeColor = '#0369a1'; }
-                    else if (pNum >= 50) { remark = 'Average'; badgeBg = '#fef08a'; badgeColor = '#854d0e'; }
-                    else { remark = 'Poor'; badgeBg = '#fee2e2'; badgeColor = '#991b1b'; }
-                }
-
-                if(resultBox) {
-                    resultBox.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                            <div>
-                                <span style="font-size: 13px; opacity: 0.8;">Hun chhung: ${start} to ${end}</span><br>
-                                <span style="font-size: 14px; margin-top: 4px; display: inline-block;">I Points Hmuh: <b style="color: #0f766e;">${earned}</b> / ${studentMax} (Max Possible)</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span style="font-weight: bold; font-size: 20px; color: #0f766e;">${pct}%</span>
-                                <span style="background: ${badgeBg}; color: ${badgeColor}; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold;">${remark}</span>
-                            </div>
+            if(resultBox) {
+                resultBox.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <span style="font-size: 13px; opacity: 0.8;">Hun chhung: ${start} to ${end}</span><br>
+                            <span style="font-size: 14px; margin-top: 4px; display: inline-block;">I Points Hmuh: <b style="color: #0f766e;">${earned}</b> / ${studentMax} (Max Possible)</span>
                         </div>
-                    `;
-                }
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-weight: bold; font-size: 20px; color: #0f766e;">${pct}%</span>
+                            <span style="background: ${badgeBg}; color: ${badgeColor}; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: bold;">${remark}</span>
+                        </div>
+                    </div>
+                `;
             }
         }
 
@@ -1229,41 +1176,6 @@
             }
         });
 
-        window.submitPracticalLink = async function(event) {
-            event.preventDefault();
-            const title = document.getElementById('practical-title').value.trim();
-            const link = document.getElementById('practical-link').value.trim();
-            if(!title || !link) return;
-            try {
-                await addDoc(collection(db, "practical_submissions"), {
-                    enrollment: window.currentStudent.enrollment, studentName: window.currentStudent.name, title: title, url: link, timestamp: serverTimestamp()
-                });
-                alert("I practical link chu thehluh a ni e. Zirtirtuin a lo check dawn nia."); event.target.reset();
-                autoCalculatePeriodAttendance();
-            } catch(e) { alert("Harsatna: " + e.message); }
-        }
-
-        onSnapshot(query(collection(db, "practical_submissions"), orderBy("timestamp", "desc")), (snapshot) => {
-            const studentList = document.getElementById('student-practical-list');
-            let studentHtml = '';
-            
-            snapshot.forEach(docSnap => {
-                const data = docSnap.data();
-                const dateStr = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString() : 'Vawiin';
-                if(window.currentStudent && data.enrollment === window.currentStudent.enrollment) {
-                    studentHtml += `
-                        <div class="notice-box" style="border-left-color: #10b981; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-                            <div style="flex-grow: 1;">
-                                <strong>${data.title}</strong>
-                                <div style="font-size: 12px; opacity: 0.7; margin-top: 4px;">📅 Thehluh ni: ${dateStr}</div>
-                            </div>
-                            <a href="${data.url}" target="_blank" class="btn btn-outline" style="padding: 6px 12px; font-size: 13px; margin: 0; text-decoration: none; width: auto;">I link</a>
-                        </div>`;
-                }
-            });
-            if(studentList && window.currentStudent && window.currentStudent.enrollment) { studentList.innerHTML = studentHtml || '<p style="opacity: 0.7;">I la thehlut lo.</p>'; }
-        });
-
         window.loginStudent = async function(event) {
             event.preventDefault();
             const enrollmentStr = document.getElementById('login-enrollment').value.trim(); 
@@ -1300,10 +1212,9 @@
                     if (matched) {
                         window.currentStudent.enrollment = enrollmentStr;
                         try { 
-                            // Update last login date
                             await updateDoc(doc(db, "students", actualDocId), { lastLoginDate: todayISODate }); 
                             
-                            // LOGIN LOG RECORD SIAMNA
+                            // LOGIN LOG RECORD SIAMNA (Admin lamah a lut ang)
                             await addDoc(collection(db, "login_logs"), {
                                 enrollment: window.currentStudent.enrollment,
                                 studentName: window.currentStudent.name,
