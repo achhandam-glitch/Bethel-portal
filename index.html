@@ -473,7 +473,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "6.2"; 
+        const APP_VERSION = "6.3"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -1241,7 +1241,8 @@
                         if (window.currentStudent.shift === 'Saturday (O)') {
                             if (onlineMenuBtn) onlineMenuBtn.style.display = 'block';
                             if (leaveMenuBtn) leaveMenuBtn.style.display = 'none'; 
-                            if (attPointsCard) attPointsCard.style.display = 'none'; 
+                            // THLAK THAR: Saturday (O) pawhin Total Points tarlanna an hmu thei tawh ang
+                            if (attPointsCard) attPointsCard.style.display = 'flex'; 
                         } else {
                             if (onlineMenuBtn) onlineMenuBtn.style.display = 'none';
                             if (leaveMenuBtn) leaveMenuBtn.style.display = 'block';
