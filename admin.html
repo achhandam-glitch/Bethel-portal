@@ -498,7 +498,6 @@
                                     <option value="5pm shift">5pm shift</option>
                                     <option value="7pm shift">7pm shift</option>
                                     <option value="Saturday shift">Saturday shift</option>
-                                    <option value="Saturday (O)">Saturday (O)</option>
                                     <option value="Flexible shift">Flexible shift</option>
                                 </select>
                             </div>
@@ -735,9 +734,41 @@
                     </div>
 
                     <div class="card" style="border: 2px solid #10b981; margin-top: 20px;">
-                        <h3 style="color: #047857; border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">📥 Zirlai Practical Thehluh Te (Google Drive Links)</h3>
-                        <div id="admin-practical-list" style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
-                            <p style="color: gray;">Thehlut an la awm lo...</p>
+                        <h3 style="color: #047857; border-bottom: 1px solid #a7f3d0; padding-bottom: 10px;">✅ Practical Points Pekna (Saturday O)</h3>
+                        <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">WhatsApp aṭanga an practical rawn thawnte check sak hnuah, hetah hian an attendance points tur i thun lut dawn nia (Vawikhat thehluhah Point 5).</p>
+                        <div class="form-grid" style="background: #f0fdf4; padding: 15px; border-radius: 8px; border: 1px solid #bbf7d0;">
+                            <div class="input-group">
+                                <label>Ni (Date)</label>
+                                <input type="date" id="sato-date" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Zirlai Thlang Rawh</label>
+                                <select id="sato-student-select">
+                                    <option value="">-- Thlang rawh --</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>Points Pek Zat</label>
+                                <input type="number" id="sato-points" value="5" step="0.5" required>
+                            </div>
+                            <div class="input-group" style="display: flex; align-items: flex-end;">
+                                <button class="btn btn-success" style="margin: 0; background-color: #10b981;" onclick="saveSatOPoints()">Points Save Rawh</button>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; max-height: 250px; overflow-y: auto;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                                <thead style="position: sticky; top: 0; background: #f8fafc;">
+                                    <tr>
+                                        <th>Ni (Date)</th>
+                                        <th>Zirlai Hming</th>
+                                        <th>Points</th>
+                                        <th>Paih</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-sato-points-list">
+                                    <tr><td colspan="4" style="text-align: center; color: gray;">A rawn in-load mek...</td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -969,7 +1000,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "5.1";
+        const APP_VERSION = "6.1";
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -984,6 +1015,7 @@
         const todayISODate = new Date().toISOString().split('T')[0];
         if (document.getElementById('attendance-date')) document.getElementById('attendance-date').value = todayISODate;
         if (document.getElementById('fee-date')) document.getElementById('fee-date').value = todayISODate;
+        if (document.getElementById('sato-date')) document.getElementById('sato-date').value = todayISODate;
 
         (function checkVersion() {
             let savedVersion = localStorage.getItem('bcc_portal_version');
@@ -1083,6 +1115,7 @@
 
         // ================= MCQ & COINS LOGIC =================
         
+        // Manual MCQ Creation (Thlalak dah theih tawh)
         window.createMCQ = async function(e) {
             e.preventDefault();
             try {
@@ -1118,6 +1151,7 @@
             }
         }
 
+        // Bulk Upload MCQ Excel (Image URL theih tawh)
         window.uploadMCQExcel = async function() {
             const fileInput = document.getElementById('mcq-excel-upload');
             const statusDiv = document.getElementById('mcq-upload-status');
@@ -1147,7 +1181,7 @@
                         let row = json[i];
                         let quizTitle = row.QuizTitle || row.quiztitle || row.Quiz_Title || "General Test";
                         let q = row.Question || row.question || row.Zawhna;
-                        let imgUrl = row.ImageURL || row.imageurl || row.image_url || "";
+                        let imgUrl = row.ImageURL || row.imageurl || row.image_url || ""; 
                         
                         let optA = row.OptionA || row.optiona || row.Option_A;
                         let optAImg = row.OptAImg || row.optaimg || row.opt_a_img || "";
@@ -1558,8 +1592,36 @@
                 attendanceStats[d.enrollment].days += 1;
             });
             renderStudentManagementTable();
+            renderSatOPointsTable();
             if (document.getElementById('period-start-date').value && document.getElementById('period-end-date').value) { calculatePeriodAttendance(); }
         });
+
+        function renderSatOPointsTable() {
+            const tbody = document.getElementById('admin-sato-points-list');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            
+            const satOEnrs = allStudentsList.filter(s => s.shift === 'Saturday (O)').map(s => s.enrollment);
+            const satORecords = allAttendanceRecords.filter(r => satOEnrs.includes(r.enrollment));
+            satORecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if(satORecords.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: gray;">Record a awm lo.</td></tr>';
+                return;
+            }
+
+            satORecords.forEach(r => {
+                let badge = r.status === 'Practical Submitted' ? '<span style="color: #10b981; font-size: 11px;">[Practical]</span>' : '';
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${r.date}</td>
+                        <td><b>${r.name}</b> ${badge}</td>
+                        <td style="color: #047857; font-weight: bold;">${r.points}</td>
+                        <td><button class="btn btn-danger btn-icon" style="width: 25px; height: 25px; font-size: 12px;" onclick="deleteSatOPoint('${r.date}_${r.enrollment}')">✕</button></td>
+                    </tr>
+                `;
+            });
+        }
 
         window.loadAttendanceForDate = async function() {
             const dateStr = document.getElementById('attendance-date').value;
@@ -1570,18 +1632,18 @@
             const currentShiftVal = shiftSelect.value;
             shiftSelect.innerHTML = '<option value="ALL">-- Shift ZAWNG ZAWNG --</option>';
             
-            const allShifts = ["6am shift", "7am shift", "8am shift", "10am shift", "11am shift", "1pm shift", "2pm shift", "3pm shift", "4pm shift", "5pm shift", "7pm shift", "Saturday shift", "Saturday (O)", "Flexible shift"];
+            const allShifts = ["6am shift", "7am shift", "8am shift", "10am shift", "11am shift", "1pm shift", "2pm shift", "3pm shift", "4pm shift", "5pm shift", "7pm shift", "Saturday shift", "Flexible shift"];
             
             allShifts.forEach(shift => {
                 if (isSaturday) {
-                    if (shift === 'Saturday shift' || shift === 'Saturday (O)') shiftSelect.innerHTML += `<option value="${shift}">${shift}</option>`;
+                    if (shift === 'Saturday shift') shiftSelect.innerHTML += `<option value="${shift}">${shift}</option>`;
                 } else {
-                    if (shift !== 'Saturday shift' && shift !== 'Saturday (O)') shiftSelect.innerHTML += `<option value="${shift}">${shift}</option>`;
+                    if (shift !== 'Saturday shift') shiftSelect.innerHTML += `<option value="${shift}">${shift}</option>`;
                 }
             });
             
-            if (isSaturday && currentShiftVal !== 'Saturday shift' && currentShiftVal !== 'Saturday (O)' && currentShiftVal !== 'ALL') { shiftSelect.value = 'ALL'; } 
-            else if (!isSaturday && (currentShiftVal === 'Saturday shift' || currentShiftVal === 'Saturday (O)')) { shiftSelect.value = 'ALL'; } 
+            if (isSaturday && currentShiftVal !== 'Saturday shift' && currentShiftVal !== 'ALL') { shiftSelect.value = 'ALL'; } 
+            else if (!isSaturday && currentShiftVal === 'Saturday shift') { shiftSelect.value = 'ALL'; } 
             else { shiftSelect.value = currentShiftVal || 'ALL'; }
             
             const selectedShift = shiftSelect.value;
@@ -1592,10 +1654,11 @@
 
             const tbody = document.getElementById('attendance-list-body'); tbody.innerHTML = '';
             
-            let filteredStudents = allStudentsList;
-            if (isSaturday) { filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift' || (s.shift || '10am shift') === 'Saturday (O)'); } 
-            else {
-                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') !== 'Saturday shift' && (s.shift || '10am shift') !== 'Saturday (O)');
+            let filteredStudents = allStudentsList.filter(s => (s.shift || '10am shift') !== 'Saturday (O)');
+            if (isSaturday) { 
+                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift'); 
+            } else {
+                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') !== 'Saturday shift');
                 if (selectedShift !== 'ALL') { filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === selectedShift); }
             }
 
@@ -1648,10 +1711,11 @@
             const dateStr = document.getElementById('attendance-date').value;
             const isSaturday = new Date(dateStr).getDay() === 6;
             
-            let filteredStudents = allStudentsList;
-            if (isSaturday) { filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift' || (s.shift || '10am shift') === 'Saturday (O)'); } 
-            else {
-                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') !== 'Saturday shift' && (s.shift || '10am shift') !== 'Saturday (O)');
+            let filteredStudents = allStudentsList.filter(s => (s.shift || '10am shift') !== 'Saturday (O)');
+            if (isSaturday) { 
+                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift'); 
+            } else {
+                filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') !== 'Saturday shift');
                 if (selectedShift !== 'ALL') { filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === selectedShift); }
             }
             
@@ -1692,10 +1756,11 @@
             const isSaturday = new Date(dateStr).getDay() === 6;
             const pts = isSaturday ? {Present: 5, Reported: 2.5, Absent: 0} : {Present: 1, Reported: 0.5, Absent: 0};
 
-            let targetStudents = allStudentsList;
-            if (isSaturday) { targetStudents = targetStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift' || (s.shift || '10am shift') === 'Saturday (O)'); } 
-            else {
-                targetStudents = targetStudents.filter(s => (s.shift || '10am shift') !== 'Saturday shift' && (s.shift || '10am shift') !== 'Saturday (O)');
+            let targetStudents = allStudentsList.filter(s => (s.shift || '10am shift') !== 'Saturday (O)');
+            if (isSaturday) { 
+                targetStudents = targetStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift'); 
+            } else {
+                targetStudents = targetStudents.filter(s => (s.shift || '10am shift') !== 'Saturday shift');
                 if (selectedShift !== 'ALL') { targetStudents = targetStudents.filter(s => (s.shift || '10am shift') === selectedShift); }
             }
 
@@ -1751,18 +1816,58 @@
 
         function renderOnlineShiftStudents() {
             const container = document.getElementById('admin-online-students-list');
-            if (!container) return;
+            const select = document.getElementById('sato-student-select');
             const onlineStudents = allStudentsList.filter(s => (s.shift || '10am shift') === 'Saturday (O)');
-            if (onlineStudents.length === 0) {
-                container.innerHTML = '<span style="color: gray; font-size: 14px; font-style: italic;">Saturday (O)-ah zirlai an la awm lo...</span>';
-            } else {
-                container.innerHTML = onlineStudents.map(s => `<span class="badge-student" style="background-color: #f3e8ff; color: #6b21a8; border-color: #d8b4fe; font-size: 14px; padding: 6px 12px;">${s.name} <small style="color: #64748b; font-weight: normal; margin-left: 4px;">(${s.enrollment})</small></span>`).join('');
+            
+            if (container) {
+                if (onlineStudents.length === 0) {
+                    container.innerHTML = '<span style="color: gray; font-size: 14px; font-style: italic;">Saturday (O)-ah zirlai an la awm lo...</span>';
+                } else {
+                    container.innerHTML = onlineStudents.map(s => `<span class="badge-student" style="background-color: #f3e8ff; color: #6b21a8; border-color: #d8b4fe; font-size: 14px; padding: 6px 12px;">${s.name} <small style="color: #64748b; font-weight: normal; margin-left: 4px;">(${s.enrollment})</small></span>`).join('');
+                }
+            }
+            if (select) {
+                select.innerHTML = '<option value="">-- Thlang rawh --</option>';
+                onlineStudents.forEach(s => {
+                    select.innerHTML += `<option value="${s.enrollment}">${s.name} (${s.enrollment})</option>`;
+                });
+            }
+        }
+
+        window.saveSatOPoints = async function() {
+            const dateStr = document.getElementById('sato-date').value;
+            const enr = document.getElementById('sato-student-select').value;
+            const pts = parseFloat(document.getElementById('sato-points').value);
+
+            if(!dateStr || !enr || isNaN(pts)) { alert("Data kimin thun rawh."); return; }
+
+            const student = allStudentsList.find(s => s.enrollment === enr);
+            if(!student) return;
+
+            try {
+                await setDoc(doc(db, "attendance", `${dateStr}_${enr}`), {
+                    date: dateStr,
+                    enrollment: enr,
+                    name: student.name,
+                    status: 'Practical Submitted',
+                    points: pts,
+                    timestamp: serverTimestamp()
+                });
+                alert("Point save a ni e!");
+            } catch(e) {
+                alert("Harsatna: " + e.message);
+            }
+        }
+
+        window.deleteSatOPoint = async function(docId) {
+            if(confirm("He point hi paih i duh takzet em?")) {
+                try { await deleteDoc(doc(db, "attendance", docId)); } catch(e) { alert(e.message); }
             }
         }
 
         onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
             allStudentsList = []; snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
-            renderStudentManagementTable(); renderFeeTable(); loadAttendanceForDate(); renderOnlineShiftStudents(); renderAdminLeaderboard();
+            renderStudentManagementTable(); renderFeeTable(); loadAttendanceForDate(); renderOnlineShiftStudents(); renderAdminLeaderboard(); renderSatOPointsTable();
             if (document.getElementById('period-start-date').value && document.getElementById('period-end-date').value) { calculatePeriodAttendance(); }
         });
 
@@ -2045,31 +2150,6 @@
                     }
                 });
             }
-        });
-
-        // ================= PRACTICAL SUBMISSION =================
-        window.deletePracticalSubmission = async function(docId) { if(confirm("He link thehluh hi paih i duh takzet em?")) { try { await deleteDoc(doc(db, "practical_submissions", docId)); } catch(e) { alert("Harsatna: " + e.message); } } }
-
-        onSnapshot(query(collection(db, "practical_submissions"), orderBy("timestamp", "desc")), (snapshot) => {
-            const adminList = document.getElementById('admin-practical-list');
-            let adminHtml = '';
-            snapshot.forEach(docSnap => {
-                const data = docSnap.data(); const docId = docSnap.id;
-                const dateStr = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString() : 'Vawiin';
-                adminHtml += `
-                    <div class="notice-box" style="border-left-color: #10b981; display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-                        <div style="flex-grow: 1;">
-                            <strong style="color: #047857; font-size: 15px;">${data.studentName} <span style="color:gray; font-size: 12px;">(${data.enrollment})</span></strong>
-                            <div style="font-size: 14px; color: #334155; margin-top: 4px;"><span style="font-weight: bold; color: #0f172a;">Subject:</span> ${data.title}</div>
-                            <div style="font-size: 12px; color: gray; margin-top: 4px;">📅 ${dateStr}</div>
-                        </div>
-                        <div style="display: flex; gap: 8px;">
-                            <a href="${data.url}" target="_blank" class="btn btn-success" style="padding: 6px 12px; font-size: 13px; margin: 0; text-decoration: none; width: auto;">Hawng Rawh</a>
-                            <button class="btn btn-danger btn-icon" onclick="deletePracticalSubmission('${docId}')">✕</button>
-                        </div>
-                    </div>`;
-            });
-            if(adminList) { adminList.innerHTML = adminHtml || '<p style="color: gray;">Thehlut an la awm lo...</p>'; }
         });
 
         // ================= DELETE STUDENT =================
