@@ -487,7 +487,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "5.3"; 
+        const APP_VERSION = "6.0"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -1299,7 +1299,17 @@
 
                     if (matched) {
                         window.currentStudent.enrollment = enrollmentStr;
-                        try { await updateDoc(doc(db, "students", actualDocId), { lastLoginDate: todayISODate }); } catch(updErr) { console.log(updErr); }
+                        try { 
+                            // Update last login date
+                            await updateDoc(doc(db, "students", actualDocId), { lastLoginDate: todayISODate }); 
+                            
+                            // LOGIN LOG RECORD SIAMNA
+                            await addDoc(collection(db, "login_logs"), {
+                                enrollment: window.currentStudent.enrollment,
+                                studentName: window.currentStudent.name,
+                                timestamp: serverTimestamp()
+                            });
+                        } catch(updErr) { console.log(updErr); }
                         
                         const welcomeEl = document.getElementById('student-welcome-title');
                         if (welcomeEl) welcomeEl.innerText = `Zirlai Portal - ${window.currentStudent.name}`;
