@@ -221,16 +221,6 @@
                 </div>
 
                 <div class="admin-sidebar">
-                    <div style="border: 1px solid #bae6fd; background: #f0f9ff; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #bae6fd; padding-bottom: 6px; margin-bottom: 8px;">
-                            <span style="color: #0369a1; font-weight: bold; font-size: 14px;">Vawiina Online</span>
-                            <span style="background: #0284c7; color: white; padding: 2px 10px; border-radius: 10px; font-size: 13px; font-weight: bold;" id="today-login-count">0</span>
-                        </div>
-                        <div id="today-online-names" style="max-height: 90px; overflow-y: auto; font-size: 13px;">
-                            <span style="color: gray; font-style: italic;">Online an la awm lo...</span>
-                        </div>
-                    </div>
-
                     <h4 style="font-size: 14px; color: #64748b; text-transform: uppercase; margin-bottom: 5px;">Dashboard Menu</h4>
                     <div class="menu-box">
                         <button class="menu-btn" onclick="openAdminTab('tab-register')">📋 Zirlai Register-na</button>
@@ -243,11 +233,8 @@
                         <button class="menu-btn" onclick="openAdminTab('tab-gradebook')">📊 Comprehensive Gradebook</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-management')">👥 Zirlai Management</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-ai-logs')" style="border-left-color: #f43f5e; background: #fff1f2; color: #9f1239;">📈 AI Hman Dan (Logs)</button>
-                        
-                        <!-- Zirlai Login Logs Button -->
-                        <button class="menu-btn" onclick="openAdminTab('tab-login-logs')" style="border-left-color: #f97316; background: #fff7ed; color: #c2410c;">🔐 Zirlai Login Record</button>
-                        
                         <button class="menu-btn" onclick="openAdminTab('tab-ai-settings')" style="border-left-color: #10b981; background: #ecfdf5; color: #065f46;">🤖 AI Zirtirtu Settings</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-login-logs')" style="border-left-color: #f97316; background: #fff7ed; color: #c2410c;">🔐 Zirlai Login Record</button>
                     </div>
                 </div>
             </div>
@@ -890,36 +877,6 @@
                     </div>
                 </div>
 
-                <!-- TAB: LOGIN LOGS -->
-                <div id="tab-login-logs" class="admin-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
-                    
-                    <div class="card" style="border: 2px solid #ea580c; margin-bottom: 0;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
-                            <div>
-                                <h3 style="color: #c2410c; border: none; padding: 0; margin: 0;">🔐 Zirlaite Log In Record</h3>
-                                <p style="font-size: 13px; color: #475569; margin-top: 4px;">Zirlai portal an luh (log in) apiangin hetah hian a lo in-record zel ang.</p>
-                            </div>
-                            <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearLoginLogs()">🗑️ Logs Paih Faina</button>
-                        </div>
-                        
-                        <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
-                            <table>
-                                <thead style="position: sticky; top: 0; z-index: 10; background: #fff7ed;">
-                                    <tr>
-                                        <th style="min-width: 150px;">Zirlai Hming</th>
-                                        <th>Enrollment No</th>
-                                        <th>Luh Hun (Date & Time)</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="admin-login-logs-body">
-                                    <tr><td colspan="3" style="text-align:center; color:gray;">Data a rawn in-load mek...</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- TAB: AI SETTINGS -->
                 <div id="tab-ai-settings" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
@@ -951,6 +908,39 @@
                         </form>
                     </div>
                 </div>
+                
+                <!-- TAB: LOGIN LOGS -->
+                <div id="tab-login-logs" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
+                    
+                    <div class="card" style="border: 2px solid #ea580c; margin-bottom: 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
+                            <div>
+                                <h3 style="color: #c2410c; border: none; padding: 0; margin: 0;">🔐 Zirlaite Log In Record</h3>
+                                <p style="font-size: 13px; color: #475569; margin-top: 4px;">Zirlai portal an luh (log in) apiangin hetah hian a lo in-record zel ang.</p>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="exportLoginLogsToExcel()">📥 Excel Export</button>
+                                <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearLoginLogs()">🗑️ Logs Paih Faina</button>
+                            </div>
+                        </div>
+                        
+                        <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
+                            <table>
+                                <thead style="position: sticky; top: 0; z-index: 10; background: #fff7ed;">
+                                    <tr>
+                                        <th style="min-width: 150px;">Zirlai Hming</th>
+                                        <th>Enrollment No</th>
+                                        <th>Luh Hun (Date & Time)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-login-logs-body">
+                                    <tr><td colspan="3" style="text-align:center; color:gray;">Data a rawn in-load mek...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
             </div>
 
@@ -979,7 +969,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "6.0";
+        const APP_VERSION = "5.1";
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -1093,7 +1083,6 @@
 
         // ================= MCQ & COINS LOGIC =================
         
-        // Manual MCQ Creation (Thlalak dah theih tawh)
         window.createMCQ = async function(e) {
             e.preventDefault();
             try {
@@ -1129,7 +1118,6 @@
             }
         }
 
-        // Bulk Upload MCQ Excel (Option Image URLs theih tawh)
         window.uploadMCQExcel = async function() {
             const fileInput = document.getElementById('mcq-excel-upload');
             const statusDiv = document.getElementById('mcq-upload-status');
@@ -1735,13 +1723,12 @@
 
         // ================= GENERAL & MANAGEMENT =================
         function renderStudentManagementTable() {
-            const tableBody = document.getElementById('student-management-body'); let todayLoginCount = 0; let onlineNames = [];
+            const tableBody = document.getElementById('student-management-body'); 
             if(!tableBody) return; tableBody.innerHTML = '';
             
             if(allStudentsList.length === 0) { tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>'; } 
             else {
                 allStudentsList.forEach((s) => {
-                    if(s.lastLoginDate === todayISODate) { todayLoginCount++; onlineNames.push(`<span class="badge-student">${s.name}</span>`); }
                     const totalPts = attendancePointsMap[s.enrollment] || 0;
                     const studentShift = s.shift || '10am shift';
                     const studentCoins = s.coins || 0;
@@ -1760,9 +1747,6 @@
                         </tr>`;
                 });
             }
-            const countDisplay = document.getElementById('today-login-count'); if (countDisplay) countDisplay.innerText = todayLoginCount;
-            const namesDisplay = document.getElementById('today-online-names');
-            if (namesDisplay) { namesDisplay.innerHTML = onlineNames.length > 0 ? onlineNames.join('') : '<span style="color: gray; font-style: italic; font-size: 13px;">Online an la awm lo...</span>'; }
         }
 
         function renderOnlineShiftStudents() {
@@ -2156,7 +2140,7 @@
                 } catch (error) { alert("Harsatna: " + error.message); }
             }
         }
-
+        
         // ================= LOGIN LOGS (USAGE TRACKING) =================
         onSnapshot(query(collection(db, "login_logs"), orderBy("timestamp", "desc")), (snapshot) => {
             const tbody = document.getElementById('admin-login-logs-body');
@@ -2177,6 +2161,27 @@
                     </tr>`;
             });
         });
+
+        window.exportLoginLogsToExcel = async function() {
+            try {
+                const querySnapshot = await getDocs(query(collection(db, "login_logs"), orderBy("timestamp", "desc"))); 
+                let logData = []; 
+                querySnapshot.forEach((docSnap) => { 
+                    let d = docSnap.data(); 
+                    let timeStr = d.timestamp ? new Date(d.timestamp.toDate()).toLocaleString() : 'Hun hriat loh';
+                    logData.push({ 
+                        "Zirlai Hming": d.studentName, 
+                        "Enrollment No": d.enrollment, 
+                        "Luh Hun (Date & Time)": timeStr 
+                    }); 
+                }); 
+                if(logData.length === 0) { alert("Log in record a la awm lo."); return; } 
+                let worksheet = XLSX.utils.json_to_sheet(logData); 
+                let workbook = XLSX.utils.book_new(); 
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Login_Logs"); 
+                XLSX.writeFile(workbook, "Bethel_Login_Logs.xlsx"); 
+            } catch (error) { alert("Excel export-naah harsatna: " + error.message); }
+        }
 
         window.clearLoginLogs = async function() {
             if (confirm("Login record (logs) zawng zawng hi i paih fai takzet i duh em?")) {
