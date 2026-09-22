@@ -243,6 +243,10 @@
                         <button class="menu-btn" onclick="openAdminTab('tab-gradebook')">📊 Comprehensive Gradebook</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-management')">👥 Zirlai Management</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-ai-logs')" style="border-left-color: #f43f5e; background: #fff1f2; color: #9f1239;">📈 AI Hman Dan (Logs)</button>
+                        
+                        <!-- Zirlai Login Logs Button -->
+                        <button class="menu-btn" onclick="openAdminTab('tab-login-logs')" style="border-left-color: #f97316; background: #fff7ed; color: #c2410c;">🔐 Zirlai Login Record</button>
+                        
                         <button class="menu-btn" onclick="openAdminTab('tab-ai-settings')" style="border-left-color: #10b981; background: #ecfdf5; color: #065f46;">🤖 AI Zirtirtu Settings</button>
                     </div>
                 </div>
@@ -886,6 +890,36 @@
                     </div>
                 </div>
 
+                <!-- TAB: LOGIN LOGS -->
+                <div id="tab-login-logs" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
+                    
+                    <div class="card" style="border: 2px solid #ea580c; margin-bottom: 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
+                            <div>
+                                <h3 style="color: #c2410c; border: none; padding: 0; margin: 0;">🔐 Zirlaite Log In Record</h3>
+                                <p style="font-size: 13px; color: #475569; margin-top: 4px;">Zirlai portal an luh (log in) apiangin hetah hian a lo in-record zel ang.</p>
+                            </div>
+                            <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearLoginLogs()">🗑️ Logs Paih Faina</button>
+                        </div>
+                        
+                        <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
+                            <table>
+                                <thead style="position: sticky; top: 0; z-index: 10; background: #fff7ed;">
+                                    <tr>
+                                        <th style="min-width: 150px;">Zirlai Hming</th>
+                                        <th>Enrollment No</th>
+                                        <th>Luh Hun (Date & Time)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-login-logs-body">
+                                    <tr><td colspan="3" style="text-align:center; color:gray;">Data a rawn in-load mek...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- TAB: AI SETTINGS -->
                 <div id="tab-ai-settings" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
@@ -945,7 +979,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "5.1";
+        const APP_VERSION = "6.0";
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -2118,6 +2152,40 @@
                     querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "ai_logs", document.id))));
                     
                     if(deletePromises.length > 0) { await Promise.all(deletePromises); alert("AI Logs paih fai a ni tawh e!"); } 
+                    else { alert("Paih tur record a awm lo."); }
+                } catch (error) { alert("Harsatna: " + error.message); }
+            }
+        }
+
+        // ================= LOGIN LOGS (USAGE TRACKING) =================
+        onSnapshot(query(collection(db, "login_logs"), orderBy("timestamp", "desc")), (snapshot) => {
+            const tbody = document.getElementById('admin-login-logs-body');
+            if(!tbody) return;
+            
+            if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">Log in record a la awm lo...</td></tr>'; return; }
+
+            tbody.innerHTML = '';
+            snapshot.forEach((docSnap) => {
+                let d = docSnap.data();
+                let timeStr = d.timestamp ? new Date(d.timestamp.toDate()).toLocaleString() : 'Hun hriat loh';
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td><b>${d.studentName}</b></td>
+                        <td><span style="background: #f1f5f9; padding: 3px 6px; border-radius: 4px; font-size: 12px;">${d.enrollment}</span></td>
+                        <td style="font-size: 13px; color: #64748b;">${timeStr}</td>
+                    </tr>`;
+            });
+        });
+
+        window.clearLoginLogs = async function() {
+            if (confirm("Login record (logs) zawng zawng hi i paih fai takzet i duh em?")) {
+                try {
+                    const querySnapshot = await getDocs(collection(db, "login_logs"));
+                    let deletePromises = [];
+                    querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "login_logs", document.id))));
+                    
+                    if(deletePromises.length > 0) { await Promise.all(deletePromises); alert("Login Logs paih fai a ni tawh e!"); } 
                     else { alert("Paih tur record a awm lo."); }
                 } catch (error) { alert("Harsatna: " + error.message); }
             }
