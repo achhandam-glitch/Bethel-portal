@@ -742,8 +742,8 @@
                                 <input type="date" id="sato-date" required>
                             </div>
                             <div class="input-group">
-                                <label>Zirlai Thlang Rawh</label>
-                                <select id="sato-student-select">
+                                <label>Zirlai Thlang Rawh (Sat-O chauh a lang ang)</label>
+                                <select id="sato-student-select" required>
                                     <option value="">-- Thlang rawh --</option>
                                 </select>
                             </div>
@@ -1000,7 +1000,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "6.1";
+        const APP_VERSION = "6.4";
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -1115,7 +1115,7 @@
 
         // ================= MCQ & COINS LOGIC =================
         
-        // Manual MCQ Creation (Thlalak dah theih tawh)
+        // Manual MCQ Creation 
         window.createMCQ = async function(e) {
             e.preventDefault();
             try {
@@ -1151,7 +1151,7 @@
             }
         }
 
-        // Bulk Upload MCQ Excel (Image URL theih tawh)
+        // Bulk Upload MCQ Excel 
         window.uploadMCQExcel = async function() {
             const fileInput = document.getElementById('mcq-excel-upload');
             const statusDiv = document.getElementById('mcq-upload-status');
@@ -1581,6 +1581,7 @@
             attendanceStats = {}; 
             snapshot.forEach(docSnap => {
                 let d = docSnap.data();
+                d.id = docSnap.id; // DOC ID lak sa
                 allAttendanceRecords.push(d);
                 if(!attendancePointsMap[d.enrollment]) attendancePointsMap[d.enrollment] = 0;
                 attendancePointsMap[d.enrollment] += d.points;
@@ -1602,7 +1603,7 @@
             tbody.innerHTML = '';
             
             const satOEnrs = allStudentsList.filter(s => s.shift === 'Saturday (O)').map(s => s.enrollment);
-            const satORecords = allAttendanceRecords.filter(r => satOEnrs.includes(r.enrollment));
+            const satORecords = allAttendanceRecords.filter(r => satOEnrs.includes(r.enrollment) && r.status === 'Practical Submitted');
             satORecords.sort((a, b) => new Date(b.date) - new Date(a.date));
 
             if(satORecords.length === 0) {
@@ -1611,13 +1612,12 @@
             }
 
             satORecords.forEach(r => {
-                let badge = r.status === 'Practical Submitted' ? '<span style="color: #10b981; font-size: 11px;">[Practical]</span>' : '';
                 tbody.innerHTML += `
                     <tr>
                         <td>${r.date}</td>
-                        <td><b>${r.name}</b> ${badge}</td>
+                        <td><b>${r.name}</b> <span style="color: #10b981; font-size: 11px;">[Practical]</span></td>
                         <td style="color: #047857; font-weight: bold;">${r.points}</td>
-                        <td><button class="btn btn-danger btn-icon" style="width: 25px; height: 25px; font-size: 12px;" onclick="deleteSatOPoint('${r.date}_${r.enrollment}')">✕</button></td>
+                        <td><button class="btn btn-danger btn-icon" style="width: 25px; height: 25px; font-size: 12px;" onclick="deleteSatOPoint('${r.id}')">✕</button></td>
                     </tr>
                 `;
             });
@@ -1817,6 +1817,7 @@
         function renderOnlineShiftStudents() {
             const container = document.getElementById('admin-online-students-list');
             const select = document.getElementById('sato-student-select');
+            
             const onlineStudents = allStudentsList.filter(s => (s.shift || '10am shift') === 'Saturday (O)');
             
             if (container) {
@@ -1845,7 +1846,8 @@
             if(!student) return;
 
             try {
-                await setDoc(doc(db, "attendance", `${dateStr}_${enr}`), {
+                // SATO_ dah tel a ni a, regular attendance nen an date inang palh pawh nise a in-nawt reh lo ang.
+                await setDoc(doc(db, "attendance", `SATO_${dateStr}_${enr}`), {
                     date: dateStr,
                     enrollment: enr,
                     name: student.name,
