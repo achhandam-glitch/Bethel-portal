@@ -116,7 +116,7 @@
         body.dark-mode span[style*="color: #0369a1"], body.dark-mode span[style*="color: #4c1d95"], body.dark-mode b[style*="color: #15803d"], body.dark-mode b[style*="color: #dc2626"], body.dark-mode strong[style*="color: #0f172a"], body.dark-mode div[style*="background: white"], body.dark-mode div[style*="background: #fffbeb"], body.dark-mode div[style*="background: #f0fdf4"], body.dark-mode div[style*="background: #faf5ff"], body.dark-mode div[style*="background: #f8fafc"], body.dark-mode div[style*="background: #fff1f2"] { color: #e2e8f0 !important; background-color: transparent !important; }
         
         body.dark-mode #list-present, body.dark-mode #list-report, body.dark-mode .summary-list-text { color: #ffffff !important; }
-        body.dark-mode h4[style*="color: #6b21a8"], body.dark-mode span[style*="color: #6b21a8"], body.dark-mode h3[style*="color: #e11d48"], body.dark-mode label[style*="color: #be123c"], body.dark-mode b[style*="color: #be123c"] { color: #e2e8f0 !important; }
+        body.dark-mode h4[style*="color: #6b21a8"], body.dark-mode span[style*="color: #6b21a8"], body.dark-mode h3[style*="color: #e11d48"], body.dark-mode label[style*="color: #be123c"], body.dark-mode b[style*="color: #be123c"], body.dark-mode span[style*="color: #be123c"] { color: #e2e8f0 !important; }
 
         body.dark-mode .badge-student { background-color: #334155 !important; color: #38bdf8 !important; border-color: #475569 !important; }
         body.dark-mode .badge-shift { background-color: #334155 !important; color: #cbd5e1 !important; border-color: #475569 !important; }
@@ -469,37 +469,45 @@
                         </div>
                     </div>
 
-                    <!-- HOLIDAY SETTINGS CARD -->
-                    <div class="card" style="border: 2px solid #f43f5e; margin-top: 20px;">
-                        <h3 style="color: #e11d48; border-bottom: 1px solid #fecdd3; padding-bottom: 10px; margin-bottom: 15px;">🏖️ Sorkar Chawlh (Holiday) Set-na</h3>
-                        <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">Sunday leh heta chawlh i set niah te hian Attendance mark theih a ni lo ang.</p>
-                        <form onsubmit="saveHoliday(event)" class="form-grid" style="background: #fff1f2; padding: 15px; border-radius: 8px; border: 1px solid #fecdd3; margin-bottom: 15px; grid-template-columns: 1fr 1fr auto;">
-                            <div class="input-group">
-                                <label style="color: #be123c;">Chawlh Ni (Date)</label>
-                                <input type="date" id="holiday-date" required>
-                            </div>
-                            <div class="input-group">
-                                <label style="color: #be123c;">Chawlh Hming (Occasion)</label>
-                                <input type="text" id="holiday-name" placeholder="Entirnan: Remna Ni" required>
-                            </div>
-                            <div class="input-group" style="display: flex; align-items: flex-end;">
-                                <button type="submit" class="btn btn-primary" style="background-color: #e11d48; margin: 0; padding: 10px 15px;">Chawlh Save Rawh</button>
-                            </div>
-                        </form>
+                    <!-- HOLIDAY SETTINGS CARD (COLLAPSIBLE / ACCORDION STYLE) -->
+                    <div style="background: #fff1f2; border: 1px solid #fecdd3; padding: 15px; border-radius: 8px; margin-bottom: 20px; margin-top: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleHolidayBox()">
+                            <h4 style="font-size: 16px; color: #be123c; margin: 0; display: flex; align-items: center; gap: 8px;">
+                                <span>🏖️</span> Sorkar Chawlh (Holiday) Set-na
+                            </h4>
+                            <span id="holiday-toggle-icon" style="font-weight: bold; color: #be123c; background: #ffe4e6; padding: 4px 10px; border-radius: 6px; font-size: 13px;">▼ Hmet Hawng</span>
+                        </div>
                         
-                        <div style="max-height: 200px; overflow-y: auto; border-radius: 6px; border: 1px solid #fecdd3;">
-                            <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 0;">
-                                <thead style="position: sticky; top: 0; background: #fff1f2;">
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Chawlh Hming</th>
-                                        <th style="text-align: center;">Paih</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="holiday-list-body">
-                                    <tr><td colspan="3" style="text-align: center; color: gray;">Data a in-load mek...</td></tr>
-                                </tbody>
-                            </table>
+                        <div id="holiday-content-box" style="display: none; margin-top: 15px; border-top: 1px solid #fecdd3; padding-top: 15px;">
+                            <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">Sunday leh heta chawlh i set niah te hian Attendance mark theih a ni lo ang. (Sunday chu set kher a ngai lo).</p>
+                            <form onsubmit="saveHoliday(event)" class="form-grid" style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #fecdd3; margin-bottom: 15px; grid-template-columns: 1fr 1fr auto;">
+                                <div class="input-group">
+                                    <label style="color: #be123c;">Chawlh Ni (Date)</label>
+                                    <input type="date" id="holiday-date" required>
+                                </div>
+                                <div class="input-group">
+                                    <label style="color: #be123c;">Chawlh Hming (Occasion)</label>
+                                    <input type="text" id="holiday-name" placeholder="Entirnan: Remna Ni" required>
+                                </div>
+                                <div class="input-group" style="display: flex; align-items: flex-end;">
+                                    <button type="submit" class="btn btn-primary" style="background-color: #e11d48; margin: 0; padding: 10px 15px;">Chawlh Save</button>
+                                </div>
+                            </form>
+                            
+                            <div style="max-height: 200px; overflow-y: auto; border-radius: 6px; border: 1px solid #fecdd3; background: white;">
+                                <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 0;">
+                                    <thead style="position: sticky; top: 0; background: #fff1f2;">
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Chawlh Hming</th>
+                                            <th style="text-align: center;">Paih</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="holiday-list-body">
+                                        <tr><td colspan="3" style="text-align: center; color: gray;">Data a in-load mek...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
 
@@ -1034,7 +1042,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "6.5"; // Version tihsan hret a ni e
+        const APP_VERSION = "6.7"; // Version updated
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -1043,7 +1051,7 @@
         let attendanceStats = {}; 
         let feeDataMap = {}; 
         let mcqTests = []; 
-        let holidayList = []; // Holiday list dahna thar
+        let holidayList = []; 
 
         window.currentPerformanceFilter = 'ALL';
 
@@ -1121,6 +1129,19 @@
             } else {
                 box.style.display = 'none';
                 icon.innerText = '▼ Khup / Hawng';
+            }
+        }
+        
+        // ADMIN HOLIDAY TOGGLE FUNCTION
+        window.toggleHolidayBox = function() {
+            const box = document.getElementById('holiday-content-box');
+            const icon = document.getElementById('holiday-toggle-icon');
+            if (box.style.display === 'none' || box.style.display === '') {
+                box.style.display = 'block';
+                icon.innerText = '▲ Hmet Khup';
+            } else {
+                box.style.display = 'none';
+                icon.innerText = '▼ Hmet Hawng';
             }
         }
 
@@ -1452,7 +1473,7 @@
             XLSX.utils.book_append_sheet(workbook, worksheet, "Fee_Report"); XLSX.writeFile(workbook, "Bethel_Fee_Report.xlsx");
         }
 
-        // ================= HOLIDAYS / CHAWLH SETTING (NEW) =================
+        // ================= HOLIDAYS / CHAWLH SETTING =================
         onSnapshot(query(collection(db, "holidays"), orderBy("date", "desc")), (snapshot) => {
             holidayList = [];
             const tbody = document.getElementById('holiday-list-body');
@@ -1477,7 +1498,6 @@
                     }
                 });
             }
-            // Auto reload attendance if active
             if (document.getElementById('attendance-date') && document.getElementById('attendance-date').value) {
                 if (typeof loadAttendanceForDate === 'function') loadAttendanceForDate();
             }
