@@ -313,6 +313,14 @@
                         </button>
                     </div>
 
+                    <!-- THLAK THAR: Sorkar Chawlh Hriattirna Dahna -->
+                    <div class="card" style="border: 2px solid #f43f5e; margin-bottom: 20px;" id="holiday-info-card">
+                        <h3 style="border-bottom: 1px solid #fecdd3; padding-bottom: 10px; margin-bottom: 15px; color: #e11d48;">🏖️ Sorkar Chawlh Hriattirna</h3>
+                        <div id="student-holiday-list">
+                            <p style="opacity: 0.7; font-size: 14px;">Data a in-load mek...</p>
+                        </div>
+                    </div>
+
                     <div class="card" style="border: 2px solid #0f766e; margin-bottom: 20px;" id="attendance-percentage-card">
                         <h3 style="border-bottom: 1px solid #99f6e4; padding-bottom: 10px; margin-bottom: 15px;">📊 <span id="student-period-title">Attendance Percentage</span></h3>
                         
@@ -380,7 +388,6 @@
                         <p style="opacity: 0.7;">Database atangin a rawn in-load mek...</p>
                     </div>
 
-                    <!-- THLAK THAR LAAI: Saturday O Practical Submission form paihin WhatsApp Notice zawk dah a ni -->
                     <div class="card" style="border: 2px solid #10b981;">
                         <h3 style="border-bottom: 1px solid #a7f3d0; padding-bottom: 10px; color: #047857;">✅ Practical Thehluh Dan (Saturday O)</h3>
                         <p style="font-size: 14px; line-height: 1.6; margin-bottom: 15px; margin-top: 10px;">
@@ -473,7 +480,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "6.3"; 
+        const APP_VERSION = "6.4"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -485,6 +492,7 @@
         let mcqTests = []; 
         let mySubmissions = [];
         let globalAttendancePeriod = null; 
+        let holidayList = []; // Sorkar Chawlh List
 
         let latestNoticeTime = 0;
         let latestMaterialTime = 0;
@@ -609,6 +617,47 @@
             window.scrollTo(0, 0);
         }
 
+        // ================= HOLIDAY FETCH LOGIC =================
+        onSnapshot(query(collection(db, "holidays"), orderBy("date", "desc")), (snapshot) => {
+            holidayList = [];
+            snapshot.forEach(docSnap => {
+                holidayList.push(docSnap.data());
+            });
+            renderHolidays();
+        });
+
+        function renderHolidays() {
+            const container = document.getElementById('student-holiday-list');
+            if(!container) return;
+            
+            if(holidayList.length === 0) {
+                container.innerHTML = '<p style="opacity: 0.7; font-size: 14px; margin: 0;">Sorkar chawlh hnai vai a awm rih lo.</p>';
+                return;
+            }
+            
+            const today = new Date().toISOString().split('T')[0];
+            // Filter future or today holidays, sort ascending
+            let upcoming = holidayList.filter(h => h.date >= today).sort((a, b) => a.date.localeCompare(b.date));
+            
+            if(upcoming.length === 0) {
+                container.innerHTML = '<p style="opacity: 0.7; font-size: 14px; margin: 0;">Sorkar chawlh hnai vai a awm rih lo.</p>';
+                return;
+            }
+
+            let html = '<ul style="list-style: none; padding: 0; margin: 0;">';
+            upcoming.forEach(h => {
+                let isToday = (h.date === today);
+                let highlightStyle = isToday ? 'background: #ffe4e6; border-left: 4px solid #e11d48; font-weight: bold; padding: 10px; margin-bottom: 5px; border-radius: 4px;' : 'padding: 10px; margin-bottom: 5px; border-bottom: 1px solid #f1f5f9; border-radius: 4px;';
+                
+                html += `<li style="${highlightStyle}">
+                            <span style="color: #e11d48;">📅 ${h.date}</span> : <span>${h.name}</span>
+                            ${isToday ? ' <span style="background:#e11d48; color:white; padding:2px 6px; border-radius:12px; font-size:10px; margin-left:5px;">Vawiin a ni!</span>' : ''}
+                         </li>`;
+            });
+            html += '</ul>';
+            container.innerHTML = html;
+        }
+
         onSnapshot(doc(db, "settings", "attendance_period"), (docSnap) => {
             if (docSnap.exists()) {
                 globalAttendancePeriod = docSnap.data();
@@ -620,7 +669,6 @@
             }
         });
 
-        // THLAK THAR: Saturday (O) leh Regular Attendance chhut dan kha tih inang a ni tawh
         function autoCalculatePeriodAttendance() {
             const resultBox = document.getElementById('student-period-result');
             const titleBox = document.getElementById('student-period-title');
@@ -1038,10 +1086,22 @@
             const selectedDate = new Date(leaveDate);
             const dayOfWeek = selectedDate.getDay(); 
             const myShift = window.currentStudent.shift || '10am shift';
+            
+            // THLAK THAR: Check if selected date is a Sunday or a registered Holiday
+            if (dayOfWeek === 0) {
+                alert("He ni hi Pathianni (Sunday) a ni a, chawlh dil a ngai lo.");
+                return;
+            }
+            
+            const isHoliday = holidayList.find(h => h.date === leaveDate);
+            if (isHoliday) {
+                alert(`He ni hi Sorkar chawlh (${isHoliday.name}) a ni a, class awm loh ni anih avangin chawlh dil a ngai lo.`);
+                return;
+            }
 
             if (myShift === 'Saturday (O)') { alert("Saturday (O) zirlaite tan chawlh dil a ngai lo."); return; }
             if ((myShift === 'Saturday shift') && dayOfWeek !== 6) { alert("Saturday shift i nih avangin Inrinni (Saturday)-ah chauh chawlh i report thei ang."); return; }
-            if ((myShift !== 'Saturday shift' && myShift !== 'Saturday (O)') && (dayOfWeek === 6 || dayOfWeek === 0)) { alert("Weekday shift i nih avangin Inrinni (Saturday) emaw Pathianni (Sunday)-ah chawlh i report thei lo."); return; }
+            if ((myShift !== 'Saturday shift' && myShift !== 'Saturday (O)') && dayOfWeek === 6) { alert("Weekday shift i nih avangin Inrinni (Saturday)-ah chawlh i report thei lo."); return; }
             
             const monthPrefix = leaveDate.substring(0, 7);
             try {
@@ -1214,7 +1274,7 @@
                         try { 
                             await updateDoc(doc(db, "students", actualDocId), { lastLoginDate: todayISODate }); 
                             
-                            // LOGIN LOG RECORD SIAMNA (Admin lamah a lut ang)
+                            // LOGIN LOG RECORD SIAMNA
                             await addDoc(collection(db, "login_logs"), {
                                 enrollment: window.currentStudent.enrollment,
                                 studentName: window.currentStudent.name,
@@ -1241,7 +1301,6 @@
                         if (window.currentStudent.shift === 'Saturday (O)') {
                             if (onlineMenuBtn) onlineMenuBtn.style.display = 'block';
                             if (leaveMenuBtn) leaveMenuBtn.style.display = 'none'; 
-                            // THLAK THAR: Saturday (O) pawhin Total Points tarlanna an hmu thei tawh ang
                             if (attPointsCard) attPointsCard.style.display = 'flex'; 
                         } else {
                             if (onlineMenuBtn) onlineMenuBtn.style.display = 'none';
@@ -1252,6 +1311,7 @@
                         renderStudentFeePortal(); loadStudentLeaves(enrollmentStr); loadMySubmissions(); autoCalculatePeriodAttendance(); 
                         checkNotifications();
                         loadAIChatHistory();
+                        renderHolidays(); // Load holidays here as well
 
                         showSection('student-portal-section');
                     } else { alert("Date of birth a dik lo! I date of birth kha 0 telh kim in han chhut teh (Entirnan: 15-05-2005)"); }
