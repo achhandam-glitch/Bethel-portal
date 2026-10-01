@@ -473,7 +473,7 @@
                     <div style="background: #fff1f2; border: 1px solid #fecdd3; padding: 15px; border-radius: 8px; margin-bottom: 20px; margin-top: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                         <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleHolidayBox()">
                             <h4 style="font-size: 16px; color: #be123c; margin: 0; display: flex; align-items: center; gap: 8px;">
-                                <span>🏖️️</span> Sorkar Chawlh (Holiday) Set-na
+                                <span>🏖</span> Sorkar Chawlh (Holiday) Set-na
                             </h4>
                             <span id="holiday-toggle-icon" style="font-weight: bold; color: #be123c; background: #ffe4e6; padding: 4px 10px; border-radius: 6px; font-size: 13px;">▼ Hmet Hawng</span>
                         </div>
@@ -1042,7 +1042,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "6.7"; 
+        const APP_VERSION = "6.8"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -1054,13 +1054,6 @@
         let holidayList = []; 
 
         window.currentPerformanceFilter = 'ALL';
-
-        // REAL-TIME TODAY DATE AUTO-SETTING (Vawiin ni tak tak set-na)
-        const realToday = new Date().toISOString().split('T')[0];
-        if (document.getElementById('attendance-date')) document.getElementById('attendance-date').value = realToday;
-        if (document.getElementById('fee-date')) document.getElementById('fee-date').value = realToday;
-        if (document.getElementById('sato-date')) document.getElementById('sato-date').value = realToday;
-        if (document.getElementById('holiday-date')) document.getElementById('holiday-date').value = realToday;
 
         (function checkVersion() {
             let savedVersion = localStorage.getItem('bcc_portal_version');
@@ -2224,7 +2217,7 @@
         });
 
         // ================= SHARED LINKS =================
-        window.shareLink = async function(event) { event.preventDefault(); try { await addDoc(collection(db, "shared_links"), { type: document.getElementById('link-type').value, fileName: document.getElementById('link-name').value, url: document.getElementById('link-url').value, createdAt: serverTimestamp() }); alert("Hlawhtling takin i sem e!"); event.target.reset(); } catch (error) { alert("Harsatna: " + error.message); } }
+        window.shareLink = async function(event) { event.preventDefault(); try { await addDoc(collection(db, "shared_links"), { type: document.getElementById('link-type').value, fileName: document.getElementById('link-name').value, url: document.getElementById('link-url').value, createdAt: serverTimestamp() }); alert("Hlawhtling taka i sem e!"); event.target.reset(); } catch (error) { alert("Harsatna: " + error.message); } }
         window.deleteLink = async function(docId) { if(confirm("Paih duh takzet em?")) { try { await deleteDoc(doc(db, "shared_links", docId)); } catch(error) { alert("Harsatna: " + error.message); } } }
 
         onSnapshot(query(collection(db, "shared_links"), orderBy("createdAt", "desc")), (snapshot) => {
