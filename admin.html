@@ -473,7 +473,7 @@
                     <div style="background: #fff1f2; border: 1px solid #fecdd3; padding: 15px; border-radius: 8px; margin-bottom: 20px; margin-top: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                         <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleHolidayBox()">
                             <h4 style="font-size: 16px; color: #be123c; margin: 0; display: flex; align-items: center; gap: 8px;">
-                                <span>🏖️</span> Sorkar Chawlh (Holiday) Set-na
+                                <span>🏖️️</span> Sorkar Chawlh (Holiday) Set-na
                             </h4>
                             <span id="holiday-toggle-icon" style="font-weight: bold; color: #be123c; background: #ffe4e6; padding: 4px 10px; border-radius: 6px; font-size: 13px;">▼ Hmet Hawng</span>
                         </div>
@@ -1042,7 +1042,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "6.7"; // Version updated
+        const APP_VERSION = "6.7"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -1055,11 +1055,12 @@
 
         window.currentPerformanceFilter = 'ALL';
 
-        const todayISODate = new Date().toISOString().split('T')[0];
-        if (document.getElementById('attendance-date')) document.getElementById('attendance-date').value = todayISODate;
-        if (document.getElementById('fee-date')) document.getElementById('fee-date').value = todayISODate;
-        if (document.getElementById('sato-date')) document.getElementById('sato-date').value = todayISODate;
-        if (document.getElementById('holiday-date')) document.getElementById('holiday-date').value = todayISODate;
+        // REAL-TIME TODAY DATE AUTO-SETTING (Vawiin ni tak tak set-na)
+        const realToday = new Date().toISOString().split('T')[0];
+        if (document.getElementById('attendance-date')) document.getElementById('attendance-date').value = realToday;
+        if (document.getElementById('fee-date')) document.getElementById('fee-date').value = realToday;
+        if (document.getElementById('sato-date')) document.getElementById('sato-date').value = realToday;
+        if (document.getElementById('holiday-date')) document.getElementById('holiday-date').value = realToday;
 
         (function checkVersion() {
             let savedVersion = localStorage.getItem('bcc_portal_version');
@@ -1195,7 +1196,7 @@
                     coins: parseInt(document.getElementById('mcq-coins').value),
                     createdAt: serverTimestamp()
                 });
-                alert("MCQ hlawhtling takin i siam e!");
+                alert("MCQ hlawhtling taka i siam e!");
                 e.target.reset(); 
             } catch(err) { alert("Error: " + err.message); }
         }
@@ -1512,7 +1513,7 @@
                 await setDoc(doc(db, "holidays", date), { date: date, name: name, timestamp: serverTimestamp() });
                 alert("Sorkar chawlh hlawhtling taka save a ni e!");
                 event.target.reset();
-                document.getElementById('holiday-date').value = todayISODate;
+                document.getElementById('holiday-date').value = new Date().toISOString().split('T')[0];
             } catch(e) { alert("Harsatna: " + e.message); }
         }
         
