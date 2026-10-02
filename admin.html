@@ -929,7 +929,7 @@
                                 <h3 style="color: #9f1239; border: none; padding: 0; margin: 0;">📈 Zirlaite AI Hman Dan Record</h3>
                                 <p style="font-size: 13px; color: #475569; margin-top: 4px;">Zirlai ten AI Zirtirtu an zawh apiangin hetah hian a rawn in-record zel ang.</p>
                             </div>
-                            <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAILogs()">🗑️ Logs Paih Faina</button>
+                            <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAILogs()">🗑️️ Logs Paih Faina</button>
                         </div>
                         
                         <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
@@ -1042,7 +1042,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "6.8"; 
+        const APP_VERSION = "6.9"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -1054,6 +1054,15 @@
         let holidayList = []; 
 
         window.currentPerformanceFilter = 'ALL';
+
+        // Vawihni test nawn kher ngai lova date auto-set nghet tlatna
+        const realToday = new Date().toISOString().split('T')[0];
+        document.addEventListener("DOMContentLoaded", () => {
+            if (document.getElementById('attendance-date')) document.getElementById('attendance-date').value = realToday;
+            if (document.getElementById('fee-date')) document.getElementById('fee-date').value = realToday;
+            if (document.getElementById('sato-date')) document.getElementById('sato-date').value = realToday;
+            if (document.getElementById('holiday-date')) document.getElementById('holiday-date').value = realToday;
+        });
 
         (function checkVersion() {
             let savedVersion = localStorage.getItem('bcc_portal_version');
@@ -1093,6 +1102,7 @@
                 const adminMenu = document.getElementById('admin-menu-view');
                 if(adminMenu) adminMenu.style.display = 'block';
                 document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.remove('active-content'));
+                if (document.getElementById('attendance-date')) document.getElementById('attendance-date').value = realToday;
                 if(typeof loadAttendanceForDate === 'function') loadAttendanceForDate();
             }
             window.scrollTo(0, 0);
@@ -1103,6 +1113,11 @@
             document.querySelectorAll('.admin-tab-content').forEach(el => { el.classList.remove('active-content'); });
             document.getElementById(tabId).classList.add('active-content');
             
+            if (document.getElementById('attendance-date')) document.getElementById('attendance-date').value = realToday;
+            if (document.getElementById('fee-date')) document.getElementById('fee-date').value = realToday;
+            if (document.getElementById('sato-date')) document.getElementById('sato-date').value = realToday;
+            if (document.getElementById('holiday-date')) document.getElementById('holiday-date').value = realToday;
+
             if(tabId === 'tab-ai-settings') { lockAISettingsAgain(); }
             if(tabId === 'tab-attendance') { loadAttendanceForDate(); }
             window.scrollTo(0, 0);
@@ -1506,7 +1521,7 @@
                 await setDoc(doc(db, "holidays", date), { date: date, name: name, timestamp: serverTimestamp() });
                 alert("Sorkar chawlh hlawhtling taka save a ni e!");
                 event.target.reset();
-                document.getElementById('holiday-date').value = new Date().toISOString().split('T')[0];
+                document.getElementById('holiday-date').value = realToday;
             } catch(e) { alert("Harsatna: " + e.message); }
         }
         
@@ -2357,6 +2372,7 @@
             if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">Log in record a la awm lo...</td></tr>'; return; }
 
             tbody.innerHTML = '';
+            snapshot.each = null; // safe check
             snapshot.forEach((docSnap) => {
                 let d = docSnap.data();
                 let timeStr = d.timestamp ? new Date(d.timestamp.toDate()).toLocaleString() : 'Hun hriat loh';
