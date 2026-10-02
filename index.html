@@ -336,7 +336,7 @@
                     </div>
                 </div>
 
-                <!-- CHAWLH DILNA TAB (UPDATED WITH DATE RANGE & LIMIT) -->
+                <!-- CHAWLH DILNA TAB -->
                 <div id="student-tab-leave" class="student-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
                     <div class="form-grid">
@@ -483,7 +483,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "7.0"; 
+        const APP_VERSION = "7.1"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -638,7 +638,7 @@
             if(!container) return;
             
             if(holidayList.length === 0) {
-                container.innerHTML = '<span style="opacity: 0.7;">🏖️ Chawlh hnai a awm lo</span>';
+                container.innerHTML = '<span style="opacity: 0.7;">🏖️️ Chawlh hnai a awm lo</span>';
                 return;
             }
             
@@ -950,7 +950,6 @@
             }
         }
 
-        // ================= DATE RANGE & LIMIT CHAWLH DILNA LOGIC =================
         window.applyLeave = async function(event) {
             event.preventDefault();
             const startDate = document.getElementById('leave-start-date').value; 
@@ -970,13 +969,11 @@
                 let dayOfWeek = curr.getDay();
                 
                 if (dayOfWeek === 0) {
-                    alert(`Hriattirna: ${dStr} hi Pathianni (Sunday) a ni a, chawlh huam tir tel a ni lo vang.`);
                     curr.setDate(curr.getDate() + 1);
                     continue;
                 }
                 const isHoli = holidayList.find(h => h.date === dStr);
                 if (isHoli) {
-                    alert(`Hriattirna: ${dStr} (${isHoli.name}) hi sorkar chawlh anih avangin chawlh huam tir tel a ni lo vang.`);
                     curr.setDate(curr.getDate() + 1);
                     continue;
                 }
@@ -993,7 +990,7 @@
                 curr.setDate(curr.getDate() + 1);
             }
 
-            if (validDates.length === 0) { alert("Chawlh dil theih ni tur dik tak thlang rawh (Sunday leh Sorkar chawlh ni te paih a ni)."); return; }
+            if (validDates.length === 0) { alert("Chawlh dil theih ni tur dik tak thlang rawh (Sunday leh Sorkar chawlh ni te huam tel a ni lo)."); return; }
 
             const monthPrefix = startDate.substring(0, 7);
             try {
@@ -1135,6 +1132,7 @@
             }
         });
 
+        // FIXED LOGIN FUNCTION FOR ROBUST DOB MATCHING
         window.loginStudent = async function(event) {
             event.preventDefault();
             const enrollmentStr = document.getElementById('login-enrollment').value.trim(); 
@@ -1157,10 +1155,11 @@
                 if (!snap.empty) {
                     let matched = false; let actualDocId = '';
                     snap.forEach((d) => {
-                        let dbDobRaw = String(d.data().dob).trim().replace(/\//g, '-');
+                        let dbDobRaw = String(d.data().dob || '').trim().replace(/\//g, '-');
                         let dbParts = dbDobRaw.split('-');
                         if(dbParts.length === 3) { dbDobRaw = `${dbParts[0].padStart(2, '0')}-${dbParts[1].padStart(2, '0')}-${dbParts[2]}`; }
-                        if (dbDobRaw === dobInput) {
+                        
+                        if (dbDobRaw === dobInput || String(d.data().dob).trim() === document.getElementById('login-dob').value.trim()) {
                             matched = true; actualDocId = d.id; 
                             window.currentStudent.name = d.data().name;
                             window.currentStudent.shift = d.data().shift || '10am shift';
