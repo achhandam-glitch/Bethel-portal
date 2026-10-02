@@ -483,7 +483,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "7.1"; 
+        const APP_VERSION = "7.2"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -638,7 +638,7 @@
             if(!container) return;
             
             if(holidayList.length === 0) {
-                container.innerHTML = '<span style="opacity: 0.7;">🏖️️ Chawlh hnai a awm lo</span>';
+                container.innerHTML = '<span style="opacity: 0.7;">🏖️ Chawlh hnai a awm lo</span>';
                 return;
             }
             
@@ -1132,77 +1132,84 @@
             }
         });
 
-        // FIXED LOGIN FUNCTION FOR ROBUST DOB MATCHING
+        // FULLY ROBUST LOGIN FUNCTION WITH MULTI-FORMAT DOB MATCHING
         window.loginStudent = async function(event) {
             event.preventDefault();
-            const enrollmentStr = document.getElementById('login-enrollment').value.trim(); 
-            const enrollmentNum = Number(enrollmentStr);
+            const enrollmentInput = document.getElementById('login-enrollment').value.trim(); 
             let dobInput = document.getElementById('login-dob').value.trim().replace(/\//g, '-');
-            
-            let dParts = dobInput.split('-');
-            if(dParts.length === 3) {
-                let d = dParts[0].padStart(2, '0'); let m = dParts[1].padStart(2, '0'); let y = dParts[2];
-                dobInput = `${d}-${m}-${y}`;
-            }
 
             try {
-                const qStr = query(collection(db, "students"), where("enrollment", "==", enrollmentStr));
-                const qNum = query(collection(db, "students"), where("enrollment", "==", enrollmentNum));
+                const studentsRef = collection(db, "students");
+                const snap = await getDocs(studentsRef);
                 
-                let snap = await getDocs(qStr);
-                if (snap.empty) { snap = await getDocs(qNum); }
-                
-                if (!snap.empty) {
-                    let matched = false; let actualDocId = '';
-                    snap.forEach((d) => {
-                        let dbDobRaw = String(d.data().dob || '').trim().replace(/\//g, '-');
-                        let dbParts = dbDobRaw.split('-');
-                        if(dbParts.length === 3) { dbDobRaw = `${dbParts[0].padStart(2, '0')}-${dbParts[1].padStart(2, '0')}-${dbParts[2]}`; }
-                        
-                        if (dbDobRaw === dobInput || String(d.data().dob).trim() === document.getElementById('login-dob').value.trim()) {
-                            matched = true; actualDocId = d.id; 
-                            window.currentStudent.name = d.data().name;
-                            window.currentStudent.shift = d.data().shift || '10am shift';
-                            window.currentStudent.coins = d.data().coins || 0;
+                let matched = false; 
+                let actualDocId = '';
+                let studentName = '';
+                let studentShift = '';
+                let studentCoins = 0;
+
+                snap.forEach((d) => {
+                    let data = d.data();
+                    let dbEnrollment = String(data.enrollment || '').trim();
+                    let dbDob = String(data.dob || '').trim().replace(/\//g, '-');
+
+                    if (dbEnrollment === enrollmentInput || dbEnrollment === String(Number(enrollmentInput))) {
+                        if (dbDob === dobInput || dbDob === document.getElementById('login-dob').value.trim() || Number(dbDob.replace(/-/g, '')) === Number(dobInput.replace(/-/g, ''))) {
+                            matched = true;
+                            actualDocId = d.id;
+                            studentName = data.name;
+                            studentShift = data.shift || '10am shift';
+                            studentCoins = data.coins || 0;
                         }
-                    });
+                    }
+                });
 
-                    if (matched) {
-                        window.currentStudent.enrollment = enrollmentStr;
-                        try { 
-                            await updateDoc(doc(db, "students", actualDocId), { lastLoginDate: realToday }); 
-                            await addDoc(collection(db, "login_logs"), {
-                                enrollment: window.currentStudent.enrollment,
-                                studentName: window.currentStudent.name,
-                                timestamp: serverTimestamp()
-                            });
-                        } catch(updErr) { console.log(updErr); }
-                        
-                        document.getElementById('student-welcome-title').innerText = `Zirlai Portal - ${window.currentStudent.name}`;
-                        document.getElementById('student-coin-balance').innerText = window.currentStudent.coins;
-                        document.getElementById('student-coin-balance-status').innerText = window.currentStudent.coins; 
-                        document.getElementById('student-att-points').innerText = (attendancePointsMap[enrollmentStr] || attendancePointsMap[enrollmentNum] || 0) + " Points";
-                        
-                        const onlineMenuBtn = document.getElementById('student-menu-online');
-                        const leaveMenuBtn = document.getElementById('student-menu-leave');
+                if (matched) {
+                    window.currentStudent.enrollment = enrollmentInput;
+                    window.currentStudent.name = studentName;
+                    window.currentStudent.shift = studentShift;
+                    window.currentStudent.coins = studentCoins;
 
-                        if (window.currentStudent.shift === 'Saturday (O)') {
-                            if (onlineMenuBtn) onlineMenuBtn.style.display = 'block';
-                            if (leaveMenuBtn) leaveMenuBtn.style.display = 'none'; 
-                        } else {
-                            if (onlineMenuBtn) onlineMenuBtn.style.display = 'none';
-                            if (leaveMenuBtn) leaveMenuBtn.style.display = 'block';
-                        }
+                    try { 
+                        await updateDoc(doc(db, "students", actualDocId), { lastLoginDate: realToday }); 
+                        await addDoc(collection(db, "login_logs"), {
+                            enrollment: enrollmentInput,
+                            studentName: studentName,
+                            timestamp: serverTimestamp()
+                        });
+                    } catch(updErr) { console.log(updErr); }
+                    
+                    document.getElementById('student-welcome-title').innerText = `Zirlai Portal - ${studentName}`;
+                    document.getElementById('student-coin-balance').innerText = studentCoins;
+                    document.getElementById('student-coin-balance-status').innerText = studentCoins; 
+                    document.getElementById('student-att-points').innerText = (attendancePointsMap[enrollmentInput] || 0) + " Points";
+                    
+                    const onlineMenuBtn = document.getElementById('student-menu-online');
+                    const leaveMenuBtn = document.getElementById('student-menu-leave');
 
-                        renderStudentFeePortal(); loadStudentLeaves(enrollmentStr); loadMySubmissions(); autoCalculatePeriodAttendance(); 
-                        checkNotifications();
-                        loadAIChatHistory();
-                        renderHolidays(); 
+                    if (studentShift === 'Saturday (O)') {
+                        if (onlineMenuBtn) onlineMenuBtn.style.display = 'block';
+                        if (leaveMenuBtn) leaveMenuBtn.style.display = 'none'; 
+                    } else {
+                        if (onlineMenuBtn) onlineMenuBtn.style.display = 'none';
+                        if (leaveMenuBtn) leaveMenuBtn.style.display = 'block';
+                    }
 
-                        showSection('student-portal-section');
-                    } else { alert("Date of birth a dik lo! I date of birth kha 0 telh kim in han chhut teh (Entirnan: 15-05-2005)"); }
-                } else { alert("Enrollment Number a dik lo! Zirlai list-ah a awm lo emaw check ṭha rawh."); }
-            } catch (e) { alert("Harsatna: " + e.message); }
+                    renderStudentFeePortal(); 
+                    loadStudentLeaves(enrollmentInput); 
+                    loadMySubmissions(); 
+                    autoCalculatePeriodAttendance(); 
+                    checkNotifications();
+                    loadAIChatHistory();
+                    renderHolidays(); 
+
+                    showSection('student-portal-section');
+                } else { 
+                    alert("Enrollment Number emaw Date of birth a dik lo! Zirlai list-ah a awm em tih leh Date of birth format kha check ṭha rawh (Entirnan: 15-05-2005)."); 
+                }
+            } catch (e) { 
+                alert("Harsatna: " + e.message); 
+            }
         }
 
         window.sendAIMessage = async function(event) {
