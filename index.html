@@ -134,6 +134,9 @@
         /* Dark Mode Holiday Notice Widget */
         body.dark-mode #student-holiday-list { background-color: #4c0519 !important; border-color: #9f1239 !important; color: #fda4af !important; }
         body.dark-mode #student-holiday-list div[style*="color: #be123c"] { color: #fecdd3 !important; }
+        
+        /* Dark Mode Leave Balance */
+        body.dark-mode #leave-balance-display { background-color: #0f172a !important; color: #ffffff !important; border-left-color: #38bdf8 !important; }
 
         .theme-toggle-btn { position: fixed; bottom: 25px; right: 25px; background: #0f172a; color: #fde047; border: 2px solid #334155; border-radius: 50%; width: 50px; height: 50px; font-size: 22px; cursor: pointer; z-index: 9999; box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: transform 0.2s; display: flex; align-items: center; justify-content: center; }
         .theme-toggle-btn:active { transform: scale(0.9); }
@@ -350,10 +353,22 @@
                     <div class="form-grid">
                         <div class="card" style="margin-bottom: 0;">
                             <h3>Chawlh Report-na</h3>
+                            
+                            <!-- Leave Balance Display Added Here -->
+                            <div id="leave-balance-display" style="background: #e0f2fe; border-left: 4px solid #0284c7; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; color: #1e293b;">
+                                <p style="margin-bottom: 5px;"><strong>Tun thlaa chawlh dil theih zat (Max):</strong> <span id="lbl-max-leave">0</span></p>
+                                <p style="margin-bottom: 5px;"><strong>Chawlh hman tawh/dil mek:</strong> <span id="lbl-used-leave">0</span></p>
+                                <p style="margin-bottom: 0;"><strong>Chawlh la neih zat (Balance):</strong> <span id="lbl-bal-leave" style="color: #16a34a; font-weight: bold; font-size: 16px;">0</span></p>
+                            </div>
+
                             <form onsubmit="applyLeave(event)">
                                 <div class="input-group">
-                                    <label>Chawlh Dil Ni (Date)</label>
-                                    <input type="date" id="leave-date" required>
+                                    <label>A ṭan Ni (Start Date)</label>
+                                    <input type="date" id="leave-start-date" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>A tawp Ni (End Date)</label>
+                                    <input type="date" id="leave-end-date" required>
                                 </div>
                                 <div class="input-group">
                                     <label>Chawlh chhan (Reason)</label>
@@ -490,7 +505,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "6.6"; 
+        const APP_VERSION = "6.7"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -553,7 +568,10 @@
         }
 
         const todayISODate = new Date().toISOString().split('T')[0];
-        if (document.getElementById('leave-date')) document.getElementById('leave-date').value = todayISODate;
+        if (document.getElementById('leave-start-date')) {
+            document.getElementById('leave-start-date').value = todayISODate;
+            document.getElementById('leave-end-date').value = todayISODate;
+        }
 
         (function checkVersion() {
             let savedVersion = localStorage.getItem('bcc_portal_version');
@@ -589,6 +607,10 @@
             document.querySelectorAll('.student-tab-content').forEach(el => { el.classList.remove('active-content'); });
             document.getElementById(tabId).classList.add('active-content');
             window.scrollTo(0, 0);
+
+            if(tabId === 'student-tab-leave') {
+                updateLeaveBalance();
+            }
 
             let enr = window.currentStudent?.enrollment;
             if(enr) {
@@ -626,7 +648,7 @@
             window.scrollTo(0, 0);
         }
 
-        // ================= HOLIDAY FETCH LOGIC (SIAMTHAT) =================
+        // ================= HOLIDAY FETCH LOGIC =================
         onSnapshot(query(collection(db, "holidays"), orderBy("date", "desc")), (snapshot) => {
             holidayList = [];
             snapshot.forEach(docSnap => {
@@ -648,17 +670,15 @@
             let upcoming = holidayList.filter(h => h.date >= today).sort((a, b) => a.date.localeCompare(b.date));
             
             if(upcoming.length === 0) {
-                container.innerHTML = '<span style="opacity: 0.7;">🏖️ Chawlh hnai a awm lo</span>';
+                container.innerHTML = '<span style="opacity: 0.7;">🏖️️ Chawlh hnai a awm lo</span>';
                 return;
             }
 
-            // Hmun a awh tam loh nan a hnai ber pakhat chauh kan tarlang ang
             let h = upcoming[0];
             let isToday = (h.date === today);
             let dParts = h.date.split('-');
-            let shortDate = `${dParts[2]}/${dParts[1]}`; // DD/MM format
+            let shortDate = `${dParts[2]}/${dParts[1]}`; 
             
-            // SIAMTHAT: 'white-space: nowrap' leh 'overflow: hidden' te paih a ni a, a tlar hnih theih nan (wrap) siam a ni.
             if (isToday) {
                 container.innerHTML = `<div style="font-weight: bold; animation: pulse 2s infinite;">🔴 Vawiin Chawlh</div><div style="font-size: 11px; color: #be123c; margin-top: 2px;">${h.name}</div>`;
             } else {
@@ -779,7 +799,6 @@
             let unansweredQs = mcqTests.filter(mcq => !mySubmissions.includes(mcq.id));
             let answeredQs = mcqTests.filter(mcq => mySubmissions.includes(mcq.id));
 
-            // Group by Quiz Title
             let groups = {};
             unansweredQs.forEach(q => {
                 let title = q.quizTitle || 'General Test';
@@ -792,7 +811,7 @@
             let singleHtml = '';
 
             for(let title in groups) {
-                if(groups[title].length > 1) { // BULK / TIMED TEST
+                if(groups[title].length > 1) { 
                     let qs = groups[title];
                     bulkHtml += `
                         <div class="card" style="border: 2px solid #0284c7; margin-bottom: 15px;">
@@ -802,7 +821,7 @@
                             <button class="btn btn-primary" onclick="startBulkQuiz('${title}')">Start Quiz 🚀</button>
                         </div>
                     `;
-                } else { // SINGLE DAILY MCQ
+                } else { 
                     let mcq = groups[title][0];
                     let imgHtml = mcq.imageURL ? `<img src="${mcq.imageURL}" style="max-width: 100%; max-height: 200px; border-radius: 8px; margin: 10px 0; border: 1px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">` : '';
                     
@@ -843,7 +862,6 @@
                 list.innerHTML = '<p style="opacity: 0.7;">Zawhna thar a awm rih lo.</p>';
             }
 
-            // Answered History List
             if(answeredQs.length > 0) {
                 let ansHtml = `<div style="margin-top: 30px; border-top: 2px dashed #cbd5e1; padding-top: 15px;">
                     <h4 style="margin-bottom: 10px; color: #16a34a;">✅ I chhan tawh te:</h4>
@@ -856,7 +874,6 @@
             }
         }
 
-        // --- SINGLE MCQ SUBMISSION (No Timer) ---
         window.submitSingleMCQAnswer = async function(event, mcqId) {
             event.preventDefault();
             const submitBtn = event.target.querySelector('button[type="submit"]');
@@ -897,7 +914,6 @@
             }
         }
 
-        // --- BULK MCQ LOGIC (Timer) ---
         window.startBulkQuiz = function(title) {
             let unansweredQs = mcqTests.filter(mcq => !mySubmissions.includes(mcq.id));
             activeBulkQuestions = unansweredQs.filter(q => (q.quizTitle || 'General Test') === title);
@@ -905,7 +921,6 @@
 
             if(activeBulkQuestions.length === 0) return;
 
-            // UI Changes
             document.getElementById('mcq-main-container').classList.add('hidden');
             document.getElementById('bulk-quiz-active-container').classList.remove('hidden');
             document.getElementById('bulk-quiz-title-display').innerText = title;
@@ -939,7 +954,6 @@
                     </div>`;
             });
 
-            // Start Timer (Question Count * 60 Sec)
             quizTimeLeft = activeBulkQuestions.length * 60;
             updateQuizTimerUI();
 
@@ -964,7 +978,6 @@
             
             if(timerDisplay) {
                 timerDisplay.innerText = `${mStr}:${sStr}`;
-                // Less than 1 min = Red Background
                 if (quizTimeLeft <= 60) {
                     timerDisplay.parentNode.style.backgroundColor = "#991b1b";
                 }
@@ -996,7 +1009,6 @@
                         mcqId: mcq.id, enrollment: enr, answer: selected, timestamp: serverTimestamp()
                     }));
                 } else {
-                    // Mark unattended as UNANSWERED
                     promises.push(setDoc(doc(db, "mcq_submissions", `${mcq.id}_${enr}`), {
                         mcqId: mcq.id, enrollment: enr, answer: "UNANSWERED", timestamp: serverTimestamp()
                     }));
@@ -1007,7 +1019,6 @@
                 if (promises.length > 0) await Promise.all(promises);
                 if (coinsEarned > 0) await updateDoc(doc(db, "students", enr), { coins: increment(coinsEarned) });
 
-                // UI Changes
                 document.getElementById('bulk-quiz-active-container').classList.add('hidden');
                 document.getElementById('bulk-quiz-result-card').classList.remove('hidden');
                 
@@ -1015,7 +1026,6 @@
                 document.getElementById('bulk-total-score').innerText = activeBulkQuestions.length;
                 document.getElementById('bulk-coins-earned').innerText = coinsEarned;
 
-                // Update local UI
                 window.currentStudent.coins += coinsEarned;
                 if(document.getElementById('student-coin-balance')) document.getElementById('student-coin-balance').innerText = window.currentStudent.coins;
                 if(document.getElementById('student-coin-balance-status')) document.getElementById('student-coin-balance-status').innerText = window.currentStudent.coins;
@@ -1025,7 +1035,6 @@
                 if(submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Submit Quiz ✅"; }
             }
         }
-        // ==============================================================
 
         function renderLeaderboard() {
             const board = document.getElementById('mcq-leaderboard'); if(!board) return;
@@ -1085,55 +1094,191 @@
             }
         }
 
-        window.applyLeave = async function(event) {
-            event.preventDefault();
-            const leaveDate = document.getElementById('leave-date').value; 
-            const reason = document.getElementById('leave-reason').value.trim();
+        // ================= LEAVE BALANCE & MULTI-DAY LEAVE LOGIC =================
+
+        window.updateLeaveBalance = async function() {
+            if (!window.currentStudent || !window.currentStudent.enrollment) return;
             const enrollment = window.currentStudent.enrollment;
-            
-            const selectedDate = new Date(leaveDate);
-            const dayOfWeek = selectedDate.getDay(); 
             const myShift = window.currentStudent.shift || '10am shift';
             
-            if (dayOfWeek === 0) {
-                alert("He ni hi Pathianni (Sunday) a ni a, chawlh dil a ngai lo.");
-                return;
-            }
+            let maxLeaves = 0;
+            if (myShift === 'Saturday (O)') maxLeaves = 0;
+            else if (myShift === 'Saturday shift') maxLeaves = 2;
+            else maxLeaves = 10;
             
-            const isHoliday = holidayList.find(h => h.date === leaveDate);
-            if (isHoliday) {
-                alert(`He ni hi Sorkar chawlh (${isHoliday.name}) a ni a, class awm loh ni anih avangin chawlh dil a ngai lo.`);
+            const maxEl = document.getElementById('lbl-max-leave');
+            if(maxEl) maxEl.innerText = maxLeaves;
+            
+            if (maxLeaves === 0) {
+                if(document.getElementById('lbl-used-leave')) document.getElementById('lbl-used-leave').innerText = "0";
+                if(document.getElementById('lbl-bal-leave')) document.getElementById('lbl-bal-leave').innerText = "0";
                 return;
             }
 
-            if (myShift === 'Saturday (O)') { alert("Saturday (O) zirlaite tan chawlh dil a ngai lo."); return; }
-            if ((myShift === 'Saturday shift') && dayOfWeek !== 6) { alert("Saturday shift i nih avangin Inrinni (Saturday)-ah chauh chawlh i report thei ang."); return; }
-            if ((myShift !== 'Saturday shift' && myShift !== 'Saturday (O)') && dayOfWeek === 6) { alert("Weekday shift i nih avangin Inrinni (Saturday)-ah chawlh i report thei lo."); return; }
+            const today = new Date();
+            const monthPrefix = today.toISOString().substring(0, 7); 
             
-            const monthPrefix = leaveDate.substring(0, 7);
             try {
                 const attQuery = query(collection(db, "attendance"), where("enrollment", "==", enrollment));
                 const attSnap = await getDocs(attQuery);
                 let totalLeaves = 0;
-                attSnap.forEach(doc => { let data = doc.data(); if (data.date.startsWith(monthPrefix) && data.status === 'Reported') { totalLeaves++; } });
+                attSnap.forEach(doc => { 
+                    let data = doc.data(); 
+                    if (data.date.startsWith(monthPrefix) && data.status === 'Reported') { 
+                        totalLeaves++; 
+                    } 
+                });
                 
                 const leaveQuery = query(collection(db, "leave_requests"), where("enrollment", "==", enrollment));
                 const leaveSnap = await getDocs(leaveQuery);
-                leaveSnap.forEach(doc => { let data = doc.data(); if (data.date && data.date.startsWith(monthPrefix) && (data.status === 'Pending' || data.status === 'Approved')) { totalLeaves++; } });
+                leaveSnap.forEach(doc => { 
+                    let data = doc.data(); 
+                    if (data.date && data.date.startsWith(monthPrefix) && (data.status === 'Pending' || data.status === 'Approved')) { 
+                        totalLeaves++; 
+                    } 
+                });
+                
+                if(document.getElementById('lbl-used-leave')) document.getElementById('lbl-used-leave').innerText = totalLeaves;
+                let balance = maxLeaves - totalLeaves;
+                if(document.getElementById('lbl-bal-leave')) {
+                    document.getElementById('lbl-bal-leave').innerText = balance < 0 ? 0 : balance;
+                    document.getElementById('lbl-bal-leave').style.color = balance <= 0 ? "#dc2626" : "#16a34a";
+                }
+            } catch(e) {
+                console.log("Error calculating leave balance: ", e);
+            }
+        }
 
-                const maxLeaves = (myShift === 'Saturday shift') ? 2 : 10;
-                if (totalLeaves >= maxLeaves) {
-                    alert("Tun thlaah chawlh i dil thei tawh rih lo, chawlh dil theih zat i pelh a, i kal loh chuan attendance point a awm thei tawh lo."); return; 
+        window.applyLeave = async function(event) {
+            event.preventDefault();
+            const startDateStr = document.getElementById('leave-start-date').value;
+            const endDateStr = document.getElementById('leave-end-date').value;
+            const reason = document.getElementById('leave-reason').value.trim();
+            const enrollment = window.currentStudent.enrollment;
+            const myShift = window.currentStudent.shift || '10am shift';
+            
+            if (myShift === 'Saturday (O)') { 
+                alert("Saturday (O) zirlaite tan chawlh dil a ngai lo."); 
+                return; 
+            }
+
+            let startDate = new Date(startDateStr);
+            let endDate = new Date(endDateStr);
+            
+            if (startDate > endDate) {
+                alert("A tawp Ni hi A ṭan Ni aiin a hma thei lo!");
+                return;
+            }
+
+            let dateArray = [];
+            let currentDate = new Date(startDate);
+            while (currentDate <= endDate) {
+                dateArray.push(new Date(currentDate));
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            let validDates = [];
+            let invalidMsgs = new Set();
+
+            dateArray.forEach(d => {
+                let isoDate = d.toISOString().split('T')[0];
+                let dayOfWeek = d.getDay(); 
+                
+                if (dayOfWeek === 0) {
+                    return; // Pathianni skip zel tur
+                }
+                
+                const isHoliday = holidayList.find(h => h.date === isoDate);
+                if (isHoliday) {
+                    return; // Sorkar chawlh skip zel tur
                 }
 
-                await addDoc(collection(db, "leave_requests"), { 
-                    enrollment: enrollment, studentName: window.currentStudent.name, startDate: leaveDate, endDate: leaveDate, 
-                    date: leaveDate, reason: reason, status: "Pending", rejectReason: "", createdAt: serverTimestamp() 
-                }); 
-                alert("I in-report-na a lut hlawhtling e."); 
+                if (myShift === 'Saturday shift' && dayOfWeek !== 6) {
+                    invalidMsgs.add("Saturday shift i nih avangin Inrinni (Saturday)-ah chauh chawlh i dil thei.");
+                    return;
+                }
+
+                if (myShift !== 'Saturday shift' && dayOfWeek === 6) {
+                    invalidMsgs.add("Weekday shift i nih avangin Inrinni (Saturday)-ah chawlh i dil thei lo.");
+                    return;
+                }
+
+                validDates.push(isoDate);
+            });
+
+            if (validDates.length === 0) {
+                let msg = "I ni thlan chhungah hian chawlh dil theih ni a awm lo (Sorkar chawlh / Pathianni / Shift mil lo a ni thei).";
+                if (invalidMsgs.size > 0) msg += "\n" + Array.from(invalidMsgs).join("\n");
+                alert(msg);
+                return;
+            }
+
+            const monthPrefix = startDateStr.substring(0, 7);
+            
+            try {
+                const attQuery = query(collection(db, "attendance"), where("enrollment", "==", enrollment));
+                const attSnap = await getDocs(attQuery);
+                let totalLeaves = 0;
+                attSnap.forEach(doc => { 
+                    let data = doc.data(); 
+                    if (data.date.startsWith(monthPrefix) && data.status === 'Reported') { 
+                        totalLeaves++; 
+                    } 
+                });
+                
+                const leaveQuery = query(collection(db, "leave_requests"), where("enrollment", "==", enrollment));
+                const leaveSnap = await getDocs(leaveQuery);
+                leaveSnap.forEach(doc => { 
+                    let data = doc.data(); 
+                    if (data.date && data.date.startsWith(monthPrefix) && (data.status === 'Pending' || data.status === 'Approved')) { 
+                        totalLeaves++; 
+                    } 
+                });
+
+                const maxLeaves = (myShift === 'Saturday shift') ? 2 : 10;
+                
+                if (totalLeaves + validDates.length > maxLeaves) {
+                    alert(`Tun thlaah chawlh ni ${maxLeaves} bak dil theih a ni lo. I chawlh hman tawh/dil mek zat: ${totalLeaves}. Ni ${validDates.length} i dil belh chuan limit a pel dawn a ni.`); 
+                    return; 
+                }
+
+                const submitBtn = event.target.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerText = "Thehlut mek...";
+
+                let promises = [];
+                validDates.forEach(vd => {
+                    promises.push(addDoc(collection(db, "leave_requests"), { 
+                        enrollment: enrollment, 
+                        studentName: window.currentStudent.name, 
+                        startDate: vd,  
+                        endDate: vd, 
+                        date: vd, // Backend hian ni khat ang zelin a process theih nan
+                        reason: reason, 
+                        status: "Pending", 
+                        rejectReason: "", 
+                        createdAt: serverTimestamp() 
+                    }));
+                });
+
+                await Promise.all(promises);
+                
+                alert(`Chawlh ni ${validDates.length} atan report thehluh a ni e.`); 
                 event.target.reset(); 
-                if(document.getElementById('leave-date')) document.getElementById('leave-date').value = todayISODate; 
-            } catch (error) { alert("Thehluh theih a ni lo: " + error.message); }
+                document.getElementById('leave-start-date').value = todayISODate;
+                document.getElementById('leave-end-date').value = todayISODate;
+                
+                updateLeaveBalance();
+
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Report thehlut rawh";
+
+            } catch (error) { 
+                alert("Thehluh theih a ni lo: " + error.message); 
+                const submitBtn = event.target.querySelector('button[type="submit"]');
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Report thehlut rawh";
+            }
         }
 
         function loadStudentLeaves(enrollment) {
@@ -1141,6 +1286,9 @@
             studentLeaveUnsubscribe = onSnapshot(q, (snapshot) => {
                 const container = document.getElementById('student-leave-history'); if (!container) return;
                 container.innerHTML = '';
+                
+                updateLeaveBalance(); // A lo thlak apiangin limit a update ang
+
                 if (snapshot.empty) { container.innerHTML = '<p style="opacity: 0.7;">Report i la thehlut lo.</p>'; return; }
                 let leaves = []; snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()})); leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
                 
@@ -1281,7 +1429,6 @@
                         try { 
                             await updateDoc(doc(db, "students", actualDocId), { lastLoginDate: todayISODate }); 
                             
-                            // LOGIN LOG RECORD SIAMNA
                             await addDoc(collection(db, "login_logs"), {
                                 enrollment: window.currentStudent.enrollment,
                                 studentName: window.currentStudent.name,
