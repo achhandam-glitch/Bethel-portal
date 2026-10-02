@@ -331,7 +331,7 @@
                             <p style="font-weight: 600; font-size: 16px; margin: 0;">Total Attendance Points:</p>
                             <div style="font-size: 28px; font-weight: bold;" id="student-att-points">0 Points</div>
                         </div>
-                        <button class="btn" style="background-color: #6b21a8; color: white; font-size: 13px; padding: 8px;" onclick="openAttendanceModal()">
+                        <button id="attendance-info-btn" class="btn" style="background-color: #6b21a8; color: white; font-size: 13px; padding: 8px;" onclick="openAttendanceModal()">
                             ℹ️ Attendance & Internal Mark Hriattirna
                         </button>
                     </div>
@@ -517,7 +517,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "6.8"; 
+        const APP_VERSION = "6.9"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -1463,15 +1463,18 @@
                         const onlineMenuBtn = document.getElementById('student-menu-online');
                         const leaveMenuBtn = document.getElementById('student-menu-leave');
                         const attPointsCard = document.getElementById('attendance-points-card');
+                        const attInfoBtn = document.getElementById('attendance-info-btn');
 
                         if (window.currentStudent.shift === 'Saturday (O)') {
                             if (onlineMenuBtn) onlineMenuBtn.style.display = 'block';
                             if (leaveMenuBtn) leaveMenuBtn.style.display = 'none'; 
                             if (attPointsCard) attPointsCard.style.display = 'flex'; 
+                            if (attInfoBtn) attInfoBtn.style.display = 'none'; 
                         } else {
                             if (onlineMenuBtn) onlineMenuBtn.style.display = 'none';
                             if (leaveMenuBtn) leaveMenuBtn.style.display = 'block';
                             if (attPointsCard) attPointsCard.style.display = 'flex';
+                            if (attInfoBtn) attInfoBtn.style.display = 'block'; 
                         }
 
                         renderStudentFeePortal(); loadStudentLeaves(enrollmentStr); loadMySubmissions(); autoCalculatePeriodAttendance(); 
