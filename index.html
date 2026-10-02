@@ -273,7 +273,7 @@
                         <div class="sticky-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding: 15px 20px; position: sticky; top: 0; background: #ffffff; z-index: 10; border-radius: 12px 12px 0 0;">
                             <div><h3 style="margin: 0; color: #0284c7; border: none; padding: 0;" id="bulk-quiz-title-display">Test Title</h3></div>
                             <div style="background: #ef4444; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
-                                ⏱️ <span id="quiz-timer-display">00:00</span>
+                                ⏱️️ <span id="quiz-timer-display">00:00</span>
                             </div>
                         </div>
                         <div id="bulk-questions-list" style="padding: 20px;"></div>
@@ -336,9 +336,9 @@
                     </div>
                 </div>
 
-                <!-- CHAWLH DILNA TAB -->
+                <!-- CHAWLH DILNA TAB (Date Range & Limit with Robust DOB login) -->
                 <div id="student-tab-leave" class="student-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-a let lehna</button></div>
                     <div class="form-grid">
                         <div class="card" style="margin-bottom: 0;">
                             <h3>Chawlh Dilna (Range)</h3>
@@ -445,7 +445,7 @@
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
-            document.getElementById('theme-toggle').innerText = isDark ? '☀️' : '🌙';
+            document.getElementById('theme-toggle').innerText = isDark ? '☀️️' : '🌙';
             localStorage.setItem('bcc_theme', isDark ? 'dark' : 'light');
         }
         
@@ -483,7 +483,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "7.2"; 
+        const APP_VERSION = "7.3"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let studentLeaveUnsubscribe = null; 
@@ -950,6 +950,7 @@
             }
         }
 
+        // ================= DATE RANGE & LIMIT CHAWLH DILNA LOGIC =================
         window.applyLeave = async function(event) {
             event.preventDefault();
             const startDate = document.getElementById('leave-start-date').value; 
@@ -1132,7 +1133,7 @@
             }
         });
 
-        // FULLY ROBUST LOGIN FUNCTION WITH MULTI-FORMAT DOB MATCHING
+        // FIXED ROBUST LOGIN FUNCTION (DOB FORMAT MISMATCH RESOLVED)
         window.loginStudent = async function(event) {
             event.preventDefault();
             const enrollmentInput = document.getElementById('login-enrollment').value.trim(); 
