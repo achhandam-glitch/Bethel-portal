@@ -408,7 +408,7 @@
                 </div>
                 
                 <div id="student-tab-online" class="student-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️️ Menu-a let lehna</button></div>
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅ Menu-a let lehna</button></div>
                     
                     <div class="card" style="margin-bottom: 20px;" id="student-online-container">
                         <h3 style="color: #a78bfa;">Saturday (O) Message & Links</h3>
@@ -443,7 +443,7 @@
                                     <option value="DCA 106 - Desktop Publishing (PageMaker)">DCA 106 - Desktop Publishing (PageMaker)</option>
                                 </select>
                                 <button class="btn btn-primary" style="width: auto; margin: 0; padding: 6px 12px; font-size: 13px; background-color: #0284c7;" onclick="exportChatToPDF()" title="PDF in Download Rawh">📥 PDF</button>
-                                <button class="btn btn-danger" style="width: auto; margin: 0; padding: 6px 12px; font-size: 13px;" onclick="clearAIChat()" title="Chat hlui nawt faina">🗑️</button>
+                                <button class="btn btn-danger" style="width: auto; margin: 0; padding: 6px 12px; font-size: 13px;" onclick="clearAIChat()" title="Chat hlui nawt faina">🗑️️</button>
                             </div>
                         </div>
                         
@@ -539,6 +539,20 @@
         let quizTimerInterval = null;
         let quizTimeLeft = 0;
         let currentBulkQuizTitle = "";
+
+        // ================= NOTICE SEEN LOGIC =================
+        // Heta tang hian Zirlaiin Notice a seen in Firebase-a a save na code chu
+        window.markNoticeAsSeen = async function(noticeId) {
+            if (!window.currentStudent || !window.currentStudent.enrollment) return;
+            try {
+                const noticeRef = doc(db, "notices", noticeId);
+                await updateDoc(noticeRef, {
+                    seenBy: arrayUnion(window.currentStudent.enrollment)
+                });
+            } catch (error) {
+                console.log("Error marking notice as seen:", error);
+            }
+        }
 
         window.checkNotifications = function() {
             if (!window.currentStudent || !window.currentStudent.enrollment) return;
@@ -1352,8 +1366,23 @@
                         });
                         commentsHTML += '</div>';
                     }
+                    
                     if (studentList) {
-                        studentList.innerHTML += `<div class="notice-box"><h4 style="margin-bottom: 5px;">${data.title}</h4><p style="margin-bottom: 10px;">${data.content}</p>${commentsHTML}<div style="margin-top: 12px; display: flex; gap: 10px;"><input type="text" id="comment-input-${noticeId}" placeholder="Comment ziahna..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border-radius: 6px;"><button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="postComment('${noticeId}')">Post</button></div></div>`;
+                        // Notice list render tir la, tichuan setTimeout hmangin 'Seen' tih record rawh se
+                        let noticeHtml = `<div class="notice-box"><h4 style="margin-bottom: 5px;">${data.title}</h4><p style="margin-bottom: 10px;">${data.content}</p>${commentsHTML}<div style="margin-top: 12px; display: flex; gap: 10px;"><input type="text" id="comment-input-${noticeId}" placeholder="Comment ziahna..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border-radius: 6px;"><button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="postComment('${noticeId}')">Post</button></div></div>`;
+                        
+                        studentList.innerHTML += noticeHtml;
+                        
+                        // Zirlai enrollment a awm tawh chuan Seen record theih a ni
+                        if (window.currentStudent && window.currentStudent.enrollment) {
+                            let seenArray = data.seenBy || [];
+                            if (!seenArray.includes(window.currentStudent.enrollment)) {
+                                // Mual pho lovin unseen notice chu auto in seen record se
+                                setTimeout(() => {
+                                    markNoticeAsSeen(noticeId);
+                                }, 2000); // Second 2 nghak hmasa phawt
+                            }
+                        }
                     }
                 });
             }
