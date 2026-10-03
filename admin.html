@@ -676,7 +676,7 @@
 
                 <!-- TAB 4: NOTICE BOARD -->
                 <div id="tab-notice" class="admin-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️️ Menu-a let lehna</button></div>
                     <div class="form-grid" style="grid-template-columns: 1fr;">
                         <div class="card">
                             <h3>Notice Board Siamna</h3>
@@ -929,7 +929,7 @@
                                 <h3 style="color: #9f1239; border: none; padding: 0; margin: 0;">📈 Zirlaite AI Hman Dan Record</h3>
                                 <p style="font-size: 13px; color: #475569; margin-top: 4px;">Zirlai ten AI Zirtirtu an zawh apiangin hetah hian a rawn in-record zel ang.</p>
                             </div>
-                            <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAILogs()">🗑️️ Logs Paih Faina</button>
+                            <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAILogs()">🗑 Logs Paih Faina</button>
                         </div>
                         
                         <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
@@ -1755,7 +1755,7 @@
             // HOLIDAY CHECK
             const holidayMatch = holidayList.find(h => h.date === dateStr);
             if (holidayMatch) {
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#ea580c; font-weight:bold; padding: 30px 10px;">🏖️ Vawiin hi Sorkar Chawlh (${holidayMatch.name}) a ni a, Attendance lak theih a ni lo.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#ea580c; font-weight:bold; padding: 30px 10px;">🏖️️ Vawiin hi Sorkar Chawlh (${holidayMatch.name}) a ni a, Attendance lak theih a ni lo.</td></tr>`;
                 if (saveBtn) saveBtn.style.display = 'none';
                 return;
             }
@@ -2203,7 +2203,22 @@
         window.clearAllLeaveRequests = async function() { if (confirm("Paih fai takzet i duh em?")) { try { const querySnapshot = await getDocs(collection(db, "leave_requests")); let deletePromises = []; querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "leave_requests", document.id)))); await Promise.all(deletePromises); alert("Paih fai a ni tawh e!"); } catch (error) { alert("Harsatna: " + error.message); } } }
 
         // ================= NOTICES =================
-        window.publishNotice = async function(event) { event.preventDefault(); try { await addDoc(collection(db, "notices"), { title: document.getElementById('notice-title').value, content: document.getElementById('notice-content').value, comments: [], createdAt: serverTimestamp() }); alert("I publish hlawhtling e!"); event.target.reset(); } catch (error) { alert("Harsatna: " + error.message); } }
+        window.publishNotice = async function(event) { 
+            event.preventDefault(); 
+            try { 
+                await addDoc(collection(db, "notices"), { 
+                    title: document.getElementById('notice-title').value, 
+                    content: document.getElementById('notice-content').value, 
+                    comments: [], 
+                    seenBy: [], // Array ruak kan belh thar e
+                    createdAt: serverTimestamp() 
+                }); 
+                alert("I publish hlawhtling e!"); 
+                event.target.reset(); 
+            } catch (error) { 
+                alert("Harsatna: " + error.message); 
+            } 
+        }
         window.editNotice = async function(noticeId) { const newContent = prompt("Notice thar tur type rawh:"); if (newContent !== null && newContent.trim() !== "") { try { await updateDoc(doc(db, "notices", noticeId), { content: newContent }); alert("I siam tha e."); } catch (error) { alert("Harsatna: " + error.message); } } }
         window.deleteNotice = async function(noticeId) { if (confirm("Paih duh takzet em?")) { try { await deleteDoc(doc(db, "notices", noticeId)); alert("Paih a ni tawh e."); } catch (error) { alert("Harsatna: " + error.message); } } }
         window.adminPostComment = async function(noticeId) { const inputField = document.getElementById(`admin-comment-input-${noticeId}`); const commentText = inputField.value.trim(); if (!commentText) { alert("Reply tur ziak phawt rawh!"); return; } try { await updateDoc(doc(db, "notices", noticeId), { comments: arrayUnion({ studentName: "Zirtirtu (Admin)", text: commentText, date: new Date().toLocaleString() }) }); inputField.value = ''; alert("Reply post a ni e!"); } catch (error) { alert("Harsatna: " + error.message); } }
@@ -2223,9 +2238,27 @@
                         });
                         commentsHTML += '</div>';
                     }
+                    
+                    let seenCount = data.seenBy ? data.seenBy.length : 0; // Hmu tawh zat chhutna
                     let safeTitle = data.title ? data.title.replace(/'/g, "\\'") : '';
                     if(adminList) {
-                        adminList.innerHTML += `<div class="notice-box"><h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4><p style="margin-bottom: 10px; color: #475569;">${data.content}</p>${commentsHTML}<div style="margin-top: 12px; display: flex; gap: 10px;"><input type="text" id="admin-comment-input-${noticeId}" placeholder="Comment chhanna (Reply)..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;"><button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="adminPostComment('${noticeId}')">Reply</button></div><div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;"><button class="btn btn-whatsapp" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="shareNoticeWhatsApp('${safeTitle}')">📲 WhatsApp-ah Share-na</button><button class="btn btn-primary" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="editNotice('${noticeId}')">Edit Notice</button><button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="deleteNotice('${noticeId}')">Paih</button></div></div>`;
+                        adminList.innerHTML += `<div class="notice-box">
+                            <h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4>
+                            <p style="margin-bottom: 10px; color: #475569;">${data.content}</p>
+                            ${commentsHTML}
+                            <div style="margin-top: 12px; display: flex; gap: 10px;">
+                                <input type="text" id="admin-comment-input-${noticeId}" placeholder="Comment chhanna (Reply)..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                                <button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="adminPostComment('${noticeId}')">Reply</button>
+                            </div>
+                            <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                <!-- WhatsApp share aiah Seen Count a lang ang -->
+                                <span style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;">
+                                    👁️ Hmu tawh zat: ${seenCount}
+                                </span>
+                                <button class="btn btn-primary" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="editNotice('${noticeId}')">Edit Notice</button>
+                                <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="deleteNotice('${noticeId}')">Paih</button>
+                            </div>
+                        </div>`;
                     }
                 });
             }
