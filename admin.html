@@ -1192,21 +1192,21 @@
             <div id="id-card-front" style="width: 325px; height: 204px; background: white; padding: 12px; box-sizing: border-box; font-family: 'Times New Roman', Times, serif; position: relative; border: 1px solid #94a3b8; border-right: none;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
                     <div style="text-align: center; flex: 1;">
-                        <h4 style="margin: 0; color: #0f172a; font-size: 15px; font-weight: 900; letter-spacing: 0.5px;">BETHEL COMPUTER CENTRE</h4>
-                        <p style="margin: 0; font-size: 12px; font-weight: bold; color: #333;">Venglai : Lunglei</p>
-                        <p style="margin: 0; font-size: 11px; color: #dc2626; font-weight: bold;">Recognised by Govt. of Mizoram</p>
-                        <p style="margin: 0; font-size: 11px; color: #dc2626; font-weight: bold;">Regn.No CCA/MSCTE/2013/14</p>
+                        <h4 id="id-title" style="margin: 0; color: #0f172a; font-size: 15px; font-weight: 900; letter-spacing: 0.5px;">BETHEL COMPUTER CENTRE</h4>
+                        <p id="id-sub1" style="margin: 0; font-size: 12px; font-weight: bold; color: #333;">Venglai : Lunglei</p>
+                        <p id="id-sub2" style="margin: 0; font-size: 11px; color: #dc2626; font-weight: bold;">Recognised by Govt. of Mizoram</p>
+                        <p id="id-sub3" style="margin: 0; font-size: 11px; color: #dc2626; font-weight: bold;">Regn.No CCA/MSCTE/2013/14</p>
                     </div>
                     <div style="width: 65px; height: 75px; border: 1px solid #94a3b8; margin-left: 5px; background: #f1f5f9; flex-shrink: 0;">
                         <img id="id-photo" src="" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                 </div>
-                <div style="background: #3b82f6; color: white; text-align: center; font-size: 12px; font-weight: bold; padding: 4px 0; margin-bottom: 10px;">
+                <div id="id-banner" style="background: #3b82f6; color: white; text-align: center; font-size: 12px; font-weight: bold; padding: 4px 0; margin-bottom: 10px;">
                     Student I.D. Card
                 </div>
-                <div style="font-size: 10px; line-height: 1.4; font-weight: bold; color: #1e293b;">
+                <div id="id-text-container" style="font-size: 10px; line-height: 1.4; font-weight: bold; color: #1e293b;">
                     <div style="display: flex; justify-content: space-between;">
-                        <span>Course <span style="margin-left: 8px;">: <u style="color:#1e40af;">DCA I Sem</u></span></span>
+                        <span>Course <span style="margin-left: 8px;">: <u id="id-course" style="color:#1e40af;">DCA I Sem</u></span></span>
                         <span style="margin-right: 5px;">Timing : <u id="id-timing" style="color:#1e40af;"></u></span>
                     </div>
                     <div>Enroll No <span style="margin-left: 2px;">: <u id="id-enroll"></u></span></div>
@@ -1567,7 +1567,7 @@
                                     <button class="btn btn-danger btn-icon" onclick="deleteMCQ('${d.id}')">✕</button>
                                 </div>
                                 <ul style="font-size:13px; color:#475569; margin-left:15px; margin-bottom:10px;">
-                                    <li>A. ${d.optA} ${d.optAImg ? '🖼️️' : ''}</li>
+                                    <li>A. ${d.optA} ${d.optAImg ? '🖼' : ''}</li>
                                     <li>B. ${d.optB} ${d.optBImg ? '🖼️' : ''}</li>
                                     <li>C. ${d.optC} ${d.optCImg ? '🖼' : ''}</li>
                                     <li>D. ${d.optD} ${d.optDImg ? '🖼️' : ''}</li>
@@ -2811,7 +2811,7 @@
             const student = allStudentsList.find(s => s.enrollment === enrollment);
             if(!student) { alert("Zirlai hmuh a ni lo!"); return; }
 
-            // ID Card Template a data thunluhna (Database ami hman nghal a ni)
+            // ID Card Template a data thunluhna
             let timing = student.shift ? student.shift.replace(' shift', '').replace('Saturday (O)', 'Sat-O') : '';
             document.getElementById('id-timing').textContent = timing;
             document.getElementById('id-enroll').textContent = student.enrollment;
@@ -2819,7 +2819,55 @@
             document.getElementById('id-address').textContent = student.address || '';
             document.getElementById('id-phone').textContent = student.phone || '';
             
-            // Container unhide hmasak phawt tur (DOM a update theih nan)
+            // Course hming Auto-fetch na
+            const courseText = student.course === 'DCA II Semester' ? 'DCA II Sem' : 'DCA I Sem';
+            document.getElementById('id-course').textContent = courseText;
+
+            // ================= THEME THLAKNA (DCA I vs DCA II) =================
+            const frontCard = document.getElementById('id-card-front');
+            const title = document.getElementById('id-title');
+            const sub1 = document.getElementById('id-sub1');
+            const sub2 = document.getElementById('id-sub2');
+            const sub3 = document.getElementById('id-sub3');
+            const banner = document.getElementById('id-banner');
+            const textContainer = document.getElementById('id-text-container');
+            const courseU = document.getElementById('id-course');
+            const timingU = document.getElementById('id-timing');
+
+            if (student.course === 'DCA II Semester') {
+                // DCA II SEMESTER BIK (Dark Maroon & White Theme)
+                frontCard.style.background = '#881337'; // Sen Duk nalh
+                frontCard.style.borderColor = '#881337';
+                title.style.color = '#ffffff';
+                sub1.style.color = '#fecdd3'; // Var pawl lam
+                sub2.style.color = '#fda4af';
+                sub3.style.color = '#fda4af';
+                
+                banner.style.background = '#ffffff';
+                banner.style.color = '#881337';
+                
+                textContainer.style.color = '#ffffff';
+                courseU.style.color = '#ffffff';
+                timingU.style.color = '#ffffff';
+            } else {
+                // DCA I SEMESTER (Default Blue & White Theme)
+                frontCard.style.background = 'white';
+                frontCard.style.borderColor = '#94a3b8';
+                title.style.color = '#0f172a';
+                sub1.style.color = '#333';
+                sub2.style.color = '#dc2626';
+                sub3.style.color = '#dc2626';
+                
+                banner.style.background = '#3b82f6';
+                banner.style.color = 'white';
+                
+                textContainer.style.color = '#1e293b';
+                courseU.style.color = '#1e40af';
+                timingU.style.color = '#1e40af';
+            }
+            // ====================================================================
+
+            // Container unhide hmasak phawt tur
             const container = document.getElementById('id-card-container');
             container.classList.remove('hidden');
 
@@ -2843,7 +2891,7 @@
 
             // html2canvas settings
             const opt = {
-                margin:       10, // A paper sirah margin tlem a awm ang
+                margin:       10, 
                 filename:     `${student.enrollment}_ID_Card.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 }, 
