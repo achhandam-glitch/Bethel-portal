@@ -183,39 +183,108 @@
         </div>
     </div>
 
-    <!-- SHIFT LEH PROFILE EDIT MODAL -->
-    <div id="shift-edit-modal" class="modal-overlay hidden">
-        <div class="card" style="width: 100%; max-width: 400px; margin: 0;">
-            <h3 style="color: #0284c7; border-color: #bae6fd;">Zirlai Shift & Profile Thlakna</h3>
-            <input type="hidden" id="edit-shift-enrollment">
+    <!-- FULL STUDENT EDIT MODAL -->
+    <div id="student-edit-modal" class="modal-overlay hidden" style="align-items: flex-start; overflow-y: auto; padding-top: 50px; padding-bottom: 50px;">
+        <div class="card" style="width: 100%; max-width: 600px; margin: 0 auto;">
+            <h3 style="color: #0284c7; border-color: #bae6fd;">Zirlai Details Edit-na</h3>
+            <input type="hidden" id="edit-enrollment">
             
-            <div class="input-group" style="margin-bottom: 15px;">
-                <label>Profile Thlalak Link (Google Drive)</label>
-                <input type="url" id="edit-student-photo" placeholder="https://drive.google.com/...">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>Hming</label>
+                    <input type="text" id="edit-name" required>
+                </div>
+                <div class="input-group">
+                    <label>DOB</label>
+                    <input type="text" id="edit-dob" required>
+                </div>
+                <div class="input-group">
+                    <label>Course</label>
+                    <select id="edit-course">
+                        <option value="DCA I Semester">DCA I Semester</option>
+                        <option value="DCA II Semester">DCA II Semester</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Shift</label>
+                    <select id="edit-shift">
+                        <option value="10am shift">10am shift</option>
+                        <option value="6am shift">6am shift</option>
+                        <option value="7am shift">7am shift</option>
+                        <option value="8am shift">8am shift</option>
+                        <option value="11am shift">11am shift</option>
+                        <option value="1pm shift">1pm shift</option>
+                        <option value="2pm shift">2pm shift</option>
+                        <option value="3pm shift">3pm shift</option>
+                        <option value="4pm shift">4pm shift</option>
+                        <option value="5pm shift">5pm shift</option>
+                        <option value="7pm shift">7pm shift</option>
+                        <option value="Saturday shift">Saturday shift</option>
+                        <option value="Saturday (O)">Saturday (O)</option>
+                        <option value="Flexible shift">Flexible shift</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Pa Hming</label>
+                    <input type="text" id="edit-father">
+                </div>
+                <div class="input-group">
+                    <label>Nu Hming</label>
+                    <input type="text" id="edit-mother">
+                </div>
+                <div class="input-group">
+                    <label>Phone No</label>
+                    <input type="text" id="edit-phone">
+                </div>
+                <div class="input-group">
+                    <label>Aadhaar No</label>
+                    <input type="text" id="edit-aadhaar">
+                </div>
+                <div class="input-group">
+                    <label>Address</label>
+                    <input type="text" id="edit-address">
+                </div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="edit-email">
+                </div>
+                <div class="input-group">
+                    <label>Sex</label>
+                    <select id="edit-sex">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Apaar ID</label>
+                    <input type="text" id="edit-apaar">
+                </div>
+                <div class="input-group">
+                    <label>Class</label>
+                    <input type="text" id="edit-class">
+                </div>
+                <div class="input-group">
+                    <label>Board/University</label>
+                    <input type="text" id="edit-board">
+                </div>
+                <div class="input-group">
+                    <label>Year of Passing</label>
+                    <input type="text" id="edit-passing-year">
+                </div>
+                <div class="input-group">
+                    <label>Division</label>
+                    <input type="text" id="edit-division">
+                </div>
+                <div class="input-group" style="grid-column: 1 / -1;">
+                    <label>Profile Picture Link (Google Drive)</label>
+                    <input type="url" id="edit-photo">
+                </div>
             </div>
             
-            <div class="input-group" style="margin-bottom: 20px;">
-                <label>Shift Thlang Rawh</label>
-                <select id="edit-student-shift">
-                    <option value="6am shift">6am shift</option>
-                    <option value="7am shift">7am shift</option>
-                    <option value="8am shift">8am shift</option>
-                    <option value="10am shift">10am shift</option>
-                    <option value="11am shift">11am shift</option>
-                    <option value="1pm shift">1pm shift</option>
-                    <option value="2pm shift">2pm shift</option>
-                    <option value="3pm shift">3pm shift</option>
-                    <option value="4pm shift">4pm shift</option>
-                    <option value="5pm shift">5pm shift</option>
-                    <option value="7pm shift">7pm shift</option>
-                    <option value="Saturday shift">Saturday shift</option>
-                    <option value="Saturday (O)">Saturday (O)</option>
-                    <option value="Flexible shift">Flexible shift</option>
-                </select>
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn btn-success" style="margin: 0;" onclick="updateStudentShift()">Save</button>
-                <button class="btn btn-danger" style="margin: 0;" onclick="closeShiftModal()">Cancel</button>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-success" style="margin: 0;" onclick="updateStudentDetails()">Save Thlakna</button>
+                <button class="btn btn-danger" style="margin: 0;" onclick="closeStudentEditModal()">Cancel</button>
             </div>
         </div>
     </div>
@@ -416,7 +485,7 @@
                             </div>
                             <div class="input-group">
                                 <label>Aadhaar No</label>
-                                <input type="text" id="reg-aadhaar" placeholder="[Aadhaar Redacted]">
+                                <input type="text" id="reg-aadhaar" placeholder="Aadhaar number">
                             </div>
                             <div class="input-group">
                                 <label>Phone No</label>
@@ -475,16 +544,6 @@
                             </div>
                             <button type="submit" class="btn btn-primary" style="grid-column: 1 / -1; margin-top: 5px;">Zirlai Save Rawh</button>
                         </form>
-                    </div>
-
-                    <div class="card" style="border: 2px solid #16a34a; margin-bottom: 0;">
-                        <h3 style="color: #15803d; border-bottom: 1px solid #bbf7d0; padding-bottom: 10px;">Zirlai Register-na (Excel/CSV Upload)</h3>
-                        <p style="font-size: 14px; color: #475569; margin-bottom: 15px;">Excel file-ah Row hmasa berah (Header) hetiang hian Column hming phuah ang che: <b>Enrollment</b>, <b>Name</b>, <b>DOB</b>, <b>Shift</b>, <b>PhotoURL</b> (Optional).</p>
-                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                            <input type="file" id="excel-upload" accept=".xlsx, .xls, .csv" style="flex-grow: 1; border: 1px dashed #cbd5e1; padding: 10px; border-radius: 6px;">
-                            <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 20px;" onclick="uploadExcelData()">Data Thunlut Rawh</button>
-                        </div>
-                        <div id="upload-status" style="margin-top: 10px; font-size: 14px; font-weight: bold;"></div>
                     </div>
                 </div>
 
@@ -993,7 +1052,10 @@
                 <div id="tab-management" class="admin-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
                     <div class="card" style="margin-bottom: 0;">
-                        <h3>Zirlai List & Management</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                            <h3 style="margin: 0; border: none; padding: 0;">Zirlai List & Management</h3>
+                            <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 15px;" onclick="exportStudentsToExcel()">📥 Excel-ah Export Rawh</button>
+                        </div>
                         <div style="overflow-x: auto;">
                             <table>
                                 <thead>
@@ -1210,7 +1272,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "6.9"; 
+        const APP_VERSION = "6.10"; // Version updated
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -2493,7 +2555,7 @@
                             <td>${s.dob}</td>
                             <td>
                                 <span class="badge-shift">${studentShift}</span> 
-                                <button style="background:none; border:none; color:#0284c7; cursor:pointer; font-size:12px; margin-left:5px;" onclick="openEditStudentModal('${s.enrollment}', '${studentShift}', '${s.photoUrl || ''}')">✏️ Edit</button>
+                                <button style="background:none; border:none; color:#0284c7; cursor:pointer; font-size:12px; margin-left:5px;" onclick="openEditStudentModal('${s.enrollment}')">✏️ Edit</button>
                             </td>
                             <td style="font-weight:bold; color:#7e22ce;">${totalPts} pts</td>
                             <td style="text-align: center; font-weight:bold; color:#a16207; font-size:15px;">${studentCoins}</td>
@@ -2505,6 +2567,43 @@
                         </tr>`;
                 });
             }
+        }
+
+        window.exportStudentsToExcel = function() {
+            if(allStudentsList.length === 0) { alert("Zirlai an awm lo."); return; }
+            
+            let exportData = allStudentsList.map(s => {
+                let regDate = '';
+                if(s.registeredAt) {
+                    try { regDate = new Date(s.registeredAt.toMillis()).toLocaleString(); } 
+                    catch(e) { regDate = 'Hun hriat loh'; }
+                }
+                return {
+                    "Enrollment No": s.enrollment || '',
+                    "Course": s.course || 'DCA I Semester',
+                    "Hming": s.name || '',
+                    "DOB": s.dob || '',
+                    "Sex": s.sex || '',
+                    "Pa Hming": s.fatherName || '',
+                    "Nu Hming": s.motherName || '',
+                    "Phone No": s.phone || '',
+                    "Aadhaar No": s.aadhaar || '',
+                    "Address": s.address || '',
+                    "Email": s.email || '',
+                    "Apaar ID": s.apaarId || '',
+                    "Shift": s.shift || '10am shift',
+                    "Class": s.studentClass || '',
+                    "Board": s.board || '',
+                    "Passing Year": s.passingYear || '',
+                    "Division": s.division || '',
+                    "Registered Date": regDate
+                };
+            });
+            
+            let worksheet = XLSX.utils.json_to_sheet(exportData);
+            let workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Zirlai_List");
+            XLSX.writeFile(workbook, "Bethel_Zirlai_List.xlsx");
         }
 
         function renderOnlineShiftStudents() {
@@ -2535,21 +2634,38 @@
             if (document.getElementById('period-start-date').value && document.getElementById('period-end-date').value) { calculatePeriodAttendance(); }
         });
 
-        window.openEditStudentModal = function(enrollment, currentShift, photoUrl) { 
-            document.getElementById('edit-shift-enrollment').value = enrollment; 
-            document.getElementById('edit-student-shift').value = currentShift; 
-            document.getElementById('edit-student-photo').value = photoUrl || ''; 
-            document.getElementById('shift-edit-modal').classList.remove('hidden'); 
+        window.openEditStudentModal = function(enrollment) { 
+            const s = allStudentsList.find(x => x.enrollment === enrollment);
+            if(!s) return;
+            document.getElementById('edit-enrollment').value = s.enrollment;
+            document.getElementById('edit-name').value = s.name || '';
+            document.getElementById('edit-dob').value = s.dob || '';
+            document.getElementById('edit-course').value = s.course || 'DCA I Semester';
+            document.getElementById('edit-shift').value = s.shift || '10am shift';
+            document.getElementById('edit-father').value = s.fatherName || '';
+            document.getElementById('edit-mother').value = s.motherName || '';
+            document.getElementById('edit-phone').value = s.phone || '';
+            document.getElementById('edit-aadhaar').value = s.aadhaar || '';
+            document.getElementById('edit-address').value = s.address || '';
+            document.getElementById('edit-email').value = s.email || '';
+            document.getElementById('edit-sex').value = s.sex || 'Male';
+            document.getElementById('edit-apaar').value = s.apaarId || '';
+            document.getElementById('edit-class').value = s.studentClass || '';
+            document.getElementById('edit-board').value = s.board || '';
+            document.getElementById('edit-passing-year').value = s.passingYear || '';
+            document.getElementById('edit-division').value = s.division || '';
+            document.getElementById('edit-photo').value = s.photoUrl || '';
+            
+            document.getElementById('student-edit-modal').classList.remove('hidden'); 
         }
         
-        window.closeShiftModal = function() { 
-            document.getElementById('shift-edit-modal').classList.add('hidden'); 
+        window.closeStudentEditModal = function() { 
+            document.getElementById('student-edit-modal').classList.add('hidden'); 
         }
         
-        window.updateStudentShift = async function() {
-            const enrollment = document.getElementById('edit-shift-enrollment').value; 
-            const newShift = document.getElementById('edit-student-shift').value;
-            let photoUrlRaw = document.getElementById('edit-student-photo').value.trim();
+        window.updateStudentDetails = async function() {
+            const enrollment = document.getElementById('edit-enrollment').value; 
+            let photoUrlRaw = document.getElementById('edit-photo').value.trim();
             
             let finalPhotoUrl = photoUrlRaw;
             if(photoUrlRaw.includes("drive.google.com/file/d/")) {
@@ -2561,11 +2677,26 @@
 
             try { 
                 await updateDoc(doc(db, "students", enrollment), { 
-                    shift: newShift,
+                    name: document.getElementById('edit-name').value.trim(),
+                    dob: document.getElementById('edit-dob').value.trim(),
+                    course: document.getElementById('edit-course').value,
+                    shift: document.getElementById('edit-shift').value,
+                    fatherName: document.getElementById('edit-father').value.trim(),
+                    motherName: document.getElementById('edit-mother').value.trim(),
+                    phone: document.getElementById('edit-phone').value.trim(),
+                    aadhaar: document.getElementById('edit-aadhaar').value.trim(),
+                    address: document.getElementById('edit-address').value.trim(),
+                    email: document.getElementById('edit-email').value.trim(),
+                    sex: document.getElementById('edit-sex').value,
+                    apaarId: document.getElementById('edit-apaar').value.trim(),
+                    studentClass: document.getElementById('edit-class').value.trim(),
+                    board: document.getElementById('edit-board').value.trim(),
+                    passingYear: document.getElementById('edit-passing-year').value.trim(),
+                    division: document.getElementById('edit-division').value.trim(),
                     photoUrl: finalPhotoUrl
                 }); 
-                closeShiftModal(); 
-                alert("Zirlai thlalak/shift chu hlawhtling taka thlak a ni e!"); 
+                closeStudentEditModal(); 
+                alert("Zirlai details hlawhtling taka thlak a ni e!"); 
             } catch(e) { alert("Harsatna: " + e.message); }
         }
 
@@ -2626,57 +2757,6 @@
                 alert("Zirlai " + name + " chu hlawhtling taka register a ni e!"); 
                 event.target.reset(); 
             } catch(e) { alert("Harsatna: " + e.message); }
-        }
-
-        window.uploadExcelData = async function() {
-            const fileInput = document.getElementById('excel-upload'); const statusDiv = document.getElementById('upload-status');
-            const file = fileInput.files[0];
-            if (!file) { alert("Excel emaw CSV file thlang phawt rawh!"); return; }
-            statusDiv.style.color = "#0369a1"; statusDiv.innerText = "Data lakluh mek a ni, khawngaihin nghak lawk rawh...";
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
-                    const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { raw: false });
-                    if (json.length === 0) { statusDiv.style.color = "red"; statusDiv.innerText = "Data a awm lo."; return; }
-                    let successCount = 0; let errorCount = 0;
-                    for (let i = 0; i < json.length; i++) {
-                        let row = json[i]; 
-                        let enrollment = row.Enrollment || row.enrollment; 
-                        let name = row.Name || row.name || row.Hming; 
-                        let dob = row.DOB || row.dob; 
-                        let shift = row.Shift || row.shift || "10am shift";
-                        
-                        let photoUrlRaw = row.PhotoURL || row.photourl || row.Photo || "";
-                        let finalPhotoUrl = photoUrlRaw;
-                        if(photoUrlRaw.includes("drive.google.com/file/d/")) {
-                            let match = photoUrlRaw.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-                            if(match && match[1]) {
-                                finalPhotoUrl = `https://drive.google.com/uc?export=view&id=${match[1]}`;
-                            }
-                        }
-
-                        if (enrollment && name && dob) {
-                            try {
-                                await setDoc(doc(db, "students", String(enrollment)), { 
-                                    enrollment: String(enrollment), 
-                                    name: String(name), 
-                                    dob: String(dob), 
-                                    shift: String(shift), 
-                                    photoUrl: String(finalPhotoUrl),
-                                    coins: 0, 
-                                    registeredAt: serverTimestamp(), 
-                                    lastLoginDate: "" 
-                                }, { merge: true });
-                                successCount++;
-                            } catch (err) { errorCount++; }
-                        }
-                    }
-                    statusDiv.style.color = "#15803d"; statusDiv.innerText = `✅ Tluang takin zirlai ${successCount} thunluh an ni e! (Fail: ${errorCount})`;
-                    fileInput.value = ""; setTimeout(() => { statusDiv.innerText = ""; }, 5000); 
-                } catch (error) { statusDiv.style.color = "red"; statusDiv.innerText = "Harsatna: " + error.message; }
-            };
-            reader.readAsArrayBuffer(file);
         }
 
         // ================= GRADEBOOK & OTHERS =================
