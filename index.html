@@ -21,7 +21,6 @@
         .hero-content h1 { font-size: 45px; margin-bottom: 5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
         .hero-content p { font-size: 18px; color: #bae6fd; margin-bottom: 25px; }
 
-        /* THLAK DANGLAM: Logo leh Profile Picture Style */
         .login-logo { width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 4px solid #bae6fd; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); background-color: white; }
         .student-profile-img { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid #0284c7; background-color: #f0f9ff; }
 
@@ -174,13 +173,12 @@
     <section id="student-login-section" class="hero-section">
         <div class="hero-content" style="width: 100%; max-width: 450px; padding: 0 20px;">
             
-            <!-- ADVERTISEMENT MARQUEE (LOGO CHUNG CHIAH) -->
-            <marquee class="portal-advertisement-marquee" scrollamount="5">
-                📢 Bethel Computer Centre-ah 2026 December Exam turin registration tih mek a ni a, October ni 6 thleng hun hawn a ni e. Hrechiang duh chuan 8837469949 ah biak mai tur a ni e.
+            <!-- ADVERTISEMENT MARQUEE (ADMIN ATANGA A THU UPDATE THEIH) -->
+            <marquee id="login-marquee-box" class="portal-advertisement-marquee hidden" scrollamount="5">
+                <span id="login-marquee-text">Loading...</span>
             </marquee>
 
-            <!-- THLAK DANGLAM: LOGO DAHNA -->
-            <!-- src="" ah hian i Google Drive link (uc?export=view&id=...) chu i dah dawn nia -->
+            <!-- LOGO DAHNA -->
             <img src="logo.jpg" alt="Bethel Logo" class="login-logo" id="login-logo-img">
             <div class="card" style="text-align: left; margin-top: 10px;">
                 <h2 style="text-align: center; border-bottom: none; margin-bottom: 20px; color: #0284c7;">Zirlai Log In</h2>
@@ -235,7 +233,6 @@
             <div id="student-menu-view">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; max-width: 600px; margin-left: auto; margin-right: auto; flex-wrap: wrap; gap: 15px;">
                     
-                    <!-- THLAK DANGLAM: Zirlai Thlalak leh Hming awm dunna -->
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Student Profile" class="student-profile-img" id="student-profile-photo">
                         <div>
@@ -294,7 +291,6 @@
                 <div id="student-tab-mcq" class="student-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-a let lehna</button></div>
                     
-                    <!-- Main MCQ Container -->
                     <div id="mcq-main-container">
                         <div class="card" style="border: 2px solid #eab308; padding: 20px;">
                             <h3 style="border-bottom: 1px solid #fde047;">🏆 Coin Leaderboard (Top 5)</h3>
@@ -316,12 +312,10 @@
                         <div class="sticky-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding: 15px 20px; position: sticky; top: 0; background: #ffffff; z-index: 10; border-radius: 12px 12px 0 0;">
                             <div><h3 style="margin: 0; color: #0284c7; border: none; padding: 0;" id="bulk-quiz-title-display">Test Title</h3></div>
                             <div style="background: #ef4444; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
-                                ⏱️ <span id="quiz-timer-display">00:00</span>
+                                ⏱️️ <span id="quiz-timer-display">00:00</span>
                             </div>
                         </div>
-                        <div id="bulk-questions-list" style="padding: 20px;">
-                            <!-- Questions will be injected here -->
-                        </div>
+                        <div id="bulk-questions-list" style="padding: 20px;"></div>
                         <div style="padding: 0 20px 20px 20px;">
                             <button class="btn btn-success" onclick="submitBulkQuiz()" id="submit-bulk-btn" style="font-size: 16px; padding: 15px;">Submit Quiz ✅</button>
                         </div>
@@ -344,7 +338,6 @@
                 <div id="student-tab-status" class="student-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-a let lehna</button></div>
                     
-                    <!-- SUNDAY BANNER -->
                     <div id="sunday-banner" class="hidden" style="background: #fee2e2; border-left: 4px solid #dc2626; padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; color: #991b1b;">
                         <b style="font-size: 15px;">🔴 Vawiin chu Pathianni a ni e</b><br>
                         <span style="font-size: 13px;">Vawiin chu class a awm lo a, attendance mark a ngai lo. Inkhawm te i hmang nuam dawn nia!</span>
@@ -360,9 +353,7 @@
                             <p style="font-weight: 600; font-size: 16px; margin: 0;">I Fee Pek Dinhmun:</p>
                             <div id="student-fee-paid" style="font-size: 20px; font-weight: bold; color: #16a34a;">Pek Tawh: ₹0</div>
                         </div>
-                        <div id="student-fee-history" style="margin-top: 15px; border-top: 1px solid #fde68a; padding-top: 10px;">
-                        </div>
-                        <!-- Fee Update Notice Added Here -->
+                        <div id="student-fee-history" style="margin-top: 15px; border-top: 1px solid #fde68a; padding-top: 10px;"></div>
                         <div style="margin-top: 15px; padding: 10px 12px; background: #eff6ff; border-left: 4px solid #0284c7; border-radius: 6px; font-size: 13px; color: #1e293b; line-height: 1.5;">
                             ℹ️ Fee pek zat tarlannaah hian fee i pek thar te update a nih loh chuan <b>8837469949</b> (Sir Alana) ah update turin i hrilh dawn nia.
                         </div>
@@ -398,7 +389,6 @@
                         <div class="card" style="margin-bottom: 0;">
                             <h3>Chawlh Report-na</h3>
                             
-                            <!-- Leave Balance Display Added Here -->
                             <div id="leave-balance-display" style="background: #e0f2fe; border-left: 4px solid #0284c7; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; color: #1e293b;">
                                 <p style="margin-bottom: 5px;"><strong>Tun thlaa chawlh dil theih zat (Max):</strong> <span id="lbl-max-leave">0</span></p>
                                 <p style="margin-bottom: 5px;"><strong>Chawlh hman tawh/dil mek:</strong> <span id="lbl-used-leave">0</span></p>
@@ -511,7 +501,7 @@
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
-            document.getElementById('theme-toggle').innerText = isDark ? '☀️' : '🌙';
+            document.getElementById('theme-toggle').innerText = isDark ? '☀️️' : '🌙';
             localStorage.setItem('bcc_theme', isDark ? 'dark' : 'light');
         }
         
@@ -521,7 +511,6 @@
                 document.getElementById('theme-toggle').innerText = '☀️';
             }
 
-            // SUNDAY CHECK (Load ruala run tur)
             if (new Date().getDay() === 0) {
                 const sundayBanner = document.getElementById('sunday-banner');
                 if (sundayBanner) sundayBanner.classList.remove('hidden');
@@ -566,7 +555,6 @@
 
         const APP_VERSION = "6.9"; 
 
-        // THLAK DANGLAM: window.currentStudent ah photoUrl dah belh a ni
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0, photoUrl: '' };
         let studentLeaveUnsubscribe = null; 
         
@@ -578,7 +566,7 @@
         let mySubmissions = [];
         let globalAttendancePeriod = null; 
         let holidayList = []; 
-        let allNotices = []; // Notice lakkhawmna
+        let allNotices = [];
 
         let latestNoticeTime = 0;
         let latestMaterialTime = 0;
@@ -589,7 +577,24 @@
         let quizTimeLeft = 0;
         let currentBulkQuizTitle = "";
 
-        // ================= NOTICE SEEN LOGIC =================
+        // ================= ADMIN MARQUEE (ADVERTISEMENT) LISTENER =================
+        onSnapshot(doc(db, "settings", "portal_advertisement"), (docSnap) => {
+            const marqueeBox = document.getElementById('login-marquee-box');
+            const marqueeText = document.getElementById('login-marquee-text');
+            
+            if (docSnap.exists() && marqueeBox && marqueeText) {
+                const data = docSnap.data();
+                if (data.active && data.text) {
+                    marqueeText.innerText = data.text;
+                    marqueeBox.classList.remove('hidden');
+                } else {
+                    marqueeBox.classList.add('hidden');
+                }
+            } else if (marqueeBox) {
+                marqueeBox.classList.add('hidden');
+            }
+        });
+
         window.markNoticeAsSeen = async function(noticeId) {
             if (!window.currentStudent || !window.currentStudent.enrollment) return;
             try {
@@ -602,7 +607,6 @@
             }
         }
 
-        // Zirlai Log In fel hnuah Notice a lo la seen loh ho check a seen anga record na
         window.checkAndMarkNotices = function() {
             if (!window.currentStudent || !window.currentStudent.enrollment) return;
             allNotices.forEach(n => {
@@ -733,7 +737,6 @@
             window.scrollTo(0, 0);
         }
 
-        // ================= HOLIDAY FETCH LOGIC =================
         onSnapshot(query(collection(db, "holidays"), orderBy("date", "desc")), (snapshot) => {
             holidayList = [];
             snapshot.forEach(docSnap => {
@@ -750,7 +753,6 @@
             const isSunday = todayObj.getDay() === 0;
             const todayStr = todayObj.toISOString().split('T')[0];
 
-            // SUNDAY CHECK FOR WIDGET
             if (isSunday) {
                 container.innerHTML = `<div style="font-weight: bold; animation: pulse 2s infinite; color: #dc2626;">🔴 Vawiin Pathianni</div><div style="font-size: 11px; color: #be123c; margin-top: 2px;">Class a awm lo</div>`;
                 return;
@@ -857,7 +859,6 @@
             }
         });
 
-        // ================= MCQ RENDER & GROUPING LOGIC =================
         onSnapshot(query(collection(db, "mcq_tests"), orderBy("createdAt", "desc")), (snapshot) => {
             mcqTests = []; 
             latestMcqTime = 0;
@@ -1183,8 +1184,6 @@
             }
         }
 
-        // ================= LEAVE BALANCE & MULTI-DAY LEAVE LOGIC =================
-
         window.updateLeaveBalance = async function() {
             if (!window.currentStudent || !window.currentStudent.enrollment) return;
             const enrollment = window.currentStudent.enrollment;
@@ -1273,14 +1272,10 @@
                 let isoDate = d.toISOString().split('T')[0];
                 let dayOfWeek = d.getDay(); 
                 
-                if (dayOfWeek === 0) {
-                    return; 
-                }
+                if (dayOfWeek === 0) return; 
                 
                 const isHoliday = holidayList.find(h => h.date === isoDate);
-                if (isHoliday) {
-                    return; 
-                }
+                if (isHoliday) return; 
 
                 if (myShift === 'Saturday shift' && dayOfWeek !== 6) {
                     invalidMsgs.add("Saturday shift i nih avangin Inrinni (Saturday)-ah chauh chawlh i dil thei.");
@@ -1409,12 +1404,11 @@
             } catch (error) { alert("Harsatna: " + error.message); } 
         }
 
-        // ================= NOTICE RENDER LOGIC =================
         onSnapshot(query(collection(db, "notices"), orderBy("createdAt", "desc")), (snapshot) => {
             const studentList = document.getElementById('student-notice-list');
             if (studentList) studentList.innerHTML = '';
             latestNoticeTime = 0;
-            allNotices = []; // Reset notice array
+            allNotices = [];
 
             if (snapshot.empty) { 
                 if (studentList) studentList.innerHTML = '<p style="opacity: 0.7;">Notice a la awm rih lo...</p>'; 
@@ -1423,7 +1417,6 @@
                     const data = docSnap.data(); 
                     const noticeId = docSnap.id; 
                     
-                    // Notice kan khawlkhawm ang
                     allNotices.push({ id: noticeId, ...data });
 
                     let commentsHTML = '';
@@ -1447,7 +1440,6 @@
             }
             checkNotifications();
 
-            // Notice in load thar reng rengah, zirlai a log in tawh a nih chuan Auto Seen tir tur a ni
             if (window.currentStudent && window.currentStudent.enrollment) {
                 setTimeout(() => {
                     checkAndMarkNotices();
@@ -1528,7 +1520,6 @@
                             window.currentStudent.name = d.data().name;
                             window.currentStudent.shift = d.data().shift || '10am shift';
                             window.currentStudent.coins = d.data().coins || 0;
-                            // THLAK DANGLAM: Admin in photoUrl a lo set chuan kan la chhuak
                             window.currentStudent.photoUrl = d.data().photoUrl || '';
                         }
                     });
@@ -1548,13 +1539,11 @@
                         const welcomeEl = document.getElementById('student-welcome-title');
                         if (welcomeEl) welcomeEl.innerText = `Zirlai Portal - ${window.currentStudent.name}`;
                         
-                        // THLAK DANGLAM: Profile Picture hman tur set-na
                         const profilePhotoEl = document.getElementById('student-profile-photo');
                         if (profilePhotoEl) {
                             if (window.currentStudent.photoUrl) {
                                 profilePhotoEl.src = window.currentStudent.photoUrl;
                             } else {
-                                // Default profile icon a awm sa chu a la hmang ang
                                 profilePhotoEl.src = 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
                             }
                         }
@@ -1590,7 +1579,6 @@
                         loadAIChatHistory();
                         renderHolidays(); 
 
-                        // TAH HIAN LOG IN FEL VELEH A EN LOH NOTICE ZAWNG ZAWNG SEEN TIRA SET A NI.
                         setTimeout(() => {
                             checkAndMarkNotices();
                         }, 2000);
