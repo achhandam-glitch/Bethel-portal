@@ -1064,7 +1064,7 @@
     <button class="dark-mode-toggle-btn" id="darkModeBtn" onclick="toggleDarkMode()" title="Thim/Eng Thlakna">🌙</button>
 
     <!-- ID CARD TEMPLATE (Hmuh theih loh, PDF atana hman tur) -->
-    <div id="id-card-container" class="hidden" style="position: absolute; left: -9999px; top: 0;">
+    <div id="id-card-container" class="hidden" style="position: absolute; top: 0; left: 0; z-index: -9999;">
         <div id="id-card-front" style="width: 325px; height: 204px; background: white; padding: 12px; box-sizing: border-box; font-family: 'Times New Roman', Times, serif; position: relative;">
             <div style="text-align: center; margin-bottom: 5px;">
                 <h4 style="margin: 0; color: #0f172a; font-size: 15px; font-weight: 900; letter-spacing: 0.5px;">BETHEL COMPUTER CENTRE</h4>
@@ -1407,7 +1407,7 @@
                                 <ul style="font-size:13px; color:#475569; margin-left:15px; margin-bottom:10px;">
                                     <li>A. ${d.optA} ${d.optAImg ? '🖼️' : ''}</li>
                                     <li>B. ${d.optB} ${d.optBImg ? '🖼️' : ''}</li>
-                                    <li>C. ${d.optC} ${d.optCImg ? '🖼️' : ''}</li>
+                                    <li>C. ${d.optC} ${d.optCImg ? '🖼️️' : ''}</li>
                                     <li>D. ${d.optD} ${d.optDImg ? '🖼️' : ''}</li>
                                 </ul>
                                 <span style="font-size:13px; background:#dcfce7; color:#166534; padding:3px 8px; border-radius:4px;">Dik: <b>${d.answer}</b></span>
@@ -2605,7 +2605,7 @@
             const student = allStudentsList.find(s => s.enrollment === enrollment);
             if(!student) { alert("Zirlai hmuh a ni lo!"); return; }
 
-            // Address leh Phone Number hi database ah a awm loh avangin Popup hmangin kan dil ang
+            // Address leh Phone Number dilna
             let address = prompt(`${student.name} Address (Veng) chhu rawh:\n(I duh chuan a ruakin i kalsan thei)`, "Chanmari I, Lunglei");
             let phone = prompt(`${student.name} Phone Number chhu rawh:\n(I duh chuan a ruakin i kalsan thei)`, "");
 
@@ -2617,29 +2617,46 @@
             document.getElementById('id-address').innerText = address || '';
             document.getElementById('id-phone').innerText = phone || '';
             
-            // Photo diktak emaw a lem (placeholder) dahna
+            // Photo dahna (CORS proxy thun telin)
+            const imgEl = document.getElementById('id-photo');
             let finalPhoto = student.photoUrl || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
-            document.getElementById('id-photo').src = finalPhoto;
+            imgEl.crossOrigin = "Anonymous";
+            imgEl.src = finalPhoto;
 
-            // PDF siam tura tarlan lawkna (hmuh theih lohin)
             const element = document.getElementById('id-card-front');
             const container = document.getElementById('id-card-container');
+            
+            // 1. Box hi lang theih in kan siam phawt ang (z-index vangin page hnungah a awm ang)
             container.classList.remove('hidden');
+
+            // 2. Thlalak a in-load zawh hun kan nghak lawk ang a, tin Browser-in a paint hman nan hun kan pe bawk ang (Half second delay)
+            await new Promise((resolve) => {
+                if (imgEl.complete) {
+                    setTimeout(resolve, 500); 
+                } else {
+                    imgEl.onload = () => setTimeout(resolve, 500);
+                    imgEl.onerror = () => setTimeout(resolve, 500);
+                }
+            });
 
             // ID card size tak tak (86mm x 54mm) in PDF a generate ang
             const opt = {
                 margin:       0,
                 filename:     `${student.enrollment}_ID_Card.pdf`,
                 image:        { type: 'jpeg', quality: 1 },
-                html2canvas:  { scale: 4, useCORS: true }, 
+                html2canvas:  { scale: 4, useCORS: true, allowTaint: true }, 
                 jsPDF:        { unit: 'mm', format: [86, 54], orientation: 'landscape' }
             };
 
-            // PDF Download na
-            await html2pdf().set(opt).from(element).save();
-
-            // A zawh ah a thukru leh ang
-            container.classList.add('hidden');
+            // 3. PDF kan siam ang
+            try {
+                await html2pdf().set(opt).from(element).save();
+            } catch(e) {
+                alert("PDF siam theih a ni lo: " + e.message);
+            } finally {
+                // 4. A zawhah kan thukru leh ang
+                container.classList.add('hidden');
+            }
         };
     </script>
 </body>
