@@ -1222,7 +1222,7 @@
                 <!-- Rotate container (Absolute Position) -->
                 <div style="position: absolute; width: 204px; height: 325px; top: 204px; left: 0; transform-origin: top left; transform: rotate(-90deg); display: flex; flex-direction: column; padding: 12px; box-sizing: border-box;">
                     
-                    <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 8px; color: #333;">
+                    <div id="id-fee-display" style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 8px; color: #333;">
                         Course Fee : ₹.12000
                     </div>
                     
@@ -1600,10 +1600,14 @@
         window.onFeeStudentSelect = function() {
             const enrollment = document.getElementById('fee-student-select').value;
             if(!enrollment) return;
+            
+            const student = allStudentsList.find(s => s.enrollment === enrollment);
+            let defaultFee = (student && student.course === 'DCA II Semester') ? 15000 : 12000;
+
             if(feeDataMap[enrollment] && feeDataMap[enrollment].totalFee) {
                 document.getElementById('fee-total-amount').value = feeDataMap[enrollment].totalFee;
             } else {
-                document.getElementById('fee-total-amount').value = 12000;
+                document.getElementById('fee-total-amount').value = defaultFee;
             }
         }
 
@@ -1689,10 +1693,13 @@
 
             allStudentsList.forEach(s => {
                 const feeRecord = feeDataMap[s.enrollment];
-                let totalFee = 12000; let totalPaid = 0; let historyStr = '<span style="color:gray; font-size:12px;">A la pe lo</span>';
+                let defaultTotalFee = (s.course === 'DCA II Semester') ? 15000 : 12000;
+                let totalFee = defaultTotalFee; 
+                let totalPaid = 0; 
+                let historyStr = '<span style="color:gray; font-size:12px;">A la pe lo</span>';
                 
                 if(feeRecord) {
-                    totalFee = feeRecord.totalFee || 12000;
+                    totalFee = feeRecord.totalFee || defaultTotalFee;
                     if(feeRecord.payments && feeRecord.payments.length > 0) {
                         totalPaid = feeRecord.payments.reduce((sum, p) => sum + parseFloat(p.amount), 0);
                         historyStr = feeRecord.payments.map((p, idx) => `
@@ -1715,7 +1722,10 @@
             let exportData = [];
             allStudentsList.forEach(s => {
                 const f = feeDataMap[s.enrollment];
-                let totalFee = f ? (f.totalFee || 12000) : 12000; let cashPaid = 0, gpayPaid = 0; let histArr = [];
+                let defaultTotalFee = (s.course === 'DCA II Semester') ? 15000 : 12000;
+                let totalFee = f ? (f.totalFee || defaultTotalFee) : defaultTotalFee; 
+                let cashPaid = 0, gpayPaid = 0; 
+                let histArr = [];
                 
                 if(f && f.payments) {
                     f.payments.forEach(p => {
@@ -2822,6 +2832,10 @@
             // Course hming Auto-fetch na
             const courseText = student.course === 'DCA II Semester' ? 'DCA II Sem' : 'DCA I Sem';
             document.getElementById('id-course').textContent = courseText;
+
+            // Course Fee Update na
+            const courseFee = student.course === 'DCA II Semester' ? '15000' : '12000';
+            document.getElementById('id-fee-display').textContent = `Course Fee : ₹.${courseFee}`;
 
             // ================= THEME THLAKNA (DCA I vs DCA II) =================
             const frontCard = document.getElementById('id-card-front');
