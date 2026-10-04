@@ -2810,17 +2810,13 @@
             const student = allStudentsList.find(s => s.enrollment === enrollment);
             if(!student) { alert("Zirlai hmuh a ni lo!"); return; }
 
-            // Address leh Phone Number dilna
-            let address = prompt(`${student.name} Address (Veng) chhu rawh:\n(I duh chuan a ruakin i kalsan thei)`, "Chanmari I, Lunglei");
-            let phone = prompt(`${student.name} Phone Number chhu rawh:\n(I duh chuan a ruakin i kalsan thei)`, "");
-
-            // ID Card Template a data thunluhna (textContent hman a ni)
+            // ID Card Template a data thunluhna (Database ami hman nghal a ni)
             let timing = student.shift ? student.shift.replace(' shift', '').replace('Saturday (O)', 'Sat-O') : '';
             document.getElementById('id-timing').textContent = timing;
             document.getElementById('id-enroll').textContent = student.enrollment;
             document.getElementById('id-name').textContent = student.name;
-            document.getElementById('id-address').textContent = address || '';
-            document.getElementById('id-phone').textContent = phone || '';
+            document.getElementById('id-address').textContent = student.address || '';
+            document.getElementById('id-phone').textContent = student.phone || '';
             
             // Container unhide hmasak phawt tur (DOM a update theih nan)
             const container = document.getElementById('id-card-container');
