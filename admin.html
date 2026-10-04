@@ -743,7 +743,7 @@
 
                 <!-- TAB 5: LINK SEMCHHUAHNA -->
                 <div id="tab-links" class="admin-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️️ Menu-a let lehna</button></div>
                     <div class="form-grid" style="grid-template-columns: 1fr;">
                         <div class="card">
                             <h3>Link Sem Chhuahna</h3>
@@ -778,7 +778,7 @@
                 
                 <!-- TAB ONLINE SHIFT BIK -->
                 <div id="tab-online" class="admin-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️️ Menu-a let lehna</button></div>
                     
                     <div class="card" style="border: 2px solid #3b82f6; margin-bottom: 20px; padding: 20px;">
                         <h3 style="color: #1d4ed8; border-bottom: 1px solid #bfdbfe; padding-bottom: 10px; margin-bottom: 15px;">👥 Saturday (O) Zirlaite</h3>
@@ -1064,7 +1064,7 @@
     <button class="dark-mode-toggle-btn" id="darkModeBtn" onclick="toggleDarkMode()" title="Thim/Eng Thlakna">🌙</button>
 
     <!-- ID CARD TEMPLATE (Hmuh theih loh, PDF atana hman tur) -->
-    <div id="id-card-container" class="hidden" style="position: absolute; top: 0; left: 0; z-index: -9999;">
+    <div id="id-card-container" class="hidden" style="position: fixed; top: 0; left: 0; z-index: -9999; background: white;">
         <div id="id-card-front" style="width: 325px; height: 204px; background: white; padding: 12px; box-sizing: border-box; font-family: 'Times New Roman', Times, serif; position: relative;">
             <div style="text-align: center; margin-bottom: 5px;">
                 <h4 style="margin: 0; color: #0f172a; font-size: 15px; font-weight: 900; letter-spacing: 0.5px;">BETHEL COMPUTER CENTRE</h4>
@@ -1407,7 +1407,7 @@
                                 <ul style="font-size:13px; color:#475569; margin-left:15px; margin-bottom:10px;">
                                     <li>A. ${d.optA} ${d.optAImg ? '🖼️' : ''}</li>
                                     <li>B. ${d.optB} ${d.optBImg ? '🖼️' : ''}</li>
-                                    <li>C. ${d.optC} ${d.optCImg ? '🖼️️' : ''}</li>
+                                    <li>C. ${d.optC} ${d.optCImg ? '🖼' : ''}</li>
                                     <li>D. ${d.optD} ${d.optDImg ? '🖼️' : ''}</li>
                                 </ul>
                                 <span style="font-size:13px; background:#dcfce7; color:#166534; padding:3px 8px; border-radius:4px;">Dik: <b>${d.answer}</b></span>
@@ -2626,10 +2626,9 @@
             const element = document.getElementById('id-card-front');
             const container = document.getElementById('id-card-container');
             
-            // 1. Box hi lang theih in kan siam phawt ang (z-index vangin page hnungah a awm ang)
             container.classList.remove('hidden');
 
-            // 2. Thlalak a in-load zawh hun kan nghak lawk ang a, tin Browser-in a paint hman nan hun kan pe bawk ang (Half second delay)
+            // Thlalak a in-load zawh hun nghah lawkna
             await new Promise((resolve) => {
                 if (imgEl.complete) {
                     setTimeout(resolve, 500); 
@@ -2639,22 +2638,22 @@
                 }
             });
 
-            // ID card size tak tak (86mm x 54mm) in PDF a generate ang
+            // html2canvas settings-ah scrollY: 0 leh scrollX: 0 kan dah tel (A blank tawh loh nan)
             const opt = {
                 margin:       0,
                 filename:     `${student.enrollment}_ID_Card.pdf`,
                 image:        { type: 'jpeg', quality: 1 },
-                html2canvas:  { scale: 4, useCORS: true, allowTaint: true }, 
+                html2canvas:  { scale: 4, useCORS: true, allowTaint: true, scrollY: 0, scrollX: 0 }, 
                 jsPDF:        { unit: 'mm', format: [86, 54], orientation: 'landscape' }
             };
 
-            // 3. PDF kan siam ang
+            // PDF Download na
             try {
                 await html2pdf().set(opt).from(element).save();
             } catch(e) {
                 alert("PDF siam theih a ni lo: " + e.message);
             } finally {
-                // 4. A zawhah kan thukru leh ang
+                // A zawhah a thukru leh ang
                 container.classList.add('hidden');
             }
         };
