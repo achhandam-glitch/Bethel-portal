@@ -1050,7 +1050,7 @@
 
                 <!-- TAB 7: ZIRLAI MANAGEMENT -->
                 <div id="tab-management" class="admin-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️️ Menu-a let lehna</button></div>
                     <div class="card" style="margin-bottom: 0;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                             <h3 style="margin: 0; border: none; padding: 0;">Zirlai List & Management</h3>
@@ -1273,7 +1273,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "6.10"; // Version updated
+        const APP_VERSION = "6.11"; // Version updated
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -2231,7 +2231,6 @@
                         ${data.status === 'Pending' ? `
                             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                                 <button class="btn btn-success" style="padding: 6px 12px; font-size:12px; margin:0; width: auto;" onclick="approveLeaveStatus('${data.id}', '${data.enrollment}', '${sDate}', '${eDate}')">Pawm (Approve)</button>
-                                <button class="btn btn-danger" style="padding: 6px 12px; font-size:12px; margin:0; width: auto;" onclick="rejectLeaveStatus('${data.id}', '${data.enrollment}', '${sDate}', '${eDate}')">Hnial (Reject)</button>
                             </div>
                         ` : ''}
                     </div>`;
@@ -2255,34 +2254,22 @@
                 
                 let currDate = new Date(startDate); let lastDate = new Date(endDate); let studentName = allStudentsList.find(s => s.enrollment === enrollment)?.name || '';
                 let promises = [];
+                
                 while (currDate <= lastDate) {
-                    let dStr = currDate.toISOString().split('T')[0]; let isSaturday = currDate.getDay() === 6; let pts = isSaturday ? 2.5 : 0.5;
-                    promises.push(setDoc(doc(db, "attendance", `${dStr}_${enrollment}`), { date: dStr, enrollment: enrollment, name: studentName, status: 'Reported', points: pts, timestamp: serverTimestamp() }));
+                    let dStr = currDate.toISOString().split('T')[0]; 
+                    let isSunday = currDate.getDay() === 0;
+                    let isHoliday = holidayList.find(h => h.date === dStr);
+                    
+                    if (!isSunday && !isHoliday) {
+                        let isSaturday = currDate.getDay() === 6; let pts = isSaturday ? 2.5 : 0.5;
+                        promises.push(setDoc(doc(db, "attendance", `${dStr}_${enrollment}`), { date: dStr, enrollment: enrollment, name: studentName, status: 'Reported', points: pts, timestamp: serverTimestamp() }));
+                    }
                     currDate.setDate(currDate.getDate() + 1);
                 }
-                await Promise.all(promises); loadAttendanceForDate(); alert("Chawlh hlawhtling taka pawm a ni e! Attendance-ah 'Reported' tia dah a ni ta.");
+                
+                await Promise.all(promises); loadAttendanceForDate(); 
+                alert("Chawlh hlawhtling taka pawm a ni e! (Sunday leh Holiday a awm chuan attendance points pek tel a ni lo ang).");
             } catch(error) { alert("Harsatna: " + error.message); }
-        }
-
-        window.rejectLeaveStatus = async function(leaveId, enrollment, startDate, endDate) {
-            let reason = prompt("Hnial anih chhan (Entirnan: Attendance a tlahniam dawn a, class kal ngei tur a ni):", "Attendance a pawimawh avangin chawlh approve a rem lo.");
-            if (reason !== null) {
-                try {
-                    const q = query(collection(db, "leave_requests"), where("enrollment", "==", enrollment), where("status", "==", "Pending"));
-                    const querySnapshot = await getDocs(q);
-                    let updatePromises = [];
-                    querySnapshot.forEach((docSnap) => {
-                        let d = docSnap.data();
-                        if((d.startDate || d.date) === startDate && (d.endDate || d.date) === endDate) {
-                            updatePromises.push(updateDoc(docSnap.ref, { status: 'Rejected', rejectReason: reason.trim() }));
-                        }
-                    });
-                    
-                    if(updatePromises.length > 0) { await Promise.all(updatePromises); } 
-                    else { await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Rejected', rejectReason: reason.trim() }); }
-                    alert("Chawlh dilna chu hnial (reject) a ni e.");
-                } catch(error) { alert("Harsatna: " + error.message); }
-            }
         }
 
         window.exportLeaveToExcel = async function() { try { const querySnapshot = await getDocs(collection(db, "leave_requests")); let leaveData = []; querySnapshot.forEach((doc) => { let d = doc.data(); leaveData.push({ "Enrollment No": d.enrollment, "Zirlai Hming": d.studentName, "Chawlh Ni": d.date, "Chhan": d.reason, "Status": d.status === 'Approved' ? 'Pawm a ni' : d.status === 'Rejected' ? 'Hnial a ni' : 'Nghak mek', "Hnial Chhan": d.rejectReason || '' }); }); if(leaveData.length === 0) { alert("Record a la awm lo."); return; } let worksheet = XLSX.utils.json_to_sheet(leaveData); let workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Chawlh_Report"); XLSX.writeFile(workbook, "Bethel_Zirlai_Chawlh.xlsx"); } catch (error) { alert("Harsatna: " + error.message); } }
@@ -2566,7 +2553,7 @@
                             <td>${s.dob}</td>
                             <td>
                                 <span class="badge-shift">${studentShift}</span> 
-                                <button style="background:none; border:none; color:#0284c7; cursor:pointer; font-size:12px; margin-left:5px;" onclick="openEditStudentModal('${s.enrollment}')">✏️ Edit</button>
+                                <button style="background:none; border:none; color:#0284c7; cursor:pointer; font-size:12px; margin-left:5px;" onclick="openEditStudentModal('${s.enrollment}')">✏️️ Edit</button>
                             </td>
                             <td style="font-weight:bold; color:#7e22ce;">${totalPts} pts</td>
                             <td style="text-align: center; font-weight:bold; color:#a16207; font-size:15px;">${studentCoins}</td>
