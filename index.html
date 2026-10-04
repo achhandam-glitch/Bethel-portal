@@ -312,7 +312,7 @@
                         <div class="sticky-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding: 15px 20px; position: sticky; top: 0; background: #ffffff; z-index: 10; border-radius: 12px 12px 0 0;">
                             <div><h3 style="margin: 0; color: #0284c7; border: none; padding: 0;" id="bulk-quiz-title-display">Test Title</h3></div>
                             <div style="background: #ef4444; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
-                                ⏱️️ <span id="quiz-timer-display">00:00</span>
+                                ⏱ <span id="quiz-timer-display">00:00</span>
                             </div>
                         </div>
                         <div id="bulk-questions-list" style="padding: 20px;"></div>
@@ -501,7 +501,7 @@
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
-            document.getElementById('theme-toggle').innerText = isDark ? '☀️️' : '🌙';
+            document.getElementById('theme-toggle').innerText = isDark ? '☀' : '🌙';
             localStorage.setItem('bcc_theme', isDark ? 'dark' : 'light');
         }
         
@@ -1272,10 +1272,16 @@
                 let isoDate = d.toISOString().split('T')[0];
                 let dayOfWeek = d.getDay(); 
                 
-                if (dayOfWeek === 0) return; 
+                if (dayOfWeek === 0) {
+                    invalidMsgs.add("Pathianni (Sunday) ah attendance lak a nih loh avangin chawlh a dil theih loh.");
+                    return; 
+                }
                 
                 const isHoliday = holidayList.find(h => h.date === isoDate);
-                if (isHoliday) return; 
+                if (isHoliday) {
+                    invalidMsgs.add(`Sorkar chawlh/Holiday (${isHoliday.name}) ah attendance lak a nih loh avangin chawlh a dil theih loh.`);
+                    return;
+                }
 
                 if (myShift === 'Saturday shift' && dayOfWeek !== 6) {
                     invalidMsgs.add("Saturday shift i nih avangin Inrinni (Saturday)-ah chauh chawlh i dil thei.");
@@ -1291,7 +1297,7 @@
             });
 
             if (validDates.length === 0) {
-                let msg = "I ni thlan chhungah hian chawlh dil theih ni a awm lo (Sorkar chawlh / Pathianni / Shift mil lo a ni thei).";
+                let msg = "I ni thlan chhungah hian chawlh dil theih ni a awm lo.";
                 if (invalidMsgs.size > 0) msg += "\n" + Array.from(invalidMsgs).join("\n");
                 alert(msg);
                 return;
