@@ -279,7 +279,7 @@
                 
                 <!-- TAB: MCQ ADMIN -->
                 <div id="tab-mcq" class="admin-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️️ Menu-a let lehna</button></div>
                     
                     <div class="card" style="border: 2px solid #eab308; padding: 20px; margin-bottom: 20px;">
                         <h3 style="color: #a16207; border-bottom: 1px solid #fde047;">🏆 Zirlaite Coin Neih Zat (Top 10 Leaderboard)</h3>
@@ -743,7 +743,7 @@
 
                 <!-- TAB 5: LINK SEMCHHUAHNA -->
                 <div id="tab-links" class="admin-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️️ Menu-a let lehna</button></div>
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅ Menu-a let lehna</button></div>
                     <div class="form-grid" style="grid-template-columns: 1fr;">
                         <div class="card">
                             <h3>Link Sem Chhuahna</h3>
@@ -778,7 +778,7 @@
                 
                 <!-- TAB ONLINE SHIFT BIK -->
                 <div id="tab-online" class="admin-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️️ Menu-a let lehna</button></div>
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅ Menu-a let lehna</button></div>
                     
                     <div class="card" style="border: 2px solid #3b82f6; margin-bottom: 20px; padding: 20px;">
                         <h3 style="color: #1d4ed8; border-bottom: 1px solid #bfdbfe; padding-bottom: 10px; margin-bottom: 15px;">👥 Saturday (O) Zirlaite</h3>
@@ -1063,33 +1063,71 @@
     <!-- Floating Dark Mode Toggle -->
     <button class="dark-mode-toggle-btn" id="darkModeBtn" onclick="toggleDarkMode()" title="Thim/Eng Thlakna">🌙</button>
 
-    <!-- ID CARD TEMPLATE (Hmuh theih loh, PDF atana hman tur) -->
+    <!-- ID CARD COMBINED (Front + Back) TEMPLATE (Hmuh theih loh, PDF atana hman tur) -->
     <div id="id-card-container" class="hidden" style="position: fixed; top: 0; left: 0; z-index: -9999; background: white;">
-        <div id="id-card-front" style="width: 325px; height: 204px; background: white; padding: 12px; box-sizing: border-box; font-family: 'Times New Roman', Times, serif; position: relative;">
-            <div style="text-align: center; margin-bottom: 5px;">
-                <h4 style="margin: 0; color: #0f172a; font-size: 15px; font-weight: 900; letter-spacing: 0.5px;">BETHEL COMPUTER CENTRE</h4>
-                <p style="margin: 0; font-size: 12px; font-weight: bold; color: #333;">Venglai : Lunglei</p>
-                <p style="margin: 0; font-size: 11px; color: #dc2626; font-weight: bold;">Recognised by Govt. of Mizoram</p>
-                <p style="margin: 0; font-size: 11px; color: #dc2626; font-weight: bold;">Regn.No CCA/MSCTE/2013/14</p>
-            </div>
-            <div style="background: #3b82f6; color: white; text-align: center; font-size: 12px; font-weight: bold; padding: 4px 0; margin-bottom: 10px;">
-                Student I.D. Card
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 11px;">
-                <div style="flex: 1; line-height: 1.7; font-weight: bold; color: #1e293b;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>Course <span style="margin-left: 8px;">: <u style="color:#1e40af;">DCA I Sem</u></span></span>
-                        <span style="margin-right: 5px;">Timing : <u id="id-timing" style="color:#1e40af;"></u></span>
+        <div id="id-card-combined" style="display: flex; width: 650px; height: 204px; background: white; border: 1px solid #ccc;">
+            
+            <!-- FRONT SIDE -->
+            <div id="id-card-front" style="width: 325px; height: 204px; background: white; padding: 12px; box-sizing: border-box; font-family: 'Times New Roman', Times, serif; position: relative; border-right: 1px dashed #94a3b8;">
+                <div style="text-align: center; margin-bottom: 5px;">
+                    <h4 style="margin: 0; color: #0f172a; font-size: 15px; font-weight: 900; letter-spacing: 0.5px;">BETHEL COMPUTER CENTRE</h4>
+                    <p style="margin: 0; font-size: 12px; font-weight: bold; color: #333;">Venglai : Lunglei</p>
+                    <p style="margin: 0; font-size: 11px; color: #dc2626; font-weight: bold;">Recognised by Govt. of Mizoram</p>
+                    <p style="margin: 0; font-size: 11px; color: #dc2626; font-weight: bold;">Regn.No CCA/MSCTE/2013/14</p>
+                </div>
+                <div style="background: #3b82f6; color: white; text-align: center; font-size: 12px; font-weight: bold; padding: 4px 0; margin-bottom: 10px;">
+                    Student I.D. Card
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                    <div style="flex: 1; line-height: 1.7; font-weight: bold; color: #1e293b;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Course <span style="margin-left: 8px;">: <u style="color:#1e40af;">DCA I Sem</u></span></span>
+                            <span style="margin-right: 5px;">Timing : <u id="id-timing" style="color:#1e40af;"></u></span>
+                        </div>
+                        <div>Enroll No <span style="margin-left: 2px;">: <u id="id-enroll"></u></span></div>
+                        <div>Name <span style="margin-left: 14px;">: <u id="id-name"></u></span></div>
+                        <div>Address <span style="margin-left: 5px;">: <u id="id-address"></u></span></div>
+                        <div>Phone No <span style="margin-left: 0px;">: <u id="id-phone"></u></span></div>
                     </div>
-                    <div>Enroll No <span style="margin-left: 2px;">: <u id="id-enroll"></u></span></div>
-                    <div>Name <span style="margin-left: 14px;">: <u id="id-name"></u></span></div>
-                    <div>Address <span style="margin-left: 5px;">: <u id="id-address"></u></span></div>
-                    <div>Phone No <span style="margin-left: 0px;">: <u id="id-phone"></u></span></div>
-                </div>
-                <div style="width: 65px; height: 75px; border: 1px solid #94a3b8; margin-left: 5px; background: #f1f5f9;">
-                    <img id="id-photo" src="" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div style="width: 65px; height: 75px; border: 1px solid #94a3b8; margin-left: 5px; background: #f1f5f9;">
+                        <img id="id-photo" src="" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
                 </div>
             </div>
+
+            <!-- BACK SIDE -->
+            <div id="id-card-back" style="width: 325px; height: 204px; background: white; padding: 12px; box-sizing: border-box; font-family: 'Times New Roman', Times, serif; display: flex;">
+                <!-- Left vertical text -->
+                <div style="writing-mode: vertical-rl; transform: rotate(180deg); font-weight: bold; font-size: 13px; text-align: center; border-right: 1px solid #000; padding-left: 5px;">
+                    Course Fee : ₹.12000
+                </div>
+                <!-- Table -->
+                <div style="flex: 1; padding: 0 5px;">
+                    <table style="width: 100%; height: 100%; border-collapse: collapse; font-size: 11px; text-align: center; margin: 0;">
+                        <tr>
+                            <th style="border: 1px solid #000; padding: 2px;">Inst</th>
+                            <th style="border: 1px solid #000; padding: 2px;">Amount</th>
+                            <th style="border: 1px solid #000; padding: 2px;">Sign</th>
+                        </tr>
+                        <tr><td style="border: 1px solid #000; font-weight:bold;">1<sup style="font-size:8px;">st</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
+                        <tr><td style="border: 1px solid #000; font-weight:bold;">2<sup style="font-size:8px;">nd</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
+                        <tr><td style="border: 1px solid #000; font-weight:bold;">3<sup style="font-size:8px;">rd</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
+                        <tr><td style="border: 1px solid #000; font-weight:bold;">4<sup style="font-size:8px;">th</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
+                        <tr><td style="border: 1px solid #000; font-weight:bold;">5<sup style="font-size:8px;">th</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
+                        <tr><td style="border: 1px solid #000; font-weight:bold;">6<sup style="font-size:8px;">th</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
+                    </table>
+                </div>
+                <!-- Right QR Section -->
+                <div style="width: 65px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; border-left: 1px solid #000; padding-left: 5px;">
+                    <!-- Bethel UPI ah pawisa thehluh theihna QR Code -->
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=bethelcomputer@upi" style="width: 55px; height: 55px; border: 1px solid #ccc;">
+                    <div style="writing-mode: vertical-rl; transform: rotate(180deg); font-size: 10px; margin-top: 5px; color: #333;">
+                        Fee hi Gpay duh tan
+                    </div>
+                    <div style="font-weight: 900; font-size: 14px; font-style: italic; color: #16a34a; letter-spacing: 1px;">UPI</div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -2623,7 +2661,8 @@
             imgEl.crossOrigin = "Anonymous";
             imgEl.src = finalPhoto;
 
-            const element = document.getElementById('id-card-front');
+            // Combined Layout element thlanna
+            const element = document.getElementById('id-card-combined');
             const container = document.getElementById('id-card-container');
             
             container.classList.remove('hidden');
@@ -2638,13 +2677,13 @@
                 }
             });
 
-            // html2canvas settings-ah scrollY: 0 leh scrollX: 0 kan dah tel (A blank tawh loh nan)
+            // html2canvas settings - A4 portrait in kan thlak
             const opt = {
-                margin:       0,
+                margin:       10, // A paper sirah margin tlem a awm ang
                 filename:     `${student.enrollment}_ID_Card.pdf`,
                 image:        { type: 'jpeg', quality: 1 },
                 html2canvas:  { scale: 4, useCORS: true, allowTaint: true, scrollY: 0, scrollX: 0 }, 
-                jsPDF:        { unit: 'mm', format: [86, 54], orientation: 'landscape' }
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             // PDF Download na
