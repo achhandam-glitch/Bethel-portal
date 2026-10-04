@@ -180,11 +180,17 @@
         </div>
     </div>
 
-    <!-- SHIFT EDIT MODAL -->
+    <!-- SHIFT LEH PROFILE EDIT MODAL -->
     <div id="shift-edit-modal" class="modal-overlay hidden">
         <div class="card" style="width: 100%; max-width: 400px; margin: 0;">
-            <h3 style="color: #0284c7; border-color: #bae6fd;">Zirlai Shift Thlakna</h3>
+            <h3 style="color: #0284c7; border-color: #bae6fd;">Zirlai Shift & Profile Thlakna</h3>
             <input type="hidden" id="edit-shift-enrollment">
+            
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label>Profile Thlalak Link (Google Drive)</label>
+                <input type="url" id="edit-student-photo" placeholder="https://drive.google.com/...">
+            </div>
+            
             <div class="input-group" style="margin-bottom: 20px;">
                 <label>Shift Thlang Rawh</label>
                 <select id="edit-student-shift">
@@ -375,13 +381,17 @@
                                     <option value="Flexible shift">Flexible shift</option>
                                 </select>
                             </div>
+                            <div class="input-group" style="grid-column: 1 / -1;">
+                                <label>Profile Picture (Google Drive Link) - <span style="font-weight:normal;">Optional</span></label>
+                                <input type="url" id="reg-photo" placeholder="Entirnan: https://drive.google.com/file/d/.../view">
+                            </div>
                             <button type="submit" class="btn btn-primary" style="grid-column: 1 / -1; margin-top: 5px;">Zirlai Save Rawh</button>
                         </form>
                     </div>
 
                     <div class="card" style="border: 2px solid #16a34a; margin-bottom: 0;">
                         <h3 style="color: #15803d; border-bottom: 1px solid #bbf7d0; padding-bottom: 10px;">Zirlai Register-na (Excel/CSV Upload)</h3>
-                        <p style="font-size: 14px; color: #475569; margin-bottom: 15px;">Excel file-ah Row hmasa berah (Header) hetiang hian Column hming phuah ang che: <b>Enrollment</b>, <b>Name</b>, <b>DOB</b>, <b>Shift</b>.</p>
+                        <p style="font-size: 14px; color: #475569; margin-bottom: 15px;">Excel file-ah Row hmasa berah (Header) hetiang hian Column hming phuah ang che: <b>Enrollment</b>, <b>Name</b>, <b>DOB</b>, <b>Shift</b>, <b>PhotoURL</b> (Optional).</p>
                         <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                             <input type="file" id="excel-upload" accept=".xlsx, .xls, .csv" style="flex-grow: 1; border: 1px dashed #cbd5e1; padding: 10px; border-radius: 6px;">
                             <button class="btn btn-success" style="width: auto; margin: 0; padding: 10px 20px;" onclick="uploadExcelData()">Data Thunlut Rawh</button>
@@ -676,7 +686,7 @@
 
                 <!-- TAB 4: NOTICE BOARD -->
                 <div id="tab-notice" class="admin-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️️ Menu-a let lehna</button></div>
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅ Menu-a let lehna</button></div>
                     <div class="form-grid" style="grid-template-columns: 1fr;">
                         <div class="card">
                             <h3>Notice Board Siamna</h3>
@@ -893,7 +903,7 @@
 
                 <!-- TAB 7: ZIRLAI MANAGEMENT -->
                 <div id="tab-management" class="admin-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️️ Menu-a let lehna</button></div>
                     <div class="card" style="margin-bottom: 0;">
                         <h3>Zirlai List & Management</h3>
                         <div style="overflow-x: auto;">
@@ -901,7 +911,7 @@
                                 <thead>
                                     <tr>
                                         <th>Enrollment</th>
-                                        <th>Hming</th>
+                                        <th style="min-width: 180px;">Hming & Profile</th>
                                         <th>DOB</th>
                                         <th>Shift</th>
                                         <th>Att. Points</th>
@@ -1141,7 +1151,6 @@
             }
         }
         
-        // ADMIN HOLIDAY TOGGLE FUNCTION
         window.toggleHolidayBox = function() {
             const box = document.getElementById('holiday-content-box');
             const icon = document.getElementById('holiday-toggle-icon');
@@ -1755,7 +1764,7 @@
             // HOLIDAY CHECK
             const holidayMatch = holidayList.find(h => h.date === dateStr);
             if (holidayMatch) {
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#ea580c; font-weight:bold; padding: 30px 10px;">🏖️️ Vawiin hi Sorkar Chawlh (${holidayMatch.name}) a ni a, Attendance lak theih a ni lo.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#ea580c; font-weight:bold; padding: 30px 10px;">🏖 Vawiin hi Sorkar Chawlh (${holidayMatch.name}) a ni a, Attendance lak theih a ni lo.</td></tr>`;
                 if (saveBtn) saveBtn.style.display = 'none';
                 return;
             }
@@ -1928,178 +1937,6 @@
             } catch (error) { alert("Excel export-naah harsatna: " + error.message); }
         }
 
-        // ================= GENERAL & MANAGEMENT =================
-        function renderStudentManagementTable() {
-            const tableBody = document.getElementById('student-management-body'); 
-            if(!tableBody) return; tableBody.innerHTML = '';
-            
-            if(allStudentsList.length === 0) { tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>'; } 
-            else {
-                allStudentsList.forEach((s) => {
-                    const totalPts = attendancePointsMap[s.enrollment] || 0;
-                    const studentShift = s.shift || '10am shift';
-                    const studentCoins = s.coins || 0;
-                    tableBody.innerHTML += `
-                        <tr>
-                            <td>${s.enrollment}</td>
-                            <td><b>${s.name}</b></td>
-                            <td>${s.dob}</td>
-                            <td><span class="badge-shift">${studentShift}</span> <button style="background:none; border:none; color:#0284c7; cursor:pointer; font-size:12px; margin-left:5px;" onclick="openShiftModal('${s.enrollment}', '${studentShift}')">✏️ Edit</button></td>
-                            <td style="font-weight:bold; color:#7e22ce;">${totalPts} pts</td>
-                            <td style="text-align: center; font-weight:bold; color:#a16207; font-size:15px;">${studentCoins}</td>
-                            <td style="text-align: center;">
-                                <button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Login Thawnna" onclick="shareLoginWhatsApp('${s.name}', '${s.enrollment}', '${s.dob}')">📱</button>
-                                <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteStudent('${s.enrollment}')">✕</button>
-                            </td>
-                        </tr>`;
-                });
-            }
-        }
-
-        function renderOnlineShiftStudents() {
-            const container = document.getElementById('admin-online-students-list');
-            const select = document.getElementById('sato-student-select');
-            
-            const onlineStudents = allStudentsList.filter(s => (s.shift || '10am shift') === 'Saturday (O)');
-            
-            if (container) {
-                if (onlineStudents.length === 0) {
-                    container.innerHTML = '<span style="color: gray; font-size: 14px; font-style: italic;">Saturday (O)-ah zirlai an la awm lo...</span>';
-                } else {
-                    container.innerHTML = onlineStudents.map(s => `<span class="badge-student" style="background-color: #f3e8ff; color: #6b21a8; border-color: #d8b4fe; font-size: 14px; padding: 6px 12px;">${s.name} <small style="color: #64748b; font-weight: normal; margin-left: 4px;">(${s.enrollment})</small></span>`).join('');
-                }
-            }
-            if (select) {
-                select.innerHTML = '<option value="">-- Thlang rawh --</option>';
-                onlineStudents.forEach(s => {
-                    select.innerHTML += `<option value="${s.enrollment}">${s.name} (${s.enrollment})</option>`;
-                });
-            }
-        }
-
-        window.saveSatOPoints = async function() {
-            const dateStr = document.getElementById('sato-date').value;
-            const enr = document.getElementById('sato-student-select').value;
-            const pts = parseFloat(document.getElementById('sato-points').value);
-
-            if(!dateStr || !enr || isNaN(pts)) { alert("Data kimin thun rawh."); return; }
-
-            const student = allStudentsList.find(s => s.enrollment === enr);
-            if(!student) return;
-
-            try {
-                await setDoc(doc(db, "attendance", `SATO_${dateStr}_${enr}`), {
-                    date: dateStr,
-                    enrollment: enr,
-                    name: student.name,
-                    status: 'Practical Submitted',
-                    points: pts,
-                    timestamp: serverTimestamp()
-                });
-                alert("Point save a ni e!");
-            } catch(e) {
-                alert("Harsatna: " + e.message);
-            }
-        }
-
-        window.deleteSatOPoint = async function(docId) {
-            if(confirm("He point hi paih i duh takzet em?")) {
-                try { await deleteDoc(doc(db, "attendance", docId)); } catch(e) { alert(e.message); }
-            }
-        }
-
-        onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
-            allStudentsList = []; snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
-            renderStudentManagementTable(); renderFeeTable(); loadAttendanceForDate(); renderOnlineShiftStudents(); renderAdminLeaderboard(); renderSatOPointsTable();
-            if (document.getElementById('period-start-date').value && document.getElementById('period-end-date').value) { calculatePeriodAttendance(); }
-        });
-
-        window.openShiftModal = function(enrollment, currentShift) { document.getElementById('edit-shift-enrollment').value = enrollment; document.getElementById('edit-student-shift').value = currentShift; document.getElementById('shift-edit-modal').classList.remove('hidden'); }
-        window.closeShiftModal = function() { document.getElementById('shift-edit-modal').classList.add('hidden'); }
-        window.updateStudentShift = async function() {
-            const enrollment = document.getElementById('edit-shift-enrollment').value; const newShift = document.getElementById('edit-student-shift').value;
-            try { await updateDoc(doc(db, "students", enrollment), { shift: newShift }); closeShiftModal(); alert("Zirlai shift chu hlawhtling taka thlak a ni e!"); } catch(e) { alert("Harsatna: " + e.message); }
-        }
-
-        window.registerSingleStudent = async function(event) {
-            event.preventDefault();
-            const enr = document.getElementById('reg-enrollment').value.trim(); const name = document.getElementById('reg-name').value.trim(); const dob = document.getElementById('reg-dob').value.trim(); const shift = document.getElementById('reg-shift').value;
-            if(!enr || !name || !dob) { alert("Data a kim lo!"); return; }
-            try { await setDoc(doc(db, "students", String(enr)), { enrollment: String(enr), name: String(name), dob: String(dob), shift: String(shift), coins: 0, registeredAt: serverTimestamp(), lastLoginDate: "" }); alert("Zirlai " + name + " chu hlawhtling taka register a ni e!"); event.target.reset(); } catch(e) { alert("Harsatna: " + e.message); }
-        }
-
-        window.uploadExcelData = async function() {
-            const fileInput = document.getElementById('excel-upload'); const statusDiv = document.getElementById('upload-status');
-            const file = fileInput.files[0];
-            if (!file) { alert("Excel emaw CSV file thlang phawt rawh!"); return; }
-            statusDiv.style.color = "#0369a1"; statusDiv.innerText = "Data lakluh mek a ni, khawngaihin nghak lawk rawh...";
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
-                    const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { raw: false });
-                    if (json.length === 0) { statusDiv.style.color = "red"; statusDiv.innerText = "Data a awm lo."; return; }
-                    let successCount = 0; let errorCount = 0;
-                    for (let i = 0; i < json.length; i++) {
-                        let row = json[i]; let enrollment = row.Enrollment || row.enrollment; let name = row.Name || row.name || row.Hming; let dob = row.DOB || row.dob; let shift = row.Shift || row.shift || "10am shift";
-                        if (enrollment && name && dob) {
-                            try {
-                                await setDoc(doc(db, "students", String(enrollment)), { enrollment: String(enrollment), name: String(name), dob: String(dob), shift: String(shift), coins: 0, registeredAt: serverTimestamp(), lastLoginDate: "" }, { merge: true });
-                                successCount++;
-                            } catch (err) { errorCount++; }
-                        }
-                    }
-                    statusDiv.style.color = "#15803d"; statusDiv.innerText = `✅ Tluang takin zirlai ${successCount} thunluh an ni e! (Fail: ${errorCount})`;
-                    fileInput.value = ""; setTimeout(() => { statusDiv.innerText = ""; }, 5000); 
-                } catch (error) { statusDiv.style.color = "red"; statusDiv.innerText = "Harsatna: " + error.message; }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        // ================= GRADEBOOK =================
-        window.onGradeStudentSelect = function() {
-            let enr = document.getElementById('grade-student-select').value; let infoDiv = document.getElementById('grade-student-info');
-            if(!enr) { infoDiv.innerHTML = ''; return; }
-            let stats = attendanceStats[enr];
-            if(stats && stats.days > 0) { let pct = (stats.earned / stats.possible) * 100; infoDiv.innerHTML = `📅 A class kal tawh zat: <b>Ni ${stats.days}</b> &nbsp;|&nbsp; 📊 A regular dan: <b>${pct.toFixed(1)}%</b>`; onGradeSubjectSelect(); } 
-            else { infoDiv.innerHTML = `📅 A class kal tawh zat: <b>Ni 0</b> &nbsp;|&nbsp; 📊 A regular dan: <b>0%</b>`; }
-        }
-
-        window.onGradeSubjectSelect = function() {
-            let subj = document.getElementById('grade-subject').value; let prLabel = document.getElementById('label-pr-exam'); let prInput = document.getElementById('grade-pr-exam');
-            let enr = document.getElementById('grade-student-select').value;
-            
-            if (subj === 'DCA 101' || subj === 'DCA 102') { prLabel.innerHTML = 'Practical Exam - Typing/Folder [Max 40]'; prInput.readOnly = false; prInput.style.backgroundColor = 'white'; } 
-            else if (subj === 'DCA 104') {
-                prLabel.innerHTML = 'Practical Exam - Auto (Attendance % atangin) [Max 40]';
-                if (enr && attendanceStats[enr] && attendanceStats[enr].days > 0) { let pct = (attendanceStats[enr].earned / attendanceStats[enr].possible) * 100; prInput.value = ((pct / 100) * 40).toFixed(1); } else { prInput.value = ''; }
-                prInput.style.backgroundColor = '#e0f2fe'; 
-            } else { prLabel.innerHTML = 'Practical Exam (Pangngai) [Max 40]'; prInput.readOnly = false; prInput.style.backgroundColor = 'white'; }
-        }
-
-        window.saveGrade = async function(event) {
-            event.preventDefault();
-            const enr = document.getElementById('grade-student-select').value; const subj = document.getElementById('grade-subject').value;
-            const thIa = parseFloat(document.getElementById('grade-th-ia').value) || 0; const thExam = parseFloat(document.getElementById('grade-th-exam').value) || 0;
-            const prIa = parseFloat(document.getElementById('grade-pr-ia').value) || 0; const prExam = parseFloat(document.getElementById('grade-pr-exam').value) || 0;
-
-            if(!enr) { alert("Zirlai thlang phawt rawh."); return; }
-            const totalMark = thIa + thExam + prIa + prExam; const studentName = allStudentsList.find(s => s.enrollment === enr)?.name || '';
-            try { await setDoc(doc(db, "student_grades", `${enr}_${subj}`), { enrollment: enr, name: studentName, subject: subj, theoryIA: thIa, theoryExam: thExam, practicalIA: prIa, practicalExam: prExam, totalMark: totalMark, timestamp: serverTimestamp() }); alert(`${subj} mark hlawhtling taka save a ni e!`); document.getElementById('grade-th-ia').value = ''; document.getElementById('grade-th-exam').value = ''; document.getElementById('grade-pr-ia').value = ''; document.getElementById('grade-pr-exam').value = ''; } 
-            catch(e) { alert("Save naah harsatna: " + e.message); }
-        }
-
-        onSnapshot(query(collection(db, "student_grades"), orderBy("enrollment")), (snapshot) => {
-            const tableBody = document.getElementById('grade-results-table'); if(!tableBody) return; tableBody.innerHTML = '';
-            if (snapshot.empty) { tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: gray;">Results a la awm rih lo...</td></tr>'; } 
-            else { snapshot.forEach((docSnap) => { let d = docSnap.data(); let totalColor = d.totalMark >= 40 ? '#16a34a' : '#dc2626'; tableBody.innerHTML += `<tr><td>${d.enrollment}</td><td><b>${d.name}</b></td><td style="color: #0f766e; font-weight: bold;">${d.subject}</td><td>${d.theoryIA}</td><td>${d.theoryExam}</td><td>${d.practicalIA}</td><td>${d.practicalExam}</td><td><span style="color: ${totalColor}; font-weight: bold; font-size: 15px;">${d.totalMark.toFixed(1)}</span></td></tr>`; }); }
-        });
-
-        window.exportGradesToExcel = async function() {
-            try { const querySnapshot = await getDocs(query(collection(db, "student_grades"), orderBy("enrollment"))); let resultsData = []; querySnapshot.forEach((docSnap) => { let d = docSnap.data(); resultsData.push({ "Enrollment No": d.enrollment, "Zirlai Hming": d.name, "Subject": d.subject, "Theory IA": d.theoryIA, "Theory Exam": d.theoryExam, "Practical IA": d.practicalIA, "Practical Exam": d.practicalExam, "Total Mark (100)": d.totalMark }); }); if(resultsData.length === 0) { alert("Marks a la awm lo."); return; } let worksheet = XLSX.utils.json_to_sheet(resultsData); let workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Gradebook"); XLSX.writeFile(workbook, "Bethel_Gradebook.xlsx"); } catch (error) { alert("Harsatna: " + error.message); }
-        }
-        window.clearAllGrades = async function() { if (confirm("Mark i thunluh tawh zawng zawng paih fai takzet i duh em?")) { try { const querySnapshot = await getDocs(collection(db, "student_grades")); let deletePromises = []; querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "student_grades", document.id)))); await Promise.all(deletePromises); alert("Gradebook paih fai a ni tawh e!"); } catch (error) { alert("Harsatna: " + error.message); } } }
-
         // ================= LEAVES =================
         onSnapshot(collection(db, "leave_requests"), (snapshot) => {
             const adminContainer = document.getElementById('admin-leave-list'); if(!adminContainer) return; adminContainer.innerHTML = '';
@@ -2210,7 +2047,7 @@
                     title: document.getElementById('notice-title').value, 
                     content: document.getElementById('notice-content').value, 
                     comments: [], 
-                    seenBy: [], // Array ruak kan belh thar e
+                    seenBy: [], 
                     createdAt: serverTimestamp() 
                 }); 
                 alert("I publish hlawhtling e!"); 
@@ -2405,7 +2242,7 @@
             if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">Log in record a la awm lo...</td></tr>'; return; }
 
             tbody.innerHTML = '';
-            snapshot.each = null; // safe check
+            // Safe check for the snapshot loop
             snapshot.forEach((docSnap) => {
                 let d = docSnap.data();
                 let timeStr = d.timestamp ? new Date(d.timestamp.toDate()).toLocaleString() : 'Hun hriat loh';
@@ -2459,6 +2296,240 @@
             if (document.getElementById('admin-password').value === "Bethel@123") { document.getElementById('admin-password').value = ''; showSection('teacher-dashboard-section'); } 
             else { alert("Password a dik lo!"); }
         }
+
+        // ================= GENERAL & MANAGEMENT =================
+        function renderStudentManagementTable() {
+            const tableBody = document.getElementById('student-management-body'); 
+            if(!tableBody) return; tableBody.innerHTML = '';
+            
+            if(allStudentsList.length === 0) { tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>'; } 
+            else {
+                allStudentsList.forEach((s) => {
+                    const totalPts = attendancePointsMap[s.enrollment] || 0;
+                    const studentShift = s.shift || '10am shift';
+                    const studentCoins = s.coins || 0;
+                    
+                    // THLAK DANGLAM: Zirlai thlalak leh hming
+                    let safePhoto = s.photoUrl || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+                    let nameHtml = `<div style="display:flex; align-items:center; gap:10px;"><img src="${safePhoto}" style="width:35px; height:35px; border-radius:50%; object-fit:cover; border:2px solid #e2e8f0;"> <b>${s.name}</b></div>`;
+
+                    tableBody.innerHTML += `
+                        <tr>
+                            <td>${s.enrollment}</td>
+                            <td>${nameHtml}</td>
+                            <td>${s.dob}</td>
+                            <td>
+                                <span class="badge-shift">${studentShift}</span> 
+                                <button style="background:none; border:none; color:#0284c7; cursor:pointer; font-size:12px; margin-left:5px;" onclick="openEditStudentModal('${s.enrollment}', '${studentShift}', '${s.photoUrl || ''}')">✏️ Edit</button>
+                            </td>
+                            <td style="font-weight:bold; color:#7e22ce;">${totalPts} pts</td>
+                            <td style="text-align: center; font-weight:bold; color:#a16207; font-size:15px;">${studentCoins}</td>
+                            <td style="text-align: center;">
+                                <button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Login Thawnna" onclick="shareLoginWhatsApp('${s.name}', '${s.enrollment}', '${s.dob}')">📱</button>
+                                <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteStudent('${s.enrollment}')">✕</button>
+                            </td>
+                        </tr>`;
+                });
+            }
+        }
+
+        function renderOnlineShiftStudents() {
+            const container = document.getElementById('admin-online-students-list');
+            const select = document.getElementById('sato-student-select');
+            
+            const onlineStudents = allStudentsList.filter(s => (s.shift || '10am shift') === 'Saturday (O)');
+            
+            if (container) {
+                if (onlineStudents.length === 0) {
+                    container.innerHTML = '<span style="color: gray; font-size: 14px; font-style: italic;">Saturday (O)-ah zirlai an la awm lo...</span>';
+                } else {
+                    container.innerHTML = onlineStudents.map(s => `<span class="badge-student" style="background-color: #f3e8ff; color: #6b21a8; border-color: #d8b4fe; font-size: 14px; padding: 6px 12px;">${s.name} <small style="color: #64748b; font-weight: normal; margin-left: 4px;">(${s.enrollment})</small></span>`).join('');
+                }
+            }
+            if (select) {
+                select.innerHTML = '<option value="">-- Thlang rawh --</option>';
+                onlineStudents.forEach(s => {
+                    select.innerHTML += `<option value="${s.enrollment}">${s.name} (${s.enrollment})</option>`;
+                });
+            }
+        }
+
+        // Fetch students snapshot
+        onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
+            allStudentsList = []; snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
+            renderStudentManagementTable(); 
+            renderFeeTable(); loadAttendanceForDate(); renderOnlineShiftStudents(); renderAdminLeaderboard(); renderSatOPointsTable();
+            if (document.getElementById('period-start-date').value && document.getElementById('period-end-date').value) { calculatePeriodAttendance(); }
+        });
+
+        // THLAK DANGLAM: Zirlai Details Edit (Shift & Photo)
+        window.openEditStudentModal = function(enrollment, currentShift, photoUrl) { 
+            document.getElementById('edit-shift-enrollment').value = enrollment; 
+            document.getElementById('edit-student-shift').value = currentShift; 
+            document.getElementById('edit-student-photo').value = photoUrl || ''; 
+            document.getElementById('shift-edit-modal').classList.remove('hidden'); 
+        }
+        
+        window.closeShiftModal = function() { 
+            document.getElementById('shift-edit-modal').classList.add('hidden'); 
+        }
+        
+        window.updateStudentShift = async function() {
+            const enrollment = document.getElementById('edit-shift-enrollment').value; 
+            const newShift = document.getElementById('edit-student-shift').value;
+            let photoUrlRaw = document.getElementById('edit-student-photo').value.trim();
+            
+            // Auto Convert Drive Link
+            let finalPhotoUrl = photoUrlRaw;
+            if(photoUrlRaw.includes("drive.google.com/file/d/")) {
+                let match = photoUrlRaw.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                if(match && match[1]) {
+                    finalPhotoUrl = `https://drive.google.com/uc?export=view&id=${match[1]}`;
+                }
+            }
+
+            try { 
+                await updateDoc(doc(db, "students", enrollment), { 
+                    shift: newShift,
+                    photoUrl: finalPhotoUrl
+                }); 
+                closeShiftModal(); 
+                alert("Zirlai thlalak/shift chu hlawhtling taka thlak a ni e!"); 
+            } catch(e) { alert("Harsatna: " + e.message); }
+        }
+
+        // THLAK DANGLAM: Zirlai Register naah Photo link lakluh tel
+        window.registerSingleStudent = async function(event) {
+            event.preventDefault();
+            const enr = document.getElementById('reg-enrollment').value.trim(); 
+            const name = document.getElementById('reg-name').value.trim(); 
+            const dob = document.getElementById('reg-dob').value.trim(); 
+            const shift = document.getElementById('reg-shift').value;
+            
+            let photoUrlRaw = document.getElementById('reg-photo').value.trim();
+            // Auto Convert Drive Link
+            let finalPhotoUrl = photoUrlRaw;
+            if(photoUrlRaw.includes("drive.google.com/file/d/")) {
+                let match = photoUrlRaw.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                if(match && match[1]) {
+                    finalPhotoUrl = `https://drive.google.com/uc?export=view&id=${match[1]}`;
+                }
+            }
+
+            if(!enr || !name || !dob) { alert("Data a kim lo!"); return; }
+            try { 
+                await setDoc(doc(db, "students", String(enr)), { 
+                    enrollment: String(enr), 
+                    name: String(name), 
+                    dob: String(dob), 
+                    shift: String(shift), 
+                    photoUrl: finalPhotoUrl, // Dah belh a ni
+                    coins: 0, 
+                    registeredAt: serverTimestamp(), 
+                    lastLoginDate: "" 
+                }); 
+                alert("Zirlai " + name + " chu hlawhtling taka register a ni e!"); 
+                event.target.reset(); 
+            } catch(e) { alert("Harsatna: " + e.message); }
+        }
+
+        // THLAK DANGLAM: Excel upload a Photo URL lakluh tel theih
+        window.uploadExcelData = async function() {
+            const fileInput = document.getElementById('excel-upload'); const statusDiv = document.getElementById('upload-status');
+            const file = fileInput.files[0];
+            if (!file) { alert("Excel emaw CSV file thlang phawt rawh!"); return; }
+            statusDiv.style.color = "#0369a1"; statusDiv.innerText = "Data lakluh mek a ni, khawngaihin nghak lawk rawh...";
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
+                    const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { raw: false });
+                    if (json.length === 0) { statusDiv.style.color = "red"; statusDiv.innerText = "Data a awm lo."; return; }
+                    let successCount = 0; let errorCount = 0;
+                    for (let i = 0; i < json.length; i++) {
+                        let row = json[i]; 
+                        let enrollment = row.Enrollment || row.enrollment; 
+                        let name = row.Name || row.name || row.Hming; 
+                        let dob = row.DOB || row.dob; 
+                        let shift = row.Shift || row.shift || "10am shift";
+                        
+                        let photoUrlRaw = row.PhotoURL || row.photourl || row.Photo || "";
+                        let finalPhotoUrl = photoUrlRaw;
+                        if(photoUrlRaw.includes("drive.google.com/file/d/")) {
+                            let match = photoUrlRaw.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                            if(match && match[1]) {
+                                finalPhotoUrl = `https://drive.google.com/uc?export=view&id=${match[1]}`;
+                            }
+                        }
+
+                        if (enrollment && name && dob) {
+                            try {
+                                await setDoc(doc(db, "students", String(enrollment)), { 
+                                    enrollment: String(enrollment), 
+                                    name: String(name), 
+                                    dob: String(dob), 
+                                    shift: String(shift), 
+                                    photoUrl: String(finalPhotoUrl),
+                                    coins: 0, 
+                                    registeredAt: serverTimestamp(), 
+                                    lastLoginDate: "" 
+                                }, { merge: true });
+                                successCount++;
+                            } catch (err) { errorCount++; }
+                        }
+                    }
+                    statusDiv.style.color = "#15803d"; statusDiv.innerText = `✅ Tluang takin zirlai ${successCount} thunluh an ni e! (Fail: ${errorCount})`;
+                    fileInput.value = ""; setTimeout(() => { statusDiv.innerText = ""; }, 5000); 
+                } catch (error) { statusDiv.style.color = "red"; statusDiv.innerText = "Harsatna: " + error.message; }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // ================= GRADEBOOK & OTHERS =================
+        window.onGradeStudentSelect = function() {
+            let enr = document.getElementById('grade-student-select').value; let infoDiv = document.getElementById('grade-student-info');
+            if(!enr) { infoDiv.innerHTML = ''; return; }
+            let stats = attendanceStats[enr];
+            if(stats && stats.days > 0) { let pct = (stats.earned / stats.possible) * 100; infoDiv.innerHTML = `📅 A class kal tawh zat: <b>Ni ${stats.days}</b> &nbsp;|&nbsp; 📊 A regular dan: <b>${pct.toFixed(1)}%</b>`; onGradeSubjectSelect(); } 
+            else { infoDiv.innerHTML = `📅 A class kal tawh zat: <b>Ni 0</b> &nbsp;|&nbsp; 📊 A regular dan: <b>0%</b>`; }
+        }
+
+        window.onGradeSubjectSelect = function() {
+            let subj = document.getElementById('grade-subject').value; let prLabel = document.getElementById('label-pr-exam'); let prInput = document.getElementById('grade-pr-exam');
+            let enr = document.getElementById('grade-student-select').value;
+            
+            if (subj === 'DCA 101' || subj === 'DCA 102') { prLabel.innerHTML = 'Practical Exam - Typing/Folder [Max 40]'; prInput.readOnly = false; prInput.style.backgroundColor = 'white'; } 
+            else if (subj === 'DCA 104') {
+                prLabel.innerHTML = 'Practical Exam - Auto (Attendance % atangin) [Max 40]';
+                if (enr && attendanceStats[enr] && attendanceStats[enr].days > 0) { let pct = (attendanceStats[enr].earned / attendanceStats[enr].possible) * 100; prInput.value = ((pct / 100) * 40).toFixed(1); } else { prInput.value = ''; }
+                prInput.style.backgroundColor = '#e0f2fe'; 
+            } else { prLabel.innerHTML = 'Practical Exam (Pangngai) [Max 40]'; prInput.readOnly = false; prInput.style.backgroundColor = 'white'; }
+        }
+
+        window.saveGrade = async function(event) {
+            event.preventDefault();
+            const enr = document.getElementById('grade-student-select').value; const subj = document.getElementById('grade-subject').value;
+            const thIa = parseFloat(document.getElementById('grade-th-ia').value) || 0; const thExam = parseFloat(document.getElementById('grade-th-exam').value) || 0;
+            const prIa = parseFloat(document.getElementById('grade-pr-ia').value) || 0; const prExam = parseFloat(document.getElementById('grade-pr-exam').value) || 0;
+
+            if(!enr) { alert("Zirlai thlang phawt rawh."); return; }
+            const totalMark = thIa + thExam + prIa + prExam; const studentName = allStudentsList.find(s => s.enrollment === enr)?.name || '';
+            try { await setDoc(doc(db, "student_grades", `${enr}_${subj}`), { enrollment: enr, name: studentName, subject: subj, theoryIA: thIa, theoryExam: thExam, practicalIA: prIa, practicalExam: prExam, totalMark: totalMark, timestamp: serverTimestamp() }); alert(`${subj} mark hlawhtling taka save a ni e!`); document.getElementById('grade-th-ia').value = ''; document.getElementById('grade-th-exam').value = ''; document.getElementById('grade-pr-ia').value = ''; document.getElementById('grade-pr-exam').value = ''; } 
+            catch(e) { alert("Save naah harsatna: " + e.message); }
+        }
+
+        onSnapshot(query(collection(db, "student_grades"), orderBy("enrollment")), (snapshot) => {
+            const tableBody = document.getElementById('grade-results-table'); if(!tableBody) return; tableBody.innerHTML = '';
+            if (snapshot.empty) { tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: gray;">Results a la awm rih lo...</td></tr>'; } 
+            else { snapshot.forEach((docSnap) => { let d = docSnap.data(); let totalColor = d.totalMark >= 40 ? '#16a34a' : '#dc2626'; tableBody.innerHTML += `<tr><td>${d.enrollment}</td><td><b>${d.name}</b></td><td style="color: #0f766e; font-weight: bold;">${d.subject}</td><td>${d.theoryIA}</td><td>${d.theoryExam}</td><td>${d.practicalIA}</td><td>${d.practicalExam}</td><td><span style="color: ${totalColor}; font-weight: bold; font-size: 15px;">${d.totalMark.toFixed(1)}</span></td></tr>`; }); }
+        });
+
+        window.exportGradesToExcel = async function() {
+            try { const querySnapshot = await getDocs(query(collection(db, "student_grades"), orderBy("enrollment"))); let resultsData = []; querySnapshot.forEach((docSnap) => { let d = docSnap.data(); resultsData.push({ "Enrollment No": d.enrollment, "Zirlai Hming": d.name, "Subject": d.subject, "Theory IA": d.theoryIA, "Theory Exam": d.theoryExam, "Practical IA": d.practicalIA, "Practical Exam": d.practicalExam, "Total Mark (100)": d.totalMark }); }); if(resultsData.length === 0) { alert("Marks a la awm lo."); return; } let worksheet = XLSX.utils.json_to_sheet(resultsData); let workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Gradebook"); XLSX.writeFile(workbook, "Bethel_Gradebook.xlsx"); } catch (error) { alert("Harsatna: " + error.message); }
+        }
+        
+        window.clearAllGrades = async function() { if (confirm("Mark i thunluh tawh zawng zawng paih fai takzet i duh em?")) { try { const querySnapshot = await getDocs(collection(db, "student_grades")); let deletePromises = []; querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "student_grades", document.id)))); await Promise.all(deletePromises); alert("Gradebook paih fai a ni tawh e!"); } catch (error) { alert("Harsatna: " + error.message); } } }
+
     </script>
 </body>
 </html>
