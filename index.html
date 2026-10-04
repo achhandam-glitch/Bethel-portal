@@ -308,6 +308,12 @@
                 <div id="student-tab-status" class="student-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-a let lehna</button></div>
                     
+                    <!-- SUNDAY BANNER -->
+                    <div id="sunday-banner" class="hidden" style="background: #fee2e2; border-left: 4px solid #dc2626; padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; color: #991b1b;">
+                        <b style="font-size: 15px;">🔴 Vawiin chu Pathianni a ni e</b><br>
+                        <span style="font-size: 13px;">Vawiin chu class a awm lo a, attendance mark a ngai lo. Inkhawm te i hmang nuam dawn nia!</span>
+                    </div>
+
                     <div style="border: 1px solid #7dd3fc; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
                         <p style="font-weight: 600; font-size: 16px; margin: 0;">I Shift Hun:</p>
                         <div style="font-size: 18px; font-weight: bold;" id="student-portal-shift">-</div>
@@ -443,7 +449,7 @@
                                     <option value="DCA 106 - Desktop Publishing (PageMaker)">DCA 106 - Desktop Publishing (PageMaker)</option>
                                 </select>
                                 <button class="btn btn-primary" style="width: auto; margin: 0; padding: 6px 12px; font-size: 13px; background-color: #0284c7;" onclick="exportChatToPDF()" title="PDF in Download Rawh">📥 PDF</button>
-                                <button class="btn btn-danger" style="width: auto; margin: 0; padding: 6px 12px; font-size: 13px;" onclick="clearAIChat()" title="Chat hlui nawt faina">🗑️️</button>
+                                <button class="btn btn-danger" style="width: auto; margin: 0; padding: 6px 12px; font-size: 13px;" onclick="clearAIChat()" title="Chat hlui nawt faina">🗑</button>
                             </div>
                         </div>
                         
@@ -478,13 +484,18 @@
                 document.body.classList.add('dark-mode');
                 document.getElementById('theme-toggle').innerText = '☀️';
             }
+
+            // SUNDAY CHECK (Load ruala run tur)
+            if (new Date().getDay() === 0) {
+                const sundayBanner = document.getElementById('sunday-banner');
+                if (sundayBanner) sundayBanner.classList.remove('hidden');
+            }
         });
 
         window.openAttendanceModal = function() {
             const modal = document.getElementById('attendance-info-modal');
             const leaveInfo = document.getElementById('modal-leave-info');
             
-            // Saturday (O) an nih chuan Chawlh dil info thukru rawh
             if (window.currentStudent && window.currentStudent.shift === 'Saturday (O)') {
                 if (leaveInfo) leaveInfo.style.display = 'none';
             } else {
@@ -530,6 +541,7 @@
         let mySubmissions = [];
         let globalAttendancePeriod = null; 
         let holidayList = []; 
+        let allNotices = []; // Notice lakkhawmna
 
         let latestNoticeTime = 0;
         let latestMaterialTime = 0;
@@ -541,7 +553,6 @@
         let currentBulkQuizTitle = "";
 
         // ================= NOTICE SEEN LOGIC =================
-        // Heta tang hian Zirlaiin Notice a seen in Firebase-a a save na code chu
         window.markNoticeAsSeen = async function(noticeId) {
             if (!window.currentStudent || !window.currentStudent.enrollment) return;
             try {
@@ -552,6 +563,17 @@
             } catch (error) {
                 console.log("Error marking notice as seen:", error);
             }
+        }
+
+        // Zirlai Log In fel hnuah Notice a lo la seen loh ho check a seen anga record na
+        window.checkAndMarkNotices = function() {
+            if (!window.currentStudent || !window.currentStudent.enrollment) return;
+            allNotices.forEach(n => {
+                let seen = n.seenBy || [];
+                if (!seen.includes(window.currentStudent.enrollment)) {
+                    markNoticeAsSeen(n.id);
+                }
+            });
         }
 
         window.checkNotifications = function() {
@@ -687,21 +709,25 @@
             const container = document.getElementById('student-holiday-list');
             if(!container) return;
             
-            if(holidayList.length === 0) {
-                container.innerHTML = '<span style="opacity: 0.7;">🏖️ Chawlh hnai a awm lo</span>';
+            const todayObj = new Date();
+            const isSunday = todayObj.getDay() === 0;
+            const todayStr = todayObj.toISOString().split('T')[0];
+
+            // SUNDAY CHECK FOR WIDGET
+            if (isSunday) {
+                container.innerHTML = `<div style="font-weight: bold; animation: pulse 2s infinite; color: #dc2626;">🔴 Vawiin Pathianni</div><div style="font-size: 11px; color: #be123c; margin-top: 2px;">Class a awm lo</div>`;
                 return;
             }
             
-            const today = new Date().toISOString().split('T')[0];
-            let upcoming = holidayList.filter(h => h.date >= today).sort((a, b) => a.date.localeCompare(b.date));
+            let upcoming = holidayList.filter(h => h.date >= todayStr).sort((a, b) => a.date.localeCompare(b.date));
             
             if(upcoming.length === 0) {
-                container.innerHTML = '<span style="opacity: 0.7;">🏖 Chawlh hnai a awm lo</span>';
+                container.innerHTML = '<span style="opacity: 0.7;">🏖️ Chawlh hnai a awm lo</span>';
                 return;
             }
 
             let h = upcoming[0];
-            let isToday = (h.date === today);
+            let isToday = (h.date === todayStr);
             let dParts = h.date.split('-');
             let shortDate = `${dParts[2]}/${dParts[1]}`; 
             
@@ -1346,15 +1372,24 @@
             } catch (error) { alert("Harsatna: " + error.message); } 
         }
 
+        // ================= NOTICE RENDER LOGIC =================
         onSnapshot(query(collection(db, "notices"), orderBy("createdAt", "desc")), (snapshot) => {
             const studentList = document.getElementById('student-notice-list');
             if (studentList) studentList.innerHTML = '';
             latestNoticeTime = 0;
-            
-            if (snapshot.empty) { if (studentList) studentList.innerHTML = '<p style="opacity: 0.7;">Notice a la awm rih lo...</p>'; } 
-            else {
+            allNotices = []; // Reset notice array
+
+            if (snapshot.empty) { 
+                if (studentList) studentList.innerHTML = '<p style="opacity: 0.7;">Notice a la awm rih lo...</p>'; 
+            } else {
                 snapshot.forEach((docSnap) => {
-                    const data = docSnap.data(); const noticeId = docSnap.id; let commentsHTML = '';
+                    const data = docSnap.data(); 
+                    const noticeId = docSnap.id; 
+                    
+                    // Notice kan khawlkhawm ang
+                    allNotices.push({ id: noticeId, ...data });
+
+                    let commentsHTML = '';
                     let docTime = data.createdAt ? data.createdAt.toMillis() : 0;
                     if (docTime > latestNoticeTime) latestNoticeTime = docTime;
                     
@@ -1368,25 +1403,19 @@
                     }
                     
                     if (studentList) {
-                        // Notice list render tir la, tichuan setTimeout hmangin 'Seen' tih record rawh se
                         let noticeHtml = `<div class="notice-box"><h4 style="margin-bottom: 5px;">${data.title}</h4><p style="margin-bottom: 10px;">${data.content}</p>${commentsHTML}<div style="margin-top: 12px; display: flex; gap: 10px;"><input type="text" id="comment-input-${noticeId}" placeholder="Comment ziahna..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border-radius: 6px;"><button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="postComment('${noticeId}')">Post</button></div></div>`;
-                        
                         studentList.innerHTML += noticeHtml;
-                        
-                        // Zirlai enrollment a awm tawh chuan Seen record theih a ni
-                        if (window.currentStudent && window.currentStudent.enrollment) {
-                            let seenArray = data.seenBy || [];
-                            if (!seenArray.includes(window.currentStudent.enrollment)) {
-                                // Mual pho lovin unseen notice chu auto in seen record se
-                                setTimeout(() => {
-                                    markNoticeAsSeen(noticeId);
-                                }, 2000); // Second 2 nghak hmasa phawt
-                            }
-                        }
                     }
                 });
             }
             checkNotifications();
+
+            // Notice in load thar reng rengah, zirlai a log in tawh a nih chuan Auto Seen tir tur a ni
+            if (window.currentStudent && window.currentStudent.enrollment) {
+                setTimeout(() => {
+                    checkAndMarkNotices();
+                }, 2000); 
+            }
         });
 
         onSnapshot(query(collection(db, "shared_links"), orderBy("createdAt", "desc")), (snapshot) => {
@@ -1510,6 +1539,11 @@
                         checkNotifications();
                         loadAIChatHistory();
                         renderHolidays(); 
+
+                        // TAH HIAN LOG IN FEL VELEH A EN LOH NOTICE ZAWNG ZAWNG SEEN TIRA SET A NI.
+                        setTimeout(() => {
+                            checkAndMarkNotices();
+                        }, 2000);
 
                         showSection('student-portal-section');
                     } else { alert("Date of birth a dik lo! I date of birth kha 0 telh kim in han chhut teh (Entirnan: 15-05-2005)"); }
