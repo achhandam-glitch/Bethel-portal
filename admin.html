@@ -231,6 +231,7 @@
                     <div class="menu-box">
                         <button class="menu-btn" onclick="openAdminTab('tab-register')">📋 Zirlai Register-na</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-fee')">💰 Zirlaite Fee Management</button>
+                        <button class="menu-btn" onclick="openAdminTab('tab-portal-settings')" style="border-left-color: #0284c7; background: #f0f9ff; color: #0369a1;">⚙️ Portal Advertisement & Notice Settings</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-mcq')" style="border-left-color: #eab308; background: #fefce8; color: #a16207;">🎮 MCQ Siamna & Coins</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-attendance')">📅 Attendance Mark-na & Chawlh</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-notice')">📢 Notice Board</button>
@@ -247,6 +248,31 @@
 
             <!-- ADMIN TAB CONTENT VIEWS -->
             <div id="admin-content-view">
+
+                <!-- TAB: PORTAL SETTINGS (Advertisement & Marquee) -->
+                <div id="tab-portal-settings" class="admin-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
+                    
+                    <div class="card" style="border: 2px solid #0284c7;">
+                        <h3 style="color: #0369a1; border-bottom: 1px solid #bae6fd; padding-bottom: 10px;">📢 Zirlai Login Page Marquee (Advertisement) Update-na</h3>
+                        <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">Heta i thu type hi zirlai leh mi dang portal-a lut rih lo ten an login page lo lang hmasa ber (logo chung chiahah) khan mawi takin a rawn tawlh phei (marquee) ang.</p>
+                        
+                        <form onsubmit="savePortalAdvertisement(event)">
+                            <div class="input-group">
+                                <label>Advertisement Thu (Marquee Text)</label>
+                                <textarea id="admin-marquee-text" rows="3" placeholder="Entirnan: Bethel Computer Centre-ah 2026 December Exam turin registration tih mek a ni a..." required></textarea>
+                            </div>
+                            <div class="input-group">
+                                <label>On / Off (Lang tur nge ni a, dahtha tur?)</label>
+                                <select id="admin-marquee-status">
+                                    <option value="true">Lang rawh (Active)</option>
+                                    <option value="false">Tawp rawh (Hidden)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="margin-top: 5px;">Update & Save Rawh</button>
+                        </form>
+                    </div>
+                </div>
                 
                 <!-- TAB: MCQ ADMIN -->
                 <div id="tab-mcq" class="admin-tab-content">
@@ -686,7 +712,7 @@
 
                 <!-- TAB 4: NOTICE BOARD -->
                 <div id="tab-notice" class="admin-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅ Menu-a let lehna</button></div>
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
                     <div class="form-grid" style="grid-template-columns: 1fr;">
                         <div class="card">
                             <h3>Notice Board Siamna</h3>
@@ -706,7 +732,7 @@
                         <div class="card" style="margin-bottom: 0;">
                             <h3>Notice Post Tawh Te</h3>
                             <div id="admin-notice-list" style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
-                                <p style="color: gray;">Notice a la awm lo...</p>
+                                <p style="color: gray;">Notice a la awm rih lo...</p>
                             </div>
                         </div>
                     </div>
@@ -903,7 +929,7 @@
 
                 <!-- TAB 7: ZIRLAI MANAGEMENT -->
                 <div id="tab-management" class="admin-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️️ Menu-a let lehna</button></div>
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
                     <div class="card" style="margin-bottom: 0;">
                         <h3>Zirlai List & Management</h3>
                         <div style="overflow-x: auto;">
@@ -1065,7 +1091,6 @@
 
         window.currentPerformanceFilter = 'ALL';
 
-        // Vawihni test nawn kher ngai lova date auto-set nghet tlatna
         const realToday = new Date().toISOString().split('T')[0];
         document.addEventListener("DOMContentLoaded", () => {
             if (document.getElementById('attendance-date')) document.getElementById('attendance-date').value = realToday;
@@ -1161,6 +1186,27 @@
                 box.style.display = 'none';
                 icon.innerText = '▼ Hmet Hawng';
             }
+        }
+
+        // ================= PORTAL ADVERTISEMENT (MARQUEE) SETTINGS =================
+        onSnapshot(doc(db, "settings", "portal_advertisement"), (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if(document.getElementById('admin-marquee-text')) document.getElementById('admin-marquee-text').value = data.text || '';
+                if(document.getElementById('admin-marquee-status')) document.getElementById('admin-marquee-status').value = String(data.active ?? true);
+            }
+        });
+
+        window.savePortalAdvertisement = async function(event) {
+            event.preventDefault();
+            const text = document.getElementById('admin-marquee-text').value.trim();
+            const active = document.getElementById('admin-marquee-status').value === 'true';
+            
+            if(!text) { alert("Thu type phawt rawh!"); return; }
+            try {
+                await setDoc(doc(db, "settings", "portal_advertisement"), { text: text, active: active, updatedAt: serverTimestamp() });
+                alert("Hlawhtling taka update a ni e! Zirlai login page-ah a rawn in-thlak ve nghal ang.");
+            } catch(e) { alert("Harsatna: " + e.message); }
         }
 
         // ================= WHATSAPP SHARING =================
@@ -1754,14 +1800,12 @@
             const isSunday = selectedDateObj.getDay() === 0;
             const isSaturday = selectedDateObj.getDay() === 6;
 
-            // SUNDAY CHECK
             if (isSunday) {
                 tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#dc2626; font-weight:bold; padding: 30px 10px;">🔴 Vawiin hi Pathianni (Sunday) a ni a, Attendance lak theih a ni lo.</td></tr>';
                 if (saveBtn) saveBtn.style.display = 'none';
                 return;
             }
             
-            // HOLIDAY CHECK
             const holidayMatch = holidayList.find(h => h.date === dateStr);
             if (holidayMatch) {
                 tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#ea580c; font-weight:bold; padding: 30px 10px;">🏖 Vawiin hi Sorkar Chawlh (${holidayMatch.name}) a ni a, Attendance lak theih a ni lo.</td></tr>`;
@@ -2076,7 +2120,7 @@
                         commentsHTML += '</div>';
                     }
                     
-                    let seenCount = data.seenBy ? data.seenBy.length : 0; // Hmu tawh zat chhutna
+                    let seenCount = data.seenBy ? data.seenBy.length : 0; 
                     let safeTitle = data.title ? data.title.replace(/'/g, "\\'") : '';
                     if(adminList) {
                         adminList.innerHTML += `<div class="notice-box">
@@ -2088,7 +2132,6 @@
                                 <button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="adminPostComment('${noticeId}')">Reply</button>
                             </div>
                             <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                                <!-- WhatsApp share aiah Seen Count a lang ang -->
                                 <span style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;">
                                     👁️ Hmu tawh zat: ${seenCount}
                                 </span>
@@ -2242,7 +2285,6 @@
             if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">Log in record a la awm lo...</td></tr>'; return; }
 
             tbody.innerHTML = '';
-            // Safe check for the snapshot loop
             snapshot.forEach((docSnap) => {
                 let d = docSnap.data();
                 let timeStr = d.timestamp ? new Date(d.timestamp.toDate()).toLocaleString() : 'Hun hriat loh';
@@ -2309,7 +2351,6 @@
                     const studentShift = s.shift || '10am shift';
                     const studentCoins = s.coins || 0;
                     
-                    // THLAK DANGLAM: Zirlai thlalak leh hming
                     let safePhoto = s.photoUrl || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
                     let nameHtml = `<div style="display:flex; align-items:center; gap:10px;"><img src="${safePhoto}" style="width:35px; height:35px; border-radius:50%; object-fit:cover; border:2px solid #e2e8f0;"> <b>${s.name}</b></div>`;
 
@@ -2354,7 +2395,6 @@
             }
         }
 
-        // Fetch students snapshot
         onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
             allStudentsList = []; snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
             renderStudentManagementTable(); 
@@ -2362,7 +2402,6 @@
             if (document.getElementById('period-start-date').value && document.getElementById('period-end-date').value) { calculatePeriodAttendance(); }
         });
 
-        // THLAK DANGLAM: Zirlai Details Edit (Shift & Photo)
         window.openEditStudentModal = function(enrollment, currentShift, photoUrl) { 
             document.getElementById('edit-shift-enrollment').value = enrollment; 
             document.getElementById('edit-student-shift').value = currentShift; 
@@ -2379,7 +2418,6 @@
             const newShift = document.getElementById('edit-student-shift').value;
             let photoUrlRaw = document.getElementById('edit-student-photo').value.trim();
             
-            // Auto Convert Drive Link
             let finalPhotoUrl = photoUrlRaw;
             if(photoUrlRaw.includes("drive.google.com/file/d/")) {
                 let match = photoUrlRaw.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
@@ -2398,7 +2436,6 @@
             } catch(e) { alert("Harsatna: " + e.message); }
         }
 
-        // THLAK DANGLAM: Zirlai Register naah Photo link lakluh tel
         window.registerSingleStudent = async function(event) {
             event.preventDefault();
             const enr = document.getElementById('reg-enrollment').value.trim(); 
@@ -2407,7 +2444,6 @@
             const shift = document.getElementById('reg-shift').value;
             
             let photoUrlRaw = document.getElementById('reg-photo').value.trim();
-            // Auto Convert Drive Link
             let finalPhotoUrl = photoUrlRaw;
             if(photoUrlRaw.includes("drive.google.com/file/d/")) {
                 let match = photoUrlRaw.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
@@ -2423,7 +2459,7 @@
                     name: String(name), 
                     dob: String(dob), 
                     shift: String(shift), 
-                    photoUrl: finalPhotoUrl, // Dah belh a ni
+                    photoUrl: finalPhotoUrl,
                     coins: 0, 
                     registeredAt: serverTimestamp(), 
                     lastLoginDate: "" 
@@ -2433,7 +2469,6 @@
             } catch(e) { alert("Harsatna: " + e.message); }
         }
 
-        // THLAK DANGLAM: Excel upload a Photo URL lakluh tel theih
         window.uploadExcelData = async function() {
             const fileInput = document.getElementById('excel-upload'); const statusDiv = document.getElementById('upload-status');
             const file = fileInput.files[0];
