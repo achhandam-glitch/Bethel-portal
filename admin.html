@@ -1096,9 +1096,10 @@
             </div>
 
             <!-- BACK SIDE -->
-            <div id="id-card-back" style="width: 325px; height: 204px; background: white; box-sizing: border-box; font-family: 'Times New Roman', Times, serif; border: 1px solid #94a3b8; border-left: 1px dashed #000; position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+            <div id="id-card-back" style="width: 325px; height: 204px; background: white; border: 1px solid #94a3b8; border-left: 1px dashed #000; position: relative; overflow: hidden; font-family: 'Times New Roman', Times, serif;">
                 
-                <div style="width: 204px; height: 325px; transform: rotate(-90deg); display: flex; flex-direction: column; padding: 12px; box-sizing: border-box;">
+                <!-- Rotate container (Absolute Position) -->
+                <div style="position: absolute; width: 204px; height: 325px; top: 0; left: 325px; transform-origin: top left; transform: rotate(90deg); display: flex; flex-direction: column; padding: 12px; box-sizing: border-box;">
                     
                     <div style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 8px; color: #333;">
                         Course Fee : ₹.12000
@@ -1118,9 +1119,9 @@
                         <tr><td style="border: 1px solid #000; font-weight:bold;">6<sup style="font-size:8px;">th</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
                     </table>
                     
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 5px;">
-                        <div style="display: flex; flex-direction: column; align-items: flex-start; margin-left: 5px;">
-                            <span style="font-size: 11px; font-weight: bold; color: #333;">Fee hi Gpay duh tan</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+                        <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                            <span style="font-size: 11px; font-weight: bold; color: #333;">Fee hi Gpay <br> duh tan</span>
                             <div style="font-weight: 900; font-size: 16px; font-style: italic; color: #16a34a; letter-spacing: 1px; margin-top: 2px;">UPI</div>
                         </div>
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=bethelcomputer@upi" style="width: 55px; height: 55px; border: 1px solid #ccc;">
@@ -2205,7 +2206,7 @@
                             </div>
                             <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                                 <span style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;">
-                                    👁️️ Hmu tawh zat: ${seenCount}
+                                    👁 Hmu tawh zat: ${seenCount}
                                 </span>
                                 <button class="btn btn-primary" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="editNotice('${noticeId}')">Edit Notice</button>
                                 <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="deleteNotice('${noticeId}')">Paih</button>
@@ -2648,25 +2649,25 @@
             let address = prompt(`${student.name} Address (Veng) chhu rawh:\n(I duh chuan a ruakin i kalsan thei)`, "Chanmari I, Lunglei");
             let phone = prompt(`${student.name} Phone Number chhu rawh:\n(I duh chuan a ruakin i kalsan thei)`, "");
 
-            // ID Card Template a data thunluhna
+            // ID Card Template a data thunluhna (textContent hman a ni)
             let timing = student.shift ? student.shift.replace(' shift', '').replace('Saturday (O)', 'Sat-O') : '';
-            document.getElementById('id-timing').innerText = timing;
-            document.getElementById('id-enroll').innerText = student.enrollment;
-            document.getElementById('id-name').innerText = student.name;
-            document.getElementById('id-address').innerText = address || '';
-            document.getElementById('id-phone').innerText = phone || '';
+            document.getElementById('id-timing').textContent = timing;
+            document.getElementById('id-enroll').textContent = student.enrollment;
+            document.getElementById('id-name').textContent = student.name;
+            document.getElementById('id-address').textContent = address || '';
+            document.getElementById('id-phone').textContent = phone || '';
             
+            // Container unhide hmasak phawt tur (DOM a update theih nan)
+            const container = document.getElementById('id-card-container');
+            container.classList.remove('hidden');
+
             // Photo dahna (CORS proxy thun telin)
             const imgEl = document.getElementById('id-photo');
             let finalPhoto = student.photoUrl || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
             imgEl.crossOrigin = "Anonymous";
             imgEl.src = finalPhoto;
 
-            // Combined Layout element thlanna
             const element = document.getElementById('id-card-combined');
-            const container = document.getElementById('id-card-container');
-            
-            container.classList.remove('hidden');
 
             // Thlalak a in-load zawh hun nghah lawkna
             await new Promise((resolve) => {
@@ -2678,7 +2679,7 @@
                 }
             });
 
-            // html2canvas settings - A4 portrait in kan thlak
+            // html2canvas settings
             const opt = {
                 margin:       10, // A paper sirah margin tlem a awm ang
                 filename:     `${student.enrollment}_ID_Card.pdf`,
