@@ -25,6 +25,20 @@
         .login-logo { width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 4px solid #bae6fd; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); background-color: white; }
         .student-profile-img { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid #0284c7; background-color: #f0f9ff; }
 
+        /* ADVERTISEMENT MARQUEE STYLE */
+        .portal-advertisement-marquee {
+            width: 100%;
+            background: linear-gradient(90deg, #fef08a, #fde047, #fef08a);
+            color: #78350f;
+            padding: 10px 15px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            border: 2px dashed #ca8a04;
+        }
+
         .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
         .card { background: #ffffff; color: #1e293b; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
         h2 { color: #0f172a; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
@@ -113,6 +127,13 @@
             border-color: #475569 !important; 
         }
 
+        /* Dark Mode Marquee Override */
+        body.dark-mode .portal-advertisement-marquee {
+            background: linear-gradient(90deg, #78350f, #92400e, #78350f) !important;
+            color: #fde047 !important;
+            border-color: #eab308 !important;
+        }
+
         body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode label, body.dark-mode b, body.dark-mode strong, body.dark-mode li, body.dark-mode p, body.dark-mode span, body.dark-mode div, body.dark-mode small { color: #ffffff !important; }
 
         body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background-color: #0f172a !important; color: #ffffff !important; border: 1px solid #475569 !important; }
@@ -152,6 +173,12 @@
 
     <section id="student-login-section" class="hero-section">
         <div class="hero-content" style="width: 100%; max-width: 450px; padding: 0 20px;">
+            
+            <!-- ADVERTISEMENT MARQUEE (LOGO CHUNG CHIAH) -->
+            <marquee class="portal-advertisement-marquee" scrollamount="5">
+                📢 Bethel Computer Centre-ah 2026 December Exam turin registration tih mek a ni a, October ni 6 thleng hun hawn a ni e. Hrechiang duh chuan 8837469949 ah biak mai tur a ni e.
+            </marquee>
+
             <!-- THLAK DANGLAM: LOGO DAHNA -->
             <!-- src="" ah hian i Google Drive link (uc?export=view&id=...) chu i dah dawn nia -->
             <img src="logo.jpg" alt="Bethel Logo" class="login-logo" id="login-logo-img">
