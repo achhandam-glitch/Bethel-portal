@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1273,7 +1272,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "6.11"; // Version updated
+        const APP_VERSION = "6.10"; // Version updated
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -1406,59 +1405,26 @@
 
         // ================= WHATSAPP SHARING =================
         window.shareNoticeWhatsApp = function(title) {
-            const text = `📌 *Bethel Computer Centre*
-
-Notice thar a awm e: *${title}*
-
-Khawngaihin in Portal-ah log in ula lo check ngei ngei ru.
-@all
-
-🌐 Portal Link: ${PORTAL_LINK}`;
+            const text = `📌 *Bethel Computer Centre*\n\nNotice thar a awm e: *${title}*\n\nKhawngaihin in Portal-ah log in ula lo check ngei ngei ru.\n@all\n\n🌐 Portal Link: ${PORTAL_LINK}`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
         window.shareMaterialWhatsApp = function(fileName, type) {
-            const text = `📌 *Bethel Computer Centre*
-
-Study Material / Link thar a awm e!
-*${fileName}* (${type})
-
-Khawngaihin in Portal-ah log in ula lo check ngei ngei ru.
-@all
-
-🌐 Portal Link: ${PORTAL_LINK}`;
+            const text = `📌 *Bethel Computer Centre*\n\nStudy Material / Link thar a awm e!\n*${fileName}* (${type})\n\nKhawngaihin in Portal-ah log in ula lo check ngei ngei ru.\n@all\n\n🌐 Portal Link: ${PORTAL_LINK}`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
         window.shareLoginWhatsApp = function(name, enrollment, dob) {
-            const text = `Chibai *${name}*,
-
-Hei hi Bethel Computer Centre Portal-a i luhna tur a ni e:
-
-👤 *Enrollment No:* ${enrollment}
-🔑 *Date of Birth:* ${dob}
-
-🌐 Portal Link: ${PORTAL_LINK}
-
-(I luh dawnah i date of birth kha '-' hmangin i chhu lut dawn nia, entirnan: 15-05-2005)`;
+            const text = `Chibai *${name}*,\n\nHei hi Bethel Computer Centre Portal-a i luhna tur a ni e:\n\n👤 *Enrollment No:* ${enrollment}\n🔑 *Date of Birth:* ${dob}\n\n🌐 Portal Link: ${PORTAL_LINK}\n\n(I luh dawnah i date of birth kha '-' hmangin i chhu lut dawn nia, entirnan: 15-05-2005)`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
         window.shareOnlineWhatsApp = function(title, url) {
-            let text = `📌 *Bethel Computer Centre*
-
-💻 *Saturday (O) Zirlaite Hriattirna*
-
-*${title}*`;
+            let text = `📌 *Bethel Computer Centre*\n\n💻 *Saturday (O) Zirlaite Hriattirna*\n\n*${title}*`;
             if (url && url.trim() !== '') {
-                text += `
-🔗 Link: ${url}`;
+                text += `\n🔗 Link: ${url}`;
             }
-            text += `
-
-Khawngaihin in Portal-ah log in ula kimchangin lo check ngei ngei ru.
-
-🌐 Portal Link: ${PORTAL_LINK}`;
+            text += `\n\nKhawngaihin in Portal-ah log in ula kimchangin lo check ngei ngei ru.\n\n🌐 Portal Link: ${PORTAL_LINK}`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
@@ -1757,8 +1723,7 @@ Khawngaihin in Portal-ah log in ula kimchangin lo check ngei ngei ru.
                     });
                 }
                 let totalPaid = cashPaid + gpayPaid;
-                exportData.push({ "Enrollment No": s.enrollment, "Zirlai Hming": s.name, "Shift": s.shift || '10am shift', "Total Course Fee": totalFee, "Cash in a pe": cashPaid, "GPay in a pe": gpayPaid, "Total a pe": totalPaid, "La Ba (Balance)": totalFee - totalPaid, "Pek Ni & History": histArr.join("
-") });
+                exportData.push({ "Enrollment No": s.enrollment, "Zirlai Hming": s.name, "Shift": s.shift || '10am shift', "Total Course Fee": totalFee, "Cash in a pe": cashPaid, "GPay in a pe": gpayPaid, "Total a pe": totalPaid, "La Ba (Balance)": totalFee - totalPaid, "Pek Ni & History": histArr.join("\n") });
             });
 
             if(exportData.length === 0) { alert("Data a la awm lo"); return; }
@@ -2350,7 +2315,7 @@ Khawngaihin in Portal-ah log in ula kimchangin lo check ngei ngei ru.
                     }
                     
                     let seenCount = data.seenBy ? data.seenBy.length : 0; 
-                    let safeTitle = data.title ? data.title.replace(/'/g, "\'") : '';
+                    let safeTitle = data.title ? data.title.replace(/'/g, "\\'") : '';
                     if(adminList) {
                         adminList.innerHTML += `<div class="notice-box">
                             <h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4>
@@ -2386,7 +2351,7 @@ Khawngaihin in Portal-ah log in ula kimchangin lo check ngei ngei ru.
                     let data = docSnap.data(); let icon = '🔗'; let color = '#333'; let btnText = 'Hawng Rawh'; let finalUrl = data.url;
                     if (data.type === 'PDF Note') { icon = '📕'; color = '#dc2626'; let match = finalUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/); if(match && match[1]) { finalUrl = `https://drive.google.com/uc?export=download&id=${match[1]}`; btnText = 'Download'; } }
                     else if (data.type === 'Google Form') { icon = '📝'; color = '#16a34a'; } else if (data.type === 'YouTube Video') { icon = '▶️'; color = '#2563eb'; }
-                    let safeFileName = data.fileName ? data.fileName.replace(/'/g, "\'") : ''; let safeType = data.type ? data.type.replace(/'/g, "\'") : '';
+                    let safeFileName = data.fileName ? data.fileName.replace(/'/g, "\\'") : ''; let safeType = data.type ? data.type.replace(/'/g, "\\'") : '';
                     if(adminContainer) {
                         adminContainer.innerHTML += `<div class="list-row"><div class="list-row-info"><b style="font-size: 14px;">${data.fileName}</b><br><span style="font-size: 12px; color: gray;">(${data.type})</span></div><div style="display: flex; gap: 5px;"><button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Share-na" onclick="shareMaterialWhatsApp('${safeFileName}', '${safeType}')">📲</button><button class="btn btn-danger btn-icon" title="Paih" onclick="deleteLink('${docSnap.id}')">✕</button></div></div>`;
                     }
@@ -2413,8 +2378,8 @@ Khawngaihin in Portal-ah log in ula kimchangin lo check ngei ngei ru.
             else {
                 snapshot.forEach((docSnap) => {
                     let data = docSnap.data();
-                    let safeTitle = data.title ? data.title.replace(/'/g, "\'") : '';
-                    let safeUrl = data.url ? data.url.replace(/'/g, "\'") : '';
+                    let safeTitle = data.title ? data.title.replace(/'/g, "\\'") : '';
+                    let safeUrl = data.url ? data.url.replace(/'/g, "\\'") : '';
                     let linkHtml = data.url ? `<a href="${data.url}" target="_blank" class="btn btn-primary" style="padding: 6px 12px; font-size: 13px; text-decoration: none; display: inline-block; margin-top: 10px; width: auto;">Link Hawng Rawh</a>` : '';
                     
                     if(adminContainer) {
@@ -2845,13 +2810,17 @@ Khawngaihin in Portal-ah log in ula kimchangin lo check ngei ngei ru.
             const student = allStudentsList.find(s => s.enrollment === enrollment);
             if(!student) { alert("Zirlai hmuh a ni lo!"); return; }
 
+            // Address leh Phone Number dilna
+            let address = prompt(`${student.name} Address (Veng) chhu rawh:\n(I duh chuan a ruakin i kalsan thei)`, "Chanmari I, Lunglei");
+            let phone = prompt(`${student.name} Phone Number chhu rawh:\n(I duh chuan a ruakin i kalsan thei)`, "");
+
             // ID Card Template a data thunluhna (textContent hman a ni)
             let timing = student.shift ? student.shift.replace(' shift', '').replace('Saturday (O)', 'Sat-O') : '';
             document.getElementById('id-timing').textContent = timing;
             document.getElementById('id-enroll').textContent = student.enrollment;
             document.getElementById('id-name').textContent = student.name;
-            document.getElementById('id-address').textContent = student.address || '';
-            document.getElementById('id-phone').textContent = student.phone || '';
+            document.getElementById('id-address').textContent = address || '';
+            document.getElementById('id-phone').textContent = phone || '';
             
             // Container unhide hmasak phawt tur (DOM a update theih nan)
             const container = document.getElementById('id-card-container');
