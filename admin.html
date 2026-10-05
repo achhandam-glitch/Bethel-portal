@@ -195,14 +195,6 @@
                 <h4 style="grid-column: 1 / -1; color: #334155; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; margin-bottom: -5px;">Zirlaite Details</h4>
                 
                 <div class="input-group">
-                    <label>Hming</label>
-                    <input type="text" id="edit-name" required>
-                </div>
-                <div class="input-group">
-                    <label>DOB</label>
-                    <input type="text" id="edit-dob" required>
-                </div>
-                <div class="input-group">
                     <label>Course</label>
                     <select id="edit-course">
                         <option value="DCA I Semester">DCA I Semester</option>
@@ -227,6 +219,14 @@
                         <option value="Saturday (O)">Saturday (O)</option>
                         <option value="Flexible shift">Flexible shift</option>
                     </select>
+                </div>
+                <div class="input-group">
+                    <label>Hming</label>
+                    <input type="text" id="edit-name" required>
+                </div>
+                <div class="input-group">
+                    <label>DOB</label>
+                    <input type="text" id="edit-dob" required>
                 </div>
                 <div class="input-group">
                     <label>Pa Hming</label>
@@ -264,6 +264,10 @@
                     <label>Apaar ID</label>
                     <input type="text" id="edit-apaar">
                 </div>
+                <div class="input-group" style="grid-column: 1 / -1;">
+                    <label>Profile Picture Link (URL) - <span style="font-weight:normal;">Optional</span></label>
+                    <input type="url" id="edit-photo" placeholder="Entirnan: https://i.ibb.co/...">
+                </div>
                 
                 <h4 style="grid-column: 1 / -1; color: #334155; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; margin-top: 10px; margin-bottom: -5px;">Educational qualification</h4>
                 
@@ -282,10 +286,6 @@
                 <div class="input-group">
                     <label>Division</label>
                     <input type="text" id="edit-division">
-                </div>
-                <div class="input-group" style="grid-column: 1 / -1;">
-                    <label>Profile Picture Link (Google Drive)</label>
-                    <input type="url" id="edit-photo">
                 </div>
             </div>
             
@@ -470,6 +470,25 @@
                                 <input type="text" id="reg-enrollment" placeholder="Entirnan: 2602001" required>
                             </div>
                             <div class="input-group">
+                                <label>Shift</label>
+                                <select id="reg-shift">
+                                    <option value="10am shift">10am shift</option>
+                                    <option value="6am shift">6am shift</option>
+                                    <option value="7am shift">7am shift</option>
+                                    <option value="8am shift">8am shift</option>
+                                    <option value="11am shift">11am shift</option>
+                                    <option value="1pm shift">1pm shift</option>
+                                    <option value="2pm shift">2pm shift</option>
+                                    <option value="3pm shift">3pm shift</option>
+                                    <option value="4pm shift">4pm shift</option>
+                                    <option value="5pm shift">5pm shift</option>
+                                    <option value="7pm shift">7pm shift</option>
+                                    <option value="Saturday shift">Saturday shift</option>
+                                    <option value="Saturday (O)">Saturday (O)</option>
+                                    <option value="Flexible shift">Flexible shift</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
                                 <label>Hming</label>
                                 <input type="text" id="reg-name" placeholder="Zirlai hming pum" required>
                             </div>
@@ -513,24 +532,9 @@
                                 <label>Apaar ID</label>
                                 <input type="text" id="reg-apaar" placeholder="Apaar ID">
                             </div>
-                            <div class="input-group">
-                                <label>Shift</label>
-                                <select id="reg-shift">
-                                    <option value="10am shift">10am shift</option>
-                                    <option value="6am shift">6am shift</option>
-                                    <option value="7am shift">7am shift</option>
-                                    <option value="8am shift">8am shift</option>
-                                    <option value="11am shift">11am shift</option>
-                                    <option value="1pm shift">1pm shift</option>
-                                    <option value="2pm shift">2pm shift</option>
-                                    <option value="3pm shift">3pm shift</option>
-                                    <option value="4pm shift">4pm shift</option>
-                                    <option value="5pm shift">5pm shift</option>
-                                    <option value="7pm shift">7pm shift</option>
-                                    <option value="Saturday shift">Saturday shift</option>
-                                    <option value="Saturday (O)">Saturday (O)</option>
-                                    <option value="Flexible shift">Flexible shift</option>
-                                </select>
+                            <div class="input-group" style="grid-column: 1 / -1;">
+                                <label>Profile Picture Link (URL) - <span style="font-weight:normal;">Optional</span></label>
+                                <input type="url" id="reg-photo" placeholder="Entirnan: https://i.ibb.co/...">
                             </div>
                             
                             <h4 style="grid-column: 1 / -1; color: #0284c7; border-bottom: 1px solid #cbd5e1; padding-bottom: 5px; margin-top: 10px; margin-bottom: -5px;">Educational qualification</h4>
@@ -551,10 +555,7 @@
                                 <label>Division</label>
                                 <input type="text" id="reg-division" placeholder="1st, 2nd, etc.">
                             </div>
-                            <div class="input-group" style="grid-column: 1 / -1;">
-                                <label>Profile Picture (Google Drive Link) - <span style="font-weight:normal;">Optional</span></label>
-                                <input type="url" id="reg-photo" placeholder="Entirnan: https://drive.google.com/file/d/.../view">
-                            </div>
+                            
                             <button type="submit" class="btn btn-primary" style="grid-column: 1 / -1; margin-top: 5px;">Zirlai Save Rawh</button>
                         </form>
                     </div>
@@ -1125,7 +1126,7 @@
 
                 <!-- TAB: AI SETTINGS -->
                 <div id="tab-ai-settings" class="admin-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️️ Menu-a let lehna</button></div>
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
                     
                     <div id="ai-settings-lock" class="card" style="border: 2px solid #f59e0b; margin-bottom: 0;">
                         <h3 style="color: #b45309; border-bottom: 1px solid #fde68a; padding-bottom: 10px;">🔒 Security Lock</h3>
