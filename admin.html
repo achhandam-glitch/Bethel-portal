@@ -2853,9 +2853,11 @@
             
             const tempContainer = document.createElement('div');
             tempContainer.style.position = 'absolute';
-            tempContainer.style.top = '0px';     
-            tempContainer.style.left = '0px';
-            tempContainer.style.zIndex = '99999'; // Hma lamah kan rawn lalut
+            // Scroll Position a lak (A hma lama blank chhan siamthatna)
+            tempContainer.style.top = window.scrollY + 'px';     
+            tempContainer.style.left = '50%';
+            tempContainer.style.transform = 'translateX(-50%)';
+            tempContainer.style.zIndex = '99999'; 
             tempContainer.style.background = 'white';
             tempContainer.style.width = '794px'; 
             tempContainer.style.padding = '20px 0';
@@ -2865,13 +2867,14 @@
             tempContainer.appendChild(cardNode);
             document.body.appendChild(tempContainer);
 
-            window.scrollTo(0, 0); 
+            // Browser in a paint hman nan hun pek
+            await new Promise(r => setTimeout(r, 600));
 
             const opt = {
                 margin:       10, 
                 filename:     `${student.enrollment}_ID_Card.pdf`,
                 image:        { type: 'jpeg', quality: 1 },
-                html2canvas:  { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 }, 
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, 
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
@@ -2897,14 +2900,14 @@
 
             const printWrapper = document.createElement('div');
             printWrapper.style.position = 'absolute';
-            printWrapper.style.top = '0px';       
-            printWrapper.style.left = '0px';
-            printWrapper.style.zIndex = '99999'; // Hma lamah kan rawn lalut
+            // Scroll Position a lak
+            printWrapper.style.top = window.scrollY + 'px';       
+            printWrapper.style.left = '50%';
+            printWrapper.style.transform = 'translateX(-50%)';
+            printWrapper.style.zIndex = '99999'; 
             printWrapper.style.background = 'white';
             printWrapper.style.width = '794px';   
             document.body.appendChild(printWrapper);
-
-            window.scrollTo(0, 0); 
 
             let currentPage = document.createElement('div');
             currentPage.style.width = '100%';
@@ -2941,11 +2944,14 @@
                 cardCount++;
             }
 
+            // Elements in-load kim hun nghahna
+            await new Promise(r => setTimeout(r, 1000));
+
             const opt = {
                 margin:       [10, 0, 10, 0],
                 filename:     `Bethel_ID_Cards_Bulk.pdf`,
                 image:        { type: 'jpeg', quality: 1 },
-                html2canvas:  { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 }, 
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, 
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
