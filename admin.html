@@ -2853,11 +2853,11 @@
             
             const tempContainer = document.createElement('div');
             tempContainer.style.position = 'absolute';
-            tempContainer.style.top = '0px';     // VERY IMPORTANT: Not -9999px
+            tempContainer.style.top = '0px';     
             tempContainer.style.left = '0px';
-            tempContainer.style.zIndex = '-9999'; // Stay behind everything
+            tempContainer.style.zIndex = '99999'; // Hma lamah kan rawn lalut
             tempContainer.style.background = 'white';
-            tempContainer.style.width = '794px'; // A4 Width in pixels to prevent CSS squishing
+            tempContainer.style.width = '794px'; 
             tempContainer.style.padding = '20px 0';
             tempContainer.style.display = 'flex';
             tempContainer.style.justifyContent = 'center';
@@ -2865,7 +2865,7 @@
             tempContainer.appendChild(cardNode);
             document.body.appendChild(tempContainer);
 
-            window.scrollTo(0, 0); // Scroll top top to avoid html2canvas clipping bugs
+            window.scrollTo(0, 0); 
 
             const opt = {
                 margin:       10, 
@@ -2897,14 +2897,14 @@
 
             const printWrapper = document.createElement('div');
             printWrapper.style.position = 'absolute';
-            printWrapper.style.top = '0px';       // VERY IMPORTANT: Not -9999px
+            printWrapper.style.top = '0px';       
             printWrapper.style.left = '0px';
-            printWrapper.style.zIndex = '-9999';
+            printWrapper.style.zIndex = '99999'; // Hma lamah kan rawn lalut
             printWrapper.style.background = 'white';
-            printWrapper.style.width = '794px';   // A4 Width
+            printWrapper.style.width = '794px';   
             document.body.appendChild(printWrapper);
 
-            window.scrollTo(0, 0); // Scroll top top to avoid html2canvas clipping bugs
+            window.scrollTo(0, 0); 
 
             let currentPage = document.createElement('div');
             currentPage.style.width = '100%';
@@ -2922,7 +2922,7 @@
                 if (cardCount === 4) {
                     const pageBreak = document.createElement('div');
                     pageBreak.className = 'html2pdf__page-break';
-                    pageBreak.style.pageBreakBefore = 'always'; // Force the PDF page break natively
+                    pageBreak.style.pageBreakBefore = 'always'; 
                     printWrapper.appendChild(pageBreak);
 
                     currentPage = document.createElement('div');
