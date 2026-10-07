@@ -2777,6 +2777,7 @@
             cardNode.id = ''; // ID paih bo, thlanna a buai loh nan
             cardNode.style.display = 'flex';
             cardNode.style.margin = '15px auto'; // A4 a awm dawn in in-karawl dan tur
+            cardNode.style.transform = 'scale(1)'; // Ensure no weird scaling
 
             let timing = student.shift ? student.shift.replace(' shift', '').replace('Saturday (O)', 'Sat-O') : '';
             cardNode.querySelector('#id-timing').textContent = timing;
@@ -2832,10 +2833,12 @@
             imgEl.crossOrigin = "Anonymous";
             imgEl.src = finalPhoto;
 
-            // Thlalak in-load zawh hun nghahna
             await new Promise((resolve) => {
-                if (imgEl.complete) { setTimeout(resolve, 100); } 
-                else { imgEl.onload = () => setTimeout(resolve, 100); imgEl.onerror = () => setTimeout(resolve, 100); }
+                if (imgEl.complete) { setTimeout(resolve, 150); } 
+                else { 
+                    imgEl.onload = () => setTimeout(resolve, 150); 
+                    imgEl.onerror = () => setTimeout(resolve, 150); 
+                }
             });
 
             return cardNode;
@@ -2850,21 +2853,30 @@
             
             const tempContainer = document.createElement('div');
             tempContainer.style.position = 'absolute';
-            tempContainer.style.top = '-9999px';
+            tempContainer.style.top = '0px';     // VERY IMPORTANT: Not -9999px
+            tempContainer.style.left = '0px';
+            tempContainer.style.zIndex = '-9999'; // Stay behind everything
             tempContainer.style.background = 'white';
+            tempContainer.style.width = '794px'; // A4 Width in pixels to prevent CSS squishing
+            tempContainer.style.padding = '20px 0';
+            tempContainer.style.display = 'flex';
+            tempContainer.style.justifyContent = 'center';
+            
             tempContainer.appendChild(cardNode);
             document.body.appendChild(tempContainer);
+
+            window.scrollTo(0, 0); // Scroll top top to avoid html2canvas clipping bugs
 
             const opt = {
                 margin:       10, 
                 filename:     `${student.enrollment}_ID_Card.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true }, 
+                image:        { type: 'jpeg', quality: 1 },
+                html2canvas:  { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 }, 
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             try {
-                await html2pdf().set(opt).from(cardNode).save();
+                await html2pdf().set(opt).from(tempContainer).save();
             } catch(e) {
                 alert("PDF siam theih a ni lo: " + e.message);
             } finally {
@@ -2883,13 +2895,16 @@
             const enrollments = Array.from(checkboxes).map(cb => cb.value);
             const selectedStudents = allStudentsList.filter(s => enrollments.includes(s.enrollment));
 
-            // Hidden wrapper
             const printWrapper = document.createElement('div');
             printWrapper.style.position = 'absolute';
-            printWrapper.style.top = '-99999px';
+            printWrapper.style.top = '0px';       // VERY IMPORTANT: Not -9999px
+            printWrapper.style.left = '0px';
+            printWrapper.style.zIndex = '-9999';
             printWrapper.style.background = 'white';
-            printWrapper.style.width = '794px'; // A4 Width
+            printWrapper.style.width = '794px';   // A4 Width
             document.body.appendChild(printWrapper);
+
+            window.scrollTo(0, 0); // Scroll top top to avoid html2canvas clipping bugs
 
             let currentPage = document.createElement('div');
             currentPage.style.width = '100%';
@@ -2905,9 +2920,9 @@
 
             for (let i = 0; i < selectedStudents.length; i++) {
                 if (cardCount === 4) {
-                    // Pali (4) a tlin veleh Page tharah
                     const pageBreak = document.createElement('div');
                     pageBreak.className = 'html2pdf__page-break';
+                    pageBreak.style.pageBreakBefore = 'always'; // Force the PDF page break natively
                     printWrapper.appendChild(pageBreak);
 
                     currentPage = document.createElement('div');
@@ -2927,18 +2942,15 @@
             }
 
             const opt = {
-                margin:       [10, 0, 10, 0], // Top, Right, Bottom, Left
+                margin:       [10, 0, 10, 0],
                 filename:     `Bethel_ID_Cards_Bulk.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true }, 
+                image:        { type: 'jpeg', quality: 1 },
+                html2canvas:  { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 }, 
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             try {
                 await html2pdf().set(opt).from(printWrapper).save();
-                // Checkbox zawng zawng clear theih a ni bawk
-                // document.getElementById('selectAllCb').checked = false;
-                // document.querySelectorAll('.student-cb').forEach(cb => cb.checked = false);
             } catch(e) {
                 alert("PDF siam theih a ni lo: " + e.message);
             } finally {
