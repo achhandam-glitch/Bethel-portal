@@ -1216,7 +1216,8 @@
                         <p id="id-sub3" style="margin: 0; font-size: 11px; color: #dc2626; font-weight: bold;">Regn.No CCA/MSCTE/2013/14</p>
                     </div>
                     <div style="width: 65px; height: 75px; border: 1px solid #94a3b8; margin-left: 5px; background: #f1f5f9; flex-shrink: 0;">
-                        <img id="id-photo" src="" style="width: 100%; height: 100%; object-fit: cover;">
+                        <!-- Profile Image CORS fix -->
+                        <img id="id-photo" crossorigin="anonymous" src="" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                 </div>
                 <div id="id-banner" style="background: #3b82f6; color: white; text-align: center; font-size: 12px; font-weight: bold; padding: 4px 0; margin-bottom: 10px;">
@@ -1264,7 +1265,8 @@
                             <div style="font-size: 11px; font-weight: bold; color: #333;">Fee hi Gpay duh tan</div>
                             <div style="font-weight: 900; font-size: 18px; font-style: italic; color: #16a34a; letter-spacing: 1px; margin-top: 2px;">UPI</div>
                         </div>
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=bethelcomputer@upi" style="width: 55px; height: 55px; border: 1px solid #ccc;">
+                        <!-- QR Code CORS fix -->
+                        <img crossorigin="anonymous" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=bethelcomputer@upi" style="width: 55px; height: 55px; border: 1px solid #ccc;">
                     </div>
                 </div>
 
@@ -2849,43 +2851,31 @@
             const student = allStudentsList.find(s => s.enrollment === enrollment);
             if(!student) { alert("Zirlai hmuh a ni lo!"); return; }
 
-            // LUNGLEI BIK: Scroll position vawn that leh Top a lawn chhoh (Blank issue fix)
-            const currentScrollY = window.scrollY;
-            window.scrollTo({ top: 0, behavior: 'instant' });
-
             const cardNode = await buildCardNode(student);
             
+            // LUNGLEI BIK: Wrapper thianghlim, Body a thun luh (append) loh tur
             const tempContainer = document.createElement('div');
-            // CSS pawimawh (Blank PDF pumpelh nan)
-            tempContainer.style.position = 'absolute';
-            tempContainer.style.top = '0px';     
-            tempContainer.style.left = '0px';
-            tempContainer.style.zIndex = '99999'; // Positive z-index is MUST
             tempContainer.style.background = 'white';
             tempContainer.style.width = '794px'; 
-            tempContainer.style.padding = '20px'; // Flex aiah padding nen
+            tempContainer.style.padding = '20px'; 
+            tempContainer.style.display = 'flex';
+            tempContainer.style.justifyContent = 'center';
             
             tempContainer.appendChild(cardNode);
-            document.body.appendChild(tempContainer);
-
-            // Browser in a paint hman nan hun pek
-            await new Promise(r => setTimeout(r, 600));
 
             const opt = {
                 margin:       10, 
                 filename:     `${student.enrollment}_ID_Card.pdf`,
-                image:        { type: 'jpeg', quality: 1 },
-                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0 }, 
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true }, 
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             try {
+                // Element hi body ah dah tel lova directly a pass hian blank issue a bo hmak thin
                 await html2pdf().set(opt).from(tempContainer).save();
             } catch(e) {
                 alert("PDF siam theih a ni lo: " + e.message);
-            } finally {
-                document.body.removeChild(tempContainer);
-                window.scrollTo({ top: currentScrollY, behavior: 'instant' }); 
             }
         };
 
@@ -2897,27 +2887,17 @@
                 return;
             }
 
-            // LUNGLEI BIK: Scroll position vawn that leh Top a lawn chhoh (Blank issue fix)
-            const currentScrollY = window.scrollY;
-            window.scrollTo({ top: 0, behavior: 'instant' });
-
             const enrollments = Array.from(checkboxes).map(cb => cb.value);
             const selectedStudents = allStudentsList.filter(s => enrollments.includes(s.enrollment));
 
+            // LUNGLEI BIK: Wrapper thianghlim, Body a thun luh (append) loh tur
             const printWrapper = document.createElement('div');
-            printWrapper.style.position = 'absolute';
-            printWrapper.style.top = '0px';       
-            printWrapper.style.left = '0px';
-            printWrapper.style.zIndex = '99999'; // Positive!
             printWrapper.style.background = 'white';
             printWrapper.style.width = '794px';   
-            document.body.appendChild(printWrapper);
 
             let currentPage = document.createElement('div');
             currentPage.style.width = '100%';
             currentPage.style.padding = '10px 0';
-            // Flex leh column hman hian buaina a siam fo. Block a tha ber.
-            // Mahse card template ah margin: 15px auto a awm sa a, a in-center mai ang.
             printWrapper.appendChild(currentPage);
 
             let cardCount = 0;
@@ -2944,23 +2924,19 @@
                 cardCount++;
             }
 
-            await new Promise(r => setTimeout(r, 1000));
-
             const opt = {
                 margin:       [10, 0, 10, 0],
                 filename:     `Bethel_ID_Cards_Bulk.pdf`,
-                image:        { type: 'jpeg', quality: 1 },
-                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0 }, 
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true }, 
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             try {
+                // Element hi body ah dah tel lova directly a pass tur
                 await html2pdf().set(opt).from(printWrapper).save();
             } catch(e) {
                 alert("PDF siam theih a ni lo: " + e.message);
-            } finally {
-                document.body.removeChild(printWrapper);
-                window.scrollTo({ top: currentScrollY, behavior: 'instant' });
             }
         }
     </script>
