@@ -1068,12 +1068,16 @@
                     <div class="card" style="margin-bottom: 0;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
                             <h3 style="margin: 0; border: none; padding: 0;">Zirlai List & Management</h3>
-                            <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 15px;" onclick="exportStudentsToExcel()">📥 Excel-ah Export Rawh</button>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-primary" style="width: auto; margin: 0; padding: 8px 15px; background-color: #3b82f6;" onclick="downloadSelectedIDsA4()">🪪 A4 ID Print (Pali)</button>
+                                <button class="btn btn-success" style="width: auto; margin: 0; padding: 8px 15px;" onclick="exportStudentsToExcel()">📥 Excel Export</button>
+                            </div>
                         </div>
                         <div style="overflow-x: auto;">
                             <table>
                                 <thead>
                                     <tr>
+                                        <th style="width: 40px; text-align: center;"><input type="checkbox" id="selectAllCb" onclick="toggleAllStudents(this)" style="cursor: pointer; width: 16px; height: 16px;"></th>
                                         <th>Enrollment</th>
                                         <th style="min-width: 180px;">Hming & Profile</th>
                                         <th>DOB</th>
@@ -1085,7 +1089,7 @@
                                 </thead>
                                 <tbody id="student-management-body">
                                     <tr>
-                                        <td colspan="7" style="text-align: center; color: gray;">Data a la awm lo...</td>
+                                        <td colspan="8" style="text-align: center; color: gray;">Data a la awm lo...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1241,11 +1245,11 @@
                     </div>
                     
                     <!-- Table height thunun nan flex-grow paih a ni a, padding hman a ni -->
-                    <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: center; border: 1px solid #000; margin-bottom: 10px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: center; border: 1px solid #000; margin-bottom: 10px; table-layout: fixed;">
                         <tr>
-                            <th style="border: 1px solid #000; padding: 5px 2px;">Inst</th>
-                            <th style="border: 1px solid #000; padding: 5px 2px;">Amount</th>
-                            <th style="border: 1px solid #000; padding: 5px 2px;">Sign</th>
+                            <th style="width: 18%; border: 1px solid #000; padding: 5px 2px;">Inst</th>
+                            <th style="width: 25%; border: 1px solid #000; padding: 5px 2px;">Amount</th>
+                            <th style="width: 57%; border: 1px solid #000; padding: 5px 2px;">Sign</th>
                         </tr>
                         <tr><td style="border: 1px solid #000; padding: 5px 2px; font-weight:bold;">1<sup style="font-size:8px;">st</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
                         <tr><td style="border: 1px solid #000; padding: 5px 2px; font-weight:bold;">2<sup style="font-size:8px;">nd</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
@@ -2590,11 +2594,18 @@
         }
 
         // ================= GENERAL & MANAGEMENT =================
+        
+        // --- MULTI-SELECT LOGIC ---
+        window.toggleAllStudents = function(source) {
+            const checkboxes = document.querySelectorAll('.student-cb');
+            checkboxes.forEach(cb => { cb.checked = source.checked; });
+        }
+
         function renderStudentManagementTable() {
             const tableBody = document.getElementById('student-management-body'); 
             if(!tableBody) return; tableBody.innerHTML = '';
             
-            if(allStudentsList.length === 0) { tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>'; } 
+            if(allStudentsList.length === 0) { tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>'; } 
             else {
                 allStudentsList.forEach((s) => {
                     const totalPts = attendancePointsMap[s.enrollment] || 0;
@@ -2606,6 +2617,7 @@
 
                     tableBody.innerHTML += `
                         <tr>
+                            <td style="text-align: center;"><input type="checkbox" class="student-cb" value="${s.enrollment}" style="cursor: pointer; width: 16px; height: 16px;"></td>
                             <td>${s.enrollment}</td>
                             <td>${nameHtml}</td>
                             <td>${s.dob}</td>
@@ -2756,217 +2768,183 @@
             } catch(e) { alert("Harsatna: " + e.message); }
         }
 
-        window.registerSingleStudent = async function(event) {
-            event.preventDefault();
-            const enr = document.getElementById('reg-enrollment').value.trim(); 
-            const name = document.getElementById('reg-name').value.trim(); 
-            const dob = document.getElementById('reg-dob').value.trim(); 
-            const shift = document.getElementById('reg-shift').value;
-            const course = document.getElementById('reg-course').value;
-            const father = document.getElementById('reg-father').value.trim();
-            const mother = document.getElementById('reg-mother').value.trim();
-            const sex = document.getElementById('reg-sex').value;
-            const aadhaar = document.getElementById('reg-aadhaar').value.trim();
-            const phone = document.getElementById('reg-phone').value.trim();
-            const address = document.getElementById('reg-address').value.trim();
-            const email = document.getElementById('reg-email').value.trim();
-            const apaar = document.getElementById('reg-apaar').value.trim();
-            const studentClass = document.getElementById('reg-class').value.trim();
-            const board = document.getElementById('reg-board').value.trim();
-            const passingYear = document.getElementById('reg-passing-year').value.trim();
-            const division = document.getElementById('reg-division').value.trim();
-            
-            let photoUrlRaw = document.getElementById('reg-photo').value.trim();
-            let finalPhotoUrl = photoUrlRaw;
-            if(photoUrlRaw.includes("drive.google.com/file/d/")) {
-                let match = photoUrlRaw.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-                if(match && match[1]) {
-                    finalPhotoUrl = `https://drive.google.com/uc?export=view&id=${match[1]}`;
-                }
-            }
-
-            if(!enr || !name || !dob) { alert("Data pawimawh a kim lo!"); return; }
-            try { 
-                await setDoc(doc(db, "students", String(enr)), { 
-                    enrollment: String(enr), 
-                    name: String(name), 
-                    dob: String(dob), 
-                    shift: String(shift),
-                    course: String(course),
-                    fatherName: String(father),
-                    motherName: String(mother),
-                    sex: String(sex),
-                    aadhaar: String(aadhaar),
-                    phone: String(phone),
-                    address: String(address),
-                    email: String(email),
-                    apaarId: String(apaar),
-                    studentClass: String(studentClass),
-                    board: String(board),
-                    passingYear: String(passingYear),
-                    division: String(division),
-                    photoUrl: finalPhotoUrl,
-                    coins: 0, 
-                    registeredAt: serverTimestamp(), 
-                    lastLoginDate: "" 
-                }); 
-                alert("Zirlai " + name + " chu hlawhtling taka register a ni e!"); 
-                event.target.reset(); 
-            } catch(e) { alert("Harsatna: " + e.message); }
-        }
-
-        // ================= GRADEBOOK & OTHERS =================
-        window.onGradeStudentSelect = function() {
-            let enr = document.getElementById('grade-student-select').value; let infoDiv = document.getElementById('grade-student-info');
-            if(!enr) { infoDiv.innerHTML = ''; return; }
-            let stats = attendanceStats[enr];
-            if(stats && stats.days > 0) { let pct = (stats.earned / stats.possible) * 100; infoDiv.innerHTML = `📅 A class kal tawh zat: <b>Ni ${stats.days}</b> &nbsp;|&nbsp; 📊 A regular dan: <b>${pct.toFixed(1)}%</b>`; onGradeSubjectSelect(); } 
-            else { infoDiv.innerHTML = `📅 A class kal tawh zat: <b>Ni 0</b> &nbsp;|&nbsp; 📊 A regular dan: <b>0%</b>`; }
-        }
-
-        window.onGradeSubjectSelect = function() {
-            let subj = document.getElementById('grade-subject').value; let prLabel = document.getElementById('label-pr-exam'); let prInput = document.getElementById('grade-pr-exam');
-            let enr = document.getElementById('grade-student-select').value;
-            
-            if (subj === 'DCA 101' || subj === 'DCA 102') { prLabel.innerHTML = 'Practical Exam - Typing/Folder [Max 40]'; prInput.readOnly = false; prInput.style.backgroundColor = 'white'; } 
-            else if (subj === 'DCA 104') {
-                prLabel.innerHTML = 'Practical Exam - Auto (Attendance % atangin) [Max 40]';
-                if (enr && attendanceStats[enr] && attendanceStats[enr].days > 0) { let pct = (attendanceStats[enr].earned / attendanceStats[enr].possible) * 100; prInput.value = ((pct / 100) * 40).toFixed(1); } else { prInput.value = ''; }
-                prInput.style.backgroundColor = '#e0f2fe'; 
-            } else { prLabel.innerHTML = 'Practical Exam (Pangngai) [Max 40]'; prInput.readOnly = false; prInput.style.backgroundColor = 'white'; }
-        }
-
-        window.saveGrade = async function(event) {
-            event.preventDefault();
-            const enr = document.getElementById('grade-student-select').value; const subj = document.getElementById('grade-subject').value;
-            const thIa = parseFloat(document.getElementById('grade-th-ia').value) || 0; const thExam = parseFloat(document.getElementById('grade-th-exam').value) || 0;
-            const prIa = parseFloat(document.getElementById('grade-pr-ia').value) || 0; const prExam = parseFloat(document.getElementById('grade-pr-exam').value) || 0;
-
-            if(!enr) { alert("Zirlai thlang phawt rawh."); return; }
-            const totalMark = thIa + thExam + prIa + prExam; const studentName = allStudentsList.find(s => s.enrollment === enr)?.name || '';
-            try { await setDoc(doc(db, "student_grades", `${enr}_${subj}`), { enrollment: enr, name: studentName, subject: subj, theoryIA: thIa, theoryExam: thExam, practicalIA: prIa, practicalExam: prExam, totalMark: totalMark, timestamp: serverTimestamp() }); alert(`${subj} mark hlawhtling taka save a ni e!`); document.getElementById('grade-th-ia').value = ''; document.getElementById('grade-th-exam').value = ''; document.getElementById('grade-pr-ia').value = ''; document.getElementById('grade-pr-exam').value = ''; } 
-            catch(e) { alert("Save naah harsatna: " + e.message); }
-        }
-
-        onSnapshot(query(collection(db, "student_grades"), orderBy("enrollment")), (snapshot) => {
-            const tableBody = document.getElementById('grade-results-table'); if(!tableBody) return; tableBody.innerHTML = '';
-            if (snapshot.empty) { tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: gray;">Results a la awm rih lo...</td></tr>'; } 
-            else { snapshot.forEach((docSnap) => { let d = docSnap.data(); let totalColor = d.totalMark >= 40 ? '#16a34a' : '#dc2626'; tableBody.innerHTML += `<tr><td>${d.enrollment}</td><td><b>${d.name}</b></td><td style="color: #0f766e; font-weight: bold;">${d.subject}</td><td>${d.theoryIA}</td><td>${d.theoryExam}</td><td>${d.practicalIA}</td><td>${d.practicalExam}</td><td><span style="color: ${totalColor}; font-weight: bold; font-size: 15px;">${d.totalMark.toFixed(1)}</span></td></tr>`; }); }
-        });
-
-        window.exportGradesToExcel = async function() {
-            try { const querySnapshot = await getDocs(query(collection(db, "student_grades"), orderBy("enrollment"))); let resultsData = []; querySnapshot.forEach((docSnap) => { let d = docSnap.data(); resultsData.push({ "Enrollment No": d.enrollment, "Zirlai Hming": d.name, "Subject": d.subject, "Theory IA": d.theoryIA, "Theory Exam": d.theoryExam, "Practical IA": d.practicalIA, "Practical Exam": d.practicalExam, "Total Mark (100)": d.totalMark }); }); if(resultsData.length === 0) { alert("Marks a la awm lo."); return; } let worksheet = XLSX.utils.json_to_sheet(resultsData); let workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Gradebook"); XLSX.writeFile(workbook, "Bethel_Gradebook.xlsx"); } catch (error) { alert("Harsatna: " + error.message); }
-        }
+        // ================= ID CARD GENERATOR (BULK & SINGLE) =================
         
-        window.clearAllGrades = async function() { if (confirm("Mark i thunluh tawh zawng zawng paih fai takzet i duh em?")) { try { const querySnapshot = await getDocs(collection(db, "student_grades")); let deletePromises = []; querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "student_grades", document.id)))); await Promise.all(deletePromises); alert("Gradebook paih fai a ni tawh e!"); } catch (error) { alert("Harsatna: " + error.message); } } }
+        // Helper function: Node pakhat (ID card template) siamna
+        async function buildCardNode(student) {
+            const template = document.getElementById('id-card-combined');
+            const cardNode = template.cloneNode(true);
+            cardNode.id = ''; // ID paih bo, thlanna a buai loh nan
+            cardNode.style.display = 'flex';
+            cardNode.style.margin = '15px auto'; // A4 a awm dawn in in-karawl dan tur
 
-        // ================= ID CARD GENERATOR =================
-        window.downloadIDCard = async function(enrollment) {
-            // Zirlai zawnna
-            const student = allStudentsList.find(s => s.enrollment === enrollment);
-            if(!student) { alert("Zirlai hmuh a ni lo!"); return; }
-
-            // ID Card Template a data thunluhna
             let timing = student.shift ? student.shift.replace(' shift', '').replace('Saturday (O)', 'Sat-O') : '';
-            document.getElementById('id-timing').textContent = timing;
-            document.getElementById('id-enroll').textContent = student.enrollment;
-            document.getElementById('id-name').textContent = student.name;
-            document.getElementById('id-address').textContent = student.address || '';
-            document.getElementById('id-phone').textContent = student.phone || '';
+            cardNode.querySelector('#id-timing').textContent = timing;
+            cardNode.querySelector('#id-enroll').textContent = student.enrollment;
+            cardNode.querySelector('#id-name').textContent = student.name;
+            cardNode.querySelector('#id-address').textContent = student.address || '';
+            cardNode.querySelector('#id-phone').textContent = student.phone || '';
             
-            // Course hming Auto-fetch na
             const courseText = student.course === 'DCA II Semester' ? 'DCA II Sem' : 'DCA I Sem';
-            document.getElementById('id-course').textContent = courseText;
+            cardNode.querySelector('#id-course').textContent = courseText;
 
-            // Course Fee Update na
             const courseFee = student.course === 'DCA II Semester' ? '15000' : '12000';
-            document.getElementById('id-fee-display').textContent = `Course Fee : ₹.${courseFee}`;
+            cardNode.querySelector('#id-fee-display').textContent = `Course Fee : ₹.${courseFee}`;
 
-            // ================= THEME THLAKNA (DCA I vs DCA II) =================
-            const frontCard = document.getElementById('id-card-front');
-            const title = document.getElementById('id-title');
-            const sub1 = document.getElementById('id-sub1');
-            const sub2 = document.getElementById('id-sub2');
-            const sub3 = document.getElementById('id-sub3');
-            const banner = document.getElementById('id-banner');
-            const textContainer = document.getElementById('id-text-container');
-            const courseU = document.getElementById('id-course');
-            const timingU = document.getElementById('id-timing');
+            const frontCard = cardNode.querySelector('#id-card-front');
+            const title = cardNode.querySelector('#id-title');
+            const sub1 = cardNode.querySelector('#id-sub1');
+            const sub2 = cardNode.querySelector('#id-sub2');
+            const sub3 = cardNode.querySelector('#id-sub3');
+            const banner = cardNode.querySelector('#id-banner');
+            const textContainer = cardNode.querySelector('#id-text-container');
+            const courseU = cardNode.querySelector('#id-course');
+            const timingU = cardNode.querySelector('#id-timing');
 
             if (student.course === 'DCA II Semester') {
-                // DCA II SEMESTER BIK (Dark Maroon & White Theme)
-                frontCard.style.background = '#881337'; // Sen Duk nalh
+                frontCard.style.background = '#881337'; 
                 frontCard.style.borderColor = '#881337';
                 title.style.color = '#ffffff';
-                sub1.style.color = '#fecdd3'; // Var pawl lam
+                sub1.style.color = '#fecdd3';
                 sub2.style.color = '#fda4af';
                 sub3.style.color = '#fda4af';
-                
                 banner.style.background = '#ffffff';
                 banner.style.color = '#881337';
-                
                 textContainer.style.color = '#ffffff';
                 courseU.style.color = '#ffffff';
                 timingU.style.color = '#ffffff';
             } else {
-                // DCA I SEMESTER (Default Blue & White Theme)
                 frontCard.style.background = 'white';
                 frontCard.style.borderColor = '#94a3b8';
                 title.style.color = '#0f172a';
                 sub1.style.color = '#333';
                 sub2.style.color = '#dc2626';
                 sub3.style.color = '#dc2626';
-                
                 banner.style.background = '#3b82f6';
                 banner.style.color = 'white';
-                
                 textContainer.style.color = '#1e293b';
                 courseU.style.color = '#1e40af';
                 timingU.style.color = '#1e40af';
             }
-            // ====================================================================
 
-            // Container unhide hmasak phawt tur
-            const container = document.getElementById('id-card-container');
-            container.classList.remove('hidden');
-
-            // Photo dahna (CORS proxy thun telin)
-            const imgEl = document.getElementById('id-photo');
+            const imgEl = cardNode.querySelector('#id-photo');
             let finalPhoto = student.photoUrl || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
             imgEl.crossOrigin = "Anonymous";
             imgEl.src = finalPhoto;
 
-            const element = document.getElementById('id-card-combined');
-
-            // Thlalak a in-load zawh hun nghah lawkna
+            // Thlalak in-load zawh hun nghahna
             await new Promise((resolve) => {
-                if (imgEl.complete) {
-                    setTimeout(resolve, 500); 
-                } else {
-                    imgEl.onload = () => setTimeout(resolve, 500);
-                    imgEl.onerror = () => setTimeout(resolve, 500);
-                }
+                if (imgEl.complete) { setTimeout(resolve, 100); } 
+                else { imgEl.onload = () => setTimeout(resolve, 100); imgEl.onerror = () => setTimeout(resolve, 100); }
             });
 
-            // html2canvas settings
+            return cardNode;
+        }
+
+        // Pakhat (Single) Print / Download
+        window.downloadIDCard = async function(enrollment) {
+            const student = allStudentsList.find(s => s.enrollment === enrollment);
+            if(!student) { alert("Zirlai hmuh a ni lo!"); return; }
+
+            const cardNode = await buildCardNode(student);
+            
+            const tempContainer = document.createElement('div');
+            tempContainer.style.position = 'absolute';
+            tempContainer.style.top = '-9999px';
+            tempContainer.style.background = 'white';
+            tempContainer.appendChild(cardNode);
+            document.body.appendChild(tempContainer);
+
             const opt = {
                 margin:       10, 
                 filename:     `${student.enrollment}_ID_Card.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 }, 
+                html2canvas:  { scale: 2, useCORS: true }, 
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // PDF Download na
             try {
-                await html2pdf().set(opt).from(element).save();
+                await html2pdf().set(opt).from(cardNode).save();
             } catch(e) {
                 alert("PDF siam theih a ni lo: " + e.message);
             } finally {
-                // A zawhah a thukru leh ang
-                container.classList.add('hidden');
+                document.body.removeChild(tempContainer);
             }
         };
+
+        // Bulk (Pali/A4 pakhat) Print / Download
+        window.downloadSelectedIDsA4 = async function() {
+            const checkboxes = document.querySelectorAll('.student-cb:checked');
+            if (checkboxes.length === 0) {
+                alert("ID Card print tur zirlai i list atang khian thlang (tick) phawt rawh!");
+                return;
+            }
+
+            const enrollments = Array.from(checkboxes).map(cb => cb.value);
+            const selectedStudents = allStudentsList.filter(s => enrollments.includes(s.enrollment));
+
+            // Hidden wrapper
+            const printWrapper = document.createElement('div');
+            printWrapper.style.position = 'absolute';
+            printWrapper.style.top = '-99999px';
+            printWrapper.style.background = 'white';
+            printWrapper.style.width = '794px'; // A4 Width
+            document.body.appendChild(printWrapper);
+
+            let currentPage = document.createElement('div');
+            currentPage.style.width = '100%';
+            currentPage.style.padding = '10px 0';
+            currentPage.style.display = 'flex';
+            currentPage.style.flexDirection = 'column';
+            currentPage.style.alignItems = 'center';
+            printWrapper.appendChild(currentPage);
+
+            let cardCount = 0;
+
+            alert("PDF siam mek a ni a, zirlai i thlan zat azirin hun a duh rei deuh thei. Khawngaihin lo nghak lawk rawh...");
+
+            for (let i = 0; i < selectedStudents.length; i++) {
+                if (cardCount === 4) {
+                    // Pali (4) a tlin veleh Page tharah
+                    const pageBreak = document.createElement('div');
+                    pageBreak.className = 'html2pdf__page-break';
+                    printWrapper.appendChild(pageBreak);
+
+                    currentPage = document.createElement('div');
+                    currentPage.style.width = '100%';
+                    currentPage.style.padding = '10px 0';
+                    currentPage.style.display = 'flex';
+                    currentPage.style.flexDirection = 'column';
+                    currentPage.style.alignItems = 'center';
+                    printWrapper.appendChild(currentPage);
+
+                    cardCount = 0;
+                }
+
+                const cardNode = await buildCardNode(selectedStudents[i]);
+                currentPage.appendChild(cardNode);
+                cardCount++;
+            }
+
+            const opt = {
+                margin:       [10, 0, 10, 0], // Top, Right, Bottom, Left
+                filename:     `Bethel_ID_Cards_Bulk.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true }, 
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            try {
+                await html2pdf().set(opt).from(printWrapper).save();
+                // Checkbox zawng zawng clear theih a ni bawk
+                // document.getElementById('selectAllCb').checked = false;
+                // document.querySelectorAll('.student-cb').forEach(cb => cb.checked = false);
+            } catch(e) {
+                alert("PDF siam theih a ni lo: " + e.message);
+            } finally {
+                document.body.removeChild(printWrapper);
+            }
+        }
     </script>
 </body>
 </html>
