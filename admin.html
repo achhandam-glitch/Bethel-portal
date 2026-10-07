@@ -2856,15 +2856,14 @@
             const cardNode = await buildCardNode(student);
             
             const tempContainer = document.createElement('div');
+            // CSS pawimawh (Blank PDF pumpelh nan)
             tempContainer.style.position = 'absolute';
             tempContainer.style.top = '0px';     
             tempContainer.style.left = '0px';
-            tempContainer.style.zIndex = '-1'; 
+            tempContainer.style.zIndex = '99999'; // Positive z-index is MUST
             tempContainer.style.background = 'white';
             tempContainer.style.width = '794px'; 
-            tempContainer.style.padding = '20px 0';
-            tempContainer.style.display = 'flex';
-            tempContainer.style.justifyContent = 'center';
+            tempContainer.style.padding = '20px'; // Flex aiah padding nen
             
             tempContainer.appendChild(cardNode);
             document.body.appendChild(tempContainer);
@@ -2876,8 +2875,7 @@
                 margin:       10, 
                 filename:     `${student.enrollment}_ID_Card.pdf`,
                 image:        { type: 'jpeg', quality: 1 },
-                // windowY leh scrollY hi 0 a dah tur
-                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0, windowY: 0 }, 
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0 }, 
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
@@ -2887,7 +2885,6 @@
                 alert("PDF siam theih a ni lo: " + e.message);
             } finally {
                 document.body.removeChild(tempContainer);
-                // PDF a siam zawhah i awmna ngaiah a let leh ang
                 window.scrollTo({ top: currentScrollY, behavior: 'instant' }); 
             }
         };
@@ -2911,7 +2908,7 @@
             printWrapper.style.position = 'absolute';
             printWrapper.style.top = '0px';       
             printWrapper.style.left = '0px';
-            printWrapper.style.zIndex = '-1'; 
+            printWrapper.style.zIndex = '99999'; // Positive!
             printWrapper.style.background = 'white';
             printWrapper.style.width = '794px';   
             document.body.appendChild(printWrapper);
@@ -2919,14 +2916,13 @@
             let currentPage = document.createElement('div');
             currentPage.style.width = '100%';
             currentPage.style.padding = '10px 0';
-            currentPage.style.display = 'flex';
-            currentPage.style.flexDirection = 'column';
-            currentPage.style.alignItems = 'center';
+            // Flex leh column hman hian buaina a siam fo. Block a tha ber.
+            // Mahse card template ah margin: 15px auto a awm sa a, a in-center mai ang.
             printWrapper.appendChild(currentPage);
 
             let cardCount = 0;
 
-            alert("PDF siam mek a ni a, zirlai i thlan zat azirin hun a duh rei deuh thei. Khawngaihin lo nghak lawk rawh...");
+            alert("PDF siam mek a ni a, khawngaihin lo nghak lawk rawh...");
 
             for (let i = 0; i < selectedStudents.length; i++) {
                 if (cardCount === 4) {
@@ -2938,9 +2934,6 @@
                     currentPage = document.createElement('div');
                     currentPage.style.width = '100%';
                     currentPage.style.padding = '10px 0';
-                    currentPage.style.display = 'flex';
-                    currentPage.style.flexDirection = 'column';
-                    currentPage.style.alignItems = 'center';
                     printWrapper.appendChild(currentPage);
 
                     cardCount = 0;
@@ -2951,15 +2944,13 @@
                 cardCount++;
             }
 
-            // Elements in-load kim hun nghahna
             await new Promise(r => setTimeout(r, 1000));
 
             const opt = {
                 margin:       [10, 0, 10, 0],
                 filename:     `Bethel_ID_Cards_Bulk.pdf`,
                 image:        { type: 'jpeg', quality: 1 },
-                // windowY leh scrollY hi 0 a dah tur
-                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0, windowY: 0 }, 
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0 }, 
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
@@ -2969,7 +2960,6 @@
                 alert("PDF siam theih a ni lo: " + e.message);
             } finally {
                 document.body.removeChild(printWrapper);
-                // PDF a siam zawhah i awmna ngaiah a let leh ang
                 window.scrollTo({ top: currentScrollY, behavior: 'instant' });
             }
         }
