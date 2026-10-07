@@ -1238,34 +1238,43 @@
             <div id="id-card-back" style="width: 325px; height: 204px; background: white; border: 1px solid #94a3b8; border-left: 1px dashed #000; position: relative; overflow: hidden; font-family: 'Times New Roman', Times, serif;">
                 
                 <!-- Rotate container (Absolute Position) -->
-                <div style="position: absolute; width: 204px; height: 325px; top: 204px; left: 0; transform-origin: top left; transform: rotate(-90deg); display: flex; flex-direction: column; padding: 12px; box-sizing: border-box;">
+                <div style="position: absolute; width: 204px; height: 325px; top: 204px; left: 0; transform-origin: top left; transform: rotate(-90deg); display: flex; flex-direction: column; padding: 10px 12px; box-sizing: border-box;">
                     
-                    <div id="id-fee-display" style="text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 4px; color: #333;">
+                    <div id="id-fee-display" style="text-align: center; font-weight: bold; font-size: 13px; margin-bottom: 4px; color: #333;">
                         Course Fee : ₹.12000
                     </div>
                     
-                    <!-- Table height thunun nan flex-grow paih a ni a, padding tih zim a ni -->
-                    <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: center; border: 1px solid #000; margin-bottom: 5px; table-layout: fixed;">
+                    <!-- Table height thunun nan flex-grow paih a ni a, padding hman a ni -->
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: center; border: 1px solid #000; margin-bottom: 4px; table-layout: fixed;">
                         <tr>
-                            <th style="width: 18%; border: 1px solid #000; padding: 3px 2px;">Inst</th>
-                            <th style="width: 25%; border: 1px solid #000; padding: 3px 2px;">Amount</th>
-                            <th style="width: 57%; border: 1px solid #000; padding: 3px 2px;">Sign</th>
+                            <th style="width: 25%; border: 1px solid #000; padding: 2px;">Inst</th>
+                            <th style="width: 28%; border: 1px solid #000; padding: 2px;">Amount</th>
+                            <th style="width: 47%; border: 1px solid #000; padding: 2px;">Sign</th>
                         </tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px 2px; font-weight:bold;">1<sup style="font-size:8px;">st</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px 2px; font-weight:bold;">2<sup style="font-size:8px;">nd</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px 2px; font-weight:bold;">3<sup style="font-size:8px;">rd</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px 2px; font-weight:bold;">4<sup style="font-size:8px;">th</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px 2px; font-weight:bold;">5<sup style="font-size:8px;">th</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
-                        <tr><td style="border: 1px solid #000; padding: 3px 2px; font-weight:bold;">6<sup style="font-size:8px;">th</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
+                        <tr style="height: 14px;"><td style="border: 1px solid #000; padding: 1px 2px; font-weight:bold; white-space: nowrap;">1<sup style="font-size:8px;">st</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
+                        <tr style="height: 14px;"><td style="border: 1px solid #000; padding: 1px 2px; font-weight:bold; white-space: nowrap;">2<sup style="font-size:8px;">nd</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
+                        <tr style="height: 14px;"><td style="border: 1px solid #000; padding: 1px 2px; font-weight:bold; white-space: nowrap;">3<sup style="font-size:8px;">rd</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
+                        <tr style="height: 14px;"><td style="border: 1px solid #000; padding: 1px 2px; font-weight:bold; white-space: nowrap;">4<sup style="font-size:8px;">th</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
+                        <tr style="height: 14px;"><td style="border: 1px solid #000; padding: 1px 2px; font-weight:bold; white-space: nowrap;">5<sup style="font-size:8px;">th</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
+                        <tr style="height: 14px;"><td style="border: 1px solid #000; padding: 1px 2px; font-weight:bold; white-space: nowrap;">6<sup style="font-size:8px;">th</sup> Inst</td><td style="border: 1px solid #000;"></td><td style="border: 1px solid #000;"></td></tr>
                     </table>
                     
-                    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto;">
-                        <div style="display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 2px;">
-                            <div style="font-size: 11px; font-weight: bold; color: #333;">Fee hi Gpay duh tan</div>
-                            <div style="font-weight: 900; font-size: 18px; font-style: italic; color: #16a34a; letter-spacing: 1px; margin-top: 2px;">UPI</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 2px;">
+                        <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                            <div style="font-size: 10px; font-weight: bold; color: #333; margin-bottom: 2px;">Online Payment:</div>
+                            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 2px;">
+                                <!-- Custom CSS GPay Logo -->
+                                <div style="font-family: 'Segoe UI', sans-serif; background: #fff; padding: 2px 4px; border-radius: 4px; border: 1px solid #e2e8f0; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                    <span style="color:#4285F4;font-weight:900;font-size:11px;">G</span><span style="color:#5f6368;font-weight:600;font-size:11px; margin-left: 1px;">Pay</span>
+                                </div>
+                                <!-- Custom CSS UPI Logo -->
+                                <div style="font-family: 'Segoe UI', sans-serif; background: #fff; padding: 2px 4px; border-radius: 4px; border: 1px solid #e2e8f0; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                    <span style="font-weight:900;font-size:11px;font-style:italic;"><span style="color:#ea580c;">U</span><span style="color:#16a34a;">PI</span></span>
+                                </div>
+                            </div>
                         </div>
-                        <!-- QR Code Image CORS Fix leh size tih zim -->
-                        <img id="id-qr-code" crossorigin="anonymous" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=bethelcomputer@upi" style="width: 50px; height: 50px; border: 1px solid #ccc;">
+                        <!-- QR Code CORS Fix leh size thlak -->
+                        <img id="id-qr-code" crossorigin="anonymous" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=bethelcomputer@upi" style="width: 52px; height: 52px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px;">
                     </div>
                 </div>
 
