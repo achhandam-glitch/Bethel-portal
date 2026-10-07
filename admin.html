@@ -2853,11 +2853,10 @@
             
             const tempContainer = document.createElement('div');
             tempContainer.style.position = 'absolute';
-            // Scroll Position a lak (A hma lama blank chhan siamthatna)
-            tempContainer.style.top = window.scrollY + 'px';     
-            tempContainer.style.left = '50%';
-            tempContainer.style.transform = 'translateX(-50%)';
-            tempContainer.style.zIndex = '99999'; 
+            // Scroll Position leh Transform paih a ni (Blank siamthatna)
+            tempContainer.style.top = '0px';     
+            tempContainer.style.left = '0px';
+            tempContainer.style.zIndex = '-9999'; // Screen hnung lamah a awm ang
             tempContainer.style.background = 'white';
             tempContainer.style.width = '794px'; 
             tempContainer.style.padding = '20px 0';
@@ -2874,7 +2873,8 @@
                 margin:       10, 
                 filename:     `${student.enrollment}_ID_Card.pdf`,
                 image:        { type: 'jpeg', quality: 1 },
-                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, 
+                // scrollY: 0 tih hi html2canvas option ah dah belh a ni
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0 }, 
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
@@ -2900,11 +2900,10 @@
 
             const printWrapper = document.createElement('div');
             printWrapper.style.position = 'absolute';
-            // Scroll Position a lak
-            printWrapper.style.top = window.scrollY + 'px';       
-            printWrapper.style.left = '50%';
-            printWrapper.style.transform = 'translateX(-50%)';
-            printWrapper.style.zIndex = '99999'; 
+            // Scroll Position leh Transform paih a ni
+            printWrapper.style.top = '0px';       
+            printWrapper.style.left = '0px';
+            printWrapper.style.zIndex = '-9999'; 
             printWrapper.style.background = 'white';
             printWrapper.style.width = '794px';   
             document.body.appendChild(printWrapper);
@@ -2951,7 +2950,8 @@
                 margin:       [10, 0, 10, 0],
                 filename:     `Bethel_ID_Cards_Bulk.pdf`,
                 image:        { type: 'jpeg', quality: 1 },
-                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' }, 
+                // scrollY: 0 tih hi html2canvas option ah dah belh a ni
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollY: 0 }, 
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
