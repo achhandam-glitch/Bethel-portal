@@ -2866,7 +2866,7 @@
             return cardNode;
         }
 
-        // Pakhat (Single) Print / Download
+                // Pakhat (Single) Print / Download
         window.downloadIDCard = async function(enrollment) {
             const student = allStudentsList.find(s => s.enrollment === enrollment);
             if(!student) { alert("Zirlai hmuh a ni lo!"); return; }
@@ -2881,14 +2881,14 @@
             const tempContainer = document.createElement('div');
             tempContainer.style.background = 'white';
             tempContainer.style.width = '794px'; 
-            tempContainer.style.padding = '20px'; 
+            tempContainer.style.padding = '15px 0'; /* Heta padding hi tih zim a ni */
             tempContainer.style.display = 'flex';
             tempContainer.style.justifyContent = 'center';
             
             tempContainer.appendChild(cardNode);
 
             const opt = {
-                margin:       10, 
+                margin:       [10, 0, 10, 0], /* Heta margin hi Bulk ang chiahin thlak a ni */
                 filename:     `${student.enrollment}_ID_Card.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true }, 
@@ -2904,6 +2904,7 @@
                 window.scrollTo({ top: currentScrollY, behavior: 'instant' });
             }
         };
+
 
         // Bulk (Pali/A4 pakhat) Print / Download
         window.downloadSelectedIDsA4 = async function() {
