@@ -2974,6 +2974,235 @@
                 window.scrollTo({ top: currentScrollY, behavior: 'instant' });
             }
         }
+
+        // ================= SIAMTATNA LEH DAH BELH (MISSING FUNCTIONS) =================
+
+        // 1. ZIRLAI REGISTER-NA (MANUAL)
+        window.registerSingleStudent = async function(event) {
+            event.preventDefault();
+            const enrollment = document.getElementById('reg-enrollment').value.trim();
+            if (!enrollment) { alert("Enrollment No chhut a ngai!"); return; }
+
+            // Check if enrollment already exists
+            const existingStudent = allStudentsList.find(s => s.enrollment === enrollment);
+            if (existingStudent) {
+                alert("He Enrollment No hi hman a ni tawh. A dang hmang rawh.");
+                return;
+            }
+
+            try {
+                let photoUrlRaw = document.getElementById('reg-photo').value.trim();
+                let finalPhotoUrl = photoUrlRaw;
+                
+                if(photoUrlRaw.includes("drive.google.com/file/d/")) {
+                    let match = photoUrlRaw.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                    if(match && match[1]) {
+                        finalPhotoUrl = `https://drive.google.com/uc?export=view&id=${match[1]}`;
+                    }
+                }
+
+                await setDoc(doc(db, "students", enrollment), {
+                    enrollment: enrollment,
+                    course: document.getElementById('reg-course').value,
+                    shift: document.getElementById('reg-shift').value,
+                    name: document.getElementById('reg-name').value.trim(),
+                    fatherName: document.getElementById('reg-father').value.trim(),
+                    motherName: document.getElementById('reg-mother').value.trim(),
+                    dob: document.getElementById('reg-dob').value.trim(),
+                    sex: document.getElementById('reg-sex').value,
+                    aadhaar: document.getElementById('reg-aadhaar').value.trim(),
+                    phone: document.getElementById('reg-phone').value.trim(),
+                    address: document.getElementById('reg-address').value.trim(),
+                    email: document.getElementById('reg-email').value.trim(),
+                    apaarId: document.getElementById('reg-apaar').value.trim(),
+                    studentClass: document.getElementById('reg-class').value.trim(),
+                    board: document.getElementById('reg-board').value.trim(),
+                    passingYear: document.getElementById('reg-passing-year').value.trim(),
+                    division: document.getElementById('reg-division').value.trim(),
+                    photoUrl: finalPhotoUrl,
+                    coins: 0,
+                    registeredAt: serverTimestamp()
+                });
+                
+                alert("Zirlai thar hlawhtling taka register a ni e!");
+                event.target.reset();
+            } catch(e) {
+                alert("Harsatna: " + e.message);
+            }
+        }
+
+        // 2. GRADEBOOK LOGIC
+        window.onGradeStudentSelect = function() {
+            const enrollment = document.getElementById('grade-student-select').value;
+            const infoBox = document.getElementById('grade-student-info');
+            
+            if(!enrollment) { 
+                infoBox.innerHTML = ''; 
+                return; 
+            }
+            
+            const student = allStudentsList.find(s => s.enrollment === enrollment);
+            if(student) {
+                infoBox.innerHTML = `Hming: <span style="color:#0f766e;">${student.name}</span> | Shift: <span style="color:#0f766e;">${student.shift || '10am shift'}</span>`;
+            }
+        }
+
+        window.onGradeSubjectSelect = function() {
+            const subj = document.getElementById('grade-subject').value;
+            const prExamLabel = document.getElementById('label-pr-exam');
+            
+            // DCA 102 hi typing exam subject anih vangin label kan thlak hlek
+            if (subj === 'DCA 102') {
+                prExamLabel.innerHTML = `Practical Exam - Typing Test [Max 40]`;
+            } else {
+                prExamLabel.innerHTML = `Practical Exam - Folder/Lab [Max 40]`;
+            }
+        }
+
+        window.saveGrade = async function(event) {
+            event.preventDefault();
+            const enrollment = document.getElementById('grade-student-select').value;
+            const subject = document.getElementById('grade-subject').value;
+            const thIA = parseFloat(document.getElementById('grade-th-ia').value) || 0;
+            const thExam = parseFloat(document.getElementById('grade-th-exam').value) || 0;
+            const prIA = parseFloat(document.getElementById('grade-pr-ia').value) || 0;
+            const prExam = parseFloat(document.getElementById('grade-pr-exam').value) || 0;
+
+            if(!enrollment) { alert("Zirlai thlang phawt rawh."); return; }
+
+            const student = allStudentsList.find(s => s.enrollment === enrollment);
+            const studentName = student ? student.name : '';
+
+            // Validation (Numbers must not exceed maximum marks)
+            if (thIA > 10 || thExam > 40 || prIA > 10 || prExam > 40) {
+                alert("Mark pek zat kha a dik lo (Max points a pel). Uluk takin check nawn leh rawh.");
+                return;
+            }
+
+            try {
+                await setDoc(doc(db, "grades", `${enrollment}_${subject}`), {
+                    enrollment: enrollment,
+                    name: studentName,
+                    subject: subject,
+                    theoryIA: thIA,
+                    theoryExam: thExam,
+                    practicalIA: prIA,
+                    practicalExam: prExam,
+                    total: (thIA + thExam + prIA + prExam),
+                    timestamp: serverTimestamp()
+                });
+                alert("Mark hlawhtling taka save a ni e!");
+            } catch(e) {
+                alert("Harsatna: " + e.message);
+            }
+        }
+
+        // Fetch Grades and display in Table
+        onSnapshot(collection(db, "grades"), (snapshot) => {
+            const tableBody = document.getElementById('grade-results-table');
+            if(!tableBody) return;
+            
+            if(snapshot.empty) {
+                tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: gray;">Results a la awm rih lo...</td></tr>';
+                return;
+            }
+
+            tableBody.innerHTML = '';
+            
+            // Array ah kan dah phawt ang, chumi hnuah sort nan
+            let allGrades = [];
+            snapshot.forEach(docSnap => {
+                allGrades.push({ id: docSnap.id, ...docSnap.data() });
+            });
+
+            // Sort by Subject first, then by Enrollment
+            allGrades.sort((a, b) => {
+                if (a.subject < b.subject) return -1;
+                if (a.subject > b.subject) return 1;
+                if (a.enrollment < b.enrollment) return -1;
+                if (a.enrollment > b.enrollment) return 1;
+                return 0;
+            });
+
+            allGrades.forEach(grade => {
+                let badgeClass = grade.total >= 80 ? 'background:#dcfce7; color:#166534;' : 
+                                 grade.total >= 60 ? 'background:#e0f2fe; color:#0369a1;' : 
+                                 grade.total >= 40 ? 'background:#fef08a; color:#854d0e;' : 
+                                 'background:#fee2e2; color:#991b1b;';
+                
+                tableBody.innerHTML += `
+                    <tr>
+                        <td>${grade.enrollment}</td>
+                        <td><b>${grade.name}</b></td>
+                        <td style="color:#0f766e; font-weight:bold;">${grade.subject}</td>
+                        <td>${grade.theoryIA}</td>
+                        <td>${grade.theoryExam}</td>
+                        <td>${grade.practicalIA}</td>
+                        <td>${grade.practicalExam}</td>
+                        <td><span style="${badgeClass} padding: 4px 8px; border-radius: 6px; font-weight:bold;">${grade.total}</span></td>
+                    </tr>
+                `;
+            });
+        });
+
+        window.exportGradesToExcel = async function() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "grades"));
+                let gradeData = [];
+                querySnapshot.forEach((doc) => {
+                    let d = doc.data();
+                    gradeData.push({
+                        "Enrollment No": d.enrollment,
+                        "Zirlai Hming": d.name,
+                        "Subject": d.subject,
+                        "Theory IA": d.theoryIA,
+                        "Theory Exam": d.theoryExam,
+                        "Practical IA": d.practicalIA,
+                        "Practical Exam": d.practicalExam,
+                        "Total Marks": d.total
+                    });
+                });
+                
+                if(gradeData.length === 0) { alert("Data a la awm lo."); return; }
+                
+                // Sort by Enrollment and Subject before exporting
+                gradeData.sort((a, b) => {
+                    if (a["Enrollment No"] < b["Enrollment No"]) return -1;
+                    if (a["Enrollment No"] > b["Enrollment No"]) return 1;
+                    if (a["Subject"] < b["Subject"]) return -1;
+                    if (a["Subject"] > b["Subject"]) return 1;
+                    return 0;
+                });
+
+                let worksheet = XLSX.utils.json_to_sheet(gradeData);
+                let workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Gradebook_Report");
+                XLSX.writeFile(workbook, "Bethel_Gradebook.xlsx");
+            } catch (error) {
+                alert("Harsatna: " + error.message);
+            }
+        }
+
+        window.clearAllGrades = async function() {
+            if (confirm("Grade record zawng zawng hi i paih fai takzet i duh em?")) {
+                try {
+                    const querySnapshot = await getDocs(collection(db, "grades"));
+                    let deletePromises = [];
+                    querySnapshot.forEach((document) => {
+                        deletePromises.push(deleteDoc(doc(db, "grades", document.id)));
+                    });
+                    
+                    if(deletePromises.length > 0) {
+                        await Promise.all(deletePromises);
+                        alert("Grade record paih fai a ni tawh e!");
+                    } else {
+                        alert("Paih tur record a awm lo.");
+                    }
+                } catch (error) {
+                    alert("Harsatna: " + error.message);
+                }
+            }
+        }
     </script>
 </body>
 </html>
