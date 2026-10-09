@@ -1300,7 +1300,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "6.12"; // Version updated
+        const APP_VERSION = "6.13"; // Version updated
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -2879,55 +2879,47 @@
             const enrollments = Array.from(checkboxes).map(cb => cb.value);
             const selectedStudents = allStudentsList.filter(s => enrollments.includes(s.enrollment));
 
-            // BUG FIX: Body chhungah kan thun lut ang, mahse screen pawn lamah (hmuh theih loh in) kan dah ang.
-            // Hei hian HTML2Canvas blank page issue a fix thin.
+            // Screen-ah ti lang lova a ruka siamna (Memory Wrapper)
             const printWrapper = document.createElement('div');
-            printWrapper.id = 'temp-bulk-print-wrapper';
             printWrapper.style.background = 'white';
-            printWrapper.style.width = '794px';
-            printWrapper.style.position = 'absolute';
-            printWrapper.style.top = '0';
-            printWrapper.style.left = '-9999px'; // Hmuh theih loh in
-            printWrapper.style.zIndex = '-9999';
-            document.body.appendChild(printWrapper); // DOM-ah belh ngei ngei tur
+            printWrapper.style.width = '794px';   
 
-            let currentPage;
+            let currentPage = document.createElement('div');
+            currentPage.style.width = '100%';
+            currentPage.style.padding = '10px 0';
+            printWrapper.appendChild(currentPage);
+
             let cardCount = 0;
 
-            alert("PDF siam mek a ni a, khawngaihin lo nghak lawk rawh... (A tam chuan a rei deuh thei)");
+            alert("PDF siam mek a ni a, khawngaihin lo nghak lawk rawh... (Zirlai an tam chuan a rei deuh ang)");
 
             for (let i = 0; i < selectedStudents.length; i++) {
-                if (cardCount === 0) {
+                if (cardCount === 4) {
+                    const pageBreak = document.createElement('div');
+                    pageBreak.className = 'html2pdf__page-break';
+                    printWrapper.appendChild(pageBreak);
+
                     currentPage = document.createElement('div');
                     currentPage.style.width = '100%';
                     currentPage.style.padding = '10px 0';
-                    currentPage.style.background = 'white';
-                    
-                    // Page hmasa ber anih loh chuan Page Break kan dah zel ang
-                    if (i > 0) {
-                        currentPage.style.pageBreakBefore = 'always';
-                    }
-                    
                     printWrapper.appendChild(currentPage);
+
+                    cardCount = 0;
                 }
 
                 const cardNode = await buildCardNode(selectedStudents[i]);
+                cardNode.style.pageBreakInside = 'avoid'; // A laihawla ID a in-cut loh nan
                 currentPage.appendChild(cardNode);
                 cardCount++;
-
-                // ID Card 4 a kim velah counter reset tur
-                if (cardCount === 4) {
-                    cardCount = 0;
-                }
             }
 
             const opt = {
                 margin:       [10, 0, 10, 0],
                 filename:     `Bethel_ID_Cards_Bulk.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, scrollY: 0 }, // ScrollY 0 a dah hian offset a veng
+                html2canvas:  { scale: 1.5, useCORS: true, windowWidth: 800 }, 
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak:    { mode: ['css', 'legacy'] } // CSS page-break a zah theih nan
+                pagebreak:    { mode: ['css', 'legacy'] }
             };
 
             try {
@@ -2935,8 +2927,6 @@
             } catch(e) {
                 alert("PDF siam theih a ni lo: " + e.message);
             } finally {
-                // PDF siam zawhah hmunhnawk kan paih leh nghal ang
-                document.body.removeChild(printWrapper);
                 window.scrollTo({ top: currentScrollY, behavior: 'instant' });
             }
         }
