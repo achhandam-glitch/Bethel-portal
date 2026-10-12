@@ -99,10 +99,6 @@
         .mcq-option:hover { background: #fef08a; }
         .leaderboard-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #e2e8f0; color: #1e293b; }
 
-        /* AI CHATBOX STYLES */
-        .user-msg { background-color: #0284c7; color: white; padding: 10px 15px; border-radius: 15px 15px 0 15px; align-self: flex-end; max-width: 85%; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); line-height: 1.5; }
-        .ai-msg { background-color: #e2e8f0; color: #1e293b; padding: 10px 15px; border-radius: 15px 15px 15px 0; align-self: flex-start; max-width: 85%; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); line-height: 1.5; }
-
         @media (max-width: 768px) { 
             .form-grid { grid-template-columns: 1fr; } 
             .hero-content h1 { font-size: 32px; } 
@@ -149,10 +145,6 @@
         body.dark-mode span[style*="background: #e0f2fe"] { background-color: #0369a1 !important; color: #bae6fd !important; }
         body.dark-mode span[style*="background: #fef08a"] { background-color: #78350f !important; color: #fde047 !important; }
 
-        /* DARK MODE AI CHAT */
-        body.dark-mode .ai-msg { background-color: #334155 !important; color: #f8fafc !important; }
-        body.dark-mode #chat-history { background-color: #0f172a !important; border-color: #334155 !important; }
-        
         body.dark-mode .sticky-header { background-color: #1e293b !important; border-color: #334155 !important; }
         
         /* Dark Mode Holiday Notice Widget */
@@ -277,10 +269,6 @@
                         </button>
                         
                         <button class="menu-btn" id="student-menu-online" style="display: none; border-left-color: #8b5cf6;" onclick="openStudentTab('student-tab-online')">💻 Saturday O (Practical)</button>
-
-                        <button class="menu-btn" onclick="openStudentTab('student-tab-ai')" style="border-left-color: #10b981;">
-                            🤖 Zirtirtu zawt rawh
-                        </button>
                     </div>
                 </div>
             </div>
@@ -458,40 +446,6 @@
                     </div>
                 </div>
 
-                <div id="student-tab-ai" class="student-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-a let lehna</button></div>
-                    
-                    <div class="card" style="display: flex; flex-direction: column; height: 75vh; margin-bottom: 0; border: 2px solid #10b981;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #a7f3d0; padding-bottom: 10px; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
-                            <h3 style="margin: 0; border: none; padding: 0; color: #047857;">🤖Zirtirtu(AI a thuam a ni e)</h3>
-                            <div style="display: flex; gap: 8px; align-items: center;">
-                                <select id="ai-subject-select" style="padding: 6px 10px; font-size: 13px; border-radius: 6px; border: 1px solid #10b981; background: #ffffff; color: #1e293b;">
-                                    <option value="General">-- Subject Thlang Rawh --</option>
-                                    <option value="DCA 101 - Computer Fundamentals">DCA 101 - Computer Fundamentals</option>
-                                    <option value="DCA 102 - Operating Systems">DCA 102 - Operating Systems</option>
-                                    <option value="DCA 103 - Office Automation Software">DCA 103 - Office Automation Software</option>
-                                    <option value="DCA 104 - Internet Technology">DCA 104 - Internet Technology</option>
-                                    <option value="DCA 105 - Computer Graphics (Photoshop 7.0)">DCA 105 - Computer Graphics (Photoshop 7.0)</option>
-                                    <option value="DCA 106 - Desktop Publishing (PageMaker)">DCA 106 - Desktop Publishing (PageMaker)</option>
-                                </select>
-                                <button class="btn btn-primary" style="width: auto; margin: 0; padding: 6px 12px; font-size: 13px; background-color: #0284c7;" onclick="exportChatToPDF()" title="PDF in Download Rawh">📥 PDF</button>
-                                <button class="btn btn-danger" style="width: auto; margin: 0; padding: 6px 12px; font-size: 13px;" onclick="clearAIChat()" title="Chat hlui nawt faina">🗑</button>
-                            </div>
-                        </div>
-                        
-                        <div id="chat-history" style="flex-grow: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 12px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 12px;">
-                            <div class="ai-msg">Chibai! Bethel Computer Centre zirtirtu Sir Alan-a leh Sir Mavena te kan ni e. Subject i duh ber thlang la, i zawhna chu ziak rawh le!</div>
-                        </div>
-                        
-                        <form onsubmit="sendAIMessage(event)" style="display: flex; gap: 10px; flex-direction: column; margin: 0;">
-                            <textarea id="ai-user-input" rows="2" placeholder="I zawhna ziak rawh (Enter hmet lovin 'Thawnna' hmet rawh)..." required style="resize: none; font-size: 14px; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1;"></textarea>
-                            <div style="display: flex; justify-content: flex-end;">
-                                <button type="submit" class="btn btn-success" style="width: auto; margin: 0; background-color: #10b981; padding: 10px 25px;">Thawnna 🚀</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
             </div>
 
         </section>
@@ -554,7 +508,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "6.9"; 
+        const APP_VERSION = "6.10"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0, photoUrl: '' };
         let studentLeaveUnsubscribe = null; 
@@ -1594,7 +1548,6 @@
 
                         renderStudentFeePortal(); loadStudentLeaves(enrollmentStr); loadMySubmissions(); autoCalculatePeriodAttendance(); 
                         checkNotifications();
-                        loadAIChatHistory();
                         renderHolidays(); 
 
                         setTimeout(() => {
@@ -1618,140 +1571,6 @@
             } catch (e) { 
                 alert("Harsatna: " + e.message); 
                 if (submitBtn) { submitBtn.innerText = "Lut rawh"; submitBtn.disabled = false; }
-            }
-        }
-
-        window.sendAIMessage = async function(event) {
-            event.preventDefault();
-            const inputEl = document.getElementById('ai-user-input');
-            const subjectSelect = document.getElementById('ai-subject-select');
-            const message = inputEl.value.trim();
-            const selectedSubject = subjectSelect.value;
-            
-            if (!message) return;
-            
-            const chatHistory = document.getElementById('chat-history');
-            const submitBtn = event.target.querySelector('button[type="submit"]');
-            
-            chatHistory.innerHTML += `<div class="user-msg"><b>[${selectedSubject}]</b><br>${message}</div>`;
-            inputEl.value = '';
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-
-            submitBtn.disabled = true;
-            submitBtn.innerText = '⏳ Ngaihtuah mek...';
-            const loadingId = "loading-" + Date.now();
-            chatHistory.innerHTML += `<div class="ai-msg" id="${loadingId}">Ngaihtuah mek... ⏳</div>`;
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-
-            let lastTeacher = localStorage.getItem('last_ai_teacher') || 'Sir Mavena';
-            let currentTeacher = (lastTeacher === 'Sir Mavena') ? 'Sir Alan-a' : 'Sir Mavena';
-            localStorage.setItem('last_ai_teacher', currentTeacher);
-
-            try {
-                const aiConfigSnap = await getDocs(query(collection(db, "settings")));
-                let apiKey = ""; 
-                aiConfigSnap.forEach(doc => {
-                    if(doc.id === "ai_config") {
-                        apiKey = doc.data().geminiApiKey || "";
-                    }
-                });
-
-                if(!apiKey) throw new Error("Admin-in API Key a la dah lut lo. Khawngaihin zirtirtu hrilh rawh.");
-
-                const systemPrompt = `Nang chu Bethel Computer Centre-a computer zirtirtu, ${currentTeacher} i ni. Zirlaite zawhna chhangtu tur i ni a. DCA 101, 102, 103, 104, 105, 106 subject te i huam a ni. Mizo tawngin ṭha takin chhang rawh.`;
-
-                const modelsToTry = ["gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-3.6-flash"];
-                let data = null; let usedModel = "";
-
-                for (const modelName of modelsToTry) {
-                    try {
-                        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt + "\n\nZirlai thlan subject: " + selectedSubject + "\n\nZirlai zawhna: " + message }]}] })
-                        });
-
-                        if (response.ok) {
-                            data = await response.json(); usedModel = modelName; break; 
-                        }
-                    } catch (netErr) { console.warn(`Model ${modelName} fetch error:`, netErr); }
-                }
-
-                if (!data) { throw new Error("Tuna hman tum model hi a hna a tawt deuh a (High Demand), khawngaihin darkar chanve vel hnuah emaw a hnu-ah i try nawn leh dawn nia."); }
-
-                document.getElementById(loadingId).remove();
-                submitBtn.disabled = false; submitBtn.innerText = 'Thawnna 🚀';
-
-                if (data.candidates && data.candidates.length > 0) {
-                    const aiReply = data.candidates[0].content.parts[0].text;
-                    const formattedReply = aiReply.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-                    chatHistory.innerHTML += `<div class="ai-msg">${formattedReply}</div>`;
-                } else {
-                    chatHistory.innerHTML += `<div class="ai-msg" style="color: #ef4444;">Harsatna a awm. Nakinah try ṭha leh rawh.</div>`;
-                }
-                chatHistory.scrollTop = chatHistory.scrollHeight;
-                
-                saveAIChatHistory();
-
-                try {
-                    await addDoc(collection(db, "ai_logs"), {
-                        enrollment: window.currentStudent.enrollment,
-                        studentName: window.currentStudent.name,
-                        subject: selectedSubject,
-                        question: message,
-                        modelUsed: usedModel,
-                        timestamp: serverTimestamp()
-                    });
-                } catch(logErr) { console.log(logErr); }
-
-            } catch (error) {
-                document.getElementById(loadingId).remove();
-                submitBtn.disabled = false; submitBtn.innerText = 'Thawnna 🚀';
-                chatHistory.innerHTML += `<div class="ai-msg" style="color: #ef4444;">Harsatna: ${error.message}</div>`;
-                chatHistory.scrollTop = chatHistory.scrollHeight;
-            }
-        }
-
-        window.exportChatToPDF = function() {
-            const chatElement = document.getElementById('chat-history');
-            if(!chatElement || chatElement.children.length <= 1) { alert("Download tur chat history a la ruak a ni!"); return; }
-
-            let studentName = window.currentStudent.name ? window.currentStudent.name.replace(/\s+/g, '_') : 'Student';
-            let filename = `Bethel_AI_Chat_${studentName}.pdf`;
-
-            let opt = {
-                margin:       10,
-                filename:     filename,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            html2pdf().from(chatElement).set(opt).save().then(() => { alert("✅ PDF file hlawhtling taka download a ni e!"); }).catch(err => { alert("PDF export-naah harsatna a awm: " + err.message); });
-        }
-
-        function saveAIChatHistory() {
-            const chatHistory = document.getElementById('chat-history');
-            if(chatHistory && window.currentStudent.enrollment) {
-                localStorage.setItem('bcc_chat_history_' + window.currentStudent.enrollment, chatHistory.innerHTML);
-            }
-        }
-
-        function loadAIChatHistory() {
-            const chatHistory = document.getElementById('chat-history');
-            if(chatHistory && window.currentStudent.enrollment) {
-                let savedChat = localStorage.getItem('bcc_chat_history_' + window.currentStudent.enrollment);
-                if(savedChat) { chatHistory.innerHTML = savedChat; }
-            }
-        }
-
-        window.clearAIChat = function() {
-            if (confirm("I inbiakna (chat history) zawng zawng hi paih fai i duh takzet em?")) {
-                const chatHistory = document.getElementById('chat-history');
-                chatHistory.innerHTML = `<div class="ai-msg">Chibai! Bethel Computer Centre AI Zirtirtu (Sir Alan-a leh Sir Mavena) te kan ni e. Subject i duh ber thlang la, i zawhna chu ziak rawh le!</div>`;
-                if(window.currentStudent.enrollment) {
-                    localStorage.removeItem('bcc_chat_history_' + window.currentStudent.enrollment);
-                }
             }
         }
     </script>
