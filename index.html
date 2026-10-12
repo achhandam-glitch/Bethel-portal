@@ -263,9 +263,16 @@
                             <span id="badge-notice" class="hidden" style="background: #ef4444; color: white; border-radius: 12px; padding: 2px 6px; font-size: 11px; margin-left: 5px; font-weight: bold;">New</span>
                         </button>
                         
-                        <button class="menu-btn" onclick="openStudentTab('student-tab-materials')">
-                            📚 Study Materials, Assignments & Tests 
+                        <!-- STUDY MATERIAL BUTTON -->
+                        <button class="menu-btn" onclick="openStudentTab('student-tab-materials')" style="border-left-color: #0ea5e9;">
+                            📚 Study Materials
                             <span id="badge-materials" class="hidden" style="background: #ef4444; color: white; border-radius: 12px; padding: 2px 6px; font-size: 11px; margin-left: 5px; font-weight: bold;">New</span>
+                        </button>
+
+                        <!-- ASSIGNMENT BUTTON -->
+                        <button class="menu-btn" onclick="openStudentTab('student-tab-assignments')" style="border-left-color: #10b981;">
+                            📝 Assignments & Google Forms
+                            <span id="badge-assignments" class="hidden" style="background: #ef4444; color: white; border-radius: 12px; padding: 2px 6px; font-size: 11px; margin-left: 5px; font-weight: bold;">New</span>
                         </button>
                         
                         <button class="menu-btn" id="student-menu-online" style="display: none; border-left-color: #8b5cf6;" onclick="openStudentTab('student-tab-online')">💻 Saturday O (Practical)</button>
@@ -419,10 +426,20 @@
                     </div>
                 </div>
 
+                <!-- STUDY MATERIALS TAB -->
                 <div id="student-tab-materials" class="student-tab-content">
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-a let lehna</button></div>
-                    <div class="card" style="margin-bottom: 0;" id="student-links-container">
-                        <h3>Study Material, Assignment, Test / Exam</h3>
+                    <div class="card" style="margin-bottom: 0;" id="student-materials-container">
+                        <h3>📚 Study Materials (PDF Notes & Video Tutorials)</h3>
+                        <p style="opacity: 0.7;">Database atangin a rawn in-load mek...</p>
+                    </div>
+                </div>
+
+                <!-- ASSIGNMENTS & GOOGLE FORMS TAB -->
+                <div id="student-tab-assignments" class="student-tab-content">
+                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-a let lehna</button></div>
+                    <div class="card" style="margin-bottom: 0;" id="student-assignments-container">
+                        <h3>📝 Assignments & Google Forms</h3>
                         <p style="opacity: 0.7;">Database atangin a rawn in-load mek...</p>
                     </div>
                 </div>
@@ -432,7 +449,7 @@
                     
                     <div class="card" style="margin-bottom: 20px;" id="student-online-container">
                         <h3 style="color: #a78bfa;">Saturday (O) Message & Links</h3>
-                        <p style="opacity: 0.7;">Database atangin a rawn in-load mek...</p>
+                        <p style="opacity: 0.7;">Thil thawn a la awm lo.</p>
                     </div>
 
                     <div class="card" style="border: 2px solid #10b981;">
@@ -494,7 +511,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // FIREBASE CONFIG - A ngai ngaiin ka dah aw
         const firebaseConfig = {
             apiKey: "AIzaSyAYardtj2WcBiUGSD9Ytqa0yZUWwjEXgis",
             authDomain: "bethel-portal-1641f.firebaseapp.com",
@@ -508,7 +524,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "6.10"; 
+        const APP_VERSION = "6.17"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0, photoUrl: '' };
         let studentLeaveUnsubscribe = null; 
@@ -525,6 +541,7 @@
 
         let latestNoticeTime = 0;
         let latestMaterialTime = 0;
+        let latestAssignmentTime = 0;
         let latestMcqTime = 0;
 
         let activeBulkQuestions = [];
@@ -564,7 +581,6 @@
 
         window.checkAndMarkNotices = function() {
             if (!window.currentStudent || !window.currentStudent.enrollment) return;
-            // Make sure allNotices exists and has items
             if(allNotices && allNotices.length > 0) {
                 allNotices.forEach(n => {
                     let seen = n.seenBy || [];
@@ -591,6 +607,13 @@
             if (matBadge) {
                 if (latestMaterialTime > lastMatView) matBadge.classList.remove('hidden');
                 else matBadge.classList.add('hidden');
+            }
+
+            let lastAsgView = localStorage.getItem('last_view_assignments_' + enr) || 0;
+            let asgBadge = document.getElementById('badge-assignments');
+            if (asgBadge) {
+                if (latestAssignmentTime > lastAsgView) asgBadge.classList.remove('hidden');
+                else asgBadge.classList.add('hidden');
             }
 
             let lastMcqView = localStorage.getItem('last_view_mcq_' + enr) || 0;
@@ -670,6 +693,11 @@
                 if(tabId === 'student-tab-materials') {
                     localStorage.setItem('last_view_materials_' + enr, now);
                     let b = document.getElementById('badge-materials');
+                    if(b) b.classList.add('hidden');
+                }
+                if(tabId === 'student-tab-assignments') {
+                    localStorage.setItem('last_view_assignments_' + enr, now);
+                    let b = document.getElementById('badge-assignments');
                     if(b) b.classList.add('hidden');
                 }
                 if(tabId === 'student-tab-mcq') {
@@ -1411,25 +1439,67 @@
             }
         });
 
+        // SHARED LINKS LISTENER (Separating PDF Notes/Videos vs Google Forms/Assignments)
         onSnapshot(query(collection(db, "shared_links"), orderBy("createdAt", "desc")), (snapshot) => {
-            const studentContainer = document.getElementById('student-links-container');
-            if (studentContainer) studentContainer.innerHTML = '<h3>Study Material, Assignment, Test / Exam</h3>'; 
-            latestMaterialTime = 0;
+            const materialsContainer = document.getElementById('student-materials-container');
+            const assignmentsContainer = document.getElementById('student-assignments-container');
             
-            if (snapshot.empty) { if (studentContainer) studentContainer.innerHTML += '<p style="opacity: 0.7;">Thil sem a la awm lo.</p>'; } 
-            else {
+            if (materialsContainer) materialsContainer.innerHTML = '<h3>📚 Study Materials (PDF Notes & Video Tutorials)</h3>';
+            if (assignmentsContainer) assignmentsContainer.innerHTML = '<h3>📝 Assignments & Google Forms</h3>';
+            
+            latestMaterialTime = 0;
+            latestAssignmentTime = 0;
+            
+            if (snapshot.empty) {
+                if (materialsContainer) materialsContainer.innerHTML += '<p style="opacity: 0.7;">Study material a la awm lo.</p>';
+                if (assignmentsContainer) assignmentsContainer.innerHTML += '<p style="opacity: 0.7;">Assignment a la awm lo.</p>';
+            } else {
+                let hasMaterials = false;
+                let hasAssignments = false;
+
                 snapshot.forEach((docSnap) => {
-                    let data = docSnap.data(); let icon = '🔗'; let btnText = 'Hawng Rawh'; let finalUrl = data.url;
+                    let data = docSnap.data(); 
+                    let icon = '🔗'; 
+                    let btnText = 'Hawng Rawh'; 
+                    let finalUrl = data.url;
                     let docTime = data.createdAt ? data.createdAt.toMillis() : 0;
-                    if (docTime > latestMaterialTime) latestMaterialTime = docTime;
                     
-                    if (data.type === 'PDF Note') { icon = '📕'; let match = finalUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/); if(match && match[1]) { finalUrl = `https://drive.google.com/uc?export=download&id=${match[1]}`; btnText = 'Download'; } }
-                    else if (data.type === 'Google Form') { icon = '📝'; } else if (data.type === 'YouTube Video') { icon = '▶️'; }
-                    
-                    if (studentContainer) {
-                        studentContainer.innerHTML += `<div class="shared-link-box"><p style="margin-bottom: 0; font-weight: bold; font-size: 15px;">${icon} ${data.fileName}</p><a href="${finalUrl}" target="_blank" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">${btnText}</a></div>`;
+                    if (data.type === 'PDF Note') {
+                        icon = '📕'; 
+                        let match = finalUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/); 
+                        if(match && match[1]) { 
+                            finalUrl = `https://drive.google.com/uc?export=download&id=${match[1]}`; 
+                            btnText = 'Download'; 
+                        }
+                        if (docTime > latestMaterialTime) latestMaterialTime = docTime;
+                        hasMaterials = true;
+                        
+                        if (materialsContainer) {
+                            materialsContainer.innerHTML += `<div class="shared-link-box"><p style="margin-bottom: 0; font-weight: bold; font-size: 15px;">${icon} ${data.fileName}</p><a href="${finalUrl}" target="_blank" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">${btnText}</a></div>`;
+                        }
+                    } 
+                    else if (data.type === 'YouTube Video') {
+                        icon = '▶️';
+                        if (docTime > latestMaterialTime) latestMaterialTime = docTime;
+                        hasMaterials = true;
+                        
+                        if (materialsContainer) {
+                            materialsContainer.innerHTML += `<div class="shared-link-box"><p style="margin-bottom: 0; font-weight: bold; font-size: 15px;">${icon} ${data.fileName}</p><a href="${finalUrl}" target="_blank" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">${btnText}</a></div>`;
+                        }
+                    }
+                    else if (data.type === 'Google Form') {
+                        icon = '📝';
+                        if (docTime > latestAssignmentTime) latestAssignmentTime = docTime;
+                        hasAssignments = true;
+                        
+                        if (assignmentsContainer) {
+                            assignmentsContainer.innerHTML += `<div class="shared-link-box"><p style="margin-bottom: 0; font-weight: bold; font-size: 15px;">${icon} ${data.fileName}</p><a href="${finalUrl}" target="_blank" class="btn btn-success" style="padding: 8px 16px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">Hawng Rawh</a></div>`;
+                        }
                     }
                 });
+
+                if (!hasMaterials && materialsContainer) materialsContainer.innerHTML += '<p style="opacity: 0.7;">Study material a la awm lo.</p>';
+                if (!hasAssignments && assignmentsContainer) assignmentsContainer.innerHTML += '<p style="opacity: 0.7;">Assignment a la awm lo.</p>';
             }
             checkNotifications();
         });
