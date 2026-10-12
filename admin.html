@@ -318,8 +318,6 @@
                         <button class="menu-btn" onclick="openAdminTab('tab-online')" style="border-left-color: #8b5cf6; background: #faf5ff; color: #581c87;">💻 Saturday (O) Bik</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-gradebook')">📊 Comprehensive Gradebook</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-management')">👥 Zirlai Management</button>
-                        <button class="menu-btn" onclick="openAdminTab('tab-ai-logs')" style="border-left-color: #f43f5e; background: #fff1f2; color: #9f1239;">📈 AI Hman Dan (Logs)</button>
-                        <button class="menu-btn" onclick="openAdminTab('tab-ai-settings')" style="border-left-color: #10b981; background: #ecfdf5; color: #065f46;">🤖 AI Zirtirtu Settings</button>
                         <button class="menu-btn" onclick="openAdminTab('tab-login-logs')" style="border-left-color: #f97316; background: #fff7ed; color: #c2410c;">🔐 Zirlai Login Record</button>
                     </div>
                 </div>
@@ -1096,69 +1094,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- TAB: AI LOGS -->
-                <div id="tab-ai-logs" class="admin-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
-                    
-                    <div class="card" style="border: 2px solid #f43f5e; margin-bottom: 0;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px; gap: 10px;">
-                            <div>
-                                <h3 style="color: #9f1239; border: none; padding: 0; margin: 0;">📈 Zirlaite AI Hman Dan Record</h3>
-                                <p style="font-size: 13px; color: #475569; margin-top: 4px;">Zirlai ten AI Zirtirtu an zawh apiangin hetah hian a rawn in-record zel ang.</p>
-                            </div>
-                            <button class="btn btn-danger" style="width: auto; margin: 0; padding: 8px 12px; font-size: 13px;" onclick="clearAILogs()">🗑 Logs Paih Faina</button>
-                        </div>
-                        
-                        <div style="overflow-x: auto; max-height: 500px; overflow-y: auto;">
-                            <table>
-                                <thead style="position: sticky; top: 0; z-index: 10; background: #fff1f2;">
-                                    <tr>
-                                        <th style="min-width: 150px;">Zirlai Hming</th>
-                                        <th>Subject Thlan</th>
-                                        <th style="min-width: 250px;">Zawhna (Question)</th>
-                                        <th>Hun (Time)</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="admin-ai-logs-body">
-                                    <tr><td colspan="4" style="text-align:center; color:gray;">Data a rawn in-load mek...</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB: AI SETTINGS -->
-                <div id="tab-ai-settings" class="admin-tab-content">
-                    <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
-                    
-                    <div id="ai-settings-lock" class="card" style="border: 2px solid #f59e0b; margin-bottom: 0;">
-                        <h3 style="color: #b45309; border-bottom: 1px solid #fde68a; padding-bottom: 10px;">🔒 Security Lock</h3>
-                        <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">He hmun hi Super Admin chauh khawih theih a ni. Khawngaihin i Admin Password bik chu chhu rawh.</p>
-                        
-                        <div class="input-group" style="margin-bottom: 12px;">
-                            <label>Super Admin Password</label>
-                            <input type="password" id="ai-lock-password" placeholder="Password chhu rawh...">
-                        </div>
-                        <button class="btn btn-warning" onclick="unlockAISettings()">Hawng Rawh</button>
-                    </div>
-
-                    <div id="ai-settings-form-box" class="card hidden" style="border: 2px solid #0284c7; margin-bottom: 0;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                            <h3 style="color: #0369a1; border: none; margin: 0; padding: 0;">🤖 AI Thluak (Gemini API Key) Dahna</h3>
-                            <button class="btn btn-danger" style="width: auto; padding: 5px 10px; font-size: 12px; margin: 0;" onclick="lockAISettingsAgain()">🔒 Kalh Leh Rawh</button>
-                        </div>
-                        <p style="font-size: 13px; color: #475569; margin-bottom: 15px;">Google AI Studio aṭanga i API Key lak kha hetah hian dah rawh.</p>
-                        
-                        <form onsubmit="saveApiKey(event)">
-                            <div class="input-group">
-                                <label>Gemini API Key</label>
-                                <input type="text" id="admin-api-key" placeholder="AIzaSy..." required>
-                            </div>
-                            <button type="submit" class="btn btn-primary" style="margin-top: 5px;">API Key Save Rawh</button>
-                        </form>
-                    </div>
-                </div>
                 
                 <!-- TAB: LOGIN LOGS -->
                 <div id="tab-login-logs" class="admin-tab-content">
@@ -1300,7 +1235,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "6.13"; // Version updated
+        const APP_VERSION = "6.14"; // Version updated
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -1375,7 +1310,6 @@
             if (document.getElementById('sato-date')) document.getElementById('sato-date').value = realToday;
             if (document.getElementById('holiday-date')) document.getElementById('holiday-date').value = realToday;
 
-            if(tabId === 'tab-ai-settings') { lockAISettingsAgain(); }
             if(tabId === 'tab-attendance') { loadAttendanceForDate(); }
             window.scrollTo(0, 0);
         }
@@ -2430,72 +2364,6 @@
         // ================= DELETE STUDENT =================
         window.deleteStudent = async function(enrollment) { if(confirm(`Enrollment No: ${enrollment} hi i paih duh takzet em?`)) { try { await deleteDoc(doc(db, "students", enrollment)); alert("Zirlai hi paih a ni tawh e."); } catch(error) { alert("Paih naah harsatna: " + error.message); } } }
 
-        // ================= AI SETTINGS (API KEY) & PASSWORD LOCK =================
-        window.unlockAISettings = function() {
-            const pass = document.getElementById('ai-lock-password').value;
-            if (pass === "BccAdmin@2026") { 
-                document.getElementById('ai-settings-lock').classList.add('hidden');
-                document.getElementById('ai-settings-form-box').classList.remove('hidden');
-                document.getElementById('ai-lock-password').value = '';
-            } else { alert("Super Admin password a dik lo!"); }
-        }
-
-        window.lockAISettingsAgain = function() {
-            document.getElementById('ai-settings-form-box').classList.add('hidden');
-            document.getElementById('ai-settings-lock').classList.remove('hidden');
-            document.getElementById('ai-lock-password').value = '';
-        }
-
-        onSnapshot(doc(db, "settings", "ai_config"), (docSnap) => {
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                if(document.getElementById('admin-api-key')) { document.getElementById('admin-api-key').value = data.geminiApiKey || ''; }
-            }
-        });
-
-        window.saveApiKey = async function(event) {
-            event.preventDefault();
-            const apiKey = document.getElementById('admin-api-key').value.trim();
-            if(!apiKey) return;
-            try { await setDoc(doc(db, "settings", "ai_config"), { geminiApiKey: apiKey }, { merge: true }); alert("API Key hlawhtling taka save a ni e!"); lockAISettingsAgain(); } 
-            catch(e) { alert("Harsatna: " + e.message); }
-        }
-
-        // ================= AI LOGS (USAGE TRACKING) =================
-        onSnapshot(query(collection(db, "ai_logs"), orderBy("timestamp", "desc")), (snapshot) => {
-            const tbody = document.getElementById('admin-ai-logs-body');
-            if(!tbody) return;
-            
-            if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:gray;">AI hmang an la awm lo...</td></tr>'; return; }
-
-            tbody.innerHTML = '';
-            snapshot.forEach((docSnap) => {
-                let d = docSnap.data();
-                let timeStr = d.timestamp ? new Date(d.timestamp.toDate()).toLocaleString() : 'Hun hriat loh';
-                
-                tbody.innerHTML += `
-                    <tr>
-                        <td><b>${d.studentName}</b><br><span style="font-size:11px; color:gray;">(${d.enrollment})</span></td>
-                        <td><span style="background: #e0f2fe; color: #0369a1; padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: bold;">${d.subject || 'General'}</span></td>
-                        <td style="color: #1e293b;">${d.question}</td>
-                        <td style="font-size: 12px; color: #64748b;">${timeStr}</td>
-                    </tr>`;
-            });
-        });
-
-        window.clearAILogs = async function() {
-            if (confirm("AI hman dan record (logs) zawng zawng hi i paih fai takzet i duh em?")) {
-                try {
-                    const querySnapshot = await getDocs(collection(db, "ai_logs"));
-                    let deletePromises = [];
-                    querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "ai_logs", document.id))));
-                    
-                    if(deletePromises.length > 0) { await Promise.all(deletePromises); alert("AI Logs paih fai a ni tawh e!"); } 
-                    else { alert("Paih tur record a awm lo."); }
-                } catch (error) { alert("Harsatna: " + error.message); }
-            }
-        }
-        
         // ================= LOGIN LOGS (USAGE TRACKING) =================
         onSnapshot(query(collection(db, "login_logs"), orderBy("timestamp", "desc")), (snapshot) => {
             const tbody = document.getElementById('admin-login-logs-body');
