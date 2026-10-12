@@ -1016,19 +1016,15 @@
                                 </select>
                             </div>
                             <div class="input-group">
-                                <label>Theory IA (Written) [Max 10]</label>
+                                <label>Theory IA [Max 10]</label>
                                 <input type="number" step="0.1" id="grade-th-ia" max="10" required>
                             </div>
                             <div class="input-group">
-                                <label>Theory Exam (External) [Max 40]</label>
-                                <input type="number" step="0.1" id="grade-th-exam" max="40" required>
-                            </div>
-                            <div class="input-group">
-                                <label>Practical IA (MCQ) [Max 10]</label>
+                                <label>Practical IA [Max 10]</label>
                                 <input type="number" step="0.1" id="grade-pr-ia" max="10" required>
                             </div>
-                            <div class="input-group">
-                                <label id="label-pr-exam" style="color: #0f766e; font-weight: bold;">Practical Exam - Typing/Folder [Max 40]</label>
+                            <div class="input-group" style="grid-column: 1 / -1;">
+                                <label id="label-pr-exam" style="color: #0f766e; font-weight: bold;">Practical Exam (Internal) [Max 40]</label>
                                 <input type="number" step="0.1" id="grade-pr-exam" max="40" required>
                             </div>
                             <div class="input-group" style="grid-column: 1 / -1;">
@@ -1043,16 +1039,15 @@
                                         <th>Enrollment</th>
                                         <th>Hming</th>
                                         <th>Subject</th>
-                                        <th>Th IA (10)</th>
-                                        <th>Th Exam (40)</th>
-                                        <th>Pr IA (10)</th>
-                                        <th>Pr Exam (40)</th>
-                                        <th>Total (100)</th>
+                                        <th>Theory IA (10)</th>
+                                        <th>Practical IA (10)</th>
+                                        <th>Practical Exam (Internal) (40)</th>
+                                        <th>Total (60)</th>
                                     </tr>
                                 </thead>
                                 <tbody id="grade-results-table">
                                     <tr>
-                                        <td colspan="8" style="text-align: center; color: gray;">Results a la awm rih lo...</td>
+                                        <td colspan="7" style="text-align: center; color: gray;">Results a la awm rih lo...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1235,7 +1230,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "6.14"; // Version updated
+        const APP_VERSION = "6.16"; // Version updated
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -2875,11 +2870,10 @@
             const subj = document.getElementById('grade-subject').value;
             const prExamLabel = document.getElementById('label-pr-exam');
             
-            // DCA 102 hi typing exam subject anih vangin label kan thlak hlek
             if (subj === 'DCA 102') {
-                prExamLabel.innerHTML = `Practical Exam - Typing Test [Max 40]`;
+                prExamLabel.innerHTML = `Practical Exam (Internal) - Typing Test [Max 40]`;
             } else {
-                prExamLabel.innerHTML = `Practical Exam - Folder/Lab [Max 40]`;
+                prExamLabel.innerHTML = `Practical Exam (Internal) - Folder/Lab [Max 40]`;
             }
         }
 
@@ -2888,7 +2882,6 @@
             const enrollment = document.getElementById('grade-student-select').value;
             const subject = document.getElementById('grade-subject').value;
             const thIA = parseFloat(document.getElementById('grade-th-ia').value) || 0;
-            const thExam = parseFloat(document.getElementById('grade-th-exam').value) || 0;
             const prIA = parseFloat(document.getElementById('grade-pr-ia').value) || 0;
             const prExam = parseFloat(document.getElementById('grade-pr-exam').value) || 0;
 
@@ -2897,8 +2890,8 @@
             const student = allStudentsList.find(s => s.enrollment === enrollment);
             const studentName = student ? student.name : '';
 
-            // Validation (Numbers must not exceed maximum marks)
-            if (thIA > 10 || thExam > 40 || prIA > 10 || prExam > 40) {
+            // Validation (Maximum marks checks: Theory IA 10, Practical IA 10, Practical Exam 40)
+            if (thIA > 10 || prIA > 10 || prExam > 40) {
                 alert("Mark pek zat kha a dik lo (Max points a pel). Uluk takin check nawn leh rawh.");
                 return;
             }
@@ -2909,10 +2902,9 @@
                     name: studentName,
                     subject: subject,
                     theoryIA: thIA,
-                    theoryExam: thExam,
                     practicalIA: prIA,
                     practicalExam: prExam,
-                    total: (thIA + thExam + prIA + prExam),
+                    total: (thIA + prIA + prExam),
                     timestamp: serverTimestamp()
                 });
                 alert("Mark hlawhtling taka save a ni e!");
@@ -2927,13 +2919,12 @@
             if(!tableBody) return;
             
             if(snapshot.empty) {
-                tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: gray;">Results a la awm rih lo...</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: gray;">Results a la awm rih lo...</td></tr>';
                 return;
             }
 
             tableBody.innerHTML = '';
             
-            // Array ah kan dah phawt ang, chumi hnuah sort nan
             let allGrades = [];
             snapshot.forEach(docSnap => {
                 allGrades.push({ id: docSnap.id, ...docSnap.data() });
@@ -2949,9 +2940,9 @@
             });
 
             allGrades.forEach(grade => {
-                let badgeClass = grade.total >= 80 ? 'background:#dcfce7; color:#166534;' : 
-                                 grade.total >= 60 ? 'background:#e0f2fe; color:#0369a1;' : 
-                                 grade.total >= 40 ? 'background:#fef08a; color:#854d0e;' : 
+                let badgeClass = grade.total >= 50 ? 'background:#dcfce7; color:#166534;' : 
+                                 grade.total >= 40 ? 'background:#e0f2fe; color:#0369a1;' : 
+                                 grade.total >= 30 ? 'background:#fef08a; color:#854d0e;' : 
                                  'background:#fee2e2; color:#991b1b;';
                 
                 tableBody.innerHTML += `
@@ -2959,11 +2950,10 @@
                         <td>${grade.enrollment}</td>
                         <td><b>${grade.name}</b></td>
                         <td style="color:#0f766e; font-weight:bold;">${grade.subject}</td>
-                        <td>${grade.theoryIA}</td>
-                        <td>${grade.theoryExam}</td>
-                        <td>${grade.practicalIA}</td>
-                        <td>${grade.practicalExam}</td>
-                        <td><span style="${badgeClass} padding: 4px 8px; border-radius: 6px; font-weight:bold;">${grade.total}</span></td>
+                        <td>${grade.theoryIA ?? 0}</td>
+                        <td>${grade.practicalIA ?? 0}</td>
+                        <td>${grade.practicalExam ?? 0}</td>
+                        <td><span style="${badgeClass} padding: 4px 8px; border-radius: 6px; font-weight:bold;">${grade.total ?? 0}</span></td>
                     </tr>
                 `;
             });
@@ -2979,17 +2969,15 @@
                         "Enrollment No": d.enrollment,
                         "Zirlai Hming": d.name,
                         "Subject": d.subject,
-                        "Theory IA": d.theoryIA,
-                        "Theory Exam": d.theoryExam,
-                        "Practical IA": d.practicalIA,
-                        "Practical Exam": d.practicalExam,
-                        "Total Marks": d.total
+                        "Theory IA (10)": d.theoryIA ?? 0,
+                        "Practical IA (10)": d.practicalIA ?? 0,
+                        "Practical Exam (Internal) (40)": d.practicalExam ?? 0,
+                        "Total Marks (60)": d.total ?? 0
                     });
                 });
                 
                 if(gradeData.length === 0) { alert("Data a la awm lo."); return; }
                 
-                // Sort by Enrollment and Subject before exporting
                 gradeData.sort((a, b) => {
                     if (a["Enrollment No"] < b["Enrollment No"]) return -1;
                     if (a["Enrollment No"] > b["Enrollment No"]) return 1;
