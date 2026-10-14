@@ -4,13 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bethel Computer Centre - Student Portal</title>
-    
-    <!-- html2pdf library for exporting chat to PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f0f2f5; color: #1e293b; position: relative; min-height: 100vh; padding-bottom: 50px; }
+        body { background-color: #f0f2f5; color: #1e293b; position: relative; min-height: 100vh; padding-bottom: 50px; transition: background-color 0.3s, color 0.3s; }
         .hidden { display: none !important; }
 
         .hero-section {
@@ -39,7 +36,7 @@
         }
 
         .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-        .card { background: #ffffff; color: #1e293b; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .card { background: #ffffff; color: #1e293b; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; transition: 0.3s; }
         h2 { color: #0f172a; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
         h3 { color: #1e293b; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;}
         
@@ -72,7 +69,6 @@
         .status-badge { display: inline-block; padding: 5px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }
         .status-pending { background-color: #fef08a; color: #854d0e; }
         .status-approved { background-color: #bbf7d0; color: #166534; }
-        .status-rejected { background-color: #fee2e2; color: #991b1b; }
         .leave-item { background: #ffffff; color: #1e293b; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
 
         .badge-cash { background-color: #dcfce7; color: #166534; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
@@ -86,7 +82,7 @@
         .menu-btn:hover { background: #e0f2fe; color: #0369a1; transform: translateX(3px); }
 
         .student-tab-content { display: none; }
-        .student-tab-content.active-content { display: block; animation: fadeIn 0.3s; }
+        .student-tab-content.active-content { display: block; animation: fadeIn 0.25s ease-out; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
@@ -171,7 +167,7 @@
             </marquee>
 
             <!-- LOGO DAHNA -->
-            <img src="logo.jpg" alt="Bethel Logo" class="login-logo" id="login-logo-img">
+            <img src="logo.jpg" alt="Bethel Logo" class="login-logo" id="login-logo-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'">
             <div class="card" style="text-align: left; margin-top: 10px;">
                 <h2 style="text-align: center; border-bottom: none; margin-bottom: 20px; color: #0284c7;">Zirlai Log In</h2>
                 <form onsubmit="loginStudent(event)">
@@ -211,7 +207,7 @@
 
                 <h4 style="margin-bottom: 5px;">📌 Internal Mark Hamthatna</h4>
                 <p style="margin-bottom: 15px; padding: 10px; background-color: #14532d; border-left: 4px solid #22c55e; border-radius: 4px; color: #86efac;">
-                    Attendance point te, coins khawl te kha internal mark-ah belh a ni ang. A hmu tha zualte chu duhsak bik an ni ang
+                    Attendance point te, coins khawl te kha internal mark-ah belh a ni ang. A hmu tha zualte chu duhsak bik an ni ang.
                 </p>
             </div>
             
@@ -306,7 +302,7 @@
                     <div class="card hidden" style="margin-bottom: 0; border: 2px solid #0284c7; padding: 0;" id="bulk-quiz-active-container">
                         <div class="sticky-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding: 15px 20px; position: sticky; top: 0; background: #ffffff; z-index: 10; border-radius: 12px 12px 0 0;">
                             <div><h3 style="margin: 0; color: #0284c7; border: none; padding: 0;" id="bulk-quiz-title-display">Test Title</h3></div>
-                            <div style="background: #ef4444; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                            <div id="quiz-timer-badge" style="background: #ef4444; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
                                 ⏱ <span id="quiz-timer-display">00:00</span>
                             </div>
                         </div>
@@ -324,7 +320,7 @@
                             <span id="bulk-final-score">0</span> / <span id="bulk-total-score">0</span>
                         </div>
                         <p style="color: #d97706; font-weight: bold; font-size: 18px;">Coins hmuh belh zat: <span id="bulk-coins-earned">0</span> 🪙</p>
-                        <button class="btn btn-primary" style="margin-top: 20px; width: auto; padding: 10px 30px;" onclick="location.reload()">Close & Refresh</button>
+                        <button class="btn btn-primary" style="margin-top: 20px; width: auto; padding: 10px 30px;" onclick="closeBulkQuizResult()">Quiz List-ah Let Leh Rawh</button>
                     </div>
 
                 </div>
@@ -455,10 +451,10 @@
                     <div class="card" style="border: 2px solid #10b981;">
                         <h3 style="border-bottom: 1px solid #a7f3d0; padding-bottom: 10px; color: #047857;">✅ Practical Thehluh Dan (Saturday O)</h3>
                         <p style="font-size: 14px; line-height: 1.6; margin-bottom: 15px; margin-top: 10px;">
-                            Saturday (O) zirlaite chuan in Practical (Assignments) in tih zawh apiangin <b>Zip file</b>-ah siam tur,chu chu i hming leh Enrollment No. tarlangin Zirtirtu hnenah <b>WhatsApp</b> kaltlangin rawn thawn ṭhin tur a ni.
+                            Saturday (O) zirlaite chuan in Practical (Assignments) in tih zawh apiangin <b>Zip file</b>-ah siam tur, chu chu i hming leh Enrollment No. tarlangin Zirtirtu hnenah <b>WhatsApp</b> kaltlangin rawn thawn ṭhin tur a ni.
                         </p>
                         <p style="font-size: 14px; line-height: 1.6; color: #047857; background: #d1fae5; padding: 10px; border-radius: 6px;">
-                            I thil thehluh hi zirtirtuin a lo check ang a, a ṭhat dan a zirin i <b>Attendance Points</b>-ah points a lo thun lut ṭhin dawn a ni. I points hmuh zat hi i "Zirlai Dinhmun" tab-ah i check thei ang.Attendance point leh coins i khawl te hi internal mark-ah belh tur a ni e.A ti tha zual chu duhsak an ni ang
+                            I thil thehluh hi zirtirtuin a lo check ang a, a ṭhat dan a zirin i <b>Attendance Points</b>-ah points a lo thun lut ṭhin dawn a ni. I points hmuh zat hi i "Zirlai Dinhmun" tab-ah i check thei ang. Attendance point leh coins i khawl te hi internal mark-ah belh tur a ni e. A ti tha zual chu duhsak an ni ang.
                         </p>
                     </div>
                 </div>
@@ -472,7 +468,7 @@
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
-            document.getElementById('theme-toggle').innerText = isDark ? '☀' : '🌙';
+            document.getElementById('theme-toggle').innerText = isDark ? '☀️' : '🌙';
             localStorage.setItem('bcc_theme', isDark ? 'dark' : 'light');
         }
         
@@ -524,10 +520,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "6.17"; 
+        const APP_VERSION = "6.18"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0, photoUrl: '' };
         let studentLeaveUnsubscribe = null; 
+        let mySubmissionsUnsubscribe = null;
         
         let allStudentsList = []; 
         let allAttendanceRecords = [];
@@ -548,6 +545,41 @@
         let quizTimerInterval = null;
         let quizTimeLeft = 0;
         let currentBulkQuizTitle = "";
+
+        // Local Date Helpers (Timezone Bug Venna)
+        function getLocalToday() {
+            const now = new Date();
+            const yr = now.getFullYear();
+            const mo = String(now.getMonth() + 1).padStart(2, '0');
+            const da = String(now.getDate()).padStart(2, '0');
+            return `${yr}-${mo}-${da}`;
+        }
+
+        function parseLocalDate(dateStr) {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            return new Date(y, m - 1, d);
+        }
+
+        function formatLocalDate(dateObj) {
+            const yr = dateObj.getFullYear();
+            const mo = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const da = String(dateObj.getDate()).padStart(2, '0');
+            return `${yr}-${mo}-${da}`;
+        }
+
+        const todayISODate = getLocalToday();
+        if (document.getElementById('leave-start-date')) {
+            document.getElementById('leave-start-date').value = todayISODate;
+            document.getElementById('leave-end-date').value = todayISODate;
+        }
+
+        (function checkVersion() {
+            let savedVersion = localStorage.getItem('bcc_portal_version');
+            if (!savedVersion || savedVersion !== APP_VERSION) {
+                localStorage.setItem('bcc_portal_version', APP_VERSION);
+                window.location.reload(true);
+            }
+        })();
 
         // ================= ADMIN MARQUEE (ADVERTISEMENT) LISTENER =================
         onSnapshot(doc(db, "settings", "portal_advertisement"), (docSnap) => {
@@ -637,21 +669,12 @@
             }
         }
 
-        const todayISODate = new Date().toISOString().split('T')[0];
-        if (document.getElementById('leave-start-date')) {
-            document.getElementById('leave-start-date').value = todayISODate;
-            document.getElementById('leave-end-date').value = todayISODate;
-        }
-
-        (function checkVersion() {
-            let savedVersion = localStorage.getItem('bcc_portal_version');
-            if (!savedVersion || savedVersion !== APP_VERSION) {
-                localStorage.setItem('bcc_portal_version', APP_VERSION);
-                window.location.reload(true);
-            }
-        })();
-
         window.showSection = function(sectionId) {
+            if (sectionId === 'student-login-section' && quizTimerInterval) {
+                clearInterval(quizTimerInterval);
+                quizTimerInterval = null;
+            }
+
             const sections = ['student-login-section', 'student-portal-section'];
             sections.forEach(id => {
                 const el = document.getElementById(id);
@@ -666,9 +689,16 @@
             }
             window.scrollTo(0, 0);
             
-            if((sectionId === 'student-login-section') && studentLeaveUnsubscribe) {
-                studentLeaveUnsubscribe();
-                studentLeaveUnsubscribe = null;
+            if(sectionId === 'student-login-section') {
+                if (studentLeaveUnsubscribe) {
+                    studentLeaveUnsubscribe();
+                    studentLeaveUnsubscribe = null;
+                }
+                if (mySubmissionsUnsubscribe) {
+                    mySubmissionsUnsubscribe();
+                    mySubmissionsUnsubscribe = null;
+                }
+                window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0, photoUrl: '' };
             }
         }
 
@@ -689,6 +719,7 @@
                     localStorage.setItem('last_view_notice_' + enr, now);
                     let b = document.getElementById('badge-notice');
                     if(b) b.classList.add('hidden');
+                    checkAndMarkNotices(); // Notice tab a hawn chauhvin Seen-ah mark tur
                 }
                 if(tabId === 'student-tab-materials') {
                     localStorage.setItem('last_view_materials_' + enr, now);
@@ -718,6 +749,17 @@
         }
 
         window.backToStudentMenu = function() {
+            const activeQuizContainer = document.getElementById('bulk-quiz-active-container');
+            if (activeQuizContainer && !activeQuizContainer.classList.contains('hidden')) {
+                if (!confirm("Quiz i la chhang laklawh! Menu-ah i let chuan tuna i quiz tih lai hi a tawp ang. Let tho i duh em?")) {
+                    return;
+                }
+                clearInterval(quizTimerInterval);
+                quizTimerInterval = null;
+                activeQuizContainer.classList.add('hidden');
+                document.getElementById('mcq-main-container').classList.remove('hidden');
+            }
+
             document.querySelectorAll('.student-tab-content').forEach(el => { el.classList.remove('active-content'); });
             document.getElementById('student-menu-view').style.display = 'block';
             window.scrollTo(0, 0);
@@ -737,7 +779,7 @@
             
             const todayObj = new Date();
             const isSunday = todayObj.getDay() === 0;
-            const todayStr = todayObj.toISOString().split('T')[0];
+            const todayStr = getLocalToday();
 
             if (isSunday) {
                 container.innerHTML = `<div style="font-weight: bold; animation: pulse 2s infinite; color: #dc2626;">🔴 Vawiin Pathianni</div><div style="font-size: 11px; color: #be123c; margin-top: 2px;">Class a awm lo</div>`;
@@ -800,7 +842,7 @@
 
             let recordsInRange = allAttendanceRecords.filter(r => r.date >= start && r.date <= end);
             let earned = 0;
-            recordsInRange.filter(r => r.enrollment === enr).forEach(r => { earned += (r.points || 0); });
+            recordsInRange.filter(r => String(r.enrollment) === String(enr)).forEach(r => { earned += (r.points || 0); });
 
             let pct = studentMax > 0 ? ((earned / studentMax) * 100).toFixed(1) : 0;
             let remark = 'N/A'; let badgeBg = '#f1f5f9'; let badgeColor = '#64748b';
@@ -862,8 +904,10 @@
 
         function loadMySubmissions() {
             if(!window.currentStudent.enrollment) return;
-            onSnapshot(query(collection(db, "mcq_submissions"), where("enrollment", "==", window.currentStudent.enrollment)), (snapshot) => {
-                mySubmissions = []; snapshot.forEach(doc => mySubmissions.push(doc.data().mcqId));
+            if(mySubmissionsUnsubscribe) mySubmissionsUnsubscribe();
+            mySubmissionsUnsubscribe = onSnapshot(query(collection(db, "mcq_submissions"), where("enrollment", "==", window.currentStudent.enrollment)), (snapshot) => {
+                mySubmissions = []; 
+                snapshot.forEach(doc => mySubmissions.push(doc.data().mcqId));
                 renderStudentMCQs();
             });
         }
@@ -882,19 +926,19 @@
                 groups[title].push(q);
             });
 
-            list.innerHTML = '';
             let bulkHtml = '';
             let singleHtml = '';
 
             for(let title in groups) {
                 if(groups[title].length > 1) { 
                     let qs = groups[title];
+                    let safeTitle = title.replace(/'/g, "\\'");
                     bulkHtml += `
                         <div class="card" style="border: 2px solid #0284c7; margin-bottom: 15px;">
                             <h3 style="color: #0369a1; margin-bottom: 10px;">📋 ${title}</h3>
                             <p style="margin-bottom: 5px;">Zawhna awm zat: <b style="color: #0f172a;">${qs.length}</b></p>
                             <p style="margin-bottom: 15px;">Hun pek zat: <b style="color: #ea580c;">${qs.length} minutes</b></p>
-                            <button class="btn btn-primary" onclick="startBulkQuiz('${title}')">Start Quiz 🚀</button>
+                            <button class="btn btn-primary" onclick="startBulkQuiz('${safeTitle}')">Start Quiz 🚀</button>
                         </div>
                     `;
                 } else { 
@@ -927,15 +971,16 @@
                 }
             }
 
+            let finalHtml = '';
             if(bulkHtml) {
-                list.innerHTML += `<h4 style="margin-bottom: 15px; color: #1e293b; border-bottom: 2px solid #cbd5e1; padding-bottom: 5px;">📚 Timed Tests (Bulk)</h4>` + bulkHtml;
+                finalHtml += `<h4 style="margin-bottom: 15px; color: #1e293b; border-bottom: 2px solid #cbd5e1; padding-bottom: 5px;">📚 Timed Tests (Bulk)</h4>` + bulkHtml;
             }
             if(singleHtml) {
-                list.innerHTML += `<h4 style="margin-top: 20px; margin-bottom: 15px; color: #1e293b; border-bottom: 2px solid #cbd5e1; padding-bottom: 5px;">⚡ Daily Single Questions</h4>` + singleHtml;
+                finalHtml += `<h4 style="margin-top: 20px; margin-bottom: 15px; color: #1e293b; border-bottom: 2px solid #cbd5e1; padding-bottom: 5px;">⚡ Daily Single Questions</h4>` + singleHtml;
             }
 
             if(!bulkHtml && !singleHtml) {
-                list.innerHTML = '<p style="opacity: 0.7;">Zawhna thar a awm rih lo.</p>';
+                finalHtml = '<p style="opacity: 0.7;">Zawhna thar a awm rih lo.</p>';
             }
 
             if(answeredQs.length > 0) {
@@ -946,8 +991,10 @@
                     ansHtml += `<div style="padding: 10px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; margin-bottom: 8px; font-size: 13px; color: #166534;"><b>${mcq.quizTitle || 'General Test'}</b> - ${mcq.question}</div>`;
                 });
                 ansHtml += `</div></div>`;
-                list.innerHTML += ansHtml;
+                finalHtml += ansHtml;
             }
+
+            list.innerHTML = finalHtml;
         }
 
         window.submitSingleMCQAnswer = async function(event, mcqId) {
@@ -998,11 +1045,18 @@
             if(activeBulkQuestions.length === 0) return;
 
             document.getElementById('mcq-main-container').classList.add('hidden');
+            document.getElementById('bulk-quiz-result-card').classList.add('hidden');
             document.getElementById('bulk-quiz-active-container').classList.remove('hidden');
             document.getElementById('bulk-quiz-title-display').innerText = title;
 
+            const submitBtn = document.getElementById('submit-bulk-btn');
+            if(submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Submit Quiz ✅"; }
+
+            const timerBadge = document.getElementById('quiz-timer-badge');
+            if(timerBadge) timerBadge.style.backgroundColor = "#ef4444";
+
             const mcqListUI = document.getElementById('bulk-questions-list');
-            mcqListUI.innerHTML = '';
+            let html = '';
             
             activeBulkQuestions.forEach((mcq, index) => {
                 let imgHtml = mcq.imageURL ? `<img src="${mcq.imageURL}" style="max-width: 100%; max-height: 200px; border-radius: 8px; margin: 10px 0; border: 1px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">` : '';
@@ -1012,7 +1066,7 @@
                 let cHtml = mcq.optCImg ? `${mcq.optC}<br><img src="${mcq.optCImg}" style="max-height: 100px; margin-top: 5px; border-radius: 4px;">` : mcq.optC;
                 let dHtml = mcq.optDImg ? `${mcq.optD}<br><img src="${mcq.optDImg}" style="max-height: 100px; margin-top: 5px; border-radius: 4px;">` : mcq.optD;
 
-                mcqListUI.innerHTML += `
+                html += `
                     <div class="mcq-card" style="margin-bottom: 20px;">
                         <div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items:flex-start;">
                             <div style="padding-right: 10px;">
@@ -1029,16 +1083,19 @@
                         </div>
                     </div>`;
             });
+            mcqListUI.innerHTML = html;
 
             quizTimeLeft = activeBulkQuestions.length * 60;
             updateQuizTimerUI();
 
+            if(quizTimerInterval) clearInterval(quizTimerInterval);
             quizTimerInterval = setInterval(() => {
                 quizTimeLeft--;
                 updateQuizTimerUI();
                 
                 if(quizTimeLeft <= 0) {
                     clearInterval(quizTimerInterval);
+                    quizTimerInterval = null;
                     alert("⏰ I hun a tawp ta! I chhanna te system in a submit nghal e.");
                     submitBulkQuiz();
                 }
@@ -1061,7 +1118,10 @@
         }
 
         window.submitBulkQuiz = async function() {
-            clearInterval(quizTimerInterval); 
+            if(quizTimerInterval) {
+                clearInterval(quizTimerInterval);
+                quizTimerInterval = null;
+            }
             
             const submitBtn = document.getElementById('submit-bulk-btn');
             if(submitBtn) { submitBtn.disabled = true; submitBtn.innerText = "Submitting... ⏳"; }
@@ -1102,14 +1162,17 @@
                 document.getElementById('bulk-total-score').innerText = activeBulkQuestions.length;
                 document.getElementById('bulk-coins-earned').innerText = coinsEarned;
 
-                window.currentStudent.coins += coinsEarned;
-                if(document.getElementById('student-coin-balance')) document.getElementById('student-coin-balance').innerText = window.currentStudent.coins;
-                if(document.getElementById('student-coin-balance-status')) document.getElementById('student-coin-balance-status').innerText = window.currentStudent.coins;
-
             } catch(e) {
                 alert("Submit naah harsatna a awm: " + e.message);
                 if(submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Submit Quiz ✅"; }
             }
+        }
+
+        window.closeBulkQuizResult = function() {
+            document.getElementById('bulk-quiz-result-card').classList.add('hidden');
+            document.getElementById('mcq-main-container').classList.remove('hidden');
+            renderStudentMCQs();
+            window.scrollTo(0, 0);
         }
 
         function renderLeaderboard() {
@@ -1126,7 +1189,7 @@
             allStudentsList = []; snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
             renderLeaderboard();
             if(window.currentStudent.enrollment) {
-                let me = allStudentsList.find(s => s.enrollment === window.currentStudent.enrollment);
+                let me = allStudentsList.find(s => String(s.enrollment) === String(window.currentStudent.enrollment));
                 if(me) {
                     window.currentStudent.coins = me.coins || 0;
                     if (document.getElementById('student-coin-balance')) document.getElementById('student-coin-balance').innerText = window.currentStudent.coins;
@@ -1159,15 +1222,40 @@
 
             const historyDiv = document.getElementById('student-fee-history');
             if (historyDiv) {
-                historyDiv.innerHTML = '';
-                if(payments.length === 0) { historyDiv.innerHTML = '<span style="font-size: 13px; opacity: 0.7;">Fee pek i la nei lo.</span>'; } 
-                else {
+                if(payments.length === 0) { 
+                    historyDiv.innerHTML = '<span style="font-size: 13px; opacity: 0.7;">Fee pek i la nei lo.</span>'; 
+                } else {
+                    let html = '';
                     payments.forEach(p => {
                         let badge = p.method === 'GPay' ? '<span class="badge-gpay">GPay</span>' : '<span class="badge-cash">Cash</span>';
-                        historyDiv.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom: 5px; font-size: 13px;"><span>📅 ${p.date} ${badge}</span><strong>+ ₹${p.amount}</strong></div>`;
+                        html += `<div style="display:flex; justify-content:space-between; margin-bottom: 5px; font-size: 13px;"><span>📅 ${p.date} ${badge}</span><strong>+ ₹${p.amount}</strong></div>`;
                     });
+                    historyDiv.innerHTML = html;
                 }
             }
+        }
+
+        // Helper: Thla khat chhunga chawlh ni (Unique Dates) chhiarna (Double count venna)
+        async function getMonthlyUsedLeaveDates(enrollment, monthPrefix) {
+            let usedDates = new Set();
+            const attQuery = query(collection(db, "attendance"), where("enrollment", "==", enrollment));
+            const attSnap = await getDocs(attQuery);
+            attSnap.forEach(doc => { 
+                let data = doc.data(); 
+                if (data.date && data.date.startsWith(monthPrefix) && data.status === 'Reported') { 
+                    usedDates.add(data.date); 
+                } 
+            });
+            
+            const leaveQuery = query(collection(db, "leave_requests"), where("enrollment", "==", enrollment));
+            const leaveSnap = await getDocs(leaveQuery);
+            leaveSnap.forEach(doc => { 
+                let data = doc.data(); 
+                if (data.date && data.date.startsWith(monthPrefix) && (data.status === 'Pending' || data.status === 'Approved')) { 
+                    usedDates.add(data.date); 
+                } 
+            });
+            return usedDates;
         }
 
         window.updateLeaveBalance = async function() {
@@ -1189,28 +1277,11 @@
                 return;
             }
 
-            const today = new Date();
-            const monthPrefix = today.toISOString().substring(0, 7); 
+            const monthPrefix = getLocalToday().substring(0, 7); 
             
             try {
-                const attQuery = query(collection(db, "attendance"), where("enrollment", "==", enrollment));
-                const attSnap = await getDocs(attQuery);
-                let totalLeaves = 0;
-                attSnap.forEach(doc => { 
-                    let data = doc.data(); 
-                    if (data.date.startsWith(monthPrefix) && data.status === 'Reported') { 
-                        totalLeaves++; 
-                    } 
-                });
-                
-                const leaveQuery = query(collection(db, "leave_requests"), where("enrollment", "==", enrollment));
-                const leaveSnap = await getDocs(leaveQuery);
-                leaveSnap.forEach(doc => { 
-                    let data = doc.data(); 
-                    if (data.date && data.date.startsWith(monthPrefix) && (data.status === 'Pending' || data.status === 'Approved')) { 
-                        totalLeaves++; 
-                    } 
-                });
+                let usedDates = await getMonthlyUsedLeaveDates(enrollment, monthPrefix);
+                let totalLeaves = usedDates.size;
                 
                 if(document.getElementById('lbl-used-leave')) document.getElementById('lbl-used-leave').innerText = totalLeaves;
                 let balance = maxLeaves - totalLeaves;
@@ -1236,13 +1307,13 @@
                 return; 
             }
 
-            let startDate = new Date(startDateStr);
-            let endDate = new Date(endDateStr);
-            
-            if (startDate > endDate) {
+            if (startDateStr > endDateStr) {
                 alert("A tawp Ni hi A ṭan Ni aiin a hma thei lo!");
                 return;
             }
+
+            let startDate = parseLocalDate(startDateStr);
+            let endDate = parseLocalDate(endDateStr);
 
             let dateArray = [];
             let currentDate = new Date(startDate);
@@ -1255,7 +1326,7 @@
             let invalidMsgs = new Set();
 
             dateArray.forEach(d => {
-                let isoDate = d.toISOString().split('T')[0];
+                let isoDate = formatLocalDate(d);
                 let dayOfWeek = d.getDay(); 
                 
                 if (dayOfWeek === 0) {
@@ -1292,29 +1363,20 @@
             const monthPrefix = startDateStr.substring(0, 7);
             
             try {
-                const attQuery = query(collection(db, "attendance"), where("enrollment", "==", enrollment));
-                const attSnap = await getDocs(attQuery);
-                let totalLeaves = 0;
-                attSnap.forEach(doc => { 
-                    let data = doc.data(); 
-                    if (data.date.startsWith(monthPrefix) && data.status === 'Reported') { 
-                        totalLeaves++; 
-                    } 
-                });
+                let usedDates = await getMonthlyUsedLeaveDates(enrollment, monthPrefix);
                 
-                const leaveQuery = query(collection(db, "leave_requests"), where("enrollment", "==", enrollment));
-                const leaveSnap = await getDocs(leaveQuery);
-                leaveSnap.forEach(doc => { 
-                    let data = doc.data(); 
-                    if (data.date && data.date.startsWith(monthPrefix) && (data.status === 'Pending' || data.status === 'Approved')) { 
-                        totalLeaves++; 
-                    } 
-                });
+                // Dil tawh sa dil nawn leh loh nan filter
+                let newValidDates = validDates.filter(d => !usedDates.has(d));
+                if (newValidDates.length === 0) {
+                    alert("I ni thlan hi chawlh i dil tawh sa a ni.");
+                    return;
+                }
 
+                let totalLeaves = usedDates.size;
                 const maxLeaves = (myShift === 'Saturday shift') ? 2 : 10;
                 
-                if (totalLeaves + validDates.length > maxLeaves) {
-                    alert(`Tun thlaah chawlh ni ${maxLeaves} bak dil theih a ni lo. I chawlh hman tawh/dil mek zat: ${totalLeaves}. Ni ${validDates.length} i dil belh chuan limit a pel dawn a ni.`); 
+                if (totalLeaves + newValidDates.length > maxLeaves) {
+                    alert(`Tun thlaah chawlh ni ${maxLeaves} bak dil theih a ni lo. I chawlh hman tawh/dil mek zat: ${totalLeaves}. Ni ${newValidDates.length} i dil belh chuan limit a pel dawn a ni.`); 
                     return; 
                 }
 
@@ -1323,7 +1385,7 @@
                 submitBtn.innerText = "Thehlut mek...";
 
                 let promises = [];
-                validDates.forEach(vd => {
+                newValidDates.forEach(vd => {
                     promises.push(addDoc(collection(db, "leave_requests"), { 
                         enrollment: enrollment, 
                         studentName: window.currentStudent.name, 
@@ -1332,17 +1394,16 @@
                         date: vd, 
                         reason: reason, 
                         status: "Pending", 
-                        rejectReason: "", 
                         createdAt: serverTimestamp() 
                     }));
                 });
 
                 await Promise.all(promises);
                 
-                alert(`Chawlh ni ${validDates.length} atan report thehluh a ni e.`); 
+                alert(`Chawlh ni ${newValidDates.length} atan report thehluh a ni e.`); 
                 event.target.reset(); 
-                document.getElementById('leave-start-date').value = todayISODate;
-                document.getElementById('leave-end-date').value = todayISODate;
+                document.getElementById('leave-start-date').value = getLocalToday();
+                document.getElementById('leave-end-date').value = getLocalToday();
                 
                 updateLeaveBalance();
 
@@ -1357,33 +1418,36 @@
             }
         }
 
+        // LEAVES (Reject paih a ni, Approved leh Pending chauh)
         function loadStudentLeaves(enrollment) {
+            if (studentLeaveUnsubscribe) studentLeaveUnsubscribe();
             const q = query(collection(db, "leave_requests"), where("enrollment", "==", enrollment));
             studentLeaveUnsubscribe = onSnapshot(q, (snapshot) => {
                 const container = document.getElementById('student-leave-history'); if (!container) return;
-                container.innerHTML = '';
                 
                 updateLeaveBalance(); 
 
                 if (snapshot.empty) { container.innerHTML = '<p style="opacity: 0.7;">Report i la thehlut lo.</p>'; return; }
-                let leaves = []; snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()})); leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
+                let leaves = []; 
+                snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()})); 
+                leaves.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
                 
+                let html = '';
                 leaves.forEach(data => { 
-                    let badgeClass = data.status === 'Approved' ? 'status-approved' : data.status === 'Rejected' ? 'status-rejected' : 'status-pending'; 
-                    let statusText = data.status === 'Approved' ? 'Pawm a ni' : data.status === 'Rejected' ? 'Hnial a ni' : 'Nghak mek';
-                    
-                    let rejectReasonHtml = (data.status === 'Rejected' && data.rejectReason) ? `<div style="font-size:12px; color:#991b1b; margin-top:6px;"><b>Hnial Chhan:</b> ${data.rejectReason}</div>` : '';
+                    let isApproved = data.status === 'Approved';
+                    let badgeClass = isApproved ? 'status-approved' : 'status-pending'; 
+                    let statusText = isApproved ? 'Pawm a ni' : 'Nghak mek';
 
-                    container.innerHTML += `
-                        <div class="leave-item" style="border-left: 4px solid ${data.status === 'Approved' ? '#22c55e' : data.status === 'Rejected' ? '#ef4444' : '#eab308'};">
+                    html += `
+                        <div class="leave-item" style="border-left: 4px solid ${isApproved ? '#22c55e' : '#eab308'};">
                             <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
                                 <strong>📅 ${data.date}</strong>
                                 <span class="status-badge ${badgeClass}">${statusText}</span>
                             </div>
                             <p style="font-size:14px; margin:0;">${data.reason}</p>
-                            ${rejectReasonHtml}
                         </div>`; 
                 });
+                container.innerHTML = html;
             });
         }
 
@@ -1398,13 +1462,13 @@
 
         onSnapshot(query(collection(db, "notices"), orderBy("createdAt", "desc")), (snapshot) => {
             const studentList = document.getElementById('student-notice-list');
-            if (studentList) studentList.innerHTML = '';
             latestNoticeTime = 0;
             allNotices = [];
 
             if (snapshot.empty) { 
                 if (studentList) studentList.innerHTML = '<p style="opacity: 0.7;">Notice a la awm rih lo...</p>'; 
             } else {
+                let html = '';
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data(); 
                     const noticeId = docSnap.id; 
@@ -1424,35 +1488,32 @@
                         commentsHTML += '</div>';
                     }
                     
-                    if (studentList) {
-                        let noticeHtml = `<div class="notice-box"><h4 style="margin-bottom: 5px;">${data.title}</h4><p style="margin-bottom: 10px;">${data.content}</p>${commentsHTML}<div style="margin-top: 12px; display: flex; gap: 10px;"><input type="text" id="comment-input-${noticeId}" placeholder="Comment ziahna..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border-radius: 6px;"><button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="postComment('${noticeId}')">Post</button></div></div>`;
-                        studentList.innerHTML += noticeHtml;
-                    }
+                    html += `<div class="notice-box"><h4 style="margin-bottom: 5px;">${data.title}</h4><p style="margin-bottom: 10px; white-space: pre-wrap;">${data.content}</p>${commentsHTML}<div style="margin-top: 12px; display: flex; gap: 10px;"><input type="text" id="comment-input-${noticeId}" placeholder="Comment ziahna..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border-radius: 6px;"><button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="postComment('${noticeId}')">Post</button></div></div>`;
                 });
+                if (studentList) studentList.innerHTML = html;
             }
             checkNotifications();
 
-            if (window.currentStudent && window.currentStudent.enrollment) {
-                setTimeout(() => {
-                    checkAndMarkNotices();
-                }, 2000); 
+            const noticeTab = document.getElementById('student-tab-notice');
+            if (noticeTab && noticeTab.classList.contains('active-content')) {
+                checkAndMarkNotices();
             }
         });
 
-        // SHARED LINKS LISTENER (Separating PDF Notes/Videos vs Google Forms/Assignments)
+        // SHARED LINKS LISTENER
         onSnapshot(query(collection(db, "shared_links"), orderBy("createdAt", "desc")), (snapshot) => {
             const materialsContainer = document.getElementById('student-materials-container');
             const assignmentsContainer = document.getElementById('student-assignments-container');
             
-            if (materialsContainer) materialsContainer.innerHTML = '<h3>📚 Study Materials (PDF Notes & Video Tutorials)</h3>';
-            if (assignmentsContainer) assignmentsContainer.innerHTML = '<h3>📝 Assignments & Google Forms</h3>';
+            let matHtml = '<h3>📚 Study Materials (PDF Notes & Video Tutorials)</h3>';
+            let asgHtml = '<h3>📝 Assignments & Google Forms</h3>';
             
             latestMaterialTime = 0;
             latestAssignmentTime = 0;
             
             if (snapshot.empty) {
-                if (materialsContainer) materialsContainer.innerHTML += '<p style="opacity: 0.7;">Study material a la awm lo.</p>';
-                if (assignmentsContainer) assignmentsContainer.innerHTML += '<p style="opacity: 0.7;">Assignment a la awm lo.</p>';
+                matHtml += '<p style="opacity: 0.7;">Study material a la awm lo.</p>';
+                asgHtml += '<p style="opacity: 0.7;">Assignment a la awm lo.</p>';
             } else {
                 let hasMaterials = false;
                 let hasAssignments = false;
@@ -1473,55 +1534,50 @@
                         }
                         if (docTime > latestMaterialTime) latestMaterialTime = docTime;
                         hasMaterials = true;
-                        
-                        if (materialsContainer) {
-                            materialsContainer.innerHTML += `<div class="shared-link-box"><p style="margin-bottom: 0; font-weight: bold; font-size: 15px;">${icon} ${data.fileName}</p><a href="${finalUrl}" target="_blank" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">${btnText}</a></div>`;
-                        }
+                        matHtml += `<div class="shared-link-box"><p style="margin-bottom: 0; font-weight: bold; font-size: 15px;">${icon} ${data.fileName}</p><a href="${finalUrl}" target="_blank" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">${btnText}</a></div>`;
                     } 
                     else if (data.type === 'YouTube Video') {
                         icon = '▶️';
                         if (docTime > latestMaterialTime) latestMaterialTime = docTime;
                         hasMaterials = true;
-                        
-                        if (materialsContainer) {
-                            materialsContainer.innerHTML += `<div class="shared-link-box"><p style="margin-bottom: 0; font-weight: bold; font-size: 15px;">${icon} ${data.fileName}</p><a href="${finalUrl}" target="_blank" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">${btnText}</a></div>`;
-                        }
+                        matHtml += `<div class="shared-link-box"><p style="margin-bottom: 0; font-weight: bold; font-size: 15px;">${icon} ${data.fileName}</p><a href="${finalUrl}" target="_blank" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">${btnText}</a></div>`;
                     }
                     else if (data.type === 'Google Form') {
                         icon = '📝';
                         if (docTime > latestAssignmentTime) latestAssignmentTime = docTime;
                         hasAssignments = true;
-                        
-                        if (assignmentsContainer) {
-                            assignmentsContainer.innerHTML += `<div class="shared-link-box"><p style="margin-bottom: 0; font-weight: bold; font-size: 15px;">${icon} ${data.fileName}</p><a href="${finalUrl}" target="_blank" class="btn btn-success" style="padding: 8px 16px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">Hawng Rawh</a></div>`;
-                        }
+                        asgHtml += `<div class="shared-link-box"><p style="margin-bottom: 0; font-weight: bold; font-size: 15px;">${icon} ${data.fileName}</p><a href="${finalUrl}" target="_blank" class="btn btn-success" style="padding: 8px 16px; font-size: 14px; text-decoration: none; width: auto; margin: 0;">Hawng Rawh</a></div>`;
                     }
                 });
 
-                if (!hasMaterials && materialsContainer) materialsContainer.innerHTML += '<p style="opacity: 0.7;">Study material a la awm lo.</p>';
-                if (!hasAssignments && assignmentsContainer) assignmentsContainer.innerHTML += '<p style="opacity: 0.7;">Assignment a la awm lo.</p>';
+                if (!hasMaterials) matHtml += '<p style="opacity: 0.7;">Study material a la awm lo.</p>';
+                if (!hasAssignments) asgHtml += '<p style="opacity: 0.7;">Assignment a la awm lo.</p>';
             }
+
+            if (materialsContainer) materialsContainer.innerHTML = matHtml;
+            if (assignmentsContainer) assignmentsContainer.innerHTML = asgHtml;
             checkNotifications();
         });
 
         onSnapshot(query(collection(db, "online_materials"), orderBy("createdAt", "desc")), (snapshot) => {
             const studentContainer = document.getElementById('student-online-container');
-            if(studentContainer) studentContainer.innerHTML = '<h3 style="color: #a78bfa;">Saturday (O) Message & Links</h3>';
-            if (snapshot.empty) { if(studentContainer) studentContainer.innerHTML += '<p style="opacity: 0.7;">Thil thawn a la awm lo.</p>'; } 
-            else {
+            if(!studentContainer) return;
+            let html = '<h3 style="color: #a78bfa;">Saturday (O) Message & Links</h3>';
+            if (snapshot.empty) { 
+                html += '<p style="opacity: 0.7;">Thil thawn a la awm lo.</p>'; 
+            } else {
                 snapshot.forEach((docSnap) => {
                     let data = docSnap.data();
                     let linkHtml = data.url ? `<a href="${data.url}" target="_blank" class="btn btn-primary" style="padding: 6px 12px; font-size: 13px; text-decoration: none; display: inline-block; margin-top: 10px; width: auto;">Link Hawng Rawh</a>` : '';
-                    if(studentContainer) {
-                        studentContainer.innerHTML += `
-                            <div class="notice-box" style="border-left-color: #8b5cf6;">
-                                <h4 style="margin-bottom: 5px;">${data.title}</h4>
-                                <p style="margin-bottom: 0; white-space: pre-wrap; font-size: 14px;">${data.message}</p>
-                                ${linkHtml}
-                            </div>`;
-                    }
+                    html += `
+                        <div class="notice-box" style="border-left-color: #8b5cf6;">
+                            <h4 style="margin-bottom: 5px;">${data.title}</h4>
+                            <p style="margin-bottom: 0; white-space: pre-wrap; font-size: 14px;">${data.message}</p>
+                            ${linkHtml}
+                        </div>`;
                 });
             }
+            studentContainer.innerHTML = html;
         });
 
         window.loginStudent = async function(event) {
@@ -1548,17 +1604,22 @@
                 const qNum = query(collection(db, "students"), where("enrollment", "==", enrollmentNum));
                 
                 let snap = await getDocs(qStr);
-                if (snap.empty) { snap = await getDocs(qNum); }
+                if (snap.empty && !isNaN(enrollmentNum)) { snap = await getDocs(qNum); }
                 
                 if (!snap.empty) {
-                    let matched = false; let actualDocId = '';
+                    let matched = false; 
+                    let actualDocId = '';
+                    let dbEnrollmentVal = enrollmentStr;
+
                     snap.forEach((d) => {
                         let dbDobRaw = String(d.data().dob).trim().replace(/\//g, '-');
                         let dbParts = dbDobRaw.split('-');
                         if(dbParts.length === 3) { dbDobRaw = `${dbParts[0].padStart(2, '0')}-${dbParts[1].padStart(2, '0')}-${dbParts[2]}`; }
                         
                         if (dbDobRaw === dobInput) {
-                            matched = true; actualDocId = d.id; 
+                            matched = true; 
+                            actualDocId = d.id; 
+                            dbEnrollmentVal = String(d.data().enrollment || d.id);
                             window.currentStudent.name = d.data().name;
                             window.currentStudent.shift = d.data().shift || '10am shift';
                             window.currentStudent.coins = d.data().coins || 0;
@@ -1567,9 +1628,9 @@
                     });
 
                     if (matched) {
-                        window.currentStudent.enrollment = enrollmentStr;
+                        window.currentStudent.enrollment = dbEnrollmentVal;
                         try { 
-                            await updateDoc(doc(db, "students", actualDocId), { lastLoginDate: todayISODate }); 
+                            await updateDoc(doc(db, "students", actualDocId), { lastLoginDate: getLocalToday() }); 
                             
                             await addDoc(collection(db, "login_logs"), {
                                 enrollment: window.currentStudent.enrollment,
@@ -1583,11 +1644,7 @@
                         
                         const profilePhotoEl = document.getElementById('student-profile-photo');
                         if (profilePhotoEl) {
-                            if (window.currentStudent.photoUrl) {
-                                profilePhotoEl.src = window.currentStudent.photoUrl;
-                            } else {
-                                profilePhotoEl.src = 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
-                            }
+                            profilePhotoEl.src = window.currentStudent.photoUrl || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
                         }
                         
                         const coinEl = document.getElementById('student-coin-balance');
@@ -1597,7 +1654,7 @@
                         if(coinStatusEl) coinStatusEl.innerText = window.currentStudent.coins; 
                         
                         const ptsUI = document.getElementById('student-att-points'); 
-                        if(ptsUI) ptsUI.innerText = (attendancePointsMap[enrollmentStr] || attendancePointsMap[enrollmentNum] || 0) + " Points";
+                        if(ptsUI) ptsUI.innerText = (attendancePointsMap[dbEnrollmentVal] || attendancePointsMap[enrollmentNum] || 0) + " Points";
                         
                         const onlineMenuBtn = document.getElementById('student-menu-online');
                         const leaveMenuBtn = document.getElementById('student-menu-leave');
@@ -1616,13 +1673,12 @@
                             if (attInfoBtn) attInfoBtn.style.display = 'block'; 
                         }
 
-                        renderStudentFeePortal(); loadStudentLeaves(enrollmentStr); loadMySubmissions(); autoCalculatePeriodAttendance(); 
+                        renderStudentFeePortal(); 
+                        loadStudentLeaves(dbEnrollmentVal); 
+                        loadMySubmissions(); 
+                        autoCalculatePeriodAttendance(); 
                         checkNotifications();
                         renderHolidays(); 
-
-                        setTimeout(() => {
-                            checkAndMarkNotices();
-                        }, 2000);
 
                         if (submitBtn) {
                             submitBtn.innerText = "Lut rawh";
