@@ -16,6 +16,11 @@
         body { background-color: #f0f2f5; color: #333; position: relative; min-height: 100vh; padding-bottom: 50px; transition: background-color 0.3s, color 0.3s; }
         .hidden { display: none !important; }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .hero-section {
             height: 100vh; width: 100%; display: flex; justify-content: center; align-items: center;
             background: linear-gradient(135deg, #0f766e, #0f172a); color: white; text-align: center;
@@ -75,7 +80,6 @@
         .status-badge { display: inline-block; padding: 5px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; }
         .status-pending { background-color: #fef08a; color: #854d0e; }
         .status-approved { background-color: #bbf7d0; color: #166534; }
-        .status-rejected { background-color: #fee2e2; color: #991b1b; }
         .leave-item { background: #fff; border: 1px solid #cbd5e1; padding: 15px; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
 
         .badge-cash { background-color: #dcfce7; color: #166534; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
@@ -91,7 +95,7 @@
         .menu-btn:hover { background: #e0f2fe; color: #0369a1; transform: translateX(3px); }
 
         .admin-tab-content { display: none; }
-        .admin-tab-content.active-content { display: block; animation: fadeIn 0.3s; }
+        .admin-tab-content.active-content { display: block; animation: fadeIn 0.25s ease-out; }
 
         .back-menu-bar { margin-bottom: 15px; }
 
@@ -1173,7 +1177,6 @@
                         Course Fee : ₹.12000
                     </div>
                     
-                    <!-- Table height thunun nan flex-grow paih a ni a, padding tih zim a ni -->
                     <table style="width: 100%; border-collapse: collapse; font-size: 10px; text-align: center; border: 1px solid #000; margin-bottom: 2px;">
                         <tr style="font-size: 9px;">
                             <th style="width: 26%; border: 1px solid #000; padding: 1px; white-space: nowrap;">Inst</th>
@@ -1203,7 +1206,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- imgbb QR Code Link (Tilian a siam: width & height 104px) -->
                         <img id="id-qr-code" crossorigin="anonymous" src="https://i.ibb.co/ns5N3gPL/bcc-upi.jpg" style="width: 104px; height: 104px; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px; object-fit: cover;">
                     </div>
                 </div>
@@ -1215,7 +1217,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, getDoc, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, deleteDoc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, getDoc, onSnapshot, query, orderBy, serverTimestamp, setDoc, doc, where, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAYardtj2WcBiUGSD9Ytqa0yZUWwjEXgis",
@@ -1231,7 +1233,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "6.16"; // Version updated
+        const APP_VERSION = "6.17";
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -1244,7 +1246,23 @@
 
         window.currentPerformanceFilter = 'ALL';
 
-        const realToday = new Date().toISOString().split('T')[0];
+        // Local Date Helper (Timezone bug venna)
+        function getLocalToday() {
+            const now = new Date();
+            const yr = now.getFullYear();
+            const mo = String(now.getMonth() + 1).padStart(2, '0');
+            const da = String(now.getDate()).padStart(2, '0');
+            return `${yr}-${mo}-${da}`;
+        }
+
+        function getDayOfWeek(dateStr) {
+            if (!dateStr) return -1;
+            const [y, m, d] = dateStr.split('-').map(Number);
+            return new Date(y, m - 1, d).getDay();
+        }
+
+        const realToday = getLocalToday();
+
         document.addEventListener("DOMContentLoaded", () => {
             if (document.getElementById('attendance-date')) document.getElementById('attendance-date').value = realToday;
             if (document.getElementById('fee-date')) document.getElementById('fee-date').value = realToday;
@@ -1290,7 +1308,8 @@
                 const adminMenu = document.getElementById('admin-menu-view');
                 if(adminMenu) adminMenu.style.display = 'block';
                 document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.remove('active-content'));
-                if (document.getElementById('attendance-date')) document.getElementById('attendance-date').value = realToday;
+                const attDateEl = document.getElementById('attendance-date');
+                if (attDateEl && !attDateEl.value) attDateEl.value = realToday;
                 if(typeof loadAttendanceForDate === 'function') loadAttendanceForDate();
             }
             window.scrollTo(0, 0);
@@ -1301,10 +1320,15 @@
             document.querySelectorAll('.admin-tab-content').forEach(el => { el.classList.remove('active-content'); });
             document.getElementById(tabId).classList.add('active-content');
             
-            if (document.getElementById('attendance-date')) document.getElementById('attendance-date').value = realToday;
-            if (document.getElementById('fee-date')) document.getElementById('fee-date').value = realToday;
-            if (document.getElementById('sato-date')) document.getElementById('sato-date').value = realToday;
-            if (document.getElementById('holiday-date')) document.getElementById('holiday-date').value = realToday;
+            // Value a la awm loh chauhvin vawiin date dah tur (User thlan sa a in-reset loh nan)
+            const attDate = document.getElementById('attendance-date');
+            if (attDate && !attDate.value) attDate.value = realToday;
+            const feeDate = document.getElementById('fee-date');
+            if (feeDate && !feeDate.value) feeDate.value = realToday;
+            const satoDate = document.getElementById('sato-date');
+            if (satoDate && !satoDate.value) satoDate.value = realToday;
+            const holDate = document.getElementById('holiday-date');
+            if (holDate && !holDate.value) holDate.value = realToday;
 
             if(tabId === 'tab-attendance') { loadAttendanceForDate(); }
             window.scrollTo(0, 0);
@@ -1361,12 +1385,7 @@
             } catch(e) { alert("Harsatna: " + e.message); }
         }
 
-        // ================= WHATSAPP SHARING =================
-        window.shareNoticeWhatsApp = function(title) {
-            const text = `📌 *Bethel Computer Centre*\n\nNotice thar a awm e: *${title}* \n\nKhawngaihin in Portal-ah log in ula lo check ngei ngei ru.\n@all\n\n🌐 Portal Link: ${PORTAL_LINK}`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-        }
-
+        // ================= WHATSAPP SHARING (Notice WhatsApp Share paih a ni) =================
         window.shareMaterialWhatsApp = function(fileName, type) {
             const text = `📌 *Bethel Computer Centre*\n\nStudy Material / Link thar a awm e!\n*${fileName}* (${type})\n\nKhawngaihin in Portal-ah log in ula lo check ngei ngei ru.\n@all\n\n🌐 Portal Link: ${PORTAL_LINK}`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
@@ -1408,7 +1427,7 @@
                     optDImg: document.getElementById('mcq-d-img').value.trim(),
                     
                     answer: document.getElementById('mcq-ans').value,
-                    coins: parseInt(document.getElementById('mcq-coins').value),
+                    coins: parseInt(document.getElementById('mcq-coins').value) || 10,
                     createdAt: serverTimestamp()
                 });
                 alert("MCQ hlawhtling taka i siam e!");
@@ -1508,13 +1527,14 @@
             
             const adminList = document.getElementById('admin-mcq-list');
             if(adminList) {
-                adminList.innerHTML = '';
-                if(snapshot.empty) { adminList.innerHTML = '<p style="color:gray;">MCQ a la awm lo.</p>'; } 
-                else {
+                if(snapshot.empty) { 
+                    adminList.innerHTML = '<p style="color:gray;">MCQ a la awm lo.</p>'; 
+                } else {
+                    let html = '';
                     mcqTests.forEach(d => {
                         let imgBadge = d.imageURL ? `<span style="background:#0284c7; color:white; font-size:10px; padding:2px 4px; border-radius:4px; margin-left:5px;">📷 Image</span>` : '';
                         
-                        adminList.innerHTML += `
+                        html += `
                             <div style="border: 1px solid #fde047; background: #fefce8; padding: 15px; border-radius: 6px; margin-bottom: 10px; color: #333;">
                                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                                     <div>
@@ -1533,6 +1553,7 @@
                                 <span style="font-size:13px; background:#fef08a; color:#854d0e; padding:3px 8px; border-radius:4px;">Coins: <b>${d.coins}</b></span>
                             </div>`;
                     });
+                    adminList.innerHTML = html;
                 }
             }
         });
@@ -1630,24 +1651,38 @@
             catch(e) { alert("Harsatna: " + e.message); }
         }
 
-        function renderFeeTable() {
-            const tbody = document.getElementById('fee-list-body');
+        function updateStudentDropdowns() {
             const feeSelect = document.getElementById('fee-student-select');
             const gradeSelect = document.getElementById('grade-student-select');
+            if(!feeSelect || !gradeSelect) return;
+
+            const currentFeeVal = feeSelect.value;
+            const currentGradeVal = gradeSelect.value;
+
+            let optionsHtml = '<option value="">-- Thlang rawh --</option>';
+            allStudentsList.forEach(s => {
+                optionsHtml += `<option value="${s.enrollment}">${s.name} (${s.enrollment})</option>`;
+            });
+
+            feeSelect.innerHTML = optionsHtml;
+            gradeSelect.innerHTML = optionsHtml;
+
+            if(currentFeeVal) feeSelect.value = currentFeeVal;
+            if(currentGradeVal) gradeSelect.value = currentGradeVal;
+        }
+
+        function renderFeeTable() {
+            const tbody = document.getElementById('fee-list-body');
+            if(!tbody) return;
             
-            if(!tbody || !feeSelect || !gradeSelect) return;
-            
-            tbody.innerHTML = '';
-            
-            if(feeSelect.options.length <= 1) {
-                allStudentsList.forEach(s => {
-                    let optF = document.createElement('option'); optF.value = s.enrollment; optF.innerText = `${s.name} (${s.enrollment})`; feeSelect.appendChild(optF);
-                    let optG = document.createElement('option'); optG.value = s.enrollment; optG.innerText = `${s.name} (${s.enrollment})`; gradeSelect.appendChild(optG);
-                });
+            updateStudentDropdowns();
+
+            if(allStudentsList.length === 0) { 
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:gray;">Zirlai an awm lo.</td></tr>'; 
+                return; 
             }
 
-            if(allStudentsList.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:gray;">Zirlai an awm lo.</td></tr>'; return; }
-
+            let html = '';
             allStudentsList.forEach(s => {
                 const feeRecord = feeDataMap[s.enrollment];
                 let defaultTotalFee = (s.course === 'DCA II Semester') ? 15000 : 12000;
@@ -1670,9 +1705,11 @@
                         `).join('');
                     }
                 }
-                const balance = totalFee - totalPaid; const balanceColor = balance <= 0 ? 'color: #16a34a;' : 'color: #dc2626;';
-                tbody.innerHTML += `<tr><td>${s.enrollment}</td><td><b>${s.name}</b></td><td>₹${totalFee}</td><td style="color: #4338ca; font-weight:bold;">₹${totalPaid}</td><td style="${balanceColor} font-weight:bold;">₹${balance}</td><td>${historyStr}</td></tr>`;
+                const balance = totalFee - totalPaid; 
+                const balanceColor = balance <= 0 ? 'color: #16a34a;' : 'color: #dc2626;';
+                html += `<tr><td>${s.enrollment}</td><td><b>${s.name}</b></td><td>₹${totalFee}</td><td style="color: #4338ca; font-weight:bold;">₹${totalPaid}</td><td style="${balanceColor} font-weight:bold;">₹${balance}</td><td>${historyStr}</td></tr>`;
             });
+            tbody.innerHTML = html;
         }
 
         window.exportFeesToExcel = function() {
@@ -1703,26 +1740,25 @@
         onSnapshot(query(collection(db, "holidays"), orderBy("date", "desc")), (snapshot) => {
             holidayList = [];
             const tbody = document.getElementById('holiday-list-body');
-            if (tbody) tbody.innerHTML = '';
             
             if(snapshot.empty) {
                 if (tbody) tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: gray;">Sorkar chawlh set a la awm lo.</td></tr>';
             } else {
+                let html = '';
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
                     holidayList.push({ id: docSnap.id, ...data });
-                    if(tbody) {
-                        tbody.innerHTML += `
-                            <tr>
-                                <td><b style="color: #be123c;">${data.date}</b></td>
-                                <td>${data.name}</td>
-                                <td style="text-align: center;">
-                                    <button class="btn btn-danger btn-icon" style="width: 25px; height: 25px; font-size: 12px;" onclick="deleteHoliday('${docSnap.id}')">✕</button>
-                                </td>
-                            </tr>
-                        `;
-                    }
+                    html += `
+                        <tr>
+                            <td><b style="color: #be123c;">${data.date}</b></td>
+                            <td>${data.name}</td>
+                            <td style="text-align: center;">
+                                <button class="btn btn-danger btn-icon" style="width: 25px; height: 25px; font-size: 12px;" onclick="deleteHoliday('${docSnap.id}')">✕</button>
+                            </td>
+                        </tr>
+                    `;
                 });
+                if (tbody) tbody.innerHTML = html;
             }
             if (document.getElementById('attendance-date') && document.getElementById('attendance-date').value) {
                 if (typeof loadAttendanceForDate === 'function') loadAttendanceForDate();
@@ -1800,10 +1836,12 @@
             });
 
             if(!tbody) return;
-            tbody.innerHTML = '';
-            
-            if(allStudentsList.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:gray;">Zirlai an awm lo.</td></tr>`; return; }
+            if(allStudentsList.length === 0) { 
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:gray;">Zirlai an awm lo.</td></tr>`; 
+                return; 
+            }
 
+            let html = '';
             allStudentsList.forEach(s => {
                 let st = periodStudentStats[s.enrollment];
                 let isSatShift = (st.shift === 'Saturday shift' || st.shift === 'Saturday (O)');
@@ -1822,7 +1860,7 @@
                     else badge = `<span style="background:#fee2e2; color:#991b1b; font-size:11px; padding:2px 6px; border-radius:4px; font-weight:bold;">🚨 Poor</span>`;
                 }
 
-                tbody.innerHTML += `
+                html += `
                     <tr>
                         <td>${s.enrollment}</td>
                         <td><b>${s.name}</b> <span style="font-size:11px; color:#64748b;">(${st.shift})</span></td>
@@ -1831,6 +1869,7 @@
                         <td>${badge}</td>
                     </tr>`;
             });
+            tbody.innerHTML = html;
         };
 
         window.exportPeriodAttendanceToExcel = function() {
@@ -1917,31 +1956,31 @@
 
                 if(!attendanceStats[d.enrollment]) { attendanceStats[d.enrollment] = { earned: 0, possible: 0, days: 0 }; }
                 attendanceStats[d.enrollment].earned += d.points;
-                let isSat = new Date(d.date).getDay() === 6;
+                let isSat = getDayOfWeek(d.date) === 6;
                 attendanceStats[d.enrollment].possible += isSat ? 5 : 1; 
                 attendanceStats[d.enrollment].days += 1;
             });
             renderStudentManagementTable();
             renderSatOPointsTable();
-            if (document.getElementById('period-start-date').value && document.getElementById('period-end-date').value) { calculatePeriodAttendance(); }
+            if (document.getElementById('period-start-date')?.value && document.getElementById('period-end-date')?.value) { calculatePeriodAttendance(); }
         });
 
         function renderSatOPointsTable() {
             const tbody = document.getElementById('admin-sato-points-list');
             if(!tbody) return;
-            tbody.innerHTML = '';
             
             const satOEnrs = allStudentsList.filter(s => s.shift === 'Saturday (O)').map(s => s.enrollment);
             const satORecords = allAttendanceRecords.filter(r => satOEnrs.includes(r.enrollment) && r.status === 'Practical Submitted');
-            satORecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+            satORecords.sort((a, b) => (b.date > a.date ? 1 : -1));
 
             if(satORecords.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: gray;">Record a awm lo.</td></tr>';
                 return;
             }
 
+            let html = '';
             satORecords.forEach(r => {
-                tbody.innerHTML += `
+                html += `
                     <tr>
                         <td>${r.date}</td>
                         <td><b>${r.name}</b> <span style="color: #10b981; font-size: 11px;">[Practical]</span></td>
@@ -1950,6 +1989,7 @@
                     </tr>
                 `;
             });
+            tbody.innerHTML = html;
         }
 
         window.loadAttendanceForDate = async function() {
@@ -1958,9 +1998,9 @@
             
             const tbody = document.getElementById('attendance-list-body');
             const saveBtn = document.getElementById('btn-save-attendance');
-            const selectedDateObj = new Date(dateStr);
-            const isSunday = selectedDateObj.getDay() === 0;
-            const isSaturday = selectedDateObj.getDay() === 6;
+            const dayOfWeek = getDayOfWeek(dateStr);
+            const isSunday = dayOfWeek === 0;
+            const isSaturday = dayOfWeek === 6;
 
             if (isSunday) {
                 tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#dc2626; font-weight:bold; padding: 30px 10px;">🔴 Vawiin hi Pathianni (Sunday) a ni a, Attendance lak theih a ni lo.</td></tr>';
@@ -1979,17 +2019,18 @@
 
             const shiftSelect = document.getElementById('attendance-shift-filter');
             const currentShiftVal = shiftSelect.value;
-            shiftSelect.innerHTML = '<option value="ALL">-- Shift ZAWNG ZAWNG --</option>';
+            let shiftOptionsHtml = '<option value="ALL">-- Shift ZAWNG ZAWNG --</option>';
             
             const allShifts = ["6am shift", "7am shift", "8am shift", "10am shift", "11am shift", "1pm shift", "2pm shift", "3pm shift", "4pm shift", "5pm shift", "7pm shift", "Saturday shift", "Flexible shift"];
             
             allShifts.forEach(shift => {
                 if (isSaturday) {
-                    if (shift === 'Saturday shift') shiftSelect.innerHTML += `<option value="${shift}">${shift}</option>`;
+                    if (shift === 'Saturday shift') shiftOptionsHtml += `<option value="${shift}">${shift}</option>`;
                 } else {
-                    if (shift !== 'Saturday shift') shiftSelect.innerHTML += `<option value="${shift}">${shift}</option>`;
+                    if (shift !== 'Saturday shift') shiftOptionsHtml += `<option value="${shift}">${shift}</option>`;
                 }
             });
+            shiftSelect.innerHTML = shiftOptionsHtml;
             
             if (isSaturday && currentShiftVal !== 'Saturday shift' && currentShiftVal !== 'ALL') { shiftSelect.value = 'ALL'; } 
             else if (!isSaturday && currentShiftVal === 'Saturday shift') { shiftSelect.value = 'ALL'; } 
@@ -1998,11 +2039,10 @@
             const selectedShift = shiftSelect.value;
             const pts = isSaturday ? {p: 5, r: 2.5, a: 0} : {p: 1, r: 0.5, a: 0};
             const q = query(collection(db, "attendance"), where("date", "==", dateStr));
-            const snap = await getDocs(q); let existingAtt = {};
+            const snap = await getDocs(q); 
+            let existingAtt = {};
             snap.forEach(doc => { existingAtt[doc.data().enrollment] = doc.data().status; });
 
-            tbody.innerHTML = '';
-            
             let filteredStudents = allStudentsList.filter(s => (s.shift || '10am shift') !== 'Saturday (O)');
             if (isSaturday) { 
                 filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === 'Saturday shift'); 
@@ -2011,9 +2051,13 @@
                 if (selectedShift !== 'ALL') { filteredStudents = filteredStudents.filter(s => (s.shift || '10am shift') === selectedShift); }
             }
 
-            if(filteredStudents.length === 0) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">He shift-ah hian zirlai an awm lo.</td></tr>'; return; }
+            if(filteredStudents.length === 0) { 
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">He shift-ah hian zirlai an awm lo.</td></tr>'; 
+                return; 
+            }
 
             let presentList = []; let reportList = []; let absentCount = 0;
+            let html = '';
 
             filteredStudents.forEach(s => {
                 let status = existingAtt[s.enrollment] !== undefined ? existingAtt[s.enrollment] : ''; 
@@ -2026,11 +2070,8 @@
                 else absentCount++;
 
                 let perfData = getAttendanceCategory(s.enrollment);
-                let badgeHtml = perfData.label === 'N/A' 
-                    ? `<span style="background:${perfData.bg}; color:${perfData.color}; font-size:11px; padding:2px 6px; border-radius:4px; font-weight:bold; margin-left:5px;">N/A</span>`
-                    : `<span style="background:${perfData.bg}; color:${perfData.color}; font-size:11px; padding:2px 6px; border-radius:4px; font-weight:bold; margin-left:5px;">${perfData.label} (${perfData.pct}%)</span>`;
 
-                tbody.innerHTML += `
+                html += `
                     <tr class="att-row" data-category="${perfData.label}">
                         <td class="att-enrollment">${s.enrollment}</td>
                         <td class="att-name">
@@ -2046,6 +2087,7 @@
                     </tr>`;
             });
 
+            tbody.innerHTML = html;
             document.getElementById('count-present').innerText = presentList.length;
             document.getElementById('list-present').innerText = presentList.length > 0 ? presentList.join(', ') : 'A la awm lo';
             document.getElementById('count-report').innerText = reportList.length;
@@ -2058,7 +2100,7 @@
             let presentList = []; let reportList = []; let absentCount = 0;
             const selectedShift = document.getElementById('attendance-shift-filter').value;
             const dateStr = document.getElementById('attendance-date').value;
-            const isSaturday = new Date(dateStr).getDay() === 6;
+            const isSaturday = getDayOfWeek(dateStr) === 6;
             
             let filteredStudents = allStudentsList.filter(s => (s.shift || '10am shift') !== 'Saturday (O)');
             if (isSaturday) { 
@@ -2102,15 +2144,15 @@
             const selectedShift = document.getElementById('attendance-shift-filter').value;
             if(!dateStr) { alert("Date thlang phawt rawh!"); return; }
             
-            const selectedDateObj = new Date(dateStr);
-            if (selectedDateObj.getDay() === 0) {
+            const dayOfWeek = getDayOfWeek(dateStr);
+            if (dayOfWeek === 0) {
                 alert("Pathianni (Sunday)-ah attendance save theih a ni lo!"); return;
             }
             if (holidayList.find(h => h.date === dateStr)) {
                 alert("Sorkar chawlh anih avangin attendance save theih a ni lo!"); return;
             }
             
-            const isSaturday = selectedDateObj.getDay() === 6;
+            const isSaturday = dayOfWeek === 6;
             const pts = isSaturday ? {Present: 5, Reported: 2.5, Absent: 0} : {Present: 1, Reported: 0.5, Absent: 0};
 
             let targetStudents = allStudentsList.filter(s => (s.shift || '10am shift') !== 'Saturday (O)');
@@ -2137,20 +2179,24 @@
                 const querySnapshot = await getDocs(collection(db, "attendance")); let attData = [];
                 querySnapshot.forEach((docSnap) => { let d = docSnap.data(); attData.push({ "Ni (Date)": d.date, "Enrollment": d.enrollment, "Hming": d.name, "Status": d.status, "Points": d.points }); });
                 if(attData.length === 0) { alert("Attendance record a la awm lo."); return; }
-                attData.sort((a, b) => new Date(b["Ni (Date)"]) - new Date(a["Ni (Date)"]));
+                attData.sort((a, b) => (b["Ni (Date)"] > a["Ni (Date)"] ? 1 : -1));
                 let worksheet = XLSX.utils.json_to_sheet(attData); let workbook = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance_Report"); XLSX.writeFile(workbook, "Bethel_Attendance_Report.xlsx");
             } catch (error) { alert("Excel export-naah harsatna: " + error.message); }
         }
 
-        // ================= LEAVES =================
+        // ================= LEAVES (Reject paih a ni, Approve leh Pending chauh) =================
         onSnapshot(collection(db, "leave_requests"), (snapshot) => {
-            const adminContainer = document.getElementById('admin-leave-list'); if(!adminContainer) return; adminContainer.innerHTML = '';
-            if (snapshot.empty) { adminContainer.innerHTML = '<p style="color: gray; text-align: center; padding: 10px 0;">In-report an la awm lo...</p>'; return; }
+            const adminContainer = document.getElementById('admin-leave-list'); 
+            if(!adminContainer) return; 
+            if (snapshot.empty) { 
+                adminContainer.innerHTML = '<p style="color: gray; text-align: center; padding: 10px 0;">In-report an la awm lo...</p>'; 
+                return; 
+            }
             
             let leaves = []; 
             snapshot.forEach(doc => leaves.push({id: doc.id, ...doc.data()})); 
-            leaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
+            leaves.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
             
             let uniqueMap = {};
             leaves.forEach(data => {
@@ -2161,37 +2207,38 @@
                 if (!uniqueMap[key]) {
                     uniqueMap[key] = data;
                 } else {
-                    if (uniqueMap[key].status === 'Pending' && data.status !== 'Pending') { uniqueMap[key] = data; }
+                    if (uniqueMap[key].status === 'Pending' && data.status === 'Approved') { uniqueMap[key] = data; }
                 }
             });
 
             let finalLeaves = Object.values(uniqueMap);
-            finalLeaves.sort((a, b) => new Date(b.createdAt?.toMillis() || 0) - new Date(a.createdAt?.toMillis() || 0));
+            finalLeaves.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
 
+            let html = '';
             finalLeaves.forEach(data => {
-                let badgeClass = data.status === 'Approved' ? 'status-approved' : data.status === 'Rejected' ? 'status-rejected' : 'status-pending'; 
-                let statusText = data.status === 'Approved' ? 'Pawm a ni' : data.status === 'Rejected' ? 'Hnial a ni' : 'Nghak mek';
-                let sDate = data.startDate || data.date; let eDate = data.endDate || data.date;
-                
-                let rejectReasonHtml = (data.status === 'Rejected' && data.rejectReason) ? `<div style="font-size:12px; color:#991b1b; margin-top:4px;"><b>Hnial Chhan:</b> ${data.rejectReason}</div>` : '';
+                let isApproved = data.status === 'Approved';
+                let badgeClass = isApproved ? 'status-approved' : 'status-pending'; 
+                let statusText = isApproved ? 'Pawm a ni' : 'Nghak mek';
+                let sDate = data.startDate || data.date; 
+                let eDate = data.endDate || data.date;
 
-                adminContainer.innerHTML += `
-                    <div class="leave-item" style="border-left: 4px solid ${data.status === 'Approved' ? '#22c55e' : data.status === 'Rejected' ? '#ef4444' : '#eab308'};">
+                html += `
+                    <div class="leave-item" style="border-left: 4px solid ${isApproved ? '#22c55e' : '#eab308'};">
                         <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:8px;">
                             <strong style="font-size: 15px; color: #0f172a;">${data.studentName} <span style="color: gray; font-size: 12px;">(${data.enrollment})</span></strong>
                             <span class="status-badge ${badgeClass}">${statusText}</span>
                         </div>
                         <div style="font-size:13px; color:#334155; margin-bottom: 10px; background: #f8fafc; padding: 6px; border-radius: 4px;">
                             <span style="color:#0284c7; font-weight:bold;">Chawlh Ni:</span> ${data.date} | <span style="color:#0284c7; font-weight:bold;">A Chhan:</span> ${data.reason}
-                            ${rejectReasonHtml}
                         </div>
-                        ${data.status === 'Pending' ? `
+                        ${!isApproved ? `
                             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                                 <button class="btn btn-success" style="padding: 6px 12px; font-size:12px; margin:0; width: auto;" onclick="approveLeaveStatus('${data.id}', '${data.enrollment}', '${sDate}', '${eDate}')">Pawm (Approve)</button>
                             </div>
                         ` : ''}
                     </div>`;
             });
+            adminContainer.innerHTML = html;
         });
 
         window.approveLeaveStatus = async function(leaveId, enrollment, startDate, endDate) {
@@ -2202,37 +2249,78 @@
                 querySnapshot.forEach((docSnap) => {
                     let d = docSnap.data();
                     if((d.startDate || d.date) === startDate && (d.endDate || d.date) === endDate) {
-                        updatePromises.push(updateDoc(docSnap.ref, { status: 'Approved', rejectReason: '' }));
+                        updatePromises.push(updateDoc(docSnap.ref, { status: 'Approved' }));
                     }
                 });
                 
                 if(updatePromises.length > 0) { await Promise.all(updatePromises); } 
-                else { await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Approved', rejectReason: '' }); }
+                else { await updateDoc(doc(db, "leave_requests", leaveId), { status: 'Approved' }); }
                 
-                let currDate = new Date(startDate); let lastDate = new Date(endDate); let studentName = allStudentsList.find(s => s.enrollment === enrollment)?.name || '';
+                const [sy, sm, sd] = startDate.split('-').map(Number);
+                const [ey, em, ed] = endDate.split('-').map(Number);
+                let currDate = new Date(sy, sm - 1, sd);
+                let lastDate = new Date(ey, em - 1, ed);
+                let studentName = allStudentsList.find(s => s.enrollment === enrollment)?.name || '';
                 let promises = [];
                 
                 while (currDate <= lastDate) {
-                    let dStr = currDate.toISOString().split('T')[0]; 
+                    let yr = currDate.getFullYear();
+                    let mo = String(currDate.getMonth() + 1).padStart(2, '0');
+                    let da = String(currDate.getDate()).padStart(2, '0');
+                    let dStr = `${yr}-${mo}-${da}`;
+                    
                     let isSunday = currDate.getDay() === 0;
                     let isHoliday = holidayList.find(h => h.date === dStr);
                     
                     if (!isSunday && !isHoliday) {
-                        let isSaturday = currDate.getDay() === 6; let pts = isSaturday ? 2.5 : 0.5;
+                        let isSaturday = currDate.getDay() === 6; 
+                        let pts = isSaturday ? 2.5 : 0.5;
                         promises.push(setDoc(doc(db, "attendance", `${dStr}_${enrollment}`), { date: dStr, enrollment: enrollment, name: studentName, status: 'Reported', points: pts, timestamp: serverTimestamp() }));
                     }
                     currDate.setDate(currDate.getDate() + 1);
                 }
                 
-                await Promise.all(promises); loadAttendanceForDate(); 
+                await Promise.all(promises); 
+                loadAttendanceForDate(); 
                 alert("Chawlh hlawhtling taka pawm a ni e! (Sunday leh Holiday a awm chuan attendance points pek tel a ni lo ang).");
             } catch(error) { alert("Harsatna: " + error.message); }
         }
 
-        window.exportLeaveToExcel = async function() { try { const querySnapshot = await getDocs(collection(db, "leave_requests")); let leaveData = []; querySnapshot.forEach((doc) => { let d = doc.data(); leaveData.push({ "Enrollment No": d.enrollment, "Zirlai Hming": d.studentName, "Chawlh Ni": d.date, "Chhan": d.reason, "Status": d.status === 'Approved' ? 'Pawm a ni' : d.status === 'Rejected' ? 'Hnial a ni' : 'Nghak mek', "Hnial Chhan": d.rejectReason || '' }); }); if(leaveData.length === 0) { alert("Record a la awm lo."); return; } let worksheet = XLSX.utils.json_to_sheet(leaveData); let workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Chawlh_Report"); XLSX.writeFile(workbook, "Bethel_Zirlai_Chawlh.xlsx"); } catch (error) { alert("Harsatna: " + error.message); } }
-        window.clearAllLeaveRequests = async function() { if (confirm("Paih fai takzet i duh em?")) { try { const querySnapshot = await getDocs(collection(db, "leave_requests")); let deletePromises = []; querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "leave_requests", document.id)))); await Promise.all(deletePromises); alert("Paih fai a ni tawh e!"); } catch (error) { alert("Harsatna: " + error.message); } } }
+        window.exportLeaveToExcel = async function() { 
+            try { 
+                const querySnapshot = await getDocs(collection(db, "leave_requests")); 
+                let leaveData = []; 
+                querySnapshot.forEach((doc) => { 
+                    let d = doc.data(); 
+                    leaveData.push({ 
+                        "Enrollment No": d.enrollment, 
+                        "Zirlai Hming": d.studentName, 
+                        "Chawlh Ni": d.date, 
+                        "Chhan": d.reason, 
+                        "Status": d.status === 'Approved' ? 'Pawm a ni' : 'Nghak mek'
+                    }); 
+                }); 
+                if(leaveData.length === 0) { alert("Record a la awm lo."); return; } 
+                let worksheet = XLSX.utils.json_to_sheet(leaveData); 
+                let workbook = XLSX.utils.book_new(); 
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Chawlh_Report"); 
+                XLSX.writeFile(workbook, "Bethel_Zirlai_Chawlh.xlsx"); 
+            } catch (error) { alert("Harsatna: " + error.message); } 
+        }
 
-        // ================= NOTICES =================
+        window.clearAllLeaveRequests = async function() { 
+            if (confirm("Paih fai takzet i duh em?")) { 
+                try { 
+                    const querySnapshot = await getDocs(collection(db, "leave_requests")); 
+                    let deletePromises = []; 
+                    querySnapshot.forEach((document) => deletePromises.push(deleteDoc(doc(db, "leave_requests", document.id)))); 
+                    await Promise.all(deletePromises); 
+                    alert("Paih fai a ni tawh e!"); 
+                } catch (error) { alert("Harsatna: " + error.message); } 
+            } 
+        }
+
+        // ================= NOTICES (WhatsApp share paih a ni) =================
         window.publishNotice = async function(event) { 
             event.preventDefault(); 
             try { 
@@ -2255,11 +2343,15 @@
 
         onSnapshot(query(collection(db, "notices"), orderBy("createdAt", "desc")), (snapshot) => {
             const adminList = document.getElementById('admin-notice-list');
-            if(adminList) { adminList.innerHTML = ''; }
-            if (snapshot.empty) { if(adminList) adminList.innerHTML = '<p style="color: gray;">Notice a la awm lo...</p>'; } 
-            else {
+            if(!adminList) return;
+            if (snapshot.empty) { 
+                adminList.innerHTML = '<p style="color: gray;">Notice a la awm lo...</p>'; 
+            } else {
+                let html = '';
                 snapshot.forEach((docSnap) => {
-                    const data = docSnap.data(); const noticeId = docSnap.id; let commentsHTML = '';
+                    const data = docSnap.data(); 
+                    const noticeId = docSnap.id; 
+                    let commentsHTML = '';
                     if (data.comments && data.comments.length > 0) {
                         commentsHTML = '<div class="comment-area"><b>Comments:</b><br>';
                         data.comments.forEach(c => { 
@@ -2270,26 +2362,24 @@
                     }
                     
                     let seenCount = data.seenBy ? data.seenBy.length : 0; 
-                    let safeTitle = data.title ? data.title.replace(/'/g, "\\'") : '';
-                    if(adminList) {
-                        adminList.innerHTML += `<div class="notice-box">
-                            <h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4>
-                            <p style="margin-bottom: 10px; color: #475569;">${data.content}</p>
-                            ${commentsHTML}
-                            <div style="margin-top: 12px; display: flex; gap: 10px;">
-                                <input type="text" id="admin-comment-input-${noticeId}" placeholder="Comment chhanna (Reply)..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;">
-                                <button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="adminPostComment('${noticeId}')">Reply</button>
-                            </div>
-                            <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                                <span style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;">
-                                    👁 Hmu tawh zat: ${seenCount}
-                                </span>
-                                <button class="btn btn-primary" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="editNotice('${noticeId}')">Edit Notice</button>
-                                <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="deleteNotice('${noticeId}')">Paih</button>
-                            </div>
-                        </div>`;
-                    }
+                    html += `<div class="notice-box">
+                        <h4 style="margin-bottom: 5px; color: #0f172a;">${data.title}</h4>
+                        <p style="margin-bottom: 10px; color: #475569; white-space: pre-wrap;">${data.content}</p>
+                        ${commentsHTML}
+                        <div style="margin-top: 12px; display: flex; gap: 10px;">
+                            <input type="text" id="admin-comment-input-${noticeId}" placeholder="Comment chhanna (Reply)..." style="margin-bottom: 0; flex-grow: 1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                            <button class="btn btn-success" style="width: auto; padding: 8px 16px; white-space: nowrap; margin: 0;" onclick="adminPostComment('${noticeId}')">Reply</button>
+                        </div>
+                        <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <span style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;">
+                                👁 Hmu tawh zat: ${seenCount}
+                            </span>
+                            <button class="btn btn-primary" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="editNotice('${noticeId}')">Edit Notice</button>
+                            <button class="btn btn-danger" style="width: auto; padding: 6px 12px; font-size: 13px; margin: 0;" onclick="deleteNotice('${noticeId}')">Paih</button>
+                        </div>
+                    </div>`;
                 });
+                adminList.innerHTML = html;
             }
         });
 
@@ -2299,18 +2389,18 @@
 
         onSnapshot(query(collection(db, "shared_links"), orderBy("createdAt", "desc")), (snapshot) => {
             const adminContainer = document.getElementById('admin-links-container');
-            if(adminContainer) adminContainer.innerHTML = '';
-            if (snapshot.empty) { if(adminContainer) adminContainer.innerHTML = '<p style="color: gray;">A la awm rih lo...</p>'; } 
-            else {
+            if(!adminContainer) return;
+            if (snapshot.empty) { 
+                adminContainer.innerHTML = '<p style="color: gray;">A la awm rih lo...</p>'; 
+            } else {
+                let html = '';
                 snapshot.forEach((docSnap) => {
-                    let data = docSnap.data(); let icon = '🔗'; let color = '#333'; let btnText = 'Hawng Rawh'; let finalUrl = data.url;
-                    if (data.type === 'PDF Note') { icon = '📕'; color = '#dc2626'; let match = finalUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/); if(match && match[1]) { finalUrl = `https://drive.google.com/uc?export=download&id=${match[1]}`; btnText = 'Download'; } }
-                    else if (data.type === 'Google Form') { icon = '📝'; color = '#16a34a'; } else if (data.type === 'YouTube Video') { icon = '▶️'; color = '#2563eb'; }
-                    let safeFileName = data.fileName ? data.fileName.replace(/'/g, "\\'") : ''; let safeType = data.type ? data.type.replace(/'/g, "\\'") : '';
-                    if(adminContainer) {
-                        adminContainer.innerHTML += `<div class="list-row"><div class="list-row-info"><b style="font-size: 14px;">${data.fileName}</b><br><span style="font-size: 12px; color: gray;">(${data.type})</span></div><div style="display: flex; gap: 5px;"><button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Share-na" onclick="shareMaterialWhatsApp('${safeFileName}', '${safeType}')">📲</button><button class="btn btn-danger btn-icon" title="Paih" onclick="deleteLink('${docSnap.id}')">✕</button></div></div>`;
-                    }
+                    let data = docSnap.data();
+                    let safeFileName = data.fileName ? data.fileName.replace(/'/g, "\\'") : ''; 
+                    let safeType = data.type ? data.type.replace(/'/g, "\\'") : '';
+                    html += `<div class="list-row"><div class="list-row-info"><b style="font-size: 14px;">${data.fileName}</b><br><span style="font-size: 12px; color: gray;">(${data.type})</span></div><div style="display: flex; gap: 5px;"><button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Share-na" onclick="shareMaterialWhatsApp('${safeFileName}', '${safeType}')">📲</button><button class="btn btn-danger btn-icon" title="Paih" onclick="deleteLink('${docSnap.id}')">✕</button></div></div>`;
                 });
+                adminContainer.innerHTML = html;
             }
         });
 
@@ -2327,33 +2417,34 @@
 
         onSnapshot(query(collection(db, "online_materials"), orderBy("createdAt", "desc")), (snapshot) => {
             const adminContainer = document.getElementById('admin-online-container');
-            if(adminContainer) adminContainer.innerHTML = '';
+            if(!adminContainer) return;
             
-            if (snapshot.empty) { if(adminContainer) adminContainer.innerHTML = '<p style="color: gray;">A la awm rih lo...</p>'; } 
-            else {
+            if (snapshot.empty) { 
+                adminContainer.innerHTML = '<p style="color: gray;">A la awm rih lo...</p>'; 
+            } else {
+                let html = '';
                 snapshot.forEach((docSnap) => {
                     let data = docSnap.data();
                     let safeTitle = data.title ? data.title.replace(/'/g, "\\'") : '';
                     let safeUrl = data.url ? data.url.replace(/'/g, "\\'") : '';
                     let linkHtml = data.url ? `<a href="${data.url}" target="_blank" class="btn btn-primary" style="padding: 6px 12px; font-size: 13px; text-decoration: none; display: inline-block; margin-top: 10px; width: auto;">Link Hawng Rawh</a>` : '';
                     
-                    if(adminContainer) {
-                        adminContainer.innerHTML += `
-                            <div class="notice-box" style="border-left-color: #8b5cf6;">
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                                    <div style="flex-grow: 1; padding-right: 10px;">
-                                        <h4 style="margin-bottom: 5px; color: #581c87;">${data.title}</h4>
-                                        <p style="margin-bottom: 0; color: #475569; white-space: pre-wrap; font-size: 14px;">${data.message}</p>
-                                        ${linkHtml}
-                                    </div>
-                                    <div style="display: flex; gap: 5px; flex-direction: column;">
-                                        <button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Share-na" onclick="shareOnlineWhatsApp('${safeTitle}', '${safeUrl}')">📲</button>
-                                        <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteOnlineMaterial('${docSnap.id}')">✕</button>
-                                    </div>
+                    html += `
+                        <div class="notice-box" style="border-left-color: #8b5cf6;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div style="flex-grow: 1; padding-right: 10px;">
+                                    <h4 style="margin-bottom: 5px; color: #581c87;">${data.title}</h4>
+                                    <p style="margin-bottom: 0; color: #475569; white-space: pre-wrap; font-size: 14px;">${data.message}</p>
+                                    ${linkHtml}
                                 </div>
-                            </div>`;
-                    }
+                                <div style="display: flex; gap: 5px; flex-direction: column;">
+                                    <button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Share-na" onclick="shareOnlineWhatsApp('${safeTitle}', '${safeUrl}')">📲</button>
+                                    <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteOnlineMaterial('${docSnap.id}')">✕</button>
+                                </div>
+                            </div>
+                        </div>`;
                 });
+                adminContainer.innerHTML = html;
             }
         });
 
@@ -2367,18 +2458,19 @@
             
             if (snapshot.empty) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:gray;">Log in record a la awm lo...</td></tr>'; return; }
 
-            tbody.innerHTML = '';
+            let html = '';
             snapshot.forEach((docSnap) => {
                 let d = docSnap.data();
                 let timeStr = d.timestamp ? new Date(d.timestamp.toDate()).toLocaleString() : 'Hun hriat loh';
                 
-                tbody.innerHTML += `
+                html += `
                     <tr>
                         <td><b>${d.studentName}</b></td>
                         <td><span style="background: #f1f5f9; padding: 3px 6px; border-radius: 4px; font-size: 12px;">${d.enrollment}</span></td>
                         <td style="font-size: 13px; color: #64748b;">${timeStr}</td>
                     </tr>`;
             });
+            tbody.innerHTML = html;
         });
 
         window.exportLoginLogsToExcel = async function() {
@@ -2437,7 +2529,6 @@
             if(!student) return;
 
             try {
-                // Attendance collection-ah 'Practical Submitted' status in kan save ang
                 await setDoc(doc(db, "attendance", `${dateStr}_${enr}_practical`), {
                     date: dateStr,
                     enrollment: enr,
@@ -2448,7 +2539,6 @@
                 });
                 alert(student.name + " hnenah points " + pts + " hlawhtling taka pek a ni e!");
                 
-                // Form reset-na
                 document.getElementById('sato-student-select').value = "";
                 document.getElementById('sato-points').value = "";
             } catch (error) {
@@ -2467,8 +2557,6 @@
         }
 
         // ================= GENERAL & MANAGEMENT =================
-        
-        // --- MULTI-SELECT LOGIC ---
         window.toggleAllStudents = function(source) {
             const checkboxes = document.querySelectorAll('.student-cb');
             checkboxes.forEach(cb => { cb.checked = source.checked; });
@@ -2476,10 +2564,12 @@
 
         function renderStudentManagementTable() {
             const tableBody = document.getElementById('student-management-body'); 
-            if(!tableBody) return; tableBody.innerHTML = '';
+            if(!tableBody) return;
             
-            if(allStudentsList.length === 0) { tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>'; } 
-            else {
+            if(allStudentsList.length === 0) { 
+                tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>'; 
+            } else {
+                let html = '';
                 allStudentsList.forEach((s) => {
                     const totalPts = attendancePointsMap[s.enrollment] || 0;
                     const studentShift = s.shift || '10am shift';
@@ -2487,8 +2577,11 @@
                     
                     let safePhoto = s.photoUrl || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
                     let nameHtml = `<div style="display:flex; align-items:center; gap:10px;"><img src="${safePhoto}" style="width:35px; height:35px; border-radius:50%; object-fit:cover; border:2px solid #e2e8f0;"> <b>${s.name}</b></div>`;
+                    let safeName = (s.name || '').replace(/'/g, "\\'");
+                    let safeEnr = (s.enrollment || '').replace(/'/g, "\\'");
+                    let safeDob = (s.dob || '').replace(/'/g, "\\'");
 
-                    tableBody.innerHTML += `
+                    html += `
                         <tr>
                             <td style="text-align: center;"><input type="checkbox" class="student-cb" value="${s.enrollment}" style="cursor: pointer; width: 16px; height: 16px;"></td>
                             <td>${s.enrollment}</td>
@@ -2496,16 +2589,17 @@
                             <td>${s.dob}</td>
                             <td>
                                 <span class="badge-shift">${studentShift}</span> 
-                                <button style="background:none; border:none; color:#0284c7; cursor:pointer; font-size:12px; margin-left:5px;" onclick="openEditStudentModal('${s.enrollment}')">✏ Edit</button>
+                                <button style="background:none; border:none; color:#0284c7; cursor:pointer; font-size:12px; margin-left:5px;" onclick="openEditStudentModal('${safeEnr}')">✏ Edit</button>
                             </td>
                             <td style="font-weight:bold; color:#7e22ce;">${totalPts} pts</td>
                             <td style="text-align: center; font-weight:bold; color:#a16207; font-size:15px;">${studentCoins}</td>
                             <td style="text-align: center;">
-                                <button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Login Thawnna" onclick="shareLoginWhatsApp('${s.name}', '${s.enrollment}', '${s.dob}')">📱</button>
-                                <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteStudent('${s.enrollment}')">✕</button>
+                                <button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Login Thawnna" onclick="shareLoginWhatsApp('${safeName}', '${safeEnr}', '${safeDob}')">📱</button>
+                                <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteStudent('${safeEnr}')">✕</button>
                             </td>
                         </tr>`;
                 });
+                tableBody.innerHTML = html;
             }
         }
 
@@ -2560,18 +2654,25 @@
                 }
             }
             if (select) {
-                select.innerHTML = '<option value="">-- Thlang rawh --</option>';
+                const currentVal = select.value;
+                let html = '<option value="">-- Thlang rawh --</option>';
                 onlineStudents.forEach(s => {
-                    select.innerHTML += `<option value="${s.enrollment}">${s.name} (${s.enrollment})</option>`;
+                    html += `<option value="${s.enrollment}">${s.name} (${s.enrollment})</option>`;
                 });
+                select.innerHTML = html;
+                if(currentVal) select.value = currentVal;
             }
         }
 
         onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
             allStudentsList = []; snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
             renderStudentManagementTable(); 
-            renderFeeTable(); loadAttendanceForDate(); renderOnlineShiftStudents(); renderAdminLeaderboard(); renderSatOPointsTable();
-            if (document.getElementById('period-start-date').value && document.getElementById('period-end-date').value) { calculatePeriodAttendance(); }
+            renderFeeTable(); 
+            loadAttendanceForDate(); 
+            renderOnlineShiftStudents(); 
+            renderAdminLeaderboard(); 
+            renderSatOPointsTable();
+            if (document.getElementById('period-start-date')?.value && document.getElementById('period-end-date')?.value) { calculatePeriodAttendance(); }
         });
 
         window.openEditStudentModal = function(enrollment) { 
@@ -2641,15 +2742,13 @@
         }
 
         // ================= ID CARD GENERATOR (BULK THUAMTHAR) =================
-        
-        // Helper function: Node pakhat (ID card template) siamna
         async function buildCardNode(student) {
             const template = document.getElementById('id-card-combined');
             const cardNode = template.cloneNode(true);
-            cardNode.id = ''; // ID paih bo, thlanna a buai loh nan
+            cardNode.id = '';
             cardNode.style.display = 'flex';
-            cardNode.style.margin = '15px auto'; // A4 a awm dawn in in-karawl dan tur
-            cardNode.style.transform = 'scale(1)'; // Ensure no weird scaling
+            cardNode.style.margin = '15px auto';
+            cardNode.style.transform = 'scale(1)';
 
             let timing = student.shift ? student.shift.replace(' shift', '').replace('Saturday (O)', 'Sat-O') : '';
             cardNode.querySelector('#id-timing').textContent = timing;
@@ -2705,7 +2804,6 @@
             imgEl.crossOrigin = "Anonymous";
             imgEl.src = finalPhoto;
 
-            // Wait for both Profile Image and QR Code to load before continuing
             const qrEl = cardNode.querySelector('#id-qr-code');
 
             const imgPromise = new Promise((resolve) => {
@@ -2729,7 +2827,6 @@
             return cardNode;
         }
 
-        // Bulk (Pali/A4 pakhat) Print / Download
         window.downloadSelectedIDsA4 = async function() {
             const checkboxes = document.querySelectorAll('.student-cb:checked');
             if (checkboxes.length === 0) {
@@ -2743,7 +2840,6 @@
             const enrollments = Array.from(checkboxes).map(cb => cb.value);
             const selectedStudents = allStudentsList.filter(s => enrollments.includes(s.enrollment));
 
-            // Screen-ah ti lang lova a ruka siamna (Memory Wrapper)
             const printWrapper = document.createElement('div');
             printWrapper.style.background = 'white';
             printWrapper.style.width = '794px';   
@@ -2772,7 +2868,7 @@
                 }
 
                 const cardNode = await buildCardNode(selectedStudents[i]);
-                cardNode.style.pageBreakInside = 'avoid'; // A laihawla ID a in-cut loh nan
+                cardNode.style.pageBreakInside = 'avoid';
                 currentPage.appendChild(cardNode);
                 cardCount++;
             }
@@ -2795,15 +2891,12 @@
             }
         }
 
-        // ================= SIAMTATNA LEH DAH BELH =================
-
-        // 1. ZIRLAI REGISTER-NA (MANUAL)
+        // ================= ZIRLAI REGISTER-NA & GRADEBOOK =================
         window.registerSingleStudent = async function(event) {
             event.preventDefault();
             const enrollment = document.getElementById('reg-enrollment').value.trim();
             if (!enrollment) { alert("Enrollment No chhut a ngai!"); return; }
 
-            // Check if enrollment already exists
             const existingStudent = allStudentsList.find(s => s.enrollment === enrollment);
             if (existingStudent) {
                 alert("He Enrollment No hi hman a ni tawh. A dang hmang rawh.");
@@ -2851,7 +2944,6 @@
             }
         }
 
-        // 2. GRADEBOOK LOGIC
         window.onGradeStudentSelect = function() {
             const enrollment = document.getElementById('grade-student-select').value;
             const infoBox = document.getElementById('grade-student-info');
@@ -2891,7 +2983,6 @@
             const student = allStudentsList.find(s => s.enrollment === enrollment);
             const studentName = student ? student.name : '';
 
-            // Validation (Maximum marks checks: Theory IA 10, Practical IA 10, Practical Exam 40)
             if (thIA > 10 || prIA > 10 || prExam > 40) {
                 alert("Mark pek zat kha a dik lo (Max points a pel). Uluk takin check nawn leh rawh.");
                 return;
@@ -2905,7 +2996,7 @@
                     theoryIA: thIA,
                     practicalIA: prIA,
                     practicalExam: prExam,
-                    total: (thIA + prIA + prExam),
+                    total: Number((thIA + prIA + prExam).toFixed(1)),
                     timestamp: serverTimestamp()
                 });
                 alert("Mark hlawhtling taka save a ni e!");
@@ -2914,7 +3005,6 @@
             }
         }
 
-        // Fetch Grades and display in Table
         onSnapshot(collection(db, "grades"), (snapshot) => {
             const tableBody = document.getElementById('grade-results-table');
             if(!tableBody) return;
@@ -2923,15 +3013,12 @@
                 tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: gray;">Results a la awm rih lo...</td></tr>';
                 return;
             }
-
-            tableBody.innerHTML = '';
             
             let allGrades = [];
             snapshot.forEach(docSnap => {
                 allGrades.push({ id: docSnap.id, ...docSnap.data() });
             });
 
-            // Sort by Subject first, then by Enrollment
             allGrades.sort((a, b) => {
                 if (a.subject < b.subject) return -1;
                 if (a.subject > b.subject) return 1;
@@ -2940,13 +3027,14 @@
                 return 0;
             });
 
+            let html = '';
             allGrades.forEach(grade => {
                 let badgeClass = grade.total >= 50 ? 'background:#dcfce7; color:#166534;' : 
                                  grade.total >= 40 ? 'background:#e0f2fe; color:#0369a1;' : 
                                  grade.total >= 30 ? 'background:#fef08a; color:#854d0e;' : 
                                  'background:#fee2e2; color:#991b1b;';
                 
-                tableBody.innerHTML += `
+                html += `
                     <tr>
                         <td>${grade.enrollment}</td>
                         <td><b>${grade.name}</b></td>
@@ -2958,6 +3046,7 @@
                     </tr>
                 `;
             });
+            tableBody.innerHTML = html;
         });
 
         window.exportGradesToExcel = async function() {
