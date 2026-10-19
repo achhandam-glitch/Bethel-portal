@@ -99,7 +99,7 @@
 
         .back-menu-bar { margin-bottom: 15px; }
 
-        .leaderboard-row { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #e2e8f0; }
+        .leaderboard-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #e2e8f0; }
 
         /* Floating Dark Mode Toggle Button */
         .dark-mode-toggle-btn { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%; background-color: #1e293b; color: #f8fafc; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 9999; display: flex; justify-content: center; align-items: center; transition: 0.3s; }
@@ -245,7 +245,7 @@
                     <input type="text" id="edit-phone">
                 </div>
                 <div class="input-group">
-                    <label>Aadhaar No</label>
+                    <label>ID No (Optional)</label>
                     <input type="text" id="edit-aadhaar">
                 </div>
                 <div class="input-group">
@@ -360,8 +360,13 @@
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToMenu()">⬅️ Menu-a let lehna</button></div>
                     
                     <div class="card" style="border: 2px solid #eab308; padding: 20px; margin-bottom: 20px;">
-                        <h3 style="color: #a16207; border-bottom: 1px solid #fde047;">🏆 Zirlaite Coin Neih Zat (Top 10 Leaderboard)</h3>
-                        <div id="admin-mcq-leaderboard" style="margin-top: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #fde047; padding-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+                            <h3 style="color: #a16207; border: none; margin: 0; padding: 0;">🏆 Zirlaite Coin Rank & Title List</h3>
+                            <span style="font-size: 12px; background: #fef9c3; color: #854d0e; padding: 4px 10px; border-radius: 6px; font-weight: bold;">
+                                1-10: Elite | 11-20: Master | 21-30: Average | 31+: Poor
+                            </span>
+                        </div>
+                        <div id="admin-mcq-leaderboard" style="margin-top: 15px; max-height: 400px; overflow-y: auto;">
                             <p style="color: gray;">Loading...</p>
                         </div>
                     </div>
@@ -515,8 +520,8 @@
                                 </select>
                             </div>
                             <div class="input-group">
-                                <label>Aadhaar No</label>
-                                <input type="text" id="reg-aadhaar" placeholder="Aadhaar number">
+                                <label>ID No (Optional)</label>
+                                <input type="text" id="reg-aadhaar" placeholder="ID number">
                             </div>
                             <div class="input-group">
                                 <label>Phone No</label>
@@ -1080,7 +1085,7 @@
                                         <th>DOB</th>
                                         <th>Shift</th>
                                         <th>Att. Points</th>
-                                        <th style="text-align: center;">Coins 🪙</th>
+                                        <th style="text-align: center;">Coins & Title 🪙</th>
                                         <th style="text-align: center;">Thawn/Paih</th>
                                     </tr>
                                 </thead>
@@ -1233,7 +1238,7 @@
         const db = getFirestore(app);
 
         const PORTAL_LINK = "https://tinyurl.com/bcctestportal"; 
-        const APP_VERSION = "6.17";
+        const APP_VERSION = "6.19";
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0 };
         let allStudentsList = []; 
@@ -1259,6 +1264,19 @@
             if (!dateStr) return -1;
             const [y, m, d] = dateStr.split('-').map(Number);
             return new Date(y, m - 1, d).getDay();
+        }
+
+        // COIN RANK ATANGA TITLE LEH BADGE SIAMNA HELPER FUNCTION (1-10: Elite, 11-20: Master, 21-30: Average, 31+: Poor)
+        function getCoinRankDetails(rank) {
+            if (rank >= 1 && rank <= 10) {
+                return { title: 'Elite', badge: '👑 Elite', bg: '#fef08a', color: '#854d0e', border: '#eab308' };
+            } else if (rank >= 11 && rank <= 20) {
+                return { title: 'Master', badge: '⚔️ Master', bg: '#e0f2fe', color: '#0369a1', border: '#38bdf8' };
+            } else if (rank >= 21 && rank <= 30) {
+                return { title: 'Average', badge: '🛡️ Average', bg: '#dcfce7', color: '#166534', border: '#4ade80' };
+            } else {
+                return { title: 'Poor', badge: '🌱 Poor', bg: '#fee2e2', color: '#991b1b', border: '#f87171' };
+            }
         }
 
         const realToday = getLocalToday();
@@ -1320,7 +1338,6 @@
             document.querySelectorAll('.admin-tab-content').forEach(el => { el.classList.remove('active-content'); });
             document.getElementById(tabId).classList.add('active-content');
             
-            // Value a la awm loh chauhvin vawiin date dah tur (User thlan sa a in-reset loh nan)
             const attDate = document.getElementById('attendance-date');
             if (attDate && !attDate.value) attDate.value = realToday;
             const feeDate = document.getElementById('fee-date');
@@ -1385,7 +1402,7 @@
             } catch(e) { alert("Harsatna: " + e.message); }
         }
 
-        // ================= WHATSAPP SHARING (Notice WhatsApp Share paih a ni) =================
+        // ================= WHATSAPP SHARING =================
         window.shareMaterialWhatsApp = function(fileName, type) {
             const text = `📌 *Bethel Computer Centre*\n\nStudy Material / Link thar a awm e!\n*${fileName}* (${type})\n\nKhawngaihin in Portal-ah log in ula lo check ngei ngei ru.\n@all\n\n🌐 Portal Link: ${PORTAL_LINK}`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
@@ -1558,14 +1575,82 @@
             }
         });
 
-        function renderAdminLeaderboard() {
-            const board = document.getElementById('admin-mcq-leaderboard'); if(!board) return;
-            let sorted = [...allStudentsList].sort((a,b) => (b.coins || 0) - (a.coins || 0)).slice(0, 10);
-            if(sorted.length === 0 || (sorted[0].coins || 0) === 0) { board.innerHTML = '<p style="color:gray; font-size:14px;">Coin la an la awm lo.</p>'; return; }
-            board.innerHTML = sorted.map((s, i) => {
-                let medal = i===0 ? '🥇' : i===1 ? '🥈' : i===2 ? '🥉' : '🔹';
-                return `<div class="leaderboard-row"><span>${medal} <b>${s.name}</b> <span style="font-size:12px; color:gray;">(${s.enrollment})</span></span><strong style="color:#a16207;">${s.coins || 0} Coins</strong></div>`;
-            }).join('');
+        // ADMIN LEADERBOARD TARLANNA LEH STUDENT PORTAL ATANA FIREBASE-A TITLE SYNC-NA
+        async function renderAdminLeaderboard() {
+            const board = document.getElementById('admin-mcq-leaderboard'); 
+            if(!board) return;
+
+            if(allStudentsList.length === 0) { 
+                board.innerHTML = '<p style="color:gray; font-size:14px;">Zirlai an la awm lo.</p>'; 
+                return; 
+            }
+
+            // Coins ngah dan indawtin rem phawt ang (Coins inzat an awm chuan hming indawtin)
+            let sorted = [...allStudentsList].sort((a, b) => {
+                let diff = (b.coins || 0) - (a.coins || 0);
+                if (diff !== 0) return diff;
+                return (a.name || '').localeCompare(b.name || '');
+            });
+
+            let html = '';
+            let updatePromises = [];
+            let leaderboardSummary = [];
+
+            sorted.forEach((s, i) => {
+                let rank = i + 1;
+                let details = getCoinRankDetails(rank);
+                let medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
+
+                html += `
+                    <div class="leaderboard-row">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-weight: bold; min-width: 32px; color: #475569;">${medal}</span>
+                            <div>
+                                <b>${s.name}</b> <span style="font-size:12px; color:gray;">(${s.enrollment})</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="background: ${details.bg}; color: ${details.color}; border: 1px solid ${details.border}; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: bold;">
+                                ${details.badge}
+                            </span>
+                            <strong style="color:#a16207; min-width: 75px; text-align: right;">${s.coins || 0} Coins</strong>
+                        </div>
+                    </div>`;
+
+                leaderboardSummary.push({
+                    rank: rank,
+                    enrollment: s.enrollment,
+                    name: s.name,
+                    coins: s.coins || 0,
+                    title: details.title,
+                    badge: details.badge
+                });
+
+                // Student document-ah a Title leh Rank a la in-save dik loh chuan Firebase-ah auto-update ang
+                if (s.coinTitle !== details.title || s.coinRank !== rank) {
+                    updatePromises.push(
+                        updateDoc(doc(db, "students", s.enrollment), {
+                            coinTitle: details.title,
+                            coinRank: rank
+                        }).catch(err => console.error("Rank sync error:", err))
+                    );
+                }
+            });
+
+            board.innerHTML = html;
+
+            // Student Portal-in awlsam taka Leaderboard leh Title a chhiar theih nan settings-ah save tel ang
+            try {
+                setDoc(doc(db, "settings", "coin_leaderboard"), {
+                    list: leaderboardSummary,
+                    updatedAt: serverTimestamp()
+                });
+                if (updatePromises.length > 0) {
+                    await Promise.all(updatePromises);
+                }
+            } catch (e) {
+                console.error("Leaderboard sync error:", e);
+            }
         }
 
         // ================= FEE MANAGEMENT =================
@@ -2185,7 +2270,7 @@
             } catch (error) { alert("Excel export-naah harsatna: " + error.message); }
         }
 
-        // ================= LEAVES (Reject paih a ni, Approve leh Pending chauh) =================
+        // ================= LEAVES =================
         onSnapshot(collection(db, "leave_requests"), (snapshot) => {
             const adminContainer = document.getElementById('admin-leave-list'); 
             if(!adminContainer) return; 
@@ -2320,7 +2405,7 @@
             } 
         }
 
-        // ================= NOTICES (WhatsApp share paih a ni) =================
+        // ================= NOTICES =================
         window.publishNotice = async function(event) { 
             event.preventDefault(); 
             try { 
@@ -2569,11 +2654,23 @@
             if(allStudentsList.length === 0) { 
                 tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: gray;">Zirlai an la in-register lo...</td></tr>'; 
             } else {
+                // Zirlaite Coin Rank chhut chhuak phawt ang
+                let sortedByCoins = [...allStudentsList].sort((a, b) => {
+                    let diff = (b.coins || 0) - (a.coins || 0);
+                    if (diff !== 0) return diff;
+                    return (a.name || '').localeCompare(b.name || '');
+                });
+                let rankMap = {};
+                sortedByCoins.forEach((st, idx) => {
+                    rankMap[st.enrollment] = getCoinRankDetails(idx + 1);
+                });
+
                 let html = '';
                 allStudentsList.forEach((s) => {
                     const totalPts = attendancePointsMap[s.enrollment] || 0;
                     const studentShift = s.shift || '10am shift';
                     const studentCoins = s.coins || 0;
+                    const rankDetails = rankMap[s.enrollment] || getCoinRankDetails(999);
                     
                     let safePhoto = s.photoUrl || 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
                     let nameHtml = `<div style="display:flex; align-items:center; gap:10px;"><img src="${safePhoto}" style="width:35px; height:35px; border-radius:50%; object-fit:cover; border:2px solid #e2e8f0;"> <b>${s.name}</b></div>`;
@@ -2592,7 +2689,10 @@
                                 <button style="background:none; border:none; color:#0284c7; cursor:pointer; font-size:12px; margin-left:5px;" onclick="openEditStudentModal('${safeEnr}')">✏ Edit</button>
                             </td>
                             <td style="font-weight:bold; color:#7e22ce;">${totalPts} pts</td>
-                            <td style="text-align: center; font-weight:bold; color:#a16207; font-size:15px;">${studentCoins}</td>
+                            <td style="text-align: center;">
+                                <div style="font-weight:bold; color:#a16207; font-size:15px;">${studentCoins}</div>
+                                <span style="background:${rankDetails.bg}; color:${rankDetails.color}; border:1px solid ${rankDetails.border}; font-size:10px; padding:2px 6px; border-radius:8px; font-weight:bold; display:inline-block; margin-top:2px;">${rankDetails.badge}</span>
+                            </td>
                             <td style="text-align: center;">
                                 <button class="btn btn-whatsapp btn-icon" title="WhatsApp-ah Login Thawnna" onclick="shareLoginWhatsApp('${safeName}', '${safeEnr}', '${safeDob}')">📱</button>
                                 <button class="btn btn-danger btn-icon" title="Paih" onclick="deleteStudent('${safeEnr}')">✕</button>
@@ -2621,7 +2721,7 @@
                     "Pa Hming": s.fatherName || '',
                     "Nu Hming": s.motherName || '',
                     "Phone No": s.phone || '',
-                    "Aadhaar No": s.aadhaar || '',
+                    "ID No": s.aadhaar || '',
                     "Address": s.address || '',
                     "Email": s.email || '',
                     "Apaar ID": s.apaarId || '',
@@ -2630,6 +2730,9 @@
                     "Board": s.board || '',
                     "Passing Year": s.passingYear || '',
                     "Division": s.division || '',
+                    "Coins": s.coins || 0,
+                    "Coin Rank": s.coinRank || '',
+                    "Coin Title": s.coinTitle || 'Poor',
                     "Registered Date": regDate
                 };
             });
