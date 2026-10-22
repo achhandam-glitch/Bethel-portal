@@ -93,7 +93,6 @@
         .mcq-card { border: 2px solid #eab308; background: #fefce8; color: #1e293b; padding: 20px; border-radius: 10px; margin-bottom: 15px; }
         .mcq-option { display: block; margin: 8px 0; padding: 10px; background: #ffffff; color: #1e293b; border: 1px solid #fde047; border-radius: 6px; cursor: pointer; }
         .mcq-option:hover { background: #fef08a; }
-        .leaderboard-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #e2e8f0; color: #1e293b; }
 
         @media (max-width: 768px) { 
             .form-grid { grid-template-columns: 1fr; } 
@@ -134,7 +133,6 @@
         body.dark-mode .menu-btn:hover { background-color: #334155 !important; color: #38bdf8 !important; }
 
         body.dark-mode .comment-item { border-bottom-color: #334155 !important; color: #ffffff !important; }
-        body.dark-mode .leaderboard-row { border-bottom-color: #334155 !important; color: #ffffff !important; }
 
         body.dark-mode span[style*="background: #fee2e2"] { background-color: #7f1d1d !important; color: #fca5a5 !important; }
         body.dark-mode span[style*="background: #dcfce7"] { background-color: #14532d !important; color: #86efac !important; }
@@ -286,17 +284,29 @@
                     <div class="back-menu-bar"><button class="btn btn-outline" style="width: auto; padding: 8px 15px;" onclick="backToStudentMenu()">⬅️ Menu-a let lehna</button></div>
                     
                     <div id="mcq-main-container">
-                        <div class="card" style="border: 2px solid #eab308; padding: 20px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #fde047; padding-bottom: 10px; flex-wrap: wrap; gap: 10px;">
-                                <h3 style="margin: 0; border: none; padding: 0;">🏆 Coin Leaderboard & Titles</h3>
-                                <span style="font-size: 11px; background: #fef08a; color: #854d0e; padding: 4px 8px; border-radius: 6px; font-weight: bold;">
-                                    1-10: Elite | 11-20: Master | 21-30: Average | 31+: Poor
+                        <!-- ZIRLAI MAHNI RANK LEH TITLE CHAUH LANNA CARD (ZIRLAI DANG AN LANG VE LO) -->
+                        <div class="card" style="border: 2px solid #eab308; padding: 25px; text-align: center; margin-bottom: 20px;">
+                            <h3 style="color: #a16207; border-bottom: 1px solid #fde047; padding-bottom: 10px; margin-bottom: 15px;">🏆 I Coin Rank & Title</h3>
+                            
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 15px;">
+                                <div style="background: #f8fafc; padding: 15px 25px; border-radius: 10px; border: 1px solid #e2e8f0; min-width: 140px;">
+                                    <div style="font-size: 12px; color: #64748b; font-weight: bold;">I RANK</div>
+                                    <div style="font-size: 28px; font-weight: 900; color: #0f172a; margin-top: 5px;" id="student-my-single-rank">#-</div>
+                                </div>
+                                <div style="background: #f8fafc; padding: 15px 25px; border-radius: 10px; border: 1px solid #e2e8f0; min-width: 140px;">
+                                    <div style="font-size: 12px; color: #64748b; font-weight: bold;">I COINS</div>
+                                    <div style="font-size: 28px; font-weight: 900; color: #a16207; margin-top: 5px;"><span id="student-my-single-coins">0</span> 🪙</div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 15px;">
+                                <span style="font-size: 13px; color: #475569; display: block; margin-bottom: 5px;">I Title & Badge:</span>
+                                <span id="student-my-single-badge" style="background: #fef08a; color: #854d0e; padding: 6px 16px; border-radius: 20px; font-size: 15px; font-weight: bold; border: 1px solid #eab308; display: inline-block;">
+                                    ⏳ Chhut mek...
                                 </span>
                             </div>
-                            <p style="font-size: 12px; color: #64748b; margin-top: 8px;"><i>* Coins neih zat inang an awm chuan a chhang dik hmasa zawkin Rank sang zawk an chang zel ang.</i></p>
-                            <div id="mcq-leaderboard" style="margin-top: 12px; max-height: 350px; overflow-y: auto;">
-                                <p style="opacity: 0.7;">Loading...</p>
-                            </div>
+
+                            <p style="font-size: 12px; color: #94a3b8; margin-top: 15px;"><i>* Point inangah chuan a chhang hmasa sa (time hma zawk) chu rank sang zawkah dah a ni ṭhin.</i></p>
                         </div>
 
                         <div class="card" style="margin-bottom: 0;">
@@ -568,7 +578,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "6.21"; 
+        const APP_VERSION = "6.22"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0, photoUrl: '' };
         let studentLeaveUnsubscribe = null; 
@@ -615,6 +625,12 @@
             return `${yr}-${mo}-${da}`;
         }
 
+        function getDayOfWeek(dateStr) {
+            if (!dateStr) return -1;
+            const [y, m, d] = dateStr.split('-').map(Number);
+            return new Date(y, m - 1, d).getDay();
+        }
+
         // COIN RANK LEH TITLE CHHUTNA HELPER FUNCTION (1-10: Elite, 11-20: Master, 21-30: Average, 31+: Poor)
         function getCoinRankDetails(rank) {
             if (rank >= 1 && rank <= 10) {
@@ -629,12 +645,12 @@
         }
 
         // ATTENDANCE CONSISTENCY RANK BADGE HELPER
-        function getAttendanceRankDetails(rank, totalPts, absentCount) {
+        function getAttendanceRankDetails(rank, totalPts, absentUnits) {
             if (totalPts <= 0) {
                 return { title: 'No Record', badge: '⏳ Record la awm lo', bg: '#f1f5f9', color: '#64748b', border: '#cbd5e1' };
             }
             if (rank >= 1 && rank <= 10) {
-                let extra = absentCount === 0 ? ' (100% Streak)' : '';
+                let extra = absentUnits === 0 ? ' (100% Streak)' : '';
                 return { title: 'Most Consistent', badge: `🌟 Most Consistent${extra}`, bg: '#dcfce7', color: '#166534', border: '#4ade80' };
             } else if (rank >= 11 && rank <= 20) {
                 return { title: 'Very Regular', badge: '🔥 Very Regular', bg: '#e0f2fe', color: '#0369a1', border: '#38bdf8' };
@@ -645,7 +661,7 @@
             }
         }
 
-        // MAHNI ATTENDANCE CONSISTENCY RANK CHHUTNA (MIDANG LIST LANG LOVIN)
+        // MAHNI ATTENDANCE CONSISTENCY RANK CHHUTNA (SATURDAY X5 WEIGHTAGE INMILIN)
         function updateMyAttendanceConsistencyUI() {
             const myEnr = String(window.currentStudent?.enrollment || '');
             if (!myEnr || allStudentsList.length === 0) return;
@@ -653,33 +669,41 @@
             let consistencyList = allStudentsList.map(s => {
                 let stRecords = allAttendanceRecords.filter(r => String(r.enrollment) === String(s.enrollment));
                 let totalPts = 0;
-                let presentDays = 0;
-                let reportDays = 0;
-                let absentDays = 0;
+                let presentUnits = 0;
+                let reportUnits = 0;
+                let absentUnits = 0;
 
                 stRecords.forEach(r => {
-                    totalPts += (r.points || 0);
-                    if (r.status === 'Present' || r.status === 'Practical Submitted') presentDays++;
-                    else if (r.status === 'Reported') reportDays++;
-                    else if (r.status === 'Absent') absentDays++;
+                    let pts = r.points || 0;
+                    totalPts += pts;
+                    let isSat = getDayOfWeek(r.date) === 6;
+                    let unitMultiplier = isSat ? 5 : 1;
+
+                    if (r.status === 'Present' || r.status === 'Practical Submitted') {
+                        presentUnits += unitMultiplier;
+                    } else if (r.status === 'Reported') {
+                        reportUnits += unitMultiplier;
+                    } else if (r.status === 'Absent') {
+                        absentUnits += unitMultiplier;
+                    }
                 });
 
                 return {
                     enrollment: String(s.enrollment),
                     name: s.name || '',
                     attTotalPts: totalPts,
-                    attPresentDays: presentDays,
-                    attReportDays: reportDays,
-                    attAbsentDays: absentDays
+                    attPresentUnits: presentUnits,
+                    attReportUnits: reportUnits,
+                    attAbsentUnits: absentUnits
                 };
             });
 
             // Admin Page nen inmil thlapa Sort-na:
-            // 1. Total Points sang zawk -> 2. Absent nei tlem zawk -> 3. Present ni ngah zawk -> 4. Hming indawt
+            // 1. Total Points sang zawk -> 2. Absent unit nei tlem zawk -> 3. Present unit ngah zawk -> 4. Hming indawt
             consistencyList.sort((a, b) => {
                 if (b.attTotalPts !== a.attTotalPts) return b.attTotalPts - a.attTotalPts;
-                if (a.attAbsentDays !== b.attAbsentDays) return a.attAbsentDays - b.attAbsentDays;
-                if (b.attPresentDays !== a.attPresentDays) return b.attPresentDays - a.attPresentDays;
+                if (a.attAbsentUnits !== b.attAbsentUnits) return a.attAbsentUnits - b.attAbsentUnits;
+                if (b.attPresentUnits !== a.attPresentUnits) return b.attPresentUnits - a.attPresentUnits;
                 return a.name.localeCompare(b.name);
             });
 
@@ -687,7 +711,7 @@
             if (myIndex !== -1) {
                 const myStats = consistencyList[myIndex];
                 const myRank = myIndex + 1;
-                const details = getAttendanceRankDetails(myRank, myStats.attTotalPts, myStats.attAbsentDays);
+                const details = getAttendanceRankDetails(myRank, myStats.attTotalPts, myStats.attAbsentUnits);
 
                 const rankEl = document.getElementById('my-att-rank');
                 const badgeEl = document.getElementById('my-att-badge');
@@ -701,7 +725,7 @@
                     badgeEl.style.border = `1px solid ${details.border}`;
                 }
                 if (statsEl) {
-                    statsEl.innerText = `Present: ${myStats.attPresentDays} | Report: ${myStats.attReportDays} | Absent: ${myStats.attAbsentDays}`;
+                    statsEl.innerText = `Present Units: ${myStats.attPresentUnits} | Report Units: ${myStats.attReportUnits} | Absent Units: ${myStats.attAbsentUnits}`;
                 }
             }
         }
@@ -1343,11 +1367,7 @@
 
         // LEADERBOARD & STUDENT COIN TITLE TARLANNA (Tie-breaker: Chhang dik hmasa zawk rank sang zawk)
         function renderLeaderboard() {
-            const board = document.getElementById('mcq-leaderboard');
-            if(allStudentsList.length === 0) { 
-                if(board) board.innerHTML = '<p style="opacity:0.7; font-size:14px;">Zirlai an la awm lo.</p>'; 
-                return; 
-            }
+            if(allStudentsList.length === 0) return;
 
             // 1. Coins ngah dan -> 2. Chhang dik hmasa zawk (lastCoinUpdatedAt / lastCoinEarnedAt hma zawk) -> 3. Hming indawt
             let sorted = [...allStudentsList].sort((a, b) => {
@@ -1361,55 +1381,38 @@
                 return (a.name || '').localeCompare(b.name || '');
             });
 
-            let html = '';
             let myEnr = String(window.currentStudent?.enrollment || '');
+            let myIndex = sorted.findIndex(s => String(s.enrollment) === myEnr);
 
-            sorted.forEach((s, i) => {
-                let rank = i + 1;
+            if (myIndex !== -1) {
+                let rank = myIndex + 1;
                 let details = getCoinRankDetails(rank);
-                let medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`;
-                let isMe = myEnr !== '' && String(s.enrollment) === myEnr;
+                let myCoins = sorted[myIndex].coins || 0;
 
-                // Tuna log-in mek zirlai a nih chuan a Header leh Status Card-a a Title leh Rank update nghal ang
-                if (isMe) {
-                    const headerBadge = document.getElementById('student-header-title-badge');
-                    if (headerBadge) {
-                        headerBadge.innerText = `${details.badge} (#${rank})`;
-                        headerBadge.style.background = details.bg;
-                        headerBadge.style.color = details.color;
-                        headerBadge.style.border = `1px solid ${details.border}`;
-                    }
-
-                    const statusRankEl = document.getElementById('student-coin-rank-status');
-                    if (statusRankEl) statusRankEl.innerText = `#${rank}`;
-
-                    const statusTitleEl = document.getElementById('student-coin-title-status');
-                    if (statusTitleEl) {
-                        statusTitleEl.innerText = details.badge;
-                        statusTitleEl.style.background = details.bg;
-                        statusTitleEl.style.color = details.color;
-                        statusTitleEl.style.border = `1px solid ${details.border}`;
-                    }
+                // Header badge update
+                const headerBadge = document.getElementById('student-header-title-badge');
+                if (headerBadge) {
+                    headerBadge.innerText = `${details.badge} (#${rank})`;
+                    headerBadge.style.background = details.bg;
+                    headerBadge.style.color = details.color;
+                    headerBadge.style.border = `1px solid ${details.border}`;
                 }
 
-                let rowHighlight = isMe ? 'background: #fffbeb; border-left: 4px solid #eab308;' : '';
+                // Single Card UI update
+                const rankEl = document.getElementById('student-my-single-rank');
+                if (rankEl) rankEl.innerText = `#${rank}`;
 
-                html += `
-                    <div class="leaderboard-row" style="${rowHighlight}">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span style="font-weight: bold; min-width: 28px; color: #475569;">${medal}</span>
-                            <b style="color: ${isMe ? '#b45309' : 'inherit'};">${s.name} ${isMe ? '(Nangmah)' : ''}</b>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span style="background: ${details.bg}; color: ${details.color}; border: 1px solid ${details.border}; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">
-                                ${details.badge}
-                            </span>
-                            <strong style="min-width: 70px; text-align: right; color: #a16207;">${s.coins || 0} Coins</strong>
-                        </div>
-                    </div>`;
-            });
+                const coinsEl = document.getElementById('student-my-single-coins');
+                if (coinsEl) coinsEl.innerText = myCoins;
 
-            if (board) board.innerHTML = html;
+                const badgeEl = document.getElementById('student-my-single-badge');
+                if (badgeEl) {
+                    badgeEl.innerText = details.badge;
+                    badgeEl.style.background = details.bg;
+                    badgeEl.style.color = details.color;
+                    badgeEl.style.border = `1px solid ${details.border}`;
+                }
+            }
         }
 
         onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
