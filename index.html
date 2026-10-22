@@ -188,7 +188,7 @@
     <div id="attendance-info-modal" class="modal-overlay hidden">
         <div class="card" style="width: 100%; max-width: 450px; margin: 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
-                <h3 style="color: #c084fc; margin: 0; border: none; padding: 0;">Attendance & Internal Mark</h3>
+                <h3 style="color: #c084fc; margin: 0; border: none; padding: 0;">Attendance & Practical Mark Boost</h3>
                 <button style="background: none; border: none; font-size: 20px; cursor: pointer; color: #ef4444;" onclick="closeAttendanceModal()">✕</button>
             </div>
             
@@ -205,9 +205,9 @@
                     <p style="margin-bottom: 15px;">Class i kal theih dawn lo chuan Menu aṭangin <b>"📝 Chawlh Dilna & In-Report-na"</b> ah lut la, i chawlh chhan ziakin thehlut rawh. Zirtirtuin a pawm (approve) hunah i attendance kha 'Reported' ah a inthlak ang a, point chanve i hmu ang.</p>
                 </div>
 
-                <h4 style="margin-bottom: 5px;">📌 Internal Mark Hamthatna</h4>
+                <h4 style="margin-bottom: 5px;">🚀 Practical Mark Boost & Internal Hamthatna</h4>
                 <p style="margin-bottom: 15px; padding: 10px; background-color: #14532d; border-left: 4px solid #22c55e; border-radius: 4px; color: #86efac;">
-                    Attendance point te, coins khawl te kha internal mark-ah belh a ni ang. A hmu tha zualte chu duhsak bik an ni ang.
+                    Class kal ṭhat (Attendance Consistency) leh MCQ Coins khawlte hi <b>Internal Practical Mark boost (tihpun)</b> nan hman tur a ni. Absent nei lova kal kim leh Consistency Rank sangte chu duhsak bik an ni ang.
                 </p>
             </div>
             
@@ -359,13 +359,45 @@
                         </div>
                     </div>
 
+                    <!-- ATTENDANCE POINTS & CONSISTENCY RANK (PRACTICAL MARK BOOST) CARD -->
                     <div style="border: 1px solid #d8b4fe; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px;" id="attendance-points-card">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <p style="font-weight: 600; font-size: 16px; margin: 0;">Total Attendance Points:</p>
                             <div style="font-size: 28px; font-weight: bold;" id="student-att-points">0 Points</div>
                         </div>
-                        <button id="attendance-info-btn" class="btn" style="background-color: #6b21a8; color: white; font-size: 13px; padding: 8px;" onclick="openAttendanceModal()">
-                            ℹ️ Attendance & Internal Mark Hriattirna
+
+                        <!-- MAHNI ATTENDANCE CONSISTENCY RANK & PRACTICAL BOOST INFO -->
+                        <div style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 2px solid #4ade80; padding: 16px; border-radius: 12px; box-shadow: 0 4px 10px rgba(22, 163, 74, 0.08);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <div style="font-size: 12px; color: #166534; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        🏅 I Attendance Consistency Rank
+                                    </div>
+                                    <div style="font-size: 24px; font-weight: 900; color: #065f46; margin-top: 4px;">
+                                        Rank #<span id="my-att-rank">-</span>
+                                    </div>
+                                    <div id="my-att-stats" style="font-size: 12px; color: #15803d; margin-top: 2px; font-weight: 600;">
+                                        Present: 0 | Report: 0 | Absent: 0
+                                    </div>
+                                </div>
+                                <div>
+                                    <span id="my-att-badge" style="background: #ffffff; color: #166534; border: 1px solid #22c55e; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: inline-block;">
+                                        ⏳ Chhut mek...
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- PRACTICAL MARK BOOST NOTICE -->
+                            <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed #86efac; font-size: 13px; color: #14532d; display: flex; align-items: flex-start; gap: 8px; line-height: 1.5;">
+                                <span style="font-size: 18px;">🚀</span>
+                                <span>
+                                    <b>Practical Mark Boost:</b> Class kal ṭhat leh Attendance Consistency vawn ṭhat hi <b>Internal Practical Mark boost (tihpun)</b> nan hman tur a ni. Absent nei lova kal kim zel turin ṭan la rawh le!
+                                </span>
+                            </div>
+                        </div>
+
+                        <button id="attendance-info-btn" class="btn" style="background-color: #6b21a8; color: white; font-size: 13px; padding: 8px; margin-bottom: 0;" onclick="openAttendanceModal()">
+                            ℹ️ Attendance & Practical Mark Boost Hriattirna
                         </button>
                     </div>
 
@@ -470,7 +502,7 @@
                             Saturday (O) zirlaite chuan in Practical (Assignments) in tih zawh apiangin <b>Zip file</b>-ah siam tur, chu chu i hming leh Enrollment No. tarlangin Zirtirtu hnenah <b>WhatsApp</b> kaltlangin rawn thawn ṭhin tur a ni.
                         </p>
                         <p style="font-size: 14px; line-height: 1.6; color: #047857; background: #d1fae5; padding: 10px; border-radius: 6px;">
-                            I thil thehluh hi zirtirtuin a lo check ang a, a ṭhat dan a zirin i <b>Attendance Points</b>-ah points a lo thun lut ṭhin dawn a ni. I points hmuh zat hi i "Zirlai Dinhmun" tab-ah i check thei ang. Attendance point leh coins i khawl te hi internal mark-ah belh tur a ni e. A ti tha zual chu duhsak an ni ang.
+                            I thil thehluh hi zirtirtuin a lo check ang a, a ṭhat dan a zirin i <b>Attendance Points</b>-ah points a lo thun lut ṭhin dawn a ni. I points hmuh zat hi i "Zirlai Dinhmun" tab-ah i check thei ang. Attendance consistency leh coins i khawl te hi <b>Practical Mark boost</b> nan hman tur a ni e.
                         </p>
                     </div>
                 </div>
@@ -536,7 +568,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const APP_VERSION = "6.20"; 
+        const APP_VERSION = "6.21"; 
 
         window.currentStudent = { enrollment: '', name: '', shift: '', coins: 0, photoUrl: '' };
         let studentLeaveUnsubscribe = null; 
@@ -596,8 +628,89 @@
             }
         }
 
-        // TIE-BREAKER HELPER: Chhan dik hun (lastCoinEarnedAt) milliseconds lak chhuahna
+        // ATTENDANCE CONSISTENCY RANK BADGE HELPER
+        function getAttendanceRankDetails(rank, totalPts, absentCount) {
+            if (totalPts <= 0) {
+                return { title: 'No Record', badge: '⏳ Record la awm lo', bg: '#f1f5f9', color: '#64748b', border: '#cbd5e1' };
+            }
+            if (rank >= 1 && rank <= 10) {
+                let extra = absentCount === 0 ? ' (100% Streak)' : '';
+                return { title: 'Most Consistent', badge: `🌟 Most Consistent${extra}`, bg: '#dcfce7', color: '#166534', border: '#4ade80' };
+            } else if (rank >= 11 && rank <= 20) {
+                return { title: 'Very Regular', badge: '🔥 Very Regular', bg: '#e0f2fe', color: '#0369a1', border: '#38bdf8' };
+            } else if (rank >= 21 && rank <= 35) {
+                return { title: 'Regular', badge: '👍 Regular', bg: '#fef08a', color: '#854d0e', border: '#eab308' };
+            } else {
+                return { title: 'Needs Improvement', badge: '⚠️ Tan lak ngai', bg: '#fee2e2', color: '#991b1b', border: '#f87171' };
+            }
+        }
+
+        // MAHNI ATTENDANCE CONSISTENCY RANK CHHUTNA (MIDANG LIST LANG LOVIN)
+        function updateMyAttendanceConsistencyUI() {
+            const myEnr = String(window.currentStudent?.enrollment || '');
+            if (!myEnr || allStudentsList.length === 0) return;
+
+            let consistencyList = allStudentsList.map(s => {
+                let stRecords = allAttendanceRecords.filter(r => String(r.enrollment) === String(s.enrollment));
+                let totalPts = 0;
+                let presentDays = 0;
+                let reportDays = 0;
+                let absentDays = 0;
+
+                stRecords.forEach(r => {
+                    totalPts += (r.points || 0);
+                    if (r.status === 'Present' || r.status === 'Practical Submitted') presentDays++;
+                    else if (r.status === 'Reported') reportDays++;
+                    else if (r.status === 'Absent') absentDays++;
+                });
+
+                return {
+                    enrollment: String(s.enrollment),
+                    name: s.name || '',
+                    attTotalPts: totalPts,
+                    attPresentDays: presentDays,
+                    attReportDays: reportDays,
+                    attAbsentDays: absentDays
+                };
+            });
+
+            // Admin Page nen inmil thlapa Sort-na:
+            // 1. Total Points sang zawk -> 2. Absent nei tlem zawk -> 3. Present ni ngah zawk -> 4. Hming indawt
+            consistencyList.sort((a, b) => {
+                if (b.attTotalPts !== a.attTotalPts) return b.attTotalPts - a.attTotalPts;
+                if (a.attAbsentDays !== b.attAbsentDays) return a.attAbsentDays - b.attAbsentDays;
+                if (b.attPresentDays !== a.attPresentDays) return b.attPresentDays - a.attPresentDays;
+                return a.name.localeCompare(b.name);
+            });
+
+            const myIndex = consistencyList.findIndex(x => x.enrollment === myEnr);
+            if (myIndex !== -1) {
+                const myStats = consistencyList[myIndex];
+                const myRank = myIndex + 1;
+                const details = getAttendanceRankDetails(myRank, myStats.attTotalPts, myStats.attAbsentDays);
+
+                const rankEl = document.getElementById('my-att-rank');
+                const badgeEl = document.getElementById('my-att-badge');
+                const statsEl = document.getElementById('my-att-stats');
+
+                if (rankEl) rankEl.innerText = myStats.attTotalPts > 0 ? myRank : '-';
+                if (badgeEl) {
+                    badgeEl.innerText = details.badge;
+                    badgeEl.style.background = details.bg;
+                    badgeEl.style.color = details.color;
+                    badgeEl.style.border = `1px solid ${details.border}`;
+                }
+                if (statsEl) {
+                    statsEl.innerText = `Present: ${myStats.attPresentDays} | Report: ${myStats.attReportDays} | Absent: ${myStats.attAbsentDays}`;
+                }
+            }
+        }
+
+        // TIE-BREAKER HELPER: Chhan dik hun (lastCoinUpdatedAt / lastCoinEarnedAt) milliseconds lak chhuahna
         function getCoinTimeMillis(student) {
+            if (student.lastCoinUpdatedAt && typeof student.lastCoinUpdatedAt.toMillis === 'function') {
+                return student.lastCoinUpdatedAt.toMillis();
+            }
             if (student.lastCoinEarnedAt && typeof student.lastCoinEarnedAt.toMillis === 'function') {
                 return student.lastCoinEarnedAt.toMillis();
             }
@@ -924,6 +1037,7 @@
                 const ptsUI = document.getElementById('student-att-points');
                 if(ptsUI) ptsUI.innerText = (attendancePointsMap[window.currentStudent.enrollment] || 0) + " Points";
                 autoCalculatePeriodAttendance();
+                updateMyAttendanceConsistencyUI();
             }
         });
 
@@ -1065,9 +1179,11 @@
                 });
                 
                 if(selected === mcq.answer) {
+                    const ts = serverTimestamp();
                     await updateDoc(doc(db, "students", window.currentStudent.enrollment), { 
                         coins: increment(mcq.coins),
-                        lastCoinEarnedAt: serverTimestamp() // Tie-breaker atan chhan dik hun chhinchhiahna
+                        lastCoinEarnedAt: ts,
+                        lastCoinUpdatedAt: ts // Admin leh Student tie-breaker inmilna
                     });
                     alert(`✅ I chhang dik e! Coin ${mcq.coins} pek i ni.`);
                 } else {
@@ -1197,9 +1313,11 @@
             try {
                 if (promises.length > 0) await Promise.all(promises);
                 if (coinsEarned > 0) {
+                    const ts = serverTimestamp();
                     await updateDoc(doc(db, "students", enr), { 
                         coins: increment(coinsEarned),
-                        lastCoinEarnedAt: serverTimestamp() // Tie-breaker atan chhan dik hun chhinchhiahna
+                        lastCoinEarnedAt: ts,
+                        lastCoinUpdatedAt: ts // Admin leh Student tie-breaker inmilna
                     });
                 }
 
@@ -1231,7 +1349,7 @@
                 return; 
             }
 
-            // 1. Coins ngah dan -> 2. Chhang dik hmasa zawk (lastCoinEarnedAt hma zawk) -> 3. Hming indawt
+            // 1. Coins ngah dan -> 2. Chhang dik hmasa zawk (lastCoinUpdatedAt / lastCoinEarnedAt hma zawk) -> 3. Hming indawt
             let sorted = [...allStudentsList].sort((a, b) => {
                 let coinDiff = (b.coins || 0) - (a.coins || 0);
                 if (coinDiff !== 0) return coinDiff;
@@ -1297,6 +1415,7 @@
         onSnapshot(query(collection(db, "students"), orderBy("registeredAt", "desc")), (snapshot) => {
             allStudentsList = []; snapshot.forEach((docSnap) => allStudentsList.push(docSnap.data()));
             renderLeaderboard();
+            updateMyAttendanceConsistencyUI();
             if(window.currentStudent.enrollment) {
                 let me = allStudentsList.find(s => String(s.enrollment) === String(window.currentStudent.enrollment));
                 if(me) {
@@ -1781,6 +1900,7 @@
                         }
 
                         renderLeaderboard();
+                        updateMyAttendanceConsistencyUI();
                         renderStudentFeePortal(); 
                         loadStudentLeaves(dbEnrollmentVal); 
                         loadMySubmissions(); 
